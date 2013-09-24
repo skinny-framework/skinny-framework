@@ -41,11 +41,11 @@ libraryDependencies += Seq(
 
 ## Components
 
-### Routing & Controller
+### Routing & Controller & Validator
 
 Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you'd like to use Scalatra's API directly, Skinny never bother you.
 
-`SkinnyController` is a class which extends `ScalatraBase` and integrates some additional components.
+`SkinnyController` is a class which extends `ScalatraBase` and integrates some additional components. 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
@@ -90,6 +90,22 @@ class ScalatraBootstrap exnteds SkinnyLifeCycle {
       post("/members/?")(create).as('create)
     }, "/*")
   }
+}
+```
+
+Skinny-Validator is newly created one which is based on [InputValidator](https://github.com/seratch/inputvalidator) and much improved. Rules are so simple that you can easily add original validation rules. Furthermore, you can use this validator with any other frameworks.
+
+```scala
+import skinny.validator._
+
+def createForm = validation(
+  paramKey("name") is required & minLength(2) & alphabetOnly, 
+  paramKey("countryId") is numeric
+)
+
+object alphabetOnly extends ValidationRule {
+  def name = "alphabetOnly"
+  def isValid(v: Any) = v == null || v.toString.matches("^[a-zA-Z]*$")
 }
 ```
 
@@ -305,13 +321,14 @@ class MembersController extends SkinnyServlet {
 
 #### TODO
 
-These are major tasks that Skinny should support.
+These are major tasks that Skinny should fix.
 
  - View helper
  - Scaffold generator
  - More tests
  - Supporting CoffeeScript and etc
  - Documentation
+ - Environment 
  - Cool logo
 
 Your feedback or pull requests are always welcome.
