@@ -1,0 +1,59 @@
+package model
+
+import scalikejdbc._, SQLInterpolation._
+import org.joda.time.DateTime
+import skinny.orm.SkinnyCRUDMapper
+import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }
+
+case class Programmer(
+    id: Long,
+    name: String,
+    companyId: Option[Long] = None,
+    company: Option[Company] = None,
+    skills: Seq[Skill] = Nil,
+    createdAt: DateTime,
+    updatedAt: Option[DateTime] = None) {
+
+  def addSkill(skill: Skill)(implicit session: DBSession = ProgrammerSkill.autoSession): Unit = {
+    ProgrammerSkill.withColumns { c =>
+      ProgrammerSkill.createWithNamedValues(c.programmerId -> id, c.skillId -> skill.id)
+    }
+  }
+
+  def deleteSkill(skill: Skill)(implicit session: DBSession = Programmer.autoSession): Unit = {
+    ProgrammerSkill.withColumns { c =>
+      withSQL {
+        delete.from(ProgrammerSkill).where.eq(c.programmerId, id).and.eq(c.skillId, skill.id)
+      }.update.apply()
+    }
+  }
+}
+
+object Programmer extends SkinnyCRUDMapper[Programmer]
+    with TimestampsFeature[Programmer]
+    with SoftDeleteWithTimestampFeature[Programmer] {
+
+  override lazy val defaultAlias = createAlias("p")
+  override lazy val nameConverters = Map("At$" -> "_timestamp")
+
+  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = new Programmer(
+    id = rs.long(p.id),
+    name = rs.string(p.name),
+    companyId = rs.longOpt(p.companyId),
+    createdAt = rs.dateTime(p.createdAt),
+    updatedAt = rs.dateTimeOpt(p.updatedAt)
+  )
+
+  belongsTo[Company](Company, (p, c) => p.copy(company = c)).byDefault
+
+  hasManyThrough[Skill](ProgrammerSkill, Skill, (p, skills) => p.copy(skills = skills))
+
+  private val (p, ps) = (Programmer.defaultAlias, ProgrammerSkill.defaultAlias)
+
+  def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = withExtractor {
+    withSQL {
+      defaultSelectQuery.where.notIn(p.id,
+        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeWithoutAlias)
+    }
+  }.list.apply()
+}

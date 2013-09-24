@@ -1,0 +1,15 @@
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{48} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.fusesource.scalate" level="warn"/>
+    <logger name="org.scalatra.scalate.ScalateSupport##anon#1.SourceMap" level="warn"/>
+    <logger name="org.scalatra.scalate.ScalateSupport##anon#2.SourceMap" level="warn"/>
+
+    <root level="debug">
+        <appender-ref ref="console"/>
+    </root>
+</configuration>

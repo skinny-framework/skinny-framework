@@ -1,0 +1,33 @@
+<%@val params: skinny.Params %>
+<%@val programmers: Seq[model.Programmer] %>
+<%@val i18n: skinny.I18n %>
+<h3>${i18n.get("programmer.list")}</h3>
+<hr/>
+<table class="table table-bordered">
+<thead>
+  <tr>
+    <th>${i18n.get("programmer.id")}</th>
+    <th>${i18n.get("programmer.name")}</th>
+    <th>${i18n.get("programmer.company")}</th>
+    <th></th>
+  </tr>
+</thead>
+<tbody>
+  #for (programmer <- programmers)
+  <tr>
+    <td>${programmer.id}</td>
+    <td>${programmer.name}</td>
+    <td>${programmer.company.map(_.name).getOrElse("")}</td>
+    <td>
+      <a href="/programmers/${programmer.id}" class="btn btn-default">Detail</a>
+      <a href="/programmers/${programmer.id}/edit" class="btn btn-info">Edit</a>
+      <a data-method="delete" data-confirm="${i18n.get("programmer.delete.confirm")}"
+        href="/programmers/${programmer.id}" rel="nofollow" class="btn btn-danger">Delete</a>
+    </td>
+  </tr>
+  #end
+</tbody>
+</table>
+
+<a href="/programmers/new" class="btn btn-primary">New</a>
+

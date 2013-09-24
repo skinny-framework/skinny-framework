@@ -1,0 +1,21 @@
+-@val params: skinny.Params
+-@val errorMessages: Seq[String]
+-@val i18n: skinny.I18n
+
+%h3 #{i18n.get("skill.new")}
+%hr
+
+-for (e <- errorMessages)
+ %p(class="alert alert-danger") #{e}
+
+%form(method="post" action="/skills" class="form")
+ %div(class="form-group")
+  %label(class="control-label" for="name") #{i18n.get("skill.name")}
+  %div(class="controls")
+   %div(class="row col-md-12")
+    %input(type="text" name="name" class="input-lg col-lg-6" value={params.name})
+ %input(type="hidden" name={csrfKey} value={csrfToken})
+
+ %div(class="form-actions")
+  %input(type="submit" class="btn btn-primary")
+  %a(class="btn btn-default" href="/skills") Cancel

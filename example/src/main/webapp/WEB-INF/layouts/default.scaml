@@ -1,0 +1,19 @@
+-@val body: String
+!!! 5
+%html(lang="en")
+ %head
+  %meta(charset="utf-8")
+  %meta(content={csrfToken} name="csrf-token")
+  %script(type="text/javascript" src="//codeorigin.jquery.com/jquery-2.0.3.min.js")
+  %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css")
+ %body
+  %div.container.span12
+   =unescape(body)
+   %hr
+   %a(href="/" class="btn btn-default") Top
+   %a(href="/programmers" class="btn btn-default") Programmers
+   %a(href="/companies" class="btn btn-default") Companies
+   %a(href="/skills" class="btn btn-default") Skills
+  %script(type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js")
+  %script(type="text/javascript" src="/assets/js/application.js")
+

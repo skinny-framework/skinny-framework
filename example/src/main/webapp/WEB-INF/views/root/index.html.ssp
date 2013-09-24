@@ -1,0 +1,29 @@
+<%@val i18n: skinny.I18n %>
+
+<h3>Skinny Framework Demo</h3>
+<hr/>
+<p>
+Skinny is a full-stack web app framework, which is built on Scalatra and additional components are integrated.
+</p>
+<p>
+To put it simply, Skinny framework's concept is Scala on Rails. Skinny is highly inspired by Ruby on Rails and it is optimized for sustainable productivy for ordinary Servlet-based app development.
+</p>
+
+<h3>Requrirements</h3>
+<hr/>
+
+<ul>
+  <li>Servlet 3.0</li>
+  <li>Scalatra 2.2</li>
+  <li>Scalate 1.6</li>
+  <li>ScalikeJDBC 1.6</li>
+</ul>
+
+<h3>Components</h3>
+
+<ul>
+<li>Routing & Controller = Rich Scalatra</li>
+<li>Form Validation = Skinny-Validator (based on seratch/inputvalidator)</li>
+<li>O/R Mapper = Skinny-ORM (built with ScalikeJDBC QueryDSL)</li>
+<li>Template engine = Scalatra's ScalateSupport or Skinny-FreeMarker</li>
+</ul>

@@ -1,0 +1,21 @@
+-@val skill: model.Skill
+-@val i18n: skinny.I18n
+
+%h3 #{i18n.get("skill.detail")}
+%hr
+
+%table(class="table table-bordered")
+ %thead
+  %tr
+   %th #{i18n.get("skill.id")}
+   %th #{skill.id}
+  %tr
+   %th #{i18n.get("skill.name")}
+   %td #{skill.name}
+
+%hr
+%div(class="form-actions")
+ %a(class="btn btn-default" href="/skills") Back to list
+ %a(href={"/skills/"+skill.id+"/edit"} class="btn btn-info") Edit
+ %a(data-method="delete" data-confirm={i18n.get("skill.delete.confirm")}
+  href="/skills/#{skill.id}" rel="nofollow" class="btn btn-danger") Delete

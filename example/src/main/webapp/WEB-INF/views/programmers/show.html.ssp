@@ -1,0 +1,30 @@
+<%@val programmer: model.Programmer %>
+<%@val i18n: skinny.I18n %>
+
+<h3>${i18n.get("programmer.detail")}</h3>
+<hr/>
+
+<table class="table table-bordered">
+<thead>
+  <tr>
+    <th>${i18n.get("programmer.id")}</th>
+    <td>${programmer.id}</td>
+  </tr>
+  <tr>
+    <th>${i18n.get("programmer.name")}</th>
+    <td>${programmer.name}</td>
+  </tr>
+  <tr>
+    <th>${i18n.get("programmer.company")}</th>
+    <td>${programmer.company.map(_.name).getOrElse("")}</td>
+  </tr>
+</tbody>
+</table>
+
+<hr/>
+<div class="form-actions">
+  <a class="btn btn-default" href="/programmers">Back to list</a>
+  <a href="/programmers/${programmer.id}/edit" class="btn btn-info">Edit</a>
+  <a data-method="delete" data-confirm="${i18n.get("programmer.delete.confirm")}"
+    href="/programmers/${programmer.id}" rel="nofollow" class="btn btn-danger">Delete</a>
+</div>

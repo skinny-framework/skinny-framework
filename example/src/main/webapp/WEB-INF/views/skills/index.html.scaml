@@ -1,0 +1,25 @@
+-@val params: skinny.Params
+-@val skills: Seq[model.Skill]
+-@val i18n: skinny.I18n
+%h3 #{i18n.get("skill.list")}
+%hr
+%table(class="table table-bordered")
+ %thead
+  %tr
+   %th #{i18n.get("skill.id")}
+   %th #{i18n.get("skill.name")}
+   %th
+  </tr>
+ %tbody
+  - for(skill <- skills)
+   %tr
+    %td= skill.id
+    %td= skill.name
+    %td
+     %a(href={"/skills/"+skill.id} class="btn btn-default") Detail
+     %a(href={"/skills/"+skill.id+"/edit"} class="btn btn-info") Edit
+     %a(data-method="delete" data-confirm={i18n.get("skill.delete.confirm")}
+      href="/skills/#{skill.id}" rel="nofollow" class="btn btn-danger") Delete
+
+%a(href="/skills/new" class="btn btn-primary") New
+
