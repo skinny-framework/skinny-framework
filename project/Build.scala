@@ -167,14 +167,13 @@ object SkinnyFrameworkBuild extends Build {
   }
 
   val _scalacOptions = Seq("-deprecation", "-unchecked", "-feature")
-  //val _scalacOptions = Seq("-deprecation", "-unchecked")
 
   val _pomExtra = {
     <url>https://github.com/seratch/skinny-framework</url>
       <licenses>
         <license>
-          <name>Apache License, Version 2.0</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+          <name>MIT License</name>
+          <url>http://www.opensource.org/licenses/mit-license.php</url>
           <distribution>repo</distribution>
         </license>
       </licenses>
