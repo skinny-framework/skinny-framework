@@ -13,6 +13,7 @@ class ProgrammersController extends SkinnyResource {
 
   beforeAction(only = Seq('index, 'new, 'edit)) {
     set("companies", Company.findAll())
+    set("skills", Skill.findAll())
   }
 
   override def createForm = validation(
@@ -32,7 +33,7 @@ class ProgrammersController extends SkinnyResource {
     (for {
       programmerId <- params.getAs[Long]("programmerId")
       programmer <- Programmer.findById(programmerId)
-      skillId <- params.getAs[Long]("programmerId")
+      skillId <- params.getAs[Long]("skillId")
       skill <- Skill.findById(skillId)
     } yield {
       try programmer.addSkill(skill)
@@ -44,7 +45,7 @@ class ProgrammersController extends SkinnyResource {
     (for {
       programmerId <- params.getAs[Long]("programmerId")
       programmer <- Programmer.findById(programmerId)
-      skillId <- params.getAs[Long]("programmerId")
+      skillId <- params.getAs[Long]("skillId")
       skill <- Skill.findById(skillId)
     } yield {
       programmer.deleteSkill(skill)

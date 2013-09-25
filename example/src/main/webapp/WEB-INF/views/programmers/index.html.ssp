@@ -1,5 +1,6 @@
 <%@val params: skinny.Params %>
 <%@val programmers: Seq[model.Programmer] %>
+<%@val skills: Seq[model.Skill] %>
 <%@val i18n: skinny.I18n %>
 <h3>${i18n.get("programmer.list")}</h3>
 <hr/>
@@ -9,6 +10,7 @@
     <th>${i18n.get("programmer.id")}</th>
     <th>${i18n.get("programmer.name")}</th>
     <th>${i18n.get("programmer.company")}</th>
+    <th>${i18n.get("programmer.skills")}</th>
     <th></th>
   </tr>
 </thead>
@@ -18,6 +20,22 @@
     <td>${programmer.id}</td>
     <td>${programmer.name}</td>
     <td>${programmer.company.map(_.name).getOrElse("")}</td>
+    <td>
+    #for (skill <- programmer.skills)
+      <p>
+        ${skill.name}
+        <a data-method="delete" data-confirm="${i18n.get("programmer.removeSkill.confirm")}" href="/programmers/${programmer.id}/skills/${skill.id}"
+          rel="nofollow" class="glyphicon glyphicon-remove"></a>
+      </p>
+    #end
+    <p>
+      <select data-method="post" class="form-control">
+        #for (skill <- skills.filterNot(s => programmer.skills.contains(s)))
+        <option data-url="/programmers/${programmer.id}/skills/${skill.id}">${skill.name}</option>
+        #end
+      </select>
+    </p>
+    </td>
     <td>
       <a href="/programmers/${programmer.id}" class="btn btn-default">Detail</a>
       <a href="/programmers/${programmer.id}/edit" class="btn btn-info">Edit</a>
