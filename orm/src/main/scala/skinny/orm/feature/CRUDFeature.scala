@@ -12,29 +12,9 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   val useAutoIncrementPrimaryKey = true
 
-  def prepareDefaultScopeWithoutAlias(): Unit = {}
-  def prepareDefaultScopeWithDefaultAlias(): Unit = {}
+  def defaultScopeWithoutAlias: Option[SQLSyntax] = None
 
-  private[this] var defaultScopeValueWithoutAlias: Option[SQLSyntax] = None
-  private[this] var defaultScopeValueWithDefaultAlias: Option[SQLSyntax] = None
-
-  lazy val defaultScopeWithoutAlias: Option[SQLSyntax] = {
-    prepareDefaultScopeWithoutAlias()
-    defaultScopeValueWithoutAlias
-  }
-
-  lazy val defaultScopeWithDefaultAlias: Option[SQLSyntax] = {
-    prepareDefaultScopeWithDefaultAlias()
-    defaultScopeValueWithDefaultAlias
-  }
-
-  def appendToDefaultScope(part: => SQLSyntax): Unit = defaultScopeValueWithoutAlias.synchronized {
-    defaultScopeValueWithoutAlias = defaultScopeValueWithoutAlias.map(ds => ds.and.append(part)).orElse(Option(part))
-  }
-
-  def appendToDefaultScopeWithDefaultAlias(part: => SQLSyntax): Unit = defaultScopeValueWithDefaultAlias.synchronized {
-    defaultScopeValueWithDefaultAlias = defaultScopeValueWithDefaultAlias.map(ds => ds.and.append(part)).orElse(Option(part))
-  }
+  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
 
   def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
     val belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
