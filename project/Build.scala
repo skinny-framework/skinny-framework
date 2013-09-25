@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   val Organization = "com.github.seratch"
   val Version = "0.1.1-SNAPSHOT"
   val ScalatraVersion = "2.2.1"
-  val ScalikeJDBCVersion = "1.6.9-SNAPSHOT"
+  val ScalikeJDBCVersion = "1.6.9"
 
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
@@ -65,7 +65,7 @@ object SkinnyFrameworkBuild extends Build {
       organization := Organization,
       name := "skinny-freemarker",
       version := Version,
-      scalaVersion := "2.10.2",
+      scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
