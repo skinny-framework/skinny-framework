@@ -46,7 +46,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
 
   belongsTo[Company](Company, (p, c) => p.copy(company = c)).byDefault
 
-  hasManyThrough[Skill](ProgrammerSkill, Skill, (p, skills) => p.copy(skills = skills))
+  hasManyThrough[Skill](ProgrammerSkill, Skill, (p, skills) => p.copy(skills = skills)).byDefault
 
   private val (p, ps) = (Programmer.defaultAlias, ProgrammerSkill.defaultAlias)
 

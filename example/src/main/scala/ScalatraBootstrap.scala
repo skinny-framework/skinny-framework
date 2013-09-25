@@ -11,8 +11,8 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
   val programmers = new ProgrammersController with Routes {
     post("/programmers/:programmerId/company/:companyId")(joinCompany).as('joinCompany)
     delete("/programmers/:programmerId/company")(leaveCompany).as('leaveCompany)
-    post("/programmers/:programmerId/skills/:skillsId")(addSkill).as('addSkill)
-    delete("/programmers/:programmerId/skills/:skillsId")(deleteSkill).as('deleteSkill)
+    post("/programmers/:programmerId/skills/:skillId")(addSkill).as('addSkill)
+    delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as('deleteSkill)
   }
 
   override def initSkinnyApp(ctx: ServletContext) {

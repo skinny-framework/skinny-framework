@@ -10,6 +10,16 @@
     }
     return false;
   });
+  $(document).delegate('select[data-method]', 'change', function(event) {
+    var csrfToken = $('meta[name=csrf-token]').attr("content") || $(event.target).data('csrf-token');
+    $.ajax({
+      url: $(event.target.selectedOptions).first().data('url'),
+      data: {csrfToken: csrfToken},
+      method: $(event.target).data('method'),
+      success: function(data) { window.location.reload(); }
+    });
+    return false;
+  });
 })(jQuery);
 
 
