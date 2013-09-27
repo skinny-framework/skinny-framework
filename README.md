@@ -12,7 +12,7 @@ What does the name of `Skinny` actually mean?
 
 #### Application should be skinny
 
-All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view tempaltes in an efficient way (ssp, scaml, jade, FreeMarker, Thymeleaf or something else) in most cases.
+All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view tempaltes in an efficient way (ssp, scaml, jade, FreeMarker or something else) in most cases.
 
 #### Framework should be skinny
 
@@ -24,13 +24,13 @@ A sound-alike word **"好きに (su-ki-ni)"** in Japanese means **"as you like i
 
 ## How to use
 
-Actually, application which is built with Skinny framework is a Scalatra application. After preparing Scalatra application, just add the following dependency to your `project/Build.scala`.
+Actually, An application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
 
 ```scala
 libraryDependencies += "com.gitub.seratch" %% "skinny-framework" % "[0.1,)"
 ```
 
-If you need only Skinny-ORM or Skinny-Validator, you can use only what you need. Even if you're a Play framework 2.x user, these components are available for you as well.
+If you need only Skinny-ORM or Skinny-Validator, you can use only what you need. Even if you're a Play2 (or any others) user, these components are available for you as well.
 
 ```scala
 libraryDependencies += Seq(
@@ -43,9 +43,9 @@ libraryDependencies += Seq(
 
 ### Routing & Controller & Validator
 
-Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you'd like to use Scalatra's API directly, Skinny never bother you.
+Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you need to use Scalatra's API directly, Skinny never bother you.
 
-`SkinnyController` is a class which extends `ScalatraBase` and integrates some additional components. 
+`SkinnyController` is a class which extends `ScalatraBase` and out-of-the-box components are integrated. 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
@@ -68,8 +68,7 @@ class MembersController extends SkinnyController {
     paramKey("countryId") is numeric
   )
 
-  def createFormParams = params.permit(
-    "groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
+  def createFormParams = params.permit("groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
 
   def create = if (createForm.validate()) {
     Member.createWithAttributes(createFormParams)
@@ -83,7 +82,7 @@ class MembersController extends SkinnyController {
 
 class ScalatraBootstrap exnteds SkinnyLifeCycle {
   override def initSkinnyApp(ctx: ServletContext) {
-
+    // register routes
     ctx.mount(new MembersController with Routes {
       get("/members/?")(index).as('index)
       get("/members/new")(newOne).as('new)
@@ -93,7 +92,7 @@ class ScalatraBootstrap exnteds SkinnyLifeCycle {
 }
 ```
 
-Skinny-Validator is newly created one which is based on [InputValidator](https://github.com/seratch/inputvalidator) and much improved. Rules are so simple that you can easily add original validation rules. Furthermore, you can use this validator with any other frameworks.
+Skinny-Validator is newly created validator which is based on [seratch/inputvalidator](https://github.com/seratch/inputvalidator) and much improved. Rules are so simple that you can easily add original validation rules. Furthermore, you can use this validator with any other frameworks.
 
 ```scala
 import skinny.validator._
@@ -109,7 +108,7 @@ object alphabetOnly extends ValidationRule {
 }
 ```
 
-You can use `SkinnyResource` which is similar to `ActiveResource`, too. That's a pretty DRY way.
+`SkinnyResource` which is similar to Rails ActiveResource is available. That's a pretty DRY way.
 
 ```scala
 object CompaniesController extends SkinnyResource {
@@ -127,7 +126,7 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members`.
+Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
@@ -152,7 +151,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 That's all! Now you can use the following APIs.
 
 ```scala
-Member.withAlias { m =>
+Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // find by primary key
   val member: Option[Member] = Member.findById(123)
@@ -187,7 +186,7 @@ Member.withAlias { m =>
 
 If you need to join other tables, just add `belongsTo`, `hasOne` or `hasMany` (`hasManyThrough`) to the companion.
 
-**Notice:** Unfortunately, Skinny-ORM doesn't resolve nested associations in version 0.1.x.
+**[Notice]** Unfortunately, Skinny-ORM doesn't retrieve nested associations (e.g. members.head.groups.head.country) automatically though we're still seeking a way to resolove this issue.
 
 ```scala
 class Member(id: Long, name: String, companyId: Long, company: Option[Company] = None, skills: Seq[Skill] = Nil)
@@ -282,7 +281,7 @@ The following ssp is `src/main/webapp/WEB-INF/views/members/index.html.ssp`.
 Your controller code will be like this:
 
 ```scala
-class MembersController extends SkinnyFilter {
+class MembersController extends SkinnyController {
   def index = {
     set("members", Member.findAll())
     render("/members/index")
