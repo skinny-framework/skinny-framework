@@ -18,4 +18,12 @@ object SkillsController extends SkinnyResource {
 
   override def updateForm = createForm
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
+
+  override def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+    skinnyCRUDMapper.findById(id).map { m =>
+      skinnyCRUDMapper.deleteByIdCascade(id)
+      status = 200
+    } getOrElse haltWithBody(404)
+  }
+
 }

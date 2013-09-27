@@ -32,10 +32,7 @@ create table company (
 create sequence skill_id_seq start with 1;
 create table skill (
   id bigint not null default nextval('skill_id_seq') primary key,
-  name varchar(64) not null,
-  created_at timestamp not null,
-  updated_at timestamp,
-  deleted_at timestamp
+  name varchar(64) not null
 );
 
 create table programmer_skill (
@@ -43,6 +40,10 @@ create table programmer_skill (
   skill_id bigint not null,
   primary key(programmer_id, skill_id)
 );
+
+alter table programmer add foreign key(company_id) references company(id);
+alter table programmer_skill add foreign key(skill_id) references skill(id);
+alter table programmer_skill add foreign key(programmer_id) references programmer(id);
    """.execute.apply()
 
             sql"insert into company (name, url, created_at) values (?, ?, current_timestamp)".batch(
@@ -52,7 +53,7 @@ create table programmer_skill (
               Seq("Microsoft", "http://www.microsoft.com/")
             ).apply()
 
-            sql"insert into skill (name, created_at) values (?, current_timestamp)".batch(
+            sql"insert into skill (name) values (?)".batch(
               Seq("Scala"),
               Seq("Java"),
               Seq("Ruby"),

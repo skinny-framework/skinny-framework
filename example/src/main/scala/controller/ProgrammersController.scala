@@ -11,7 +11,7 @@ class ProgrammersController extends SkinnyResource {
   override def resourcesName = "programmers"
   override def resourceName = "programmer"
 
-  beforeAction(only = Seq('index, 'new, 'edit)) {
+  beforeAction(only = Seq('index, 'new, 'create, 'edit, 'update)) {
     set("companies", Company.findAll())
     set("skills", Skill.findAll())
   }
@@ -28,6 +28,13 @@ class ProgrammersController extends SkinnyResource {
     paramKey("companyId") is required & numeric
   )
   override def updateFormStrongParameters = Seq("name" -> ParamType.String, "companyId" -> ParamType.Long)
+
+  override def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+    skinnyCRUDMapper.findById(id).map { m =>
+      skinnyCRUDMapper.deleteByIdCascade(id)
+      status = 200
+    } getOrElse haltWithBody(404)
+  }
 
   def addSkill = {
     (for {
