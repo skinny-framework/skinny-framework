@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   val Organization = "com.github.seratch"
   val Version = "0.1.2-SNAPSHOT"
   val ScalatraVersion = "2.2.1"
-  val ScalikeJDBCVersion = "1.6.9"
+  val ScalikeJDBCVersion = "1.6.10-SNAPSHOT"
 
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
