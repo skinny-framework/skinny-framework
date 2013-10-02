@@ -10,7 +10,7 @@
     }
     return false;
   });
-  $(document).delegate('select[data-method]', 'change', function(event) {
+  $(document).delegate('select[data-method]', 'blur', function(event) {
     var csrfToken = $('meta[name=csrf-token]').attr("content") || $(event.target).data('csrf-token');
     $.ajax({
       url: $(event.target.selectedOptions).first().data('url'),

@@ -38,7 +38,7 @@
 <input type="hidden" name="${csrfKey}" value="${csrfToken}"/>
 
 <div class="form-actions">
-  <input type="submit" class="btn btn-primary"/>
-  <a class="btn btn-default" href="/programmers">Cancel</a>
+  <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}"/>
+  <a class="btn btn-default" href="/programmers">${i18n.get("cancel")}</a>
 </div>
 </form>

@@ -23,8 +23,8 @@
 
 <hr/>
 <div class="form-actions">
-  <a class="btn btn-default" href="/companies">Back to list</a>
-  <a href="/companies/${company.id}/edit" class="btn btn-info">Edit</a>
+  <a class="btn btn-default" href="/companies">${i18n.get("backToList")}</a>
+  <a href="/companies/${company.id}/edit" class="btn btn-info">${i18n.get("edit")}</a>
   <a data-method="delete" data-confirm="${i18n.get("company.delete.confirm")}"
-    href="/companies/${company.id}" rel="nofollow" class="btn btn-danger">Delete</a>
+    href="/companies/${company.id}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
 </div>

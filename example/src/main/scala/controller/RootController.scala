@@ -6,4 +6,10 @@ class RootController extends SkinnyController {
 
   def index = render("/root/index")
 
+  def setLocale = {
+    val locale = params.getAs[String]("locale").filter(_.length > 0).orNull[String]
+    setCurrentLocale(locale)
+    redirect(params.getAs[String]("return_to").getOrElse("/"))
+  }
+
 }

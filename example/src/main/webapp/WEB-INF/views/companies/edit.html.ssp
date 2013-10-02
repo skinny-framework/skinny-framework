@@ -2,7 +2,7 @@
 <%@val errorMessages: Seq[String] %>
 <%@val i18n: skinny.I18n %>
 
-<h3>${i18n.get("company.new")}</h3>
+<h3>${i18n.get("company.edit")}</h3>
 <hr/>
 
 #for (e <- errorMessages)
@@ -33,7 +33,7 @@
 <input type="hidden" name="${csrfKey}" value="${csrfToken}"/>
 
 <div class="form-actions">
-  <input type="submit" class="btn btn-primary"/>
-  <a class="btn btn-default" href="/companies">Cancel</a>
+  <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}"/>
+  <a class="btn btn-default" href="/companies">${i18n.get("cancel")}</a>
 </div>
 </form>

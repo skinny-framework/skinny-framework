@@ -1,4 +1,5 @@
 -@val body: String
+-@val i18n: skinny.I18n
 !!! 5
 %html(lang="en")
  %head
@@ -8,12 +9,15 @@
   %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css")
  %body
   %div.container.span12
+   %div(class="pull-right")
+    %a(href="/session/renew?locale=" class="btn btn-default") English
+    %a(href="/session/renew?locale=ja" class="btn btn-default") 日本語
    =unescape(body)
    %hr
-   %a(href="/" class="btn btn-default") Top
-   %a(href="/programmers" class="btn btn-default") Programmers
-   %a(href="/companies" class="btn btn-default") Companies
-   %a(href="/skills" class="btn btn-default") Skills
+   %a(href="/" class="btn btn-default") #{i18n.get("top")}
+   %a(href="/programmers" class="btn btn-default") #{i18n.get("programmer.list")}
+   %a(href="/companies" class="btn btn-default") #{i18n.get("company.list")}
+   %a(href="/skills" class="btn btn-default") #{i18n.get("skill.list")}
   %script(type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js")
   %script(type="text/javascript" src="/assets/js/application.js")
 
