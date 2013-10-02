@@ -16,13 +16,13 @@ class ProgrammersController extends SkinnyResource {
     set("skills", Skill.findAll())
   }
 
-  override def createForm = validationWithPrefix("programmer",
+  override def createForm = validation(
     paramKey("name") is required & maxLength(64),
     paramKey("companyId") is required & numeric
   )
   override def createFormStrongParameters = Seq("name" -> ParamType.String, "companyId" -> ParamType.Long)
 
-  override def updateForm = validationWithPrefix("programmer",
+  override def updateForm = validation(
     paramKey("id") is required,
     paramKey("name") is required & maxLength(64),
     paramKey("companyId") is required & numeric

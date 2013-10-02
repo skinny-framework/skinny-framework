@@ -6,7 +6,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
 
   def rootController = new RootController with Routes {
     get("/?")(index).as('index)
-    get("/session/renew")(setLocale).as('setLocale)
+    get("/session/renew")(renewSessionAttributes).as('sessionRenew)
   }
 
   val programmers = new ProgrammersController with Routes {

@@ -2,14 +2,19 @@ package skinny.controller
 
 import skinny._
 import skinny.orm.ParamType
-import skinny.validator.MapValidator
+import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
+import java.util.Locale
 
 trait SkinnyResource extends SkinnyController {
 
   protected def skinnyCRUDMapper: SkinnyCRUDMapper[_]
   protected def resourcesName: String
   protected def resourceName: String
+
+  override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(resourceName, validations: _*)
+  }
 
   protected def responseFormats: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
   protected def withFormat[A](format: Format)(action: => A): A = {
