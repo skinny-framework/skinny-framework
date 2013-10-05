@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator._
 import model._
 
-object SkillsController extends SkinnyResource {
+object SkillsController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"

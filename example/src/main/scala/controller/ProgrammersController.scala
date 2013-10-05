@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator._
 import model._
 
-class ProgrammersController extends SkinnyResource {
+class ProgrammersController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
   override def skinnyCRUDMapper = Programmer

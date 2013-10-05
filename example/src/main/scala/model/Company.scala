@@ -10,7 +10,8 @@ case class Company(
   name: String,
   url: Option[String] = None,
   createdAt: DateTime,
-  updatedAt: Option[DateTime] = None)
+  updatedAt: Option[DateTime] = None,
+  deletedAt: Option[DateTime] = None)
 
 object Company extends SkinnyCRUDMapper[Company]
     with TimestampsFeature[Company]
@@ -25,4 +26,5 @@ object Company extends SkinnyCRUDMapper[Company]
     createdAt = rs.dateTime(c.createdAt),
     updatedAt = rs.dateTimeOpt(c.updatedAt)
   )
+
 }

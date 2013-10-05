@@ -28,6 +28,7 @@
   <div class="controls">
     <div class="row col-md-12">
       <select  name="companyId" class="form-control">
+        <option value=""></option>
         #for (company <- companies)
         <option value="${company.id}">${company.name}</option>
         #end

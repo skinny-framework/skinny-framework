@@ -29,7 +29,7 @@
     <div class="row col-md-12">
       <select name="companyId" class="form-control">
         #for (company <- companies)
-        <option value="${company.id}">${company.name}</option>
+        <option value="${company.id}" #if(Some(company.id) == params.companyId) selected #end >${company.name}</option>
         #end
       </select>
     </div>
