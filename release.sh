@@ -1,8 +1,10 @@
 #!/bin/sh
 
+# publish-signed in sbt 0.13
+
 sbt ++2.10.0 \
-  orm/publish-signed \
-  validator/publish-signed \
-  framework/publish-signed \
-  freemarker/publish-signed 
+  orm/publish \
+  validator/publish \
+  framework/publish \
+  freemarker/publish 
 
