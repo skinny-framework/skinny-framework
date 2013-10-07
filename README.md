@@ -322,13 +322,13 @@ class MembersController extends SkinnyServlet {
 
 These are major tasks that Skinny should fix.
 
- - View helper
+ - Testing support
+ - Framework tests
+ - Supporting CoffeeScript and etc (basically wro4j)
+ - Documentation (wiki)
  - Scaffold generator
- - More tests
- - Supporting CoffeeScript and etc
- - Documentation
- - Environment 
- - Cool logo
+ - View helper 
+ - Cool logo???
 
 Your feedback or pull requests are always welcome.
 
