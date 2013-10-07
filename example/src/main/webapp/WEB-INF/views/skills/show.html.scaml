@@ -15,7 +15,8 @@
 
 %hr
 %div(class="form-actions")
- %a(class="btn btn-default" href="/skills")  #{i18n.get("backToList")}
- %a(href={"/skills/"+skill.id+"/edit"} class="btn btn-info")  #{i18n.get("edit")}
+ %a(class="btn btn-default" href={uri("/skills")})  #{i18n.get("backToList")}
+ %a(href={uri("/skills/"+skill.id+"/edit")} class="btn btn-info")  #{i18n.get("edit")}
  %a(data-method="delete" data-confirm={i18n.get("skill.delete.confirm")}
-  href="/skills/#{skill.id}" rel="nofollow" class="btn btn-danger")  #{i18n.get("delete")}
+  href={uri("/skills/"+skill.id)} rel="nofollow" class="btn btn-danger")  #{i18n.get("delete")}
+

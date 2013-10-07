@@ -16,10 +16,10 @@
     %td= skill.id
     %td= skill.name
     %td
-     %a(href={"/skills/"+skill.id} class="btn btn-default")  #{i18n.get("detail")}
-     %a(href={"/skills/"+skill.id+"/edit"} class="btn btn-info")  #{i18n.get("edit")}
+     %a(href={uri("/skills/"+skill.id)} class="btn btn-default")  #{i18n.get("detail")}
+     %a(href={uri("/skills/"+skill.id+"/edit")} class="btn btn-info")  #{i18n.get("edit")}
      %a(data-method="delete" data-confirm={i18n.get("skill.delete.confirm")}
-      href="/skills/#{skill.id}" rel="nofollow" class="btn btn-danger")  #{i18n.get("delete")}
+      href={uri("/skills/"+skill.id)} rel="nofollow" class="btn btn-danger")  #{i18n.get("delete")}
 
-%a(href="/skills/new" class="btn btn-primary")  #{i18n.get("new")}
+%a(href={uri("/skills/new")} class="btn btn-primary")  #{i18n.get("new")}
 

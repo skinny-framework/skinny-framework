@@ -10,7 +10,7 @@
 <p class="alert alert-danger">${e}</p>
 #end
 
-<form method="post" action="/programmers/${params.id}" class="form">
+<form method="post" action="${uri("/programmers/"+params.id.get)}" class="form">
 <div class="form-group">
   <label class="control-label" for="name">
     ${i18n.get("company.name")}
@@ -39,6 +39,6 @@
 
 <div class="form-actions">
   <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}">
-  <a class="btn btn-default" href="/programmers">${i18n.get("cancel")}</a>
+  <a class="btn btn-default" href="${uri("/programmers")}">${i18n.get("cancel")}</a>
 </div>
 </form>

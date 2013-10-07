@@ -23,8 +23,9 @@
 
 <hr/>
 <div class="form-actions">
-  <a class="btn btn-default" href="/programmers">${i18n.get("backToList")}</a>
-  <a href="/programmers/${programmer.id}/edit" class="btn btn-info">${i18n.get("edit")}</a>
+  <a class="btn btn-default" href="${uri("/programmers")}">${i18n.get("backToList")}</a>
+  <a href="${uri("/programmers/"+programmer.id+"/edit")}" class="btn btn-info">${i18n.get("edit")}</a>
   <a data-method="delete" data-confirm="${i18n.get("programmer.delete.confirm")}"
-    href="/programmers/${programmer.id}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
+    href="${uri("/programmers/"+programmer.id)}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
 </div>
+

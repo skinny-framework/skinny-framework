@@ -19,15 +19,15 @@
     <td>${company.name}</td>
     <td>${company.url}</td>
     <td>
-      <a href="/companies/${company.id}" class="btn btn-default">${i18n.get("detail")}</a>
-      <a href="/companies/${company.id}/edit" class="btn btn-info">${i18n.get("edit")}</a>
+      <a href="${uri("/companies/"+company.id)}" class="btn btn-default">${i18n.get("detail")}</a>
+      <a href="${uri("/companies/"+company.id+"/edit")}" class="btn btn-info">${i18n.get("edit")}</a>
       <a data-method="delete" data-confirm="${i18n.get("company.delete.confirm")}"
-        href="/companies/${company.id}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
+        href="${uri("/companies/"+company.id)}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
     </td>
   </tr>
   #end
 </tbody>
 </table>
 
-<a href="/companies/new" class="btn btn-primary">${i18n.get("new")}</a>
+<a href="${uri("/companies/new")}" class="btn btn-primary">${i18n.get("new")}</a>
 
