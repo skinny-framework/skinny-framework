@@ -7,8 +7,8 @@ trait BasicFeature extends ScalatraBase { self: RequestScopeFeature =>
 
   before() {
     set("contextPath", contextPath)
-    set("requestPath", requestPath)
-    set("requestPathWithQueryString", s"${requestPath}${Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")}")
+    set("requestPath", contextPath + requestPath)
+    set("requestPathWithQueryString", s"${contextPath}${requestPath}${Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")}")
     set("params", skinny.controller.Params(params))
     set("errorMessages" -> Seq())
     set("keyAndErrorMessages" -> Map[String, Seq[String]]())

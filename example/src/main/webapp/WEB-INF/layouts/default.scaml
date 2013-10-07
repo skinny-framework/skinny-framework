@@ -11,8 +11,8 @@
  %body
   %div.container.span12
    %div(class="pull-right")
-    %a(href={"/session/renew?locale=&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8")} class="btn btn-default") English
-    %a(href={"/session/renew?locale=ja&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8")} class="btn btn-default") 日本語
+    %a(href={uri("/session/renew?locale=&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8"))} class="btn btn-default") English
+    %a(href={uri("/session/renew?locale=ja&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8"))} class="btn btn-default") 日本語
    =unescape(body)
    %hr
    %a(href={uri("/")} class="btn btn-default") #{i18n.get("top")}

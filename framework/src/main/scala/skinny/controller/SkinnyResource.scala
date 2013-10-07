@@ -56,14 +56,11 @@ trait SkinnyResource extends SkinnyController {
         throw new StrongParametersException(
           "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined.")
       }
-      status = 201
-      // TODO path helper
-      response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       format match {
-        case Format.HTML =>
-          set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
-          render(s"/${resourcesName}/show")
+        case Format.HTML => redirect(s"/${resourcesName}/${id}")
         case _ =>
+          status = 201
+          response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       }
     } else {
       render(s"/${resourcesName}/new")
