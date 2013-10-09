@@ -39,6 +39,23 @@ libraryDependencies += Seq(
 )
 ```
 
+## Try example
+
+You can try the example right now.
+
+https://github.com/seratch/skinny-framework/tree/master/example
+
+```
+git clone https://github.com/seratch/skinny-framework.git
+cd skinny-framework
+sbt 
+// project example
+// container:start
+// ~;container:reload
+```
+
+Access `http://localhost:8080/example/` from your browser.
+
 ## Components
 
 ### Routing & Controller & Validator

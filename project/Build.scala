@@ -119,6 +119,7 @@ object SkinnyFrameworkBuild extends Build {
       ),
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
         "com.h2database"     %  "h2"                 % "1.3.173",
         "ch.qos.logback"     % "logback-classic"     % "1.0.13",
         "org.eclipse.jetty"  % "jetty-webapp"        % "8.1.8.v20121106" % "container",
@@ -126,16 +127,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       ),
-      scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-        Seq(
-          TemplateConfig(
-            base / "webapp" / "WEB-INF" / "templates",
-            Seq.empty, 
-            Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
-            Some("templates")
-          )
-        )
-      }
+      unmanagedResourceDirectories in Compile <++= baseDirectory { base => Seq(base / "src/main/webapp") }
     )
   ) dependsOn(framework)
 

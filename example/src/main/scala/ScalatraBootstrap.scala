@@ -4,7 +4,7 @@ import skinny.routing.Routes
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
-  def rootController = new RootController with Routes {
+  val rootController = new RootController with Routes {
     get("/?")(index).as('index)
     get("/session/renew")(renewSessionAttributes).as('sessionRenew)
   }
@@ -17,7 +17,14 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
   }
 
   override def initSkinnyApp(ctx: ServletContext) {
+    /* verbose query logger
+    import scalikejdbc._
+    val className = "skinny.orm.formatter.HibernateSQLFormatter"
+    GlobalSettings.sqlFormatter = SQLFormatterSettings(className)
+    GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
+     */
     DBInitializer.createTable()
+
     ctx.mount(rootController, "/*")
     ctx.mount(CompaniesController, "/*")
     ctx.mount(programmers, "/*")
