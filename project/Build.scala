@@ -110,9 +110,9 @@ object SkinnyFrameworkBuild extends Build {
   lazy val example = Project (id = "example", base = file("example"),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,
-      name := "skinny-framework-exampl",
+      name := "skinny-framework-example",
       version := "0.0.0",
-      scalaVersion := "2.10.2",
+      scalaVersion := "2.10.3",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
@@ -128,7 +128,7 @@ object SkinnyFrameworkBuild extends Build {
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       )
       // TODO enabling only for testing...
-      // , unmanagedResourceDirectories in Test <++= baseDirectory { base => Seq(base / "src/main/webapp") }
+      , unmanagedResourceDirectories in Test <+= (baseDirectory) { _ / "src/main/webapp" }
     )
   ) dependsOn(framework)
 
