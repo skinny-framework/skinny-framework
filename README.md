@@ -50,8 +50,7 @@ git clone https://github.com/seratch/skinny-framework.git
 cd skinny-framework
 sbt 
 // project example
-// container:start
-// ~;container:reload
+// ~;container:stop;container:start
 ```
 
 Access `http://localhost:8080/example/` from your browser.
