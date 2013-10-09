@@ -127,8 +127,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       )
-      // TODO enabling only for testing...
-      , unmanagedResourceDirectories in Test <+= (baseDirectory) { _ / "src/main/webapp" }
+      , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
   ) dependsOn(framework)
 
