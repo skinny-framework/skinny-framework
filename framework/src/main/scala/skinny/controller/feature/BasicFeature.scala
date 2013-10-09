@@ -6,13 +6,15 @@ import org.scalatra._
 trait BasicFeature extends ScalatraBase { self: RequestScopeFeature =>
 
   before() {
-    set("contextPath", contextPath)
-    set("requestPath", contextPath + requestPath)
-    set("requestPathWithQueryString", s"${contextPath}${requestPath}${Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")}")
-    set("params", skinny.controller.Params(params))
-    set("errorMessages" -> Seq())
-    set("keyAndErrorMessages" -> Map[String, Seq[String]]())
-    setI18n()
+    if (requestScope().isEmpty) {
+      set("contextPath", contextPath)
+      set("requestPath", contextPath + requestPath)
+      set("requestPathWithQueryString", s"${contextPath}${requestPath}${Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")}")
+      set("params", skinny.controller.Params(params))
+      set("errorMessages" -> Seq())
+      set("keyAndErrorMessages" -> Map[String, Seq[String]]())
+      setI18n()
+    }
   }
 
   override protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {

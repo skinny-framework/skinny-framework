@@ -7,7 +7,9 @@ trait FlashFeature extends FlashMapSupport {
   self: org.scalatra.ScalatraBase with RequestScopeFeature =>
 
   before() {
-    set("flash", Flash(flash))
+    if (requestScope("flash").isEmpty) {
+      set("flash", Flash(flash))
+    }
   }
 
 }
