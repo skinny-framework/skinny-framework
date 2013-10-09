@@ -2,7 +2,7 @@ import org.scalatra.test.scalatest._
 
 class RootControllerSpec extends ScalatraFlatSpec {
 
-  addFilter(new ScalatraBootstrap().rootController, "/*")
+  addFilter(Controllers.root, "/*")
 
   it should "show top page" in {
     get("/") {
