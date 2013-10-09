@@ -1,7 +1,6 @@
 package skinny.controller.feature
 
 import org.scalatra._
-import org.scalatra.scalate._
 import org.scalatra.json._
 import org.json4s._
 
@@ -14,7 +13,6 @@ import grizzled.slf4j.Logging
 trait TemplateEngineFeature
     extends ScalatraBase
     with RequestScopeFeature
-    with ScalateSupport
     with JacksonJsonSupport
     with Logging {
 
