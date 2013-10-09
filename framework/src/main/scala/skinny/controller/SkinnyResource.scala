@@ -121,13 +121,16 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
+  protected def doDestroy(id: Long) = {
+    skinnyCRUDMapper.deleteById(id)
+  }
   protected def setDestroyFlash() = {
     flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
   }
 
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
-      skinnyCRUDMapper.deleteById(id)
+      doDestroy(id)
       setDestroyFlash()
       status = 200
     } getOrElse haltWithBody(404)
