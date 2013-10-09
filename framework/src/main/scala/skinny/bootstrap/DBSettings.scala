@@ -7,9 +7,20 @@ import skinny.exception._
 object DBSettings {
 
   def initialize(): Unit = {
-    // load sql formatter
+
+    // logging SQL & time
+    GlobalSettings.loggingSQLAndTime = new LoggingSQLAndTimeSettings(
+      enabled = true,
+      singleLineMode = true,
+      logLevel = 'DEBUG
+    )
+    // If you need using verbose logging and formatter
+    /*
     val className = "skinny.orm.formatter.HibernateSQLFormatter"
     GlobalSettings.sqlFormatter = SQLFormatterSettings(className)
+    GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
+     */
+
     // load db settings
     SkinnyEnv.get().map(env => DBsWithEnv(env).setupAll()).getOrElse {
       if (!TypesafeConfigReaderWithEnv("development").dbNames.isEmpty) {
