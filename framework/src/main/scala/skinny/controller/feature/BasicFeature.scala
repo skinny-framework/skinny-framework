@@ -1,5 +1,6 @@
 package skinny.controller.feature
 
+import skinny._
 import skinny.controller.{ Constants, ActionDefinition }
 import org.scalatra._
 
@@ -15,6 +16,11 @@ trait BasicFeature extends ScalatraBase { self: RequestScopeFeature =>
       set("keyAndErrorMessages" -> Map[String, Seq[String]]())
       setI18n()
     }
+  }
+
+  def isProduction(): Boolean = {
+    // skinny.env or org.scalatra.environment
+    SkinnyEnv.get().orElse(Option(environment)).filter(env => env == "production" || env == "prod").isDefined
   }
 
   override protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
