@@ -23,7 +23,7 @@ trait BeforeAfterActionFeature extends ScalatraBase { self: BasicFeature with Re
               action
             }
           }
-        } getOrElse action
+        } getOrElse ().asInstanceOf[Any]
       })
   }
 
@@ -43,7 +43,7 @@ trait BeforeAfterActionFeature extends ScalatraBase { self: BasicFeature with Re
               action
             }
           }
-        } getOrElse action
+        } getOrElse ().asInstanceOf[Any]
       })
   }
 
