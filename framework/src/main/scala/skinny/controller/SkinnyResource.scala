@@ -24,6 +24,7 @@ trait SkinnyResource extends SkinnyController {
 
   protected def useRelativePath: Boolean = false
   protected def basePath: String = if (useRelativePath) "" else s"/${resourcesName}"
+  protected def createI18n()(implicit locale: java.util.Locale = currentLocale.orNull[Locale]) = I18n(locale)
 
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(resourcesName, skinnyCRUDMapper.findAll())
@@ -46,6 +47,9 @@ trait SkinnyResource extends SkinnyController {
     logger.debug(s"Permitted parameters: ${parameters.params.mkString("[", ",", "]")}")
     skinnyCRUDMapper.createWithAttributes(parameters)
   }
+  protected def setCreateFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.created").getOrElse(s"The ${resourceName} was created."))
+  }
 
   def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (createForm.validate()) {
@@ -57,7 +61,9 @@ trait SkinnyResource extends SkinnyController {
           "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined.")
       }
       format match {
-        case Format.HTML => redirect(s"/${resourcesName}/${id}")
+        case Format.HTML =>
+          setCreateFlash()
+          redirect(s"/${resourcesName}/${id}")
         case _ =>
           status = 201
           response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
@@ -87,6 +93,9 @@ trait SkinnyResource extends SkinnyController {
     logger.debug(s"Id: ${id}, Permitted parameters: ${parameters.params.mkString("[", ",", "]")}")
     skinnyCRUDMapper.updateById(id).withAttributes(parameters)
   }
+  protected def setUpdateFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.updated").getOrElse(s"The ${resourceName} was updated."))
+  }
 
   def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
@@ -101,6 +110,7 @@ trait SkinnyResource extends SkinnyController {
         status = 200
         format match {
           case Format.HTML =>
+            setUpdateFlash()
             set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
             render(s"/${resourcesName}/show")
           case _ =>
@@ -111,9 +121,14 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
+  protected def setDestroyFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
+  }
+
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
       skinnyCRUDMapper.deleteById(id)
+      setDestroyFlash()
       status = 200
     } getOrElse haltWithBody(404)
   }

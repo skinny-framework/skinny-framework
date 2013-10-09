@@ -1,8 +1,12 @@
 <%@val params: skinny.Params %>
+<%@val flash: skinny.Flash %>
 <%@val companies: Seq[model.Company] %>
 <%@val i18n: skinny.I18n %>
 <h3>${i18n.get("company.list")}</h3>
 <hr/>
+#if (flash.notice.isDefined)
+  <p class="alert alert-info">${flash.notice}</p>
+#end
 <table class="table table-bordered">
 <thead>
   <tr>

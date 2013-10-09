@@ -32,6 +32,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
   override def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
       skinnyCRUDMapper.deleteByIdCascade(id)
+      setDestroyFlash()
       status = 200
     } getOrElse haltWithBody(404)
   }
