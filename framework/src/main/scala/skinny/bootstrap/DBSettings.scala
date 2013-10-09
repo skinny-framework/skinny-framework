@@ -48,4 +48,6 @@ object DBSettings {
     }
   }
 
+  def destroy() = DBs.closeAll()
+
 }

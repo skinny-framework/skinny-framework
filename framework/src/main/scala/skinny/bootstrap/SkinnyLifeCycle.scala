@@ -14,4 +14,9 @@ trait SkinnyLifeCycle extends LifeCycle {
 
   def initSkinnyApp(ctx: ServletContext): Unit
 
+  override def destroy(context: ServletContext) {
+    if (dbSettingsRequired) DBSettings.destroy()
+    super.destroy(context)
+  }
+
 }
