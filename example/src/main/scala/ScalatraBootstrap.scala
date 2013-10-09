@@ -4,7 +4,7 @@ import skinny.routing.Routes
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
-  val rootController = new RootController with Routes {
+  val root = new RootController with Routes {
     get("/?")(index).as('index)
     get("/session/renew")(renewSessionAttributes).as('sessionRenew)
   }
@@ -25,9 +25,9 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
      */
     DBInitializer.createTable()
 
-    ctx.mount(rootController, "/*")
-    ctx.mount(CompaniesController, "/*")
+    ctx.mount(root, "/*")
     ctx.mount(programmers, "/*")
+    ctx.mount(CompaniesController, "/*")
     ctx.mount(SkillsController, "/*")
   }
 
