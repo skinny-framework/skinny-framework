@@ -1,6 +1,7 @@
 import org.scalatra.test.scalatest._
+import skinny.test.SkinnyTestSupport
 
-class RootControllerSpec extends ScalatraFlatSpec {
+class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
 
   addFilter(Controllers.root, "/*")
 

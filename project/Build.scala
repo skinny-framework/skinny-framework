@@ -107,6 +107,31 @@ object SkinnyFrameworkBuild extends Build {
     )
   )
 
+  lazy val test = Project (id = "test", base = file("test"),
+   settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-test",
+      version := Version,
+      scalaVersion := "2.10.0",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
+        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "compile",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "compile"
+      ),
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) dependsOn(framework)
+
   lazy val example = Project (id = "example", base = file("example"),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,
@@ -129,7 +154,7 @@ object SkinnyFrameworkBuild extends Build {
       )
       , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
-  ) dependsOn(framework)
+  ) dependsOn(framework, test)
 
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
