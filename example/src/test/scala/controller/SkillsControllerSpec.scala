@@ -3,7 +3,7 @@ package controller
 import org.scalatra.test.scalatest._
 import model._
 
-class SkillsControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesting {
+class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(SkillsController, "/*")
 

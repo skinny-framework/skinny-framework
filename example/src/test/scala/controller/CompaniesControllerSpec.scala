@@ -3,7 +3,7 @@ package controller
 import org.scalatra.test.scalatest._
 import model._
 
-class CompaniesControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesting {
+class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(CompaniesController, "/*")
 

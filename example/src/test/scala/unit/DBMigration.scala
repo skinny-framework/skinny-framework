@@ -1,4 +1,6 @@
-package helper
+package unit
+
+import tool.DBInitializer
 
 trait DBMigration extends DBSettings {
 

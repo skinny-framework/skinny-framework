@@ -1,4 +1,4 @@
-package helper
+package unit
 
 import skinny.test._
 import grizzled.slf4j.Logging

@@ -1,4 +1,4 @@
-package helper
+package tool
 
 import scalikejdbc._, SQLInterpolation._
 
