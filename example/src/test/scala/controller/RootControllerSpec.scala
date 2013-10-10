@@ -1,3 +1,5 @@
+package controller
+
 import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
 

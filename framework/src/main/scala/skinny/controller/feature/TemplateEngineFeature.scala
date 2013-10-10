@@ -16,7 +16,7 @@ trait TemplateEngineFeature
     with JacksonJsonSupport
     with Logging {
 
-  protected implicit val jsonFormats: Formats = DefaultFormats
+  protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
   lazy val format: Format = Format.HTML
   lazy val charset: Option[String] = Some("utf-8")

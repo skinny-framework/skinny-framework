@@ -10,6 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   val Organization = "com.github.seratch"
   val Version = "0.1.2-SNAPSHOT"
   val ScalatraVersion = "2.2.1"
+  val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10-SNAPSHOT"
 
   lazy val framework = Project (id = "framework", base = file("framework"), 
@@ -160,7 +161,8 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % ScalatraVersion  % "compile",
-    "org.json4s"    %% "json4s-jackson"     % "3.2.5"          % "compile",
+    "org.json4s"    %% "json4s-jackson"     % Json4SVersion    % "compile",
+    "org.json4s"    %% "json4s-ext"         % Json4SVersion    % "compile",
     "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
     "javax.servlet" %  "javax.servlet-api"  % "3.0.1"          % "provided",
     "org.scalatra"  %% "scalatra-scalatest" % ScalatraVersion  % "test"

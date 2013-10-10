@@ -10,7 +10,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     GlobalSettings.sqlFormatter = SQLFormatterSettings(className)
     GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
      */
-    DBInitializer.createTable()
+    helper.DBInitializer.initialize()
 
     ctx.mount(Controllers.root, "/*")
     ctx.mount(Controllers.programmers, "/*")

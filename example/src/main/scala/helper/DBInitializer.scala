@@ -1,6 +1,8 @@
+package helper
+
 object DBInitializer {
 
-  def createTable() {
+  def initialize() {
     import scalikejdbc._, SQLInterpolation._
     DB readOnly { implicit s =>
       try {

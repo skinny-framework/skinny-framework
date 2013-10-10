@@ -1,6 +1,6 @@
-import _root_.controller._
+package controller
+
 import skinny._
-import skinny.routing.Routes
 
 object Controllers {
 
