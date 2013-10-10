@@ -43,7 +43,7 @@ libraryDependencies += Seq(
 
 You can try the example right now.
 
-https://github.com/seratch/skinny-framework/tree/master/example
+https://github.com/seratch/skinny-framework/tree/develop/example
 
 ```
 git clone https://github.com/seratch/skinny-framework.git
@@ -186,13 +186,14 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val id = Member.createWithAttributes(params.permit("name" -> ParamType.String))
 
   // create with named values
-  Member.createWithNamedValues(column => Seq(
+  val column = Member.column
+  Member.createWithNamedValues(
     column.id -> 123,
     column.name -> "Chris",
     column.createdAt -> DateTime.now  
-  ))
+  )
 
-  // update
+  // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
 
   // delete
@@ -208,6 +209,7 @@ If you need to join other tables, just add `belongsTo`, `hasOne` or `hasMany` (`
 class Member(id: Long, name: String, companyId: Long, company: Option[Company] = None, skills: Seq[Skill] = Nil)
 object Member extends SkinnyCRUDMapper[Member] {
 
+  // If byDefault is called, this join condition is enabled by default
   belongsTo[Company](Company, (m, c) => m.copy(company = Some(c))).byDefault
 
   val skills = hasManyThrough[Skill](
@@ -334,17 +336,35 @@ class MembersController extends SkinnyServlet {
     %a(data-method="delete" data-confirm="Are you sure?" href={"/members/"+member.id} class="btn btn-danger") Delete
 ```
 
-#### TODO
+### Testing support
+
+You can use Scalatra's great test support. Some optional feature is provieded by skinny-test library.
+
+```scala
+class ControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+  addFilter(MembersController, "/*")
+
+  it should "show index page" in {
+    withSession("userId" -> "Alice") {
+      get("/members") { status should equal(200) }
+    }
+  }
+}
+```
+
+You can see some examples here:
+
+https://github.com/seratch/skinny-framework/tree/develop/example/src/test/scala
+
+### TODO
 
 These are major tasks that Skinny should fix.
 
- - Testing support
+ - Authentication
  - Framework tests
  - Supporting CoffeeScript and etc (basically wro4j)
  - Documentation (wiki)
  - Scaffold generator
- - View helper 
- - Cool logo???
 
 Your feedback or pull requests are always welcome.
 
