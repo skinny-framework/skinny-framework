@@ -1,9 +1,10 @@
 package helper
 
+import scalikejdbc._, SQLInterpolation._
+
 object DBInitializer {
 
   def initialize() {
-    import scalikejdbc._, SQLInterpolation._
     DB readOnly { implicit s =>
       try {
         sql"select 1 from programmer limit 1".map(_.long(1)).single.apply()
@@ -48,31 +49,40 @@ alter table programmer_skill add foreign key(skill_id) references skill(id);
 alter table programmer_skill add foreign key(programmer_id) references programmer(id);
    """.execute.apply()
 
+            val company1 = sql"insert into company (name, url, created_at) values (?, ?, current_timestamp)"
+              .bind("Typesafe", "http://typesafe.com/").updateAndReturnGeneratedKey.apply()
+            val company2 = sql"insert into company (name, url, created_at) values (?, ?, current_timestamp)"
+              .bind("Oracle", "http://twww.oracle.com/").updateAndReturnGeneratedKey.apply()
+
             sql"insert into company (name, url, created_at) values (?, ?, current_timestamp)".batch(
-              Seq("Typesafe", "http://typesafe.com/"),
-              Seq("Oracle", "http://www.oracle.com/"),
               Seq("Google", "http://www.google.com/"),
               Seq("Microsoft", "http://www.microsoft.com/")
             ).apply()
 
+            val skill1 = sql"insert into skill (name) values (?)".bind("Scala").updateAndReturnGeneratedKey.apply()
+            val skill2 = sql"insert into skill (name) values (?)".bind("Java").updateAndReturnGeneratedKey.apply()
+
             sql"insert into skill (name) values (?)".batch(
-              Seq("Scala"),
-              Seq("Java"),
               Seq("Ruby"),
               Seq("MySQL"),
               Seq("PostgreSQL")
             ).apply()
 
+            val programmer1 = sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)"
+              .bind("Alice", company1).updateAndReturnGeneratedKey.apply()
+            val programmer2 = sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)"
+              .bind("Bob", company2).updateAndReturnGeneratedKey.apply()
+
             sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)".batch(
-              Seq("Alice", 1),
-              Seq("Bob", 2),
-              Seq("Chris", 1)
+              Seq("Chris", company1),
+              Seq("Denis", company2),
+              Seq("Eric", company2)
             ).apply()
 
             sql"insert into programmer_skill (programmer_id, skill_id) values (?, ?)".batch(
-              Seq(1, 1),
-              Seq(1, 2),
-              Seq(2, 2)
+              Seq(programmer1, skill1),
+              Seq(programmer2, skill1),
+              Seq(programmer2, skill2)
             ).apply()
           }
       }

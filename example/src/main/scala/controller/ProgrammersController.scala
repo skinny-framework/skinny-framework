@@ -69,8 +69,6 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
 
   def leaveCompany = {
     (for {
-      companyId <- params.getAs[Long]("companyId")
-      company <- Company.findById(companyId)
       programmerId <- params.getAs[Long]("programmerId")
       programmer <- Programmer.findById(programmerId)
     } yield {

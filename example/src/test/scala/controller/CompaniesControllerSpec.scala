@@ -84,12 +84,12 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesting
 
   it should "delete a company" in {
     val c = Company.column
-    val comany = Company.createWithNamedValues(c.name -> "Unit Test Company")
-    delete(s"/companies/${company.id}") {
+    val id = Company.createWithNamedValues(c.name -> "Unit Test Company")
+    delete(s"/companies/${id}") {
       status should equal(403)
     }
     withSession("csrfToken" -> "aaaaaa") {
-      delete(s"/companies/${company.id}?csrfToken=aaaaaa") {
+      delete(s"/companies/${id}?csrfToken=aaaaaa") {
         status should equal(200)
       }
     }
