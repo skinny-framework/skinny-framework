@@ -7,6 +7,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesti
 
   addFilter(Controllers.programmers, "/*")
 
+  def skill = Skill.findAll(1, 0).head
   def company = Company.findAll(1, 0).head
   def programmer = Programmer.findAll(1, 0).head
 
@@ -96,9 +97,9 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesti
     }
   }
 
-  it should "add new skill to a programmer" in {
+  it should "add a programmer to a company" in {
     val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "AddSkill Test Programmer")
+    val id = Programmer.createWithNamedValues(c.name -> "JoinCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
@@ -110,15 +111,49 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with helper.SkinnyTesti
     }
   }
 
-  it should "delete a skill from a programmer" in {
+  it should "remove a programmer from a company" in {
     val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "AddSkill Test Programmer")
+    val id = Programmer.createWithNamedValues(c.name -> "LeaveCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
           status should equal(200)
         }
         delete(s"/programmers/${id}/company?csrfToken=aaaaaa") {
+          status should equal(200)
+        }
+      }
+    } finally {
+      Programmer.deleteById(id)
+    }
+  }
+
+  it should "add a skill to a programmer" in {
+    val c = Programmer.column
+    val id = Programmer.createWithNamedValues(c.name -> "AddSkill Test Programmer")
+    try {
+      withSession("csrfToken" -> "aaaaaa") {
+        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+          status should equal(200)
+        }
+        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+          status should equal(409)
+        }
+      }
+    } finally {
+      Programmer.deleteById(id)
+    }
+  }
+
+  it should "remove a skill from a programmer" in {
+    val c = Programmer.column
+    val id = Programmer.createWithNamedValues(c.name -> "RemoveSkill Test Programmer")
+    try {
+      withSession("csrfToken" -> "aaaaaa") {
+        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+          status should equal(200)
+        }
+        delete(s"/programmers/${id}/skills/${skill.id}?csrfToken=aaaaaa") {
           status should equal(200)
         }
       }
