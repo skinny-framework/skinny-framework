@@ -201,7 +201,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val company2 = FactoryGirl(Company).create("name" -> "FactoryPal")
       company2.name should equal("FactoryPal")
 
-      val country = FactoryGirl(Country).create()
+      val country = FactoryGirl(Country, "countryyy").create()
 
       val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
       val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
