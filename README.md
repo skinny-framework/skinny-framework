@@ -27,15 +27,19 @@ A sound-alike word **"好きに (su-ki-ni)"** in Japanese means **"as you like i
 Actually, An application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
 
 ```scala
-libraryDependencies += "com.gitub.seratch" %% "skinny-framework" % "[0.1,)"
+libraryDependencies ++= Seq(
+  "com.gitub.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+)
 ```
 
 If you need only Skinny-ORM or Skinny-Validator, you can use only what you need. Even if you're a Play2 (or any others) user, these components are available for you as well.
 
 ```scala
-libraryDependencies += Seq(
-  "com.gitub.seratch" %% "skinny-orm"       % "[0.1,)"
-  "com.gitub.seratch" %% "skinny-validator" % "[0.1,)"
+libraryDependencies ++= Seq(
+  "com.gitub.seratch" %% "skinny-orm"       % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-validator" % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
 
@@ -84,7 +88,8 @@ class MembersController extends SkinnyController {
     paramKey("countryId") is numeric
   )
 
-  def createFormParams = params.permit("groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
+  def createFormParams = params.permit(
+    "groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
 
   def create = if (createForm.validate()) {
     Member.createWithAttributes(createFormParams)
@@ -247,10 +252,10 @@ create table meber(
 */
 ```
 
-Furthermore, Soft delete support is available out of the box.
+Soft delete support is also available.
 
 ```scala
-object Member extends SkinnyCRUDMapper[Member] with SoftDeleteWithTimestamp[Meber]
+object Member extends SkinnyCRUDMapper[Member] with SoftDeleteWithTimestamp[Member]
 /* -- expects following table by default
 create table meber(
   id bigint auto_increment primary key not null,
@@ -259,6 +264,20 @@ create table meber(
 );
 */
 ```
+
+Furthermore, optimistic lock is also available.
+
+```scala
+object Member extends SkinnyCRUDMapper[Member] with OptimisticLockWithVersionFeature[Member]
+/* -- expects following table by default
+create table meber(
+  id bigint auto_increment primary key not null,
+  name varchar(128) not null,
+  lock_version bigint
+);
+*/
+```
+
 
 ### View Templates
 
@@ -400,11 +419,10 @@ skill {
 
 These are major tasks that Skinny should fix.
 
- - Authentication
- - Framework tests
- - Supporting CoffeeScript and etc (basically wro4j)
+ - Scaffold generator support
+ - Designing Authentication API
+ - CoffeeScript and so on (basically wro4j)
  - Documentation (wiki)
- - Scaffold generator
 
 Your feedback or pull requests are always welcome.
 
