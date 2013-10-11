@@ -101,7 +101,7 @@ trait SkinnyResource extends SkinnyController {
   protected def updateForm: MapValidator
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
 
-  protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Unit = {
+  protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
     debugLoggingPermittedParameters(parameters, Some(id))
     skinnyCRUDMapper.updateById(id).withAttributes(parameters)
   }
@@ -135,7 +135,7 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
-  protected def doDestroy(id: Long) = {
+  protected def doDestroy(id: Long): Int = {
     skinnyCRUDMapper.deleteById(id)
   }
   protected def setDestroyFlash() = {
