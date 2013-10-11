@@ -8,6 +8,7 @@ import scalikejdbc.scalatest.AutoRollback
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
+import skinny.orm.exception.OptimisticLockException
 
 class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
@@ -192,6 +193,35 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
   }
 
+  describe("Optimistic Lock") {
+
+    it("should update with lock version") { implicit session =>
+      val s = Skill.column
+      val skill = FactoryGirl(Skill).create()
+
+      // with optimistic lock
+      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Java Programming")
+      intercept[OptimisticLockException] {
+        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Ruby Programming")
+      }
+      // without lock
+      Skill.updateById(skill.id).withNamedValues(s.name -> "Ruby Programming")
+    }
+
+    it("should delete with lock version") { implicit session =>
+      val s = Skill.column
+      val skill = FactoryGirl(Skill).create()
+
+      // with optimistic lock
+      Skill.deleteByIdAndVersion(skill.id, skill.lockVersion)
+      intercept[OptimisticLockException] {
+        Skill.deleteByIdAndVersion(skill.id, skill.lockVersion)
+      }
+      // without lock
+      Skill.deleteById(skill.id)
+    }
+  }
+
   describe("FactorGirl") {
 
     it("should work") { implicit session =>
@@ -268,15 +298,19 @@ object Member extends SkinnyCRUDMapper[Member] {
     countryId = rs.long(n.countryId),
     companyId = rs.longOpt(n.companyId),
     mentorId = rs.longOpt(n.mentorId),
-    createdAt = rs.timestamp(n.createdAt).toDateTime,
+    createdAt = rs.dateTime(n.createdAt),
     country = Country(rs)
   )
 }
 
-case class Name(memberId: Long, first: String, last: String, member: Option[Member] = None)
+case class Name(memberId: Long, first: String, last: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, member: Option[Member] = None)
 
-object Name extends SkinnyCRUDMapper[Name] {
+object Name extends SkinnyCRUDMapper[Name]
+    with TimestampsFeature[Name]
+    with OptimisticLockWithTimestampFeature[Name] {
+
   override val tableName = "names"
+  override val lockTimestampName = "updatedAt"
 
   override val useAutoIncrementPrimaryKey = false
   override val primaryKeyName = "memberId"
@@ -288,7 +322,9 @@ object Name extends SkinnyCRUDMapper[Name] {
   def extract(rs: WrappedResultSet, s: ResultName[Name]): Name = new Name(
     memberId = rs.long(s.memberId),
     first = rs.string(s.first),
-    last = rs.string(s.last)
+    last = rs.string(s.last),
+    createdAt = rs.dateTime(s.createdAt),
+    updatedAt = rs.dateTimeOpt(s.updatedAt)
   )
 }
 
@@ -331,16 +367,17 @@ object GroupMember extends SkinnyJoinTable[GroupMember] {
   override val defaultAlias = createAlias("gm")
 }
 
-case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
+case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, lockVersion: Long)
 
-object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] {
+object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] with OptimisticLockWithVersionFeature[Skill] {
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
   def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
     id = rs.long(s.id),
     name = rs.string(s.name),
-    createdAt = rs.timestamp(s.createdAt).toDateTime,
-    updatedAt = rs.timestampOpt(s.updatedAt).map(_.toDateTime)
+    createdAt = rs.dateTime(s.createdAt),
+    updatedAt = rs.dateTimeOpt(s.updatedAt),
+    lockVersion = rs.long(s.lockVersion)
   )
 }
 
@@ -374,7 +411,9 @@ create table members (
 create table names (
   member_id bigint primary key not null,
   first varchar(64) not null,
-  last varchar(64) not null
+  last varchar(64) not null,
+  created_at timestamp not null,
+  updated_at timestamp
 );
 create table countries (
   id bigint auto_increment primary key not null,
@@ -398,7 +437,8 @@ create table skills (
   id bigint auto_increment primary key not null,
   name varchar(255) not null,
   created_at timestamp not null,
-  updated_at timestamp
+  updated_at timestamp,
+  lock_version bigint not null default 1
 );
 create table members_skills (
   member_id bigint not null,

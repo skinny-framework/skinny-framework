@@ -88,8 +88,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
     } else {
       withSQL { insert.into(this).namedValues(namedValues: _*) }.update.apply()
-
-      namedValues.find(v => v._1.value == column.field(primaryKeyName).value).map {
+      namedValues.find(v => v._1 == column.field(primaryKeyName)).map {
         case (_, value) =>
           try value.toString.toLong
           catch { case e: Exception => 0L }
@@ -110,9 +109,15 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
   class UpdateOperationBuilder(self: CRUDFeature[Entity], where: SQLSyntax) {
 
     private[this] val attributesToBeUpdated = new mutable.LinkedHashSet[(SQLSyntax, Any)]()
+    private[this] val additionalUpdateSQLs = new mutable.LinkedHashSet[SQLSyntax]()
 
     protected def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
       attributesToBeUpdated.add(namedValue)
+      this
+    }
+
+    protected def addUpdateSQLPart(setSQLPart: SQLSyntax): UpdateOperationBuilder = {
+      additionalUpdateSQLs.add(setSQLPart)
       this
     }
 
@@ -126,34 +131,43 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
     protected def mergeNamedValues(namedValues: Seq[(SQLSyntax, Any)]): Seq[(SQLSyntax, Any)] = {
       namedValues.foldLeft(attributesToBeUpdated) {
         case (xs, (column, newValue)) =>
-          if (xs.exists(_._1.value == column.value)) xs.map { case (c, v) => if (c.value == column.value) (column -> newValue) else (c, v) }
+          if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
           else xs + (column -> newValue)
       }
       val toBeUpdated = attributesToBeUpdated.++(namedValues).toSeq
       toBeUpdated
     }
 
-    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
-      withSQL {
-        update(self)
-          .set(mergeNamedValues(toNamedValuesToBeUpdated(strongParameters)): _*)
-          .where(where).and(defaultScopeWithoutAlias)
-      }.update.apply()
+    protected def mergeAdditionalUpdateSQLs(query: UpdateSQLBuilder, othersAreEmpty: Boolean) = {
+      if (additionalUpdateSQLs.isEmpty) {
+        query
+      } else {
+        val updates = sqls.csv(additionalUpdateSQLs.toSeq: _*)
+        if (othersAreEmpty) query.append(updates) else query.append(sqls", ${updates}")
+      }
     }
 
-    def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Unit = {
-      withSQL {
-        update(self).set(mergeNamedValues(namedValues): _*).where.append(where).and(defaultScopeWithoutAlias)
-      }.update.apply()
+    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
+      withNamedValues(toNamedValuesToBeUpdated(strongParameters): _*)
     }
+
+    def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Int = {
+      onComplete(withSQL {
+        val allValues = mergeNamedValues(namedValues)
+        val query = update(self).set(allValues: _*)
+        mergeAdditionalUpdateSQLs(query, allValues.isEmpty).where.append(where).and(defaultScopeWithoutAlias)
+      }.update.apply())
+    }
+
+    def onComplete(count: Int): Int = count
   }
 
-  def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {
+  def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     withSQL {
       delete.from(this).where(where).and(defaultScopeWithoutAlias)
     }.update.apply()
   }
 
-  def deleteById(id: Long)(implicit s: DBSession = autoSession): Unit = deleteBy(byId(id))
+  def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = deleteBy(byId(id))
 
 }

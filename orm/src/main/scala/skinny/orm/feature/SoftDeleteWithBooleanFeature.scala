@@ -16,7 +16,7 @@ trait SoftDeleteWithBooleanFeature[Entity] extends CRUDFeature[Entity] {
     super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession) {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
     updateBy(where).withNamedValues(column.field(isDeletedFieldName) -> true)
   }
 }
