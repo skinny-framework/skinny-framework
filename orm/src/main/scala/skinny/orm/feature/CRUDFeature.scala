@@ -3,6 +3,7 @@ package skinny.orm.feature
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm._
 import skinny.orm.feature.associations._
+import scala.collection.mutable
 
 trait CRUDFeature[Entity] extends BasicFeature[Entity]
     with ConnectionPoolFeature
@@ -96,36 +97,63 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
     }
   }
 
-  def updateById(id: Long): UpdateOperationBuilder = new UpdateOperationBuilder(this, id)
+  def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
+    new UpdateOperationBuilder(this, where)
+  }
 
-  class UpdateOperationBuilder(self: CRUDFeature[Entity], id: Long) {
+  def updateById(id: Long): UpdateOperationBuilder = {
+    new UpdateOperationBuilder(this, byId(id))
+  }
 
-    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
-      withSQL {
-        val byId = sqls.eq(column.field(primaryKeyName), id)
-        update(self).set(namedValuesForUpdate(strongParameters): _*).where.append(byId).and(defaultScopeWithoutAlias)
-      }.update.apply()
+  protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
+
+  class UpdateOperationBuilder(self: CRUDFeature[Entity], where: SQLSyntax) {
+
+    private[this] val attributesToBeUpdated = new mutable.LinkedHashSet[(SQLSyntax, Any)]()
+
+    protected def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
+      attributesToBeUpdated.add(namedValue)
+      this
     }
 
-    protected def namedValuesForUpdate(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
+    protected def toNamedValuesToBeUpdated(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
       strongParameters.params.map {
         case (name, (value, paramType)) =>
           column.field(name) -> getTypedValueFromStrongParameter(name, value, paramType)
       }.toSeq
     }
 
+    protected def mergeNamedValues(namedValues: Seq[(SQLSyntax, Any)]): Seq[(SQLSyntax, Any)] = {
+      namedValues.foldLeft(attributesToBeUpdated) {
+        case (xs, (column, newValue)) =>
+          if (xs.exists(_._1.value == column.value)) xs.map { case (c, v) => if (c.value == column.value) (column -> newValue) else (c, v) }
+          else xs + (column -> newValue)
+      }
+      val toBeUpdated = attributesToBeUpdated.++(namedValues).toSeq
+      toBeUpdated
+    }
+
+    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
+      withSQL {
+        update(self)
+          .set(mergeNamedValues(toNamedValuesToBeUpdated(strongParameters)): _*)
+          .where(where).and(defaultScopeWithoutAlias)
+      }.update.apply()
+    }
+
     def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Unit = {
       withSQL {
-        val byId = sqls.eq(column.field(primaryKeyName), id)
-        update(self).set(namedValues: _*).where.append(byId).and(defaultScopeWithoutAlias)
+        update(self).set(mergeNamedValues(namedValues): _*).where.append(where).and(defaultScopeWithoutAlias)
       }.update.apply()
     }
   }
 
-  def deleteById(id: Long)(implicit s: DBSession = autoSession): Unit = {
+  def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {
     withSQL {
-      delete.from(this).where.eq(column.field(primaryKeyName), id).and(defaultScopeWithoutAlias)
+      delete.from(this).where(where).and(defaultScopeWithoutAlias)
     }.update.apply()
   }
+
+  def deleteById(id: Long)(implicit s: DBSession = autoSession): Unit = deleteBy(byId(id))
 
 }

@@ -17,7 +17,7 @@ trait SoftDeleteWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession) {
-    updateById(id).withNamedValues(column.field(deletedAtFieldName) -> DateTime.now)
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession) {
+    updateBy(where).withNamedValues(column.field(deletedAtFieldName) -> DateTime.now)
   }
 }
