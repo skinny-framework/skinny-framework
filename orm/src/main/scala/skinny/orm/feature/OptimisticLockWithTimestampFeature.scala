@@ -8,15 +8,25 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
 
   val lockTimestampName = "lockTimestamp"
 
+  protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = timestamp.map { t =>
+    sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampName), t)
+  }.getOrElse {
+    sqls.eq(column.field(primaryKeyName), id).and.isNull(column.field(lockTimestampName))
+  }
+
+  def updateByIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = {
+    updateBy(byIdAndTimestamp(id, timestamp))
+  }
+
   def updateByIdAndTimestamp(id: Long, timestamp: DateTime) = {
-    updateBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampName), timestamp))
+    updateBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
   class UpdateOperationBuilderWithVersion(self: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(self, where) {
     private[this] val c = defaultAlias.support.column.field(lockTimestampName)
-    addUpdateSQLPart(sqls"${c} = ${c} + 1")
+    addUpdateSQLPart(sqls"${c} = ${sqls.currentTimestamp}")
 
     override def onComplete(count: Int): Int = {
       super.onComplete(count)
@@ -28,8 +38,12 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     }
   }
 
+  def deleteByIdAndTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession) = {
+    deleteBy(byIdAndTimestamp(id, timestamp))
+  }
+
   def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession) = {
-    deleteBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampName), timestamp))
+    deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
   override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {

@@ -209,7 +209,6 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should delete with lock version") { implicit session =>
-      val s = Skill.column
       val skill = FactoryGirl(Skill).create()
 
       // with optimistic lock
@@ -220,9 +219,40 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       // without lock
       Skill.deleteById(skill.id)
     }
+
+    it("should update with lock timestamp") { implicit session =>
+      val n = Name.column
+      val member = FactoryGirl(Member)
+        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      // with optimistic lock
+      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+      intercept[OptimisticLockException] {
+        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+      }
+      // without lock
+      Name.updateById(name.memberId).withNamedValues(n.first -> "Kaz")
+    }
+
+    it("should delete with lock timestamp") { implicit session =>
+      val member = FactoryGirl(Member)
+        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      // with optimistic lock
+      Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      intercept[OptimisticLockException] {
+        Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      }
+      // without lock
+      Name.deleteById(name.memberId)
+    }
   }
 
-  describe("FactorGirl") {
+  describe("FactoryGirl") {
 
     it("should work") { implicit session =>
       val company1 = FactoryGirl(Company).create()
