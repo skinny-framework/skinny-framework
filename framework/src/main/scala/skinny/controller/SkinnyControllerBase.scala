@@ -11,6 +11,8 @@ trait SkinnyControllerBase extends ScalatraBase
   with BasicFeature
   with RequestScopeFeature
   with BeforeAfterActionFeature
+  with SessionLocaleFeature
+  with FlashFeature
   with ValidationFeature
   with TemplateEngineFeature
   with ScalateTemplateEngineFeature

@@ -12,7 +12,7 @@ What does the name of `Skinny` actually mean?
 
 #### Application should be skinny
 
-All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view tempaltes in an efficient way (ssp, scaml, jade, FreeMarker, Thymeleaf or something else) in most cases.
+All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view tempaltes in an efficient way (ssp, scaml, jade, FreeMarker or something else) in most cases.
 
 #### Framework should be skinny
 
@@ -24,28 +24,48 @@ A sound-alike word **"好きに (su-ki-ni)"** in Japanese means **"as you like i
 
 ## How to use
 
-Actually, application which is built with Skinny framework is a Scalatra application. After preparing Scalatra application, just add the following dependency to your `project/Build.scala`.
+Actually, An application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
 
 ```scala
-libraryDependencies += "com.gitub.seratch" %% "skinny-framework" % "[0.1,)"
-```
-
-If you need only Skinny-ORM or Skinny-Validator, you can use only what you need. Even if you're a Play framework 2.x user, these components are available for you as well.
-
-```scala
-libraryDependencies += Seq(
-  "com.gitub.seratch" %% "skinny-orm"       % "[0.1,)"
-  "com.gitub.seratch" %% "skinny-validator" % "[0.1,)"
+libraryDependencies ++= Seq(
+  "com.gitub.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
+
+If you need only Skinny-ORM or Skinny-Validator, you can use only what you need. Even if you're a Play2 (or any others) user, these components are available for you as well.
+
+```scala
+libraryDependencies ++= Seq(
+  "com.gitub.seratch" %% "skinny-orm"       % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-validator" % "[0.9,)",
+  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+)
+```
+
+## Try example
+
+You can try the example right now.
+
+https://github.com/seratch/skinny-framework/tree/develop/example
+
+```
+git clone https://github.com/seratch/skinny-framework.git
+cd skinny-framework
+sbt 
+// project example
+// ~;container:stop;container:start
+```
+
+Access `http://localhost:8080/example/` from your browser.
 
 ## Components
 
 ### Routing & Controller & Validator
 
-Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you'd like to use Scalatra's API directly, Skinny never bother you.
+Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you need to use Scalatra's API directly, Skinny never bother you.
 
-`SkinnyController` is a class which extends `ScalatraBase` and integrates some additional components. 
+`SkinnyController` is a class which extends `ScalatraBase` and out-of-the-box components are integrated. 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
@@ -83,7 +103,7 @@ class MembersController extends SkinnyController {
 
 class ScalatraBootstrap exnteds SkinnyLifeCycle {
   override def initSkinnyApp(ctx: ServletContext) {
-
+    // register routes
     ctx.mount(new MembersController with Routes {
       get("/members/?")(index).as('index)
       get("/members/new")(newOne).as('new)
@@ -93,7 +113,7 @@ class ScalatraBootstrap exnteds SkinnyLifeCycle {
 }
 ```
 
-Skinny-Validator is newly created one which is based on [InputValidator](https://github.com/seratch/inputvalidator) and much improved. Rules are so simple that you can easily add original validation rules. Furthermore, you can use this validator with any other frameworks.
+Skinny-Validator is newly created validator which is based on [seratch/inputvalidator](https://github.com/seratch/inputvalidator) and much improved. Rules are so simple that you can easily add original validation rules. Furthermore, you can use this validator with any other frameworks.
 
 ```scala
 import skinny.validator._
@@ -109,7 +129,7 @@ object alphabetOnly extends ValidationRule {
 }
 ```
 
-You can use `SkinnyResource` which is similar to `ActiveResource`, too. That's a pretty DRY way.
+`SkinnyResource` which is similar to Rails ActiveResource is available. That's a pretty DRY way.
 
 ```scala
 object CompaniesController extends SkinnyResource {
@@ -127,7 +147,7 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members`.
+Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
@@ -152,7 +172,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 That's all! Now you can use the following APIs.
 
 ```scala
-Member.withAlias { m =>
+Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // find by primary key
   val member: Option[Member] = Member.findById(123)
@@ -171,13 +191,14 @@ Member.withAlias { m =>
   val id = Member.createWithAttributes(params.permit("name" -> ParamType.String))
 
   // create with named values
-  Member.createWithNamedValues(column => Seq(
+  val column = Member.column
+  Member.createWithNamedValues(
     column.id -> 123,
     column.name -> "Chris",
     column.createdAt -> DateTime.now  
-  ))
+  )
 
-  // update
+  // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
 
   // delete
@@ -187,12 +208,13 @@ Member.withAlias { m =>
 
 If you need to join other tables, just add `belongsTo`, `hasOne` or `hasMany` (`hasManyThrough`) to the companion.
 
-**Notice:** Unfortunately, Skinny-ORM doesn't resolve nested associations in version 0.1.x.
+**[Notice]** Unfortunately, Skinny-ORM doesn't retrieve nested associations (e.g. members.head.groups.head.country) automatically though we're still seeking a way to resolove this issue.
 
 ```scala
 class Member(id: Long, name: String, companyId: Long, company: Option[Company] = None, skills: Seq[Skill] = Nil)
 object Member extends SkinnyCRUDMapper[Member] {
 
+  // If byDefault is called, this join condition is enabled by default
   belongsTo[Company](Company, (m, c) => m.copy(company = Some(c))).byDefault
 
   val skills = hasManyThrough[Skill](
@@ -230,10 +252,10 @@ create table meber(
 */
 ```
 
-Furthermore, Soft delete support is available out of the box.
+Soft delete support is also available.
 
 ```scala
-object Member extends SkinnyCRUDMapper[Member] with SoftDeleteWithTimestamp[Meber]
+object Member extends SkinnyCRUDMapper[Member] with SoftDeleteWithTimestamp[Member]
 /* -- expects following table by default
 create table meber(
   id bigint auto_increment primary key not null,
@@ -242,6 +264,20 @@ create table meber(
 );
 */
 ```
+
+Furthermore, optimistic lock is also available.
+
+```scala
+object Member extends SkinnyCRUDMapper[Member] with OptimisticLockWithVersionFeature[Member]
+/* -- expects following table by default
+create table meber(
+  id bigint auto_increment primary key not null,
+  name varchar(128) not null,
+  lock_version bigint
+);
+*/
+```
+
 
 ### View Templates
 
@@ -282,7 +318,7 @@ The following ssp is `src/main/webapp/WEB-INF/views/members/index.html.ssp`.
 Your controller code will be like this:
 
 ```scala
-class MembersController extends SkinnyFilter {
+class MembersController extends SkinnyController {
   def index = {
     set("members", Member.findAll())
     render("/members/index")
@@ -319,17 +355,74 @@ class MembersController extends SkinnyServlet {
     %a(data-method="delete" data-confirm="Are you sure?" href={"/members/"+member.id} class="btn btn-danger") Delete
 ```
 
-#### TODO
+### Testing support
+
+You can use Scalatra's great test support. Some optional feature is provieded by skinny-test library.
+
+```scala
+class ControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+  addFilter(MembersController, "/*")
+
+  it should "show index page" in {
+    withSession("userId" -> "Alice") {
+      get("/members") { status should equal(200) }
+    }
+  }
+}
+```
+
+You can see some examples here:
+
+https://github.com/seratch/skinny-framework/tree/develop/example/src/test/scala
+
+### FactoryGirl
+
+Though Skinny's FactoryGirl is not a complete port of [thoughtbot/factory_girl](https://github.com/thoughtbot/factory_girl), this module will be quite useful when testing your apps.
+
+```scala
+case class Company(id: Long, name: String)
+object Company extends SkinnyCRUDMapper[Company] {
+  def extract ...
+}
+
+val company1 = FactoryGirl(Company).create()
+val company2 = FactoryGirl(Company).create("name" -> "FactoryPal, Inc.")
+
+val country = FactoryGirl(Country, "countryyy").create()
+
+val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
+val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
+```
+
+Settings is not in yaml files but typesafe-config conf file. In this example, `src/test/resources/factories.conf` is like this:
+
+```
+countryyy {
+  name="Japan"
+}
+member {
+  countryId="#{countryId}"
+}
+company {
+  name="FactoryGirl, Inc."
+}
+name {
+  first="Kazuhiro"
+  last="Sera"
+}
+skill {
+  name="Scala Programming"
+}
+```
+
+### TODO
 
 These are major tasks that Skinny should fix.
 
- - View helper
- - Scaffold generator
- - More tests
- - Supporting CoffeeScript and etc
- - Documentation
- - Environment 
- - Cool logo
+ - Scaffold generator support
+ - Designing Authentication API
+ - CoffeeScript and so on (basically wro4j)
+ - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.
 

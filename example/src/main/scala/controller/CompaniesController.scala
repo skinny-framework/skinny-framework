@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator._
 import model.Company
 
-object CompaniesController extends SkinnyResource {
+object CompaniesController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
   override def skinnyCRUDMapper = Company

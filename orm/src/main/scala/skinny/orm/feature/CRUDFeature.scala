@@ -3,6 +3,7 @@ package skinny.orm.feature
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm._
 import skinny.orm.feature.associations._
+import scala.collection.mutable
 
 trait CRUDFeature[Entity] extends BasicFeature[Entity]
     with ConnectionPoolFeature
@@ -12,29 +13,9 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   val useAutoIncrementPrimaryKey = true
 
-  def prepareDefaultScopeWithoutAlias(): Unit = {}
-  def prepareDefaultScopeWithDefaultAlias(): Unit = {}
+  def defaultScopeWithoutAlias: Option[SQLSyntax] = None
 
-  private[this] var defaultScopeValueWithoutAlias: Option[SQLSyntax] = None
-  private[this] var defaultScopeValueWithDefaultAlias: Option[SQLSyntax] = None
-
-  lazy val defaultScopeWithoutAlias: Option[SQLSyntax] = {
-    prepareDefaultScopeWithoutAlias()
-    defaultScopeValueWithoutAlias
-  }
-
-  lazy val defaultScopeWithDefaultAlias: Option[SQLSyntax] = {
-    prepareDefaultScopeWithDefaultAlias()
-    defaultScopeValueWithDefaultAlias
-  }
-
-  def appendToDefaultScope(part: => SQLSyntax): Unit = defaultScopeValueWithoutAlias.synchronized {
-    defaultScopeValueWithoutAlias = defaultScopeValueWithoutAlias.map(ds => ds.and.append(part)).orElse(Option(part))
-  }
-
-  def appendToDefaultScopeWithDefaultAlias(part: => SQLSyntax): Unit = defaultScopeValueWithDefaultAlias.synchronized {
-    defaultScopeValueWithDefaultAlias = defaultScopeValueWithDefaultAlias.map(ds => ds.and.append(part)).orElse(Option(part))
-  }
+  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
 
   def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
     val belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
@@ -47,19 +28,19 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.eq(defaultAlias.id, id).and(defaultScopeWithDefaultAlias)
+      selectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
     }).single.apply()
   }
 
   def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.in(defaultAlias.id, ids).and(defaultScopeWithDefaultAlias)
+      selectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
     }).list.apply()
   }
 
   def findAll(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.id).limit(limit).offset(offset)
+      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 
@@ -71,7 +52,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   def findAllBy(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.id).limit(limit).offset(offset)
+      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 
@@ -104,42 +85,89 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
   def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
     if (useAutoIncrementPrimaryKey) {
       withSQL { insert.into(this).namedValues(namedValues: _*) }.updateAndReturnGeneratedKey.apply()
+
     } else {
       withSQL { insert.into(this).namedValues(namedValues: _*) }.update.apply()
-      0L
+      namedValues.find(v => v._1 == column.field(primaryKeyName)).map {
+        case (_, value) =>
+          try value.toString.toLong
+          catch { case e: Exception => 0L }
+      }.getOrElse(0L)
     }
   }
 
-  def updateById(id: Long): UpdateOperationBuilder = new UpdateOperationBuilder(this, id)
+  def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
+    new UpdateOperationBuilder(this, where)
+  }
 
-  class UpdateOperationBuilder(self: CRUDFeature[Entity], id: Long) {
+  def updateById(id: Long): UpdateOperationBuilder = {
+    new UpdateOperationBuilder(this, byId(id))
+  }
 
-    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
-      withSQL {
-        val byId = sqls.eq(column.id, id)
-        update(self).set(namedValuesForUpdate(strongParameters): _*).where.append(byId).and(defaultScopeWithoutAlias)
-      }.update.apply()
+  protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
+
+  class UpdateOperationBuilder(self: CRUDFeature[Entity], where: SQLSyntax) {
+
+    private[this] val attributesToBeUpdated = new mutable.LinkedHashSet[(SQLSyntax, Any)]()
+    private[this] val additionalUpdateSQLs = new mutable.LinkedHashSet[SQLSyntax]()
+
+    protected def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
+      attributesToBeUpdated.add(namedValue)
+      this
     }
 
-    protected def namedValuesForUpdate(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
+    protected def addUpdateSQLPart(setSQLPart: SQLSyntax): UpdateOperationBuilder = {
+      additionalUpdateSQLs.add(setSQLPart)
+      this
+    }
+
+    protected def toNamedValuesToBeUpdated(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
       strongParameters.params.map {
         case (name, (value, paramType)) =>
           column.field(name) -> getTypedValueFromStrongParameter(name, value, paramType)
       }.toSeq
     }
 
-    def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Unit = {
-      withSQL {
-        val byId = sqls.eq(column.id, id)
-        update(self).set(namedValues: _*).where.append(byId).and(defaultScopeWithoutAlias)
-      }.update.apply()
+    protected def mergeNamedValues(namedValues: Seq[(SQLSyntax, Any)]): Seq[(SQLSyntax, Any)] = {
+      namedValues.foldLeft(attributesToBeUpdated) {
+        case (xs, (column, newValue)) =>
+          if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
+          else xs + (column -> newValue)
+      }
+      val toBeUpdated = attributesToBeUpdated.++(namedValues).toSeq
+      toBeUpdated
     }
+
+    protected def mergeAdditionalUpdateSQLs(query: UpdateSQLBuilder, othersAreEmpty: Boolean) = {
+      if (additionalUpdateSQLs.isEmpty) {
+        query
+      } else {
+        val updates = sqls.csv(additionalUpdateSQLs.toSeq: _*)
+        if (othersAreEmpty) query.append(updates) else query.append(sqls", ${updates}")
+      }
+    }
+
+    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
+      withNamedValues(toNamedValuesToBeUpdated(strongParameters): _*)
+    }
+
+    def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Int = {
+      onComplete(withSQL {
+        val allValues = mergeNamedValues(namedValues)
+        val query = update(self).set(allValues: _*)
+        mergeAdditionalUpdateSQLs(query, allValues.isEmpty).where.append(where).and(defaultScopeWithoutAlias)
+      }.update.apply())
+    }
+
+    def onComplete(count: Int): Int = count
   }
 
-  def deleteById(id: Long)(implicit s: DBSession = autoSession): Unit = {
+  def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     withSQL {
-      delete.from(this).where.eq(column.id, id).and(defaultScopeWithoutAlias)
+      delete.from(this).where(where).and(defaultScopeWithoutAlias)
     }.update.apply()
   }
+
+  def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = deleteBy(byId(id))
 
 }

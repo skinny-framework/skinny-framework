@@ -2,8 +2,12 @@
 <%@val programmers: Seq[model.Programmer] %>
 <%@val skills: Seq[model.Skill] %>
 <%@val i18n: skinny.I18n %>
+<%@val flash: skinny.Flash %>
 <h3>${i18n.get("programmer.list")}</h3>
 <hr/>
+#for (notice <- flash.notice)
+  <p class="alert alert-info">${notice}</p>
+#end
 <table class="table table-bordered">
 <thead>
   <tr>
@@ -24,28 +28,28 @@
     #for (skill <- programmer.skills)
       <p>
         ${skill.name}
-        <a data-method="delete" data-confirm="${i18n.get("programmer.removeSkill.confirm")}" href="/programmers/${programmer.id}/skills/${skill.id}"
+        <a data-method="delete" data-confirm="${i18n.get("programmer.removeSkill.confirm")}" href="${uri("/programmers/"+programmer.id+"/skills/"+skill.id)}"
           rel="nofollow" class="glyphicon glyphicon-remove"></a>
       </p>
     #end
     <p>
       <select data-method="post" class="form-control">
         #for (skill <- skills.filterNot(s => programmer.skills.contains(s)))
-        <option data-url="/programmers/${programmer.id}/skills/${skill.id}">${skill.name}</option>
+        <option data-url="${uri("/programmers/"+programmer.id+"/skills/"+skill.id)}">${skill.name}</option>
         #end
       </select>
     </p>
     </td>
     <td>
-      <a href="/programmers/${programmer.id}" class="btn btn-default">Detail</a>
-      <a href="/programmers/${programmer.id}/edit" class="btn btn-info">Edit</a>
+      <a href="${uri("/programmers/"+programmer.id)}" class="btn btn-default">${i18n.get("detail")}</a>
+      <a href="${uri("/programmers/"+programmer.id+"/edit")}" class="btn btn-info">${i18n.get("edit")}</a>
       <a data-method="delete" data-confirm="${i18n.get("programmer.delete.confirm")}"
-        href="/programmers/${programmer.id}" rel="nofollow" class="btn btn-danger">Delete</a>
+        href="${uri("/programmers/"+programmer.id)}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
     </td>
   </tr>
   #end
 </tbody>
 </table>
 
-<a href="/programmers/new" class="btn btn-primary">New</a>
+<a href="${uri("/programmers/new")}" class="btn btn-primary">${i18n.get("new")}</a>
 

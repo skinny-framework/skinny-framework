@@ -1,14 +1,16 @@
-import skinny.orm._
-import scalikejdbc._, SQLInterpolation._
+package skinny.orm
 
-import org.joda.time.DateTime
-
-import scalikejdbc.scalatest.AutoRollback
-import org.scalatest.fixture.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import scalikejdbc._
+import scalikejdbc.SQLInterpolation._
 import skinny.orm.feature._
+import org.joda.time.DateTime
+import scalikejdbc.scalatest.AutoRollback
+import org.scalatest.fixture
+import org.scalatest.matchers.ShouldMatchers
+import skinny.test.FactoryGirl
+import skinny.orm.exception.OptimisticLockException
 
-class SkinnyORMSpec extends FunSpec with ShouldMatchers
+class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
     with Formatter
     with CreateTables
@@ -41,6 +43,7 @@ class SkinnyORMSpec extends FunSpec with ShouldMatchers
 
     Member.withColumns { m =>
 
+      // Member doesn't use TimestampsFeature
       val alice = Member.createWithNamedValues(
         m.countryId -> countryId1,
         m.companyId -> companyId,
@@ -190,11 +193,90 @@ class SkinnyORMSpec extends FunSpec with ShouldMatchers
     }
   }
 
-}
+  describe("Optimistic Lock") {
 
-// ------------------------
-// examples
-// ------------------------
+    it("should update with lock version") { implicit session =>
+      val s = Skill.column
+      val skill = FactoryGirl(Skill).create()
+
+      // with optimistic lock
+      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Java Programming")
+      intercept[OptimisticLockException] {
+        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Ruby Programming")
+      }
+      // without lock
+      Skill.updateById(skill.id).withNamedValues(s.name -> "Ruby Programming")
+    }
+
+    it("should delete with lock version") { implicit session =>
+      val skill = FactoryGirl(Skill).create()
+
+      // with optimistic lock
+      Skill.deleteByIdAndVersion(skill.id, skill.lockVersion)
+      intercept[OptimisticLockException] {
+        Skill.deleteByIdAndVersion(skill.id, skill.lockVersion)
+      }
+      // without lock
+      Skill.deleteById(skill.id)
+    }
+
+    it("should update with lock timestamp") { implicit session =>
+      val n = Name.column
+      val member = FactoryGirl(Member)
+        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      // with optimistic lock
+      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+      intercept[OptimisticLockException] {
+        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+      }
+      // without lock
+      Name.updateById(name.memberId).withNamedValues(n.first -> "Kaz")
+    }
+
+    it("should delete with lock timestamp") { implicit session =>
+      val member = FactoryGirl(Member)
+        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      // with optimistic lock
+      Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      intercept[OptimisticLockException] {
+        Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      }
+      // without lock
+      Name.deleteById(name.memberId)
+    }
+  }
+
+  describe("FactoryGirl") {
+
+    it("should work") { implicit session =>
+      val company1 = FactoryGirl(Company).create()
+      company1.name should equal("FactoryGirl")
+
+      val company2 = FactoryGirl(Company).create("name" -> "FactoryPal")
+      company2.name should equal("FactoryPal")
+
+      val country = FactoryGirl(Country, "countryyy").create()
+
+      val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
+      val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      name.first should equal("Kazuhiro")
+      name.last should equal("Sera")
+      name.member.get.id should equal(member.id)
+
+      val skill = FactoryGirl(Skill).create()
+      skill.name should equal("Scala Programming")
+    }
+  }
+
+}
 
 case class Member(
   id: Long,
@@ -246,27 +328,38 @@ object Member extends SkinnyCRUDMapper[Member] {
     countryId = rs.long(n.countryId),
     companyId = rs.longOpt(n.companyId),
     mentorId = rs.longOpt(n.mentorId),
-    createdAt = rs.timestamp(n.createdAt).toDateTime,
+    createdAt = rs.dateTime(n.createdAt),
     country = Country(rs)
   )
 }
 
-case class Name(memberId: Long, first: String, last: String, member: Option[Member] = None)
-object Name extends SkinnyCRUDMapper[Name] {
+case class Name(memberId: Long, first: String, last: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, member: Option[Member] = None)
+
+object Name extends SkinnyCRUDMapper[Name]
+    with TimestampsFeature[Name]
+    with OptimisticLockWithTimestampFeature[Name] {
+
   override val tableName = "names"
-  override val defaultAlias = createAlias("nm")
+  override val lockTimestampName = "updatedAt"
+
   override val useAutoIncrementPrimaryKey = false
+  override val primaryKeyName = "memberId"
+
+  override val defaultAlias = createAlias("nm")
 
   val member = belongsTo[Member](Member, (name, member) => name.copy(member = member)).byDefault
 
   def extract(rs: WrappedResultSet, s: ResultName[Name]): Name = new Name(
     memberId = rs.long(s.memberId),
     first = rs.string(s.first),
-    last = rs.string(s.last)
+    last = rs.string(s.last),
+    createdAt = rs.dateTime(s.createdAt),
+    updatedAt = rs.dateTimeOpt(s.updatedAt)
   )
 }
 
 case class Company(id: Long, name: String)
+
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
   override val defaultAlias = createAlias("cmp")
@@ -277,6 +370,7 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
 }
 
 case class Country(id: Long, name: String)
+
 object Country extends SkinnyCRUDMapper[Country] {
   override val tableName = "countries"
   override val defaultAlias = createAlias("cnt")
@@ -286,6 +380,7 @@ object Country extends SkinnyCRUDMapper[Country] {
 }
 
 case class Group(id: Long, name: String)
+
 object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature[Group] {
   override val tableName = "groups"
   override val defaultAlias = createAlias("g")
@@ -296,32 +391,32 @@ object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature
 }
 
 case class GroupMember(groupId: Long, memberId: Long)
+
 object GroupMember extends SkinnyJoinTable[GroupMember] {
   override val tableName = "groups_members"
   override val defaultAlias = createAlias("gm")
 }
 
-case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
-object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] {
+case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, lockVersion: Long)
+
+object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] with OptimisticLockWithVersionFeature[Skill] {
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
   def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
     id = rs.long(s.id),
     name = rs.string(s.name),
-    createdAt = rs.timestamp(s.createdAt).toDateTime,
-    updatedAt = rs.timestampOpt(s.updatedAt).map(_.toDateTime)
+    createdAt = rs.dateTime(s.createdAt),
+    updatedAt = rs.dateTimeOpt(s.updatedAt),
+    lockVersion = rs.long(s.lockVersion)
   )
 }
 
 case class MemberSkill(memberId: Long, skillId: Long)
+
 object MemberSkill extends SkinnyJoinTable[MemberSkill] {
   override val tableName = "members_skills"
   override val defaultAlias = createAlias("ms")
 }
-
-// ------------------------
-// common settings
-// ------------------------
 
 trait Connection {
   Class.forName("org.h2.Driver")
@@ -346,7 +441,9 @@ create table members (
 create table names (
   member_id bigint primary key not null,
   first varchar(64) not null,
-  last varchar(64) not null
+  last varchar(64) not null,
+  created_at timestamp not null,
+  updated_at timestamp
 );
 create table countries (
   id bigint auto_increment primary key not null,
@@ -370,7 +467,8 @@ create table skills (
   id bigint auto_increment primary key not null,
   name varchar(255) not null,
   created_at timestamp not null,
-  updated_at timestamp
+  updated_at timestamp,
+  lock_version bigint not null default 1
 );
 create table members_skills (
   member_id bigint not null,

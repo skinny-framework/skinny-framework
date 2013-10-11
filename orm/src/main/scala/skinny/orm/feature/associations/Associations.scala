@@ -18,7 +18,10 @@ case class BelongsToAssociation[Entity](
   underlying.associations.add(this)
 
   def byDefault(): BelongsToAssociation[Entity] = {
-    joinDefinitions.foreach(_.byDefault(enabledEvenIfAssociated = false))
+    joinDefinitions.foreach { joinDef =>
+      joinDef.byDefault(joinDef.enabledEvenIfAssociated)
+      underlying.defaultJoinDefinitions.add(joinDef)
+    }
     underlying.setAsByDefault(extractor)
     this
   }
@@ -33,7 +36,10 @@ case class HasOneAssociation[Entity](
   underlying.associations.add(this)
 
   def byDefault(): HasOneAssociation[Entity] = {
-    joinDefinitions.foreach(_.byDefault(enabledEvenIfAssociated = false))
+    joinDefinitions.foreach { joinDef =>
+      joinDef.byDefault(joinDef.enabledEvenIfAssociated)
+      underlying.defaultJoinDefinitions.add(joinDef)
+    }
     underlying.setAsByDefault(extractor)
     this
   }
@@ -48,7 +54,10 @@ case class HasManyAssociation[Entity](
   underlying.associations.add(this)
 
   def byDefault(): HasManyAssociation[Entity] = {
-    joinDefinitions.foreach(_.byDefault(enabledEvenIfAssociated = false))
+    joinDefinitions.foreach { joinDef =>
+      joinDef.byDefault(joinDef.enabledEvenIfAssociated)
+      underlying.defaultJoinDefinitions.add(joinDef)
+    }
     underlying.setAsByDefault(extractor)
     this
   }

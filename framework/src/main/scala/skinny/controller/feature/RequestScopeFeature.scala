@@ -7,7 +7,7 @@ import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import skinny.I18n
 
-trait RequestScopeFeature extends ScalatraBase {
+trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
 
   private[this] val SKINNY_REQUEST_SCOPE_KEY = "SCALATRA_SKINNY_REQUEST_SCOPE"
 
@@ -75,7 +75,7 @@ trait RequestScopeFeature extends ScalatraBase {
     set("params" -> Params(params))
   }
 
-  def setI18n()(implicit locale: Locale = null) {
+  def setI18n()(implicit locale: Locale = currentLocale.orNull[Locale]) {
     set("i18n", I18n(locale))
   }
 

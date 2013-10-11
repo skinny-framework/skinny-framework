@@ -1,8 +1,11 @@
 -@val skill: model.Skill
 -@val i18n: skinny.I18n
+-@val flash: skinny.Flash
 
 %h3 #{i18n.get("skill.detail")}
 %hr
+- for (notice <- flash.notice)
+ %p(class="alert alert-info") #{notice}
 
 %table(class="table table-bordered")
  %thead
@@ -15,7 +18,8 @@
 
 %hr
 %div(class="form-actions")
- %a(class="btn btn-default" href="/skills") Back to list
- %a(href={"/skills/"+skill.id+"/edit"} class="btn btn-info") Edit
+ %a(class="btn btn-default" href={uri("/skills")})  #{i18n.get("backToList")}
+ %a(href={uri("/skills/"+skill.id+"/edit")} class="btn btn-info")  #{i18n.get("edit")}
  %a(data-method="delete" data-confirm={i18n.get("skill.delete.confirm")}
-  href="/skills/#{skill.id}" rel="nofollow" class="btn btn-danger") Delete
+  href={uri("/skills/"+skill.id)} rel="nofollow" class="btn btn-danger")  #{i18n.get("delete")}
+

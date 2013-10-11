@@ -1,16 +1,26 @@
 package skinny.controller.feature
 
+import skinny._
 import skinny.controller.{ Constants, ActionDefinition }
 import org.scalatra._
 
 trait BasicFeature extends ScalatraBase { self: RequestScopeFeature =>
 
   before() {
-    set("contextPath", contextPath)
-    set("params", skinny.controller.Params(params))
-    set("errorMessages" -> Seq())
-    set("keyAndErrorMessages" -> Map[String, Seq[String]]())
-    setI18n()
+    if (requestScope().isEmpty) {
+      set("contextPath", contextPath)
+      set("requestPath", contextPath + requestPath)
+      set("requestPathWithQueryString", s"${contextPath}${requestPath}${Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")}")
+      set("params", skinny.controller.Params(params))
+      set("errorMessages" -> Seq())
+      set("keyAndErrorMessages" -> Map[String, Seq[String]]())
+      setI18n()
+    }
+  }
+
+  def isProduction(): Boolean = {
+    // skinny.env or org.scalatra.environment
+    SkinnyEnv.get().orElse(Option(environment)).filter(env => env == "production" || env == "prod").isDefined
   }
 
   override protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {

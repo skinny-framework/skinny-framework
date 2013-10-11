@@ -12,7 +12,8 @@ case class Programmer(
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
     createdAt: DateTime,
-    updatedAt: Option[DateTime] = None) {
+    updatedAt: Option[DateTime] = None,
+    deletedAt: Option[DateTime] = None) {
 
   def addSkill(skill: Skill)(implicit session: DBSession = ProgrammerSkill.autoSession): Unit = {
     ProgrammerSkill.withColumns { c =>
@@ -44,7 +45,9 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
     updatedAt = rs.dateTimeOpt(p.updatedAt)
   )
 
-  belongsTo[Company](Company, (p, c) => p.copy(company = c)).byDefault
+  private val c = Company.defaultAlias
+
+  belongsToWithJoinCondition[Company](Company, sqls.eq(defaultAlias.companyId, c.id).and.isNull(c.deletedAt), (p, c) => p.copy(company = c)).byDefault
 
   hasManyThrough[Skill](ProgrammerSkill, Skill, (p, skills) => p.copy(skills = skills)).byDefault
 
@@ -56,4 +59,12 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
         select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeWithoutAlias)
     }
   }.list.apply()
+
+  def deleteByIdCascade(id: Long): Int = DB localTx { implicit s =>
+    ProgrammerSkill.withColumns { c =>
+      withSQL(delete.from(ProgrammerSkill).where.eq(c.programmerId, id)).update.apply()
+    }
+    deleteById(id)
+  }
+
 }

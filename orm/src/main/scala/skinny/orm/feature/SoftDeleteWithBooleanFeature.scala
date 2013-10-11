@@ -6,17 +6,17 @@ trait SoftDeleteWithBooleanFeature[Entity] extends CRUDFeature[Entity] {
 
   val isDeletedFieldName = "isDeleted"
 
-  override def prepareDefaultScopeWithoutAlias(): Unit = {
-    super.prepareDefaultScopeWithoutAlias()
-    appendToDefaultScope(sqls.eq(defaultAlias.support.column.field(isDeletedFieldName), false))
+  override def defaultScopeWithoutAlias: Option[SQLSyntax] = {
+    val scope = sqls.eq(defaultAlias.support.column.field(isDeletedFieldName), false)
+    super.defaultScopeWithoutAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def prepareDefaultScopeWithDefaultAlias(): Unit = {
-    super.prepareDefaultScopeWithDefaultAlias()
-    appendToDefaultScopeWithDefaultAlias(sqls.eq(defaultAlias.field(isDeletedFieldName), false))
+  override def defaultScopeWithDefaultAlias: Option[SQLSyntax] = {
+    val scope = sqls.eq(defaultAlias.field(isDeletedFieldName), false)
+    super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession) {
-    updateById(id).withNamedValues(column.field(isDeletedFieldName) -> true)
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+    updateBy(where).withNamedValues(column.field(isDeletedFieldName) -> true)
   }
 }

@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator._
 import model._
 
-object SkillsController extends SkinnyResource {
+object SkillsController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"
@@ -18,4 +18,7 @@ object SkillsController extends SkinnyResource {
 
   override def updateForm = createForm
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
+
+  override def doDestroy(id: Long) = skinnyCRUDMapper.deleteByIdCascade(id)
+
 }

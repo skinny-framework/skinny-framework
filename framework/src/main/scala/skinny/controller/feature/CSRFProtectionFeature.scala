@@ -51,8 +51,10 @@ trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with B
   def handleForgeryIfDetected(): Unit = super.handleForgery()
 
   before() {
-    set("csrfKey", csrfKey)
-    set("csrfToken", csrfToken)
+    if (requestScope("csrfKey").isEmpty) {
+      set("csrfKey", csrfKey)
+      set("csrfToken", csrfToken)
+    }
   }
 
 }

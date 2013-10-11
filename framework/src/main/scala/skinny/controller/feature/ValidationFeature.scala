@@ -8,9 +8,16 @@ import org.scalatra.ScalatraBase
 import skinny.I18n
 import java.util.Locale
 
-trait ValidationFeature extends ScalatraBase with RequestScopeFeature {
+trait ValidationFeature extends ScalatraBase
+    with RequestScopeFeature
+    with SessionLocaleFeature {
 
-  def validation(validations: NewValidation*)(implicit locale: Locale = null): MapValidator = {
+  def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    val prefix: String = null
+    validationWithPrefix(prefix, validations: _*)
+  }
+
+  def validationWithPrefix(prefix: String, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
     if (params == null) {
       throw new RequestScopeConflictException("You cannot call #validate when Scalatra's #params is empty.")
     }
@@ -24,6 +31,8 @@ trait ValidationFeature extends ScalatraBase with RequestScopeFeature {
       }
     }
 
+    def withPrefix(key: String) = if (prefix != null) s"${prefix}.${key}" else key
+
     validator
       .success { _ => }
       .failure { (inputs, errors) =>
@@ -35,7 +44,7 @@ trait ValidationFeature extends ScalatraBase with RequestScopeFeature {
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(key).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(key)).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
         }.reverse)
@@ -43,7 +52,7 @@ trait ValidationFeature extends ScalatraBase with RequestScopeFeature {
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(key).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(key)).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
         }.toMap)

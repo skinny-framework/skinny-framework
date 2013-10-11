@@ -2,14 +2,19 @@ package skinny.controller
 
 import skinny._
 import skinny.orm.ParamType
-import skinny.validator.MapValidator
+import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
+import java.util.Locale
 
 trait SkinnyResource extends SkinnyController {
 
   protected def skinnyCRUDMapper: SkinnyCRUDMapper[_]
   protected def resourcesName: String
   protected def resourceName: String
+
+  override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(resourceName, validations: _*)
+  }
 
   protected def responseFormats: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
   protected def withFormat[A](format: Format)(action: => A): A = {
@@ -19,6 +24,18 @@ trait SkinnyResource extends SkinnyController {
 
   protected def useRelativePath: Boolean = false
   protected def basePath: String = if (useRelativePath) "" else s"/${resourcesName}"
+  protected def createI18n()(implicit locale: java.util.Locale = currentLocale.orNull[Locale]) = I18n(locale)
+
+  protected def debugLoggingParameters(form: MapValidator, id: Option[Long] = None) = {
+    val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
+    val params = form.paramMap.map { case (name, value) => s"${name} -> '${value}'" }.mkString("[", ", ", "]")
+    logger.debug(s"Parameters${forId}: ${params}")
+  }
+  protected def debugLoggingPermittedParameters(parameters: PermittedStrongParameters, id: Option[Long] = None) = {
+    val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
+    val params = parameters.params.map { case (name, (v, t)) => s"${name} -> '${v}' as ${t}" }.mkString("[", ", ", "]")
+    logger.debug(s"Permitted parameters${forId}: ${params}")
+  }
 
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(resourcesName, skinnyCRUDMapper.findAll())
@@ -38,11 +55,15 @@ trait SkinnyResource extends SkinnyController {
   protected def createFormStrongParameters: Seq[(String, ParamType)]
 
   protected def doCreateAndReturnId(parameters: PermittedStrongParameters) = {
-    logger.debug(s"Permitted parameters: ${parameters.params.mkString("[", ",", "]")}")
+    debugLoggingPermittedParameters(parameters)
     skinnyCRUDMapper.createWithAttributes(parameters)
+  }
+  protected def setCreateFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.created").getOrElse(s"The ${resourceName} was created."))
   }
 
   def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
+    debugLoggingParameters(createForm)
     if (createForm.validate()) {
       val id: Long = if (!createFormStrongParameters.isEmpty) {
         val parameters = params.permit(createFormStrongParameters: _*)
@@ -51,14 +72,13 @@ trait SkinnyResource extends SkinnyController {
         throw new StrongParametersException(
           "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined.")
       }
-      status = 201
-      // TODO path helper
-      response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       format match {
         case Format.HTML =>
-          set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
-          render(s"/${resourcesName}/show")
+          setCreateFlash()
+          redirect(s"/${resourcesName}/${id}")
         case _ =>
+          status = 201
+          response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       }
     } else {
       render(s"/${resourcesName}/new")
@@ -81,12 +101,17 @@ trait SkinnyResource extends SkinnyController {
   protected def updateForm: MapValidator
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
 
-  protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Unit = {
-    logger.debug(s"Id: ${id}, Permitted parameters: ${parameters.params.mkString("[", ",", "]")}")
+  protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
+    debugLoggingPermittedParameters(parameters, Some(id))
     skinnyCRUDMapper.updateById(id).withAttributes(parameters)
+  }
+  protected def setUpdateFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.updated").getOrElse(s"The ${resourceName} was updated."))
   }
 
   def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+    debugLoggingParameters(updateForm, Some(id))
+
     skinnyCRUDMapper.findById(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
@@ -99,6 +124,7 @@ trait SkinnyResource extends SkinnyController {
         status = 200
         format match {
           case Format.HTML =>
+            setUpdateFlash()
             set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
             render(s"/${resourcesName}/show")
           case _ =>
@@ -109,9 +135,17 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
+  protected def doDestroy(id: Long): Int = {
+    skinnyCRUDMapper.deleteById(id)
+  }
+  protected def setDestroyFlash() = {
+    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
+  }
+
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
-      skinnyCRUDMapper.deleteById(id)
+      doDestroy(id)
+      setDestroyFlash()
       status = 200
     } getOrElse haltWithBody(404)
   }

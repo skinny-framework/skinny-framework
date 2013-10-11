@@ -8,9 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.1.1"
+  val Version = "0.9.0"
   val ScalatraVersion = "2.2.1"
-  val ScalikeJDBCVersion = "1.6.9"
+  val Json4SVersion = "3.2.5"
+  val ScalikeJDBCVersion = "1.6.10"
 
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
@@ -107,42 +108,61 @@ object SkinnyFrameworkBuild extends Build {
     )
   )
 
+  lazy val test = Project (id = "test", base = file("test"),
+   settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-test",
+      version := Version,
+      scalaVersion := "2.10.0",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
+        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "compile",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "compile"
+      ),
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) dependsOn(framework)
+
   lazy val example = Project (id = "example", base = file("example"),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := Organization,
-      name := "skinny-framework-exampl",
+      name := "skinny-framework-example",
       version := "0.0.0",
-      scalaVersion := "2.10.2",
+      scalaVersion := "2.10.3",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
         "com.h2database"     %  "h2"                 % "1.3.173",
         "ch.qos.logback"     % "logback-classic"     % "1.0.13",
-        "org.eclipse.jetty"  % "jetty-webapp"        % "8.1.8.v20121106" % "container",
+        "org.eclipse.jetty"  % "jetty-webapp"        % "8.1.13.v20130916" % "container",
+        "org.eclipse.jetty"  % "jetty-plus"          % "8.1.13.v20130916" % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
            artifacts (Artifact("javax.servlet", "jar", "jar"))
-      ),
-      scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-        Seq(
-          TemplateConfig(
-            base / "webapp" / "WEB-INF" / "templates",
-            Seq.empty, 
-            Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
-            Some("templates")
-          )
-        )
-      }
+      )
+      , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
-  ) dependsOn(framework)
+  ) dependsOn(framework, test)
 
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % ScalatraVersion  % "compile",
-    "org.json4s"    %% "json4s-jackson"     % "3.2.5"          % "compile",
+    "org.json4s"    %% "json4s-jackson"     % Json4SVersion    % "compile",
+    "org.json4s"    %% "json4s-ext"         % Json4SVersion    % "compile",
     "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
     "javax.servlet" %  "javax.servlet-api"  % "3.0.1"          % "provided",
     "org.scalatra"  %% "scalatra-scalatest" % ScalatraVersion  % "test"

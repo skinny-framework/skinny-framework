@@ -3,14 +3,14 @@
 <%@val i18n: skinny.I18n %>
 <%@val companies: Seq[model.Company] %>
 
-<h3>${i18n.get("programmer.new")}</h3>
+<h3>${i18n.get("programmer.edit")}</h3>
 <hr/>
 
 #for (e <- errorMessages)
 <p class="alert alert-danger">${e}</p>
 #end
 
-<form method="post" action="/programmers/${params.id}" class="form">
+<form method="post" action="${uri("/programmers/"+params.id.get)}" class="form">
 <div class="form-group">
   <label class="control-label" for="name">
     ${i18n.get("company.name")}
@@ -29,7 +29,7 @@
     <div class="row col-md-12">
       <select name="companyId" class="form-control">
         #for (company <- companies)
-        <option value="${company.id}">${company.name}</option>
+        <option value="${company.id}" #if(Some(company.id) == params.companyId) selected #end >${company.name}</option>
         #end
       </select>
     </div>
@@ -38,7 +38,7 @@
 <input type="hidden" name="${csrfKey}" value="${csrfToken}"/>
 
 <div class="form-actions">
-  <input type="submit" class="btn btn-primary"/>
-  <a class="btn btn-default" href="/programmers">Cancel</a>
+  <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}">
+  <a class="btn btn-default" href="${uri("/programmers")}">${i18n.get("cancel")}</a>
 </div>
 </form>

@@ -1,9 +1,12 @@
 <%@val company: model.Company %>
 <%@val i18n: skinny.I18n %>
+<%@val flash: skinny.Flash %>
 
 <h3>${i18n.get("company.detail")}</h3>
 <hr/>
-
+#for (notice <- flash.notice)
+  <p class="alert alert-info">${notice}</p>
+#end
 <table class="table table-bordered">
 <thead>
   <tr>
@@ -23,8 +26,8 @@
 
 <hr/>
 <div class="form-actions">
-  <a class="btn btn-default" href="/companies">Back to list</a>
-  <a href="/companies/${company.id}/edit" class="btn btn-info">Edit</a>
+  <a class="btn btn-default" href="${uri("/companies")}">${i18n.get("backToList")}</a>
+  <a href="${uri("/companies/"+company.id+"/edit")}" class="btn btn-info">${i18n.get("edit")}</a>
   <a data-method="delete" data-confirm="${i18n.get("company.delete.confirm")}"
-    href="/companies/${company.id}" rel="nofollow" class="btn btn-danger">Delete</a>
+    href="${uri("/companies/"+company.id)}" rel="nofollow" class="btn btn-danger">${i18n.get("delete")}</a>
 </div>

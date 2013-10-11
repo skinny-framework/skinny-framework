@@ -9,6 +9,7 @@ package object skinny {
   type SkinnyServlet = skinny.controller.SkinnyServlet
 
   type Params = skinny.controller.Params
+  type Flash = skinny.controller.Flash
   type Routes = skinny.routing.Routes
 
   type SkinnyCRUDMapper[A] = skinny.orm.SkinnyCRUDMapper[A]

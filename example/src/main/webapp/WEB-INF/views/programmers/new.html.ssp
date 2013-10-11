@@ -10,7 +10,7 @@
 <p class="alert alert-danger">${e}</p>
 #end
 
-<form method="post" action="/programmers" class="form">
+<form method="post" action="${uri("/programmers")}" class="form">
 <div class="form-group">
   <label class="control-label" for="name">
     ${i18n.get("programmer.name")}
@@ -28,6 +28,7 @@
   <div class="controls">
     <div class="row col-md-12">
       <select  name="companyId" class="form-control">
+        <option value=""></option>
         #for (company <- companies)
         <option value="${company.id}">${company.name}</option>
         #end
@@ -38,7 +39,8 @@
 <input type="hidden" name="${csrfKey}" value="${csrfToken}"/>
 
 <div class="form-actions">
-  <input type="submit" class="btn btn-primary"/>
-  <a class="btn btn-default" href="/programmers">Cancel</a>
+  <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}"/>
+  <a class="btn btn-default" href="${uri("/programmers")}">${i18n.get("cancel")}</a>
 </div>
 </form>
+

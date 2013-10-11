@@ -1,21 +1,22 @@
 package skinny.controller.feature
 
 import org.scalatra._
-import org.scalatra.scalate._
-import org.json4s._
 import org.scalatra.json._
+import org.json4s._
+
 import skinny.Format
+import skinny.exception.ViewTemplateNotFoundException
+
 import scala.xml._
 import grizzled.slf4j.Logging
 
 trait TemplateEngineFeature
     extends ScalatraBase
     with RequestScopeFeature
-    with ScalateSupport
     with JacksonJsonSupport
     with Logging {
 
-  protected implicit val jsonFormats: Formats = DefaultFormats
+  protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
   lazy val format: Format = Format.HTML
   lazy val charset: Option[String] = Some("utf-8")
@@ -28,7 +29,7 @@ trait TemplateEngineFeature
     if (templateExists(path)) {
       renderWithTemplate(path)
     } else if (format == Format.HTML) {
-      throw new IllegalStateException(s"View template not found. (expected: ${templatePath(path)})")
+      throw new ViewTemplateNotFoundException(s"View template not found. (expected: ${templatePath(path)})")
     } else {
       logger.debug(s"Template for ${path} not found.")
       val entity = (for {

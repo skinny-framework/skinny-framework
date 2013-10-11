@@ -4,14 +4,14 @@ import skinny._
 import skinny.validator._
 import model._
 
-class ProgrammersController extends SkinnyResource {
+class ProgrammersController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
   override def skinnyCRUDMapper = Programmer
   override def resourcesName = "programmers"
   override def resourceName = "programmer"
 
-  beforeAction(only = Seq('index, 'new, 'edit)) {
+  beforeAction(only = Seq('index, 'new, 'create, 'edit, 'update)) {
     set("companies", Company.findAll())
     set("skills", Skill.findAll())
   }
@@ -28,6 +28,8 @@ class ProgrammersController extends SkinnyResource {
     paramKey("companyId") is required & numeric
   )
   override def updateFormStrongParameters = Seq("name" -> ParamType.String, "companyId" -> ParamType.Long)
+
+  override def doDestroy(id: Long) = skinnyCRUDMapper.deleteByIdCascade(id)
 
   def addSkill = {
     (for {
@@ -67,8 +69,6 @@ class ProgrammersController extends SkinnyResource {
 
   def leaveCompany = {
     (for {
-      companyId <- params.getAs[Long]("companyId")
-      company <- Company.findById(companyId)
       programmerId <- params.getAs[Long]("programmerId")
       programmer <- Programmer.findById(programmerId)
     } yield {
