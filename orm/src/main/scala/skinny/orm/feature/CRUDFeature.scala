@@ -27,19 +27,19 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.eq(defaultAlias.id, id).and(defaultScopeWithDefaultAlias)
+      selectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
     }).single.apply()
   }
 
   def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.in(defaultAlias.id, ids).and(defaultScopeWithDefaultAlias)
+      selectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
     }).list.apply()
   }
 
   def findAll(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.id).limit(limit).offset(offset)
+      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 
@@ -51,7 +51,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   def findAllBy(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.id).limit(limit).offset(offset)
+      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 
@@ -84,9 +84,15 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
   def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
     if (useAutoIncrementPrimaryKey) {
       withSQL { insert.into(this).namedValues(namedValues: _*) }.updateAndReturnGeneratedKey.apply()
+
     } else {
       withSQL { insert.into(this).namedValues(namedValues: _*) }.update.apply()
-      0L
+
+      namedValues.find(v => v._1.value == column.field(primaryKeyName).value).map {
+        case (_, value) =>
+          try value.toString.toLong
+          catch { case e: Exception => 0L }
+      }.getOrElse(0L)
     }
   }
 
@@ -96,7 +102,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
     def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
       withSQL {
-        val byId = sqls.eq(column.id, id)
+        val byId = sqls.eq(column.field(primaryKeyName), id)
         update(self).set(namedValuesForUpdate(strongParameters): _*).where.append(byId).and(defaultScopeWithoutAlias)
       }.update.apply()
     }
@@ -110,7 +116,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
     def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Unit = {
       withSQL {
-        val byId = sqls.eq(column.id, id)
+        val byId = sqls.eq(column.field(primaryKeyName), id)
         update(self).set(namedValues: _*).where.append(byId).and(defaultScopeWithoutAlias)
       }.update.apply()
     }
@@ -118,7 +124,7 @@ trait CRUDFeature[Entity] extends BasicFeature[Entity]
 
   def deleteById(id: Long)(implicit s: DBSession = autoSession): Unit = {
     withSQL {
-      delete.from(this).where.eq(column.id, id).and(defaultScopeWithoutAlias)
+      delete.from(this).where.eq(column.field(primaryKeyName), id).and(defaultScopeWithoutAlias)
     }.update.apply()
   }
 

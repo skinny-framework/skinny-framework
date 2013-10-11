@@ -1,6 +1,7 @@
 package controller
 
 import org.scalatra.test.scalatest._
+import skinny.test._
 import model._
 
 class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
@@ -83,13 +84,12 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
   }
 
   it should "delete a company" in {
-    val c = Company.column
-    val id = Company.createWithNamedValues(c.name -> "Unit Test Company")
-    delete(s"/companies/${id}") {
+    val company = FactoryGirl(Company).create()
+    delete(s"/companies/${company.id}") {
       status should equal(403)
     }
     withSession("csrfToken" -> "aaaaaa") {
-      delete(s"/companies/${id}?csrfToken=aaaaaa") {
+      delete(s"/companies/${company.id}?csrfToken=aaaaaa") {
         status should equal(200)
       }
     }

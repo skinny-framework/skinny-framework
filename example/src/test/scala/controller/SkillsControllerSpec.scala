@@ -1,6 +1,7 @@
 package controller
 
 import org.scalatra.test.scalatest._
+import skinny.test._
 import model._
 
 class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
@@ -83,8 +84,8 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
   }
 
   it should "delete a skill" in {
-    val c = Skill.column
-    val id = Skill.createWithNamedValues(c.name -> "Unit Test Skill")
+    val id = FactoryGirl(Skill).create().id
+
     delete(s"/skills/${id}") {
       status should equal(403)
     }

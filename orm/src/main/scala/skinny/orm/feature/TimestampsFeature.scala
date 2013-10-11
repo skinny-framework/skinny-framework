@@ -16,8 +16,11 @@ trait TimestampsFeature[Entity] extends CRUDFeature[Entity] {
   }
 
   override def createWithNamedValues(namedValues: (SQLInterpolation.SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
-    // TODO already passed
-    val namedValuesWithCreatedAt = namedValues :+ (defaultAlias.support.column.field(createdAtFieldName) -> DateTime.now)
+    val createdAt = defaultAlias.support.column.field(createdAtFieldName)
+    val namedValuesWithCreatedAt = {
+      if (namedValues.exists(_._1.value == createdAt.value)) namedValues
+      else namedValues :+ (createdAt -> DateTime.now)
+    }
     super.createWithNamedValues(namedValuesWithCreatedAt: _*)
   }
 

@@ -7,6 +7,7 @@ import skinny.orm.feature.associations._
 import scalikejdbc._, SQLInterpolation._
 import org.slf4j.LoggerFactory
 import scala.collection.mutable
+import skinny.util.JavaReflectAPI
 
 trait AssociationsFeature[Entity] extends BasicFeature[Entity]
     with ConnectionPoolFeature
@@ -484,21 +485,8 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
   }
 
   protected def toDefaultForeignKeyName[A](mapper: AssociationsFeature[A]): String = {
-    val name = getSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
+    val name = JavaReflectAPI.getSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
     name.head.toString.toLowerCase + name.tail
-  }
-
-  protected def getSimpleName(obj: Any): String = {
-    try obj.getClass.getSimpleName
-    catch {
-      case e: InternalError =>
-        // working on the Scala REPL
-        val clazz = obj.getClass
-        val classOfClazz = clazz.getClass
-        val getSimpleBinaryName = classOfClazz.getDeclaredMethods.find(_.getName == "getSimpleBinaryName").get
-        getSimpleBinaryName.setAccessible(true)
-        getSimpleBinaryName.invoke(clazz).toString
-    }
   }
 
 }

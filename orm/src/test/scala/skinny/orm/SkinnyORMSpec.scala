@@ -1,14 +1,15 @@
-import skinny.orm._
-import scalikejdbc._, SQLInterpolation._
+package skinny.orm
 
-import org.joda.time.DateTime
-
-import scalikejdbc.scalatest.AutoRollback
-import org.scalatest.fixture.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import scalikejdbc._
+import scalikejdbc.SQLInterpolation._
 import skinny.orm.feature._
+import org.joda.time.DateTime
+import scalikejdbc.scalatest.AutoRollback
+import org.scalatest.fixture
+import org.scalatest.matchers.ShouldMatchers
+import skinny.test.FactoryGirl
 
-class SkinnyORMSpec extends FunSpec with ShouldMatchers
+class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
     with Formatter
     with CreateTables
@@ -41,6 +42,7 @@ class SkinnyORMSpec extends FunSpec with ShouldMatchers
 
     Member.withColumns { m =>
 
+      // Member doesn't use TimestampsFeature
       val alice = Member.createWithNamedValues(
         m.countryId -> countryId1,
         m.companyId -> companyId,
@@ -190,11 +192,31 @@ class SkinnyORMSpec extends FunSpec with ShouldMatchers
     }
   }
 
-}
+  describe("FactorGirl") {
 
-// ------------------------
-// examples
-// ------------------------
+    it("should work") { implicit session =>
+      val company1 = FactoryGirl(Company).create()
+      company1.name should equal("FactoryGirl")
+
+      val company2 = FactoryGirl(Company).create("name" -> "FactoryPal")
+      company2.name should equal("FactoryPal")
+
+      val country = FactoryGirl(Country).create()
+
+      val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
+      val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
+      val name = FactoryGirl(Name).create("memberId" -> member.id)
+
+      name.first should equal("Kazuhiro")
+      name.last should equal("Sera")
+      name.member.get.id should equal(member.id)
+
+      val skill = FactoryGirl(Skill).create()
+      skill.name should equal("Scala Programming")
+    }
+  }
+
+}
 
 case class Member(
   id: Long,
@@ -252,10 +274,14 @@ object Member extends SkinnyCRUDMapper[Member] {
 }
 
 case class Name(memberId: Long, first: String, last: String, member: Option[Member] = None)
+
 object Name extends SkinnyCRUDMapper[Name] {
   override val tableName = "names"
-  override val defaultAlias = createAlias("nm")
+
   override val useAutoIncrementPrimaryKey = false
+  override val primaryKeyName = "memberId"
+
+  override val defaultAlias = createAlias("nm")
 
   val member = belongsTo[Member](Member, (name, member) => name.copy(member = member)).byDefault
 
@@ -267,6 +293,7 @@ object Name extends SkinnyCRUDMapper[Name] {
 }
 
 case class Company(id: Long, name: String)
+
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
   override val defaultAlias = createAlias("cmp")
@@ -277,6 +304,7 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
 }
 
 case class Country(id: Long, name: String)
+
 object Country extends SkinnyCRUDMapper[Country] {
   override val tableName = "countries"
   override val defaultAlias = createAlias("cnt")
@@ -286,6 +314,7 @@ object Country extends SkinnyCRUDMapper[Country] {
 }
 
 case class Group(id: Long, name: String)
+
 object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature[Group] {
   override val tableName = "groups"
   override val defaultAlias = createAlias("g")
@@ -296,12 +325,14 @@ object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature
 }
 
 case class GroupMember(groupId: Long, memberId: Long)
+
 object GroupMember extends SkinnyJoinTable[GroupMember] {
   override val tableName = "groups_members"
   override val defaultAlias = createAlias("gm")
 }
 
 case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
+
 object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] {
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
@@ -314,14 +345,11 @@ object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] {
 }
 
 case class MemberSkill(memberId: Long, skillId: Long)
+
 object MemberSkill extends SkinnyJoinTable[MemberSkill] {
   override val tableName = "members_skills"
   override val defaultAlias = createAlias("ms")
 }
-
-// ------------------------
-// common settings
-// ------------------------
 
 trait Connection {
   Class.forName("org.h2.Driver")

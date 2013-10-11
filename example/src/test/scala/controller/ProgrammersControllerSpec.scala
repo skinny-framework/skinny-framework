@@ -1,6 +1,7 @@
 package controller
 
 import org.scalatra.test.scalatest._
+import skinny.test._
 import model._
 
 class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
@@ -129,8 +130,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "add a skill to a programmer" in {
-    val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "AddSkill Test Programmer")
+    val id = FactoryGirl(Programmer).create().id
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
@@ -146,8 +146,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "remove a skill from a programmer" in {
-    val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "RemoveSkill Test Programmer")
+    val id = FactoryGirl(Programmer).create().id
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {

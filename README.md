@@ -356,6 +356,46 @@ You can see some examples here:
 
 https://github.com/seratch/skinny-framework/tree/develop/example/src/test/scala
 
+### FactoryGirl
+
+Though Skinny's FactoryGirl is not a complete port of [thoughtbot/factory_girl](https://github.com/thoughtbot/factory_girl), this module will be quite useful when testing your apps.
+
+```scala
+case class Company(id: Long, name: String)
+object Company extends SkinnyCRUDMapper[Company] {
+  def extract ...
+}
+
+val company1 = FactoryGirl(Company).create()
+val company2 = FactoryGirl(Company).create("name" -> "FactoryPal, Inc.")
+
+val country = FactoryGirl(Country).create()
+
+val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
+val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
+```
+
+Settings is not in yaml files but typesafe-config conf file. In this example, `src/test/resources/factories.conf` is like this:
+
+```
+country {
+  name="Japan"
+}
+member {
+  countryId="#{countryId}"
+}
+company {
+  name="FactoryGirl, Inc."
+}
+name {
+  first="Kazuhiro"
+  last="Sera"
+}
+skill {
+  name="Scala Programming"
+}
+```
+
 ### TODO
 
 These are major tasks that Skinny should fix.
