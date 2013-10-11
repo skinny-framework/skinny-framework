@@ -60,7 +60,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
     }
   }.list.apply()
 
-  def deleteByIdCascade(id: Long): Unit = DB localTx { implicit s =>
+  def deleteByIdCascade(id: Long): Int = DB localTx { implicit s =>
     ProgrammerSkill.withColumns { c =>
       withSQL(delete.from(ProgrammerSkill).where.eq(c.programmerId, id)).update.apply()
     }

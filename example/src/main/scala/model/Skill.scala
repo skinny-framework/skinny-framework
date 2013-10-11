@@ -12,7 +12,7 @@ object Skill extends SkinnyCRUDMapper[Skill] {
   override def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
     id = rs.long(s.id), name = rs.string(s.name))
 
-  def deleteByIdCascade(id: Long): Unit = DB localTx { implicit s =>
+  def deleteByIdCascade(id: Long): Int = DB localTx { implicit s =>
     ProgrammerSkill.withColumns { c =>
       withSQL(delete.from(ProgrammerSkill).where.eq(c.skillId, id)).update.apply()
     }
