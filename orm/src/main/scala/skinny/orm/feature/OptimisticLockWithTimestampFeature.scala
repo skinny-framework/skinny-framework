@@ -3,45 +3,101 @@ package skinny.orm.feature
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.exception.OptimisticLockException
 import org.joda.time.DateTime
+import org.slf4j.LoggerFactory
 
+/**
+ * Optimistic lock with timestamp.
+ *
+ * @tparam Entity entity
+ */
 trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
 
-  val lockTimestampName = "lockTimestamp"
+  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithTimestampFeature[Entity]])
 
+  /**
+   * Lock timestamp field name.
+   */
+  val lockTimestampFieldName = "lockTimestamp"
+
+  /**
+   * Returns where condition part which search by primary key and lock timestamp.
+   *
+   * @param id primary key
+   * @param timestamp lock timestamp
+   * @return query part
+   */
   protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = timestamp.map { t =>
-    sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampName), t)
+    sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampFieldName), t)
   }.getOrElse {
-    sqls.eq(column.field(primaryKeyName), id).and.isNull(column.field(lockTimestampName))
+    sqls.eq(column.field(primaryKeyName), id).and.isNull(column.field(lockTimestampFieldName))
   }
 
+  /**
+   * Returns update query builder which updates a single entity by primary key and lock timestamp.
+   *
+   * @param id primary key
+   * @param timestamp lock timestamp
+   * @return updated count
+   */
   def updateByIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = {
     updateBy(byIdAndTimestamp(id, timestamp))
   }
 
+  /**
+   * Returns update query builder which updates a single entity by primary key and lock timestamp.
+   *
+   * @param id primary key
+   * @param timestamp lock timestamp
+   * @return updated count
+   */
   def updateByIdAndTimestamp(id: Long, timestamp: DateTime) = {
     updateBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
-  class UpdateOperationBuilderWithVersion(self: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(self, where) {
-    private[this] val c = defaultAlias.support.column.field(lockTimestampName)
+  /**
+   * Update query builder/executor.
+   *
+   * @param mapper mapper
+   * @param where condition
+   */
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(mapper, where) {
+
+    // appends additional part of update query
+    private[this] val c = defaultAlias.support.column.field(lockTimestampFieldName)
     addUpdateSQLPart(sqls"${c} = ${sqls.currentTimestamp}")
 
-    override def onComplete(count: Int): Int = {
-      super.onComplete(count)
+    override def onUpdateByCompletion(where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Int = {
+      super.onUpdateByCompletion(where, namedValues, count)
       if (count == 0) {
         throw new OptimisticLockException(
-          s"Conflict ${lockTimestampName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+          s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
       }
       count
     }
   }
 
+  /**
+   * Deletes a single entity by primary key and lock timestamp.
+   *
+   * @param id primary key
+   * @param timestamp lock timestamp
+   * @param s db session
+   * @return deleted count
+   */
   def deleteByIdAndTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession) = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
+  /**
+   * Deletes a single entity by primary key and lock timestamp.
+   *
+   * @param id primary key
+   * @param timestamp lock timestamp
+   * @param s db session
+   * @return deleted count
+   */
   def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession) = {
     deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
@@ -50,7 +106,7 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     val count = super.deleteBy(where)(s)
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockTimestampName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
     } else {
       count
     }

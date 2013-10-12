@@ -22,7 +22,7 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
   /**
    * Set named values to bind #{name} in "src/test/resources/factories.conf".
    *
-   * @param named values
+   * @param namedValues named values
    * @return self
    */
   def withValues(namedValues: (String, Any)*): FactoryGirl[Entity] = {

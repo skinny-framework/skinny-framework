@@ -2,8 +2,14 @@ package skinny.orm
 
 import scalikejdbc._, SQLInterpolation._
 
-trait SkinnyJoinTable[Entity]
-    extends SkinnyMapper[Entity] {
+/**
+ * SkinnyMapper which represents join table which is used for associations.
+ *
+ * This mapper don't have primary key search and so on because they cannot work as expected or no need to implement.
+ *
+ * @tparam Entity entity
+ */
+trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
 
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 

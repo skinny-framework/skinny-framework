@@ -1,8 +1,15 @@
 package skinny.orm
 
+/**
+ * Strong parameter type definition.
+ */
 sealed trait ParamType
 
+/**
+ * Strong parameter type definition.
+ */
 object ParamType {
+
   case object Boolean extends ParamType
   case object Double extends ParamType
   case object Float extends ParamType
@@ -15,4 +22,5 @@ object ParamType {
   case object DateTime extends ParamType
   case object LocalDate extends ParamType
   case object LocalTime extends ParamType
+
 }

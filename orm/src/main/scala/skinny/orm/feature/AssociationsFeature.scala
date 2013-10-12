@@ -9,20 +9,41 @@ import org.slf4j.LoggerFactory
 import scala.collection.mutable
 import skinny.util.JavaReflectAPI
 
-trait AssociationsFeature[Entity] extends BasicFeature[Entity]
+/**
+ * Associations support feature.
+ *
+ * @tparam Entity entity
+ */
+trait AssociationsFeature[Entity]
+    extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature {
 
-  val logger = LoggerFactory.getLogger(classOf[AssociationsFeature[Entity]])
+  private[this] val logger = LoggerFactory.getLogger(classOf[AssociationsFeature[Entity]])
 
+  /**
+   * Associations
+   */
   val associations = new mutable.LinkedHashSet[Association[_]]
 
+  /**
+   * Join definitions that are enabled by default.
+   */
   val defaultJoinDefinitions = new mutable.LinkedHashSet[JoinDefinition[_]]()
 
   // ----------------------
   // Join Definition
   // ----------------------
 
+  /**
+   * Creates a new join definition.
+   *
+   * @param joinType join type
+   * @param left left mapper and table alias
+   * @param right right mapper and table alias
+   * @param on join condition
+   * @return join definition
+   */
   def createJoinDefinition(joinType: JoinType, left: (AssociationsFeature[_], Alias[_]), right: (AssociationsFeature[_], Alias[_]), on: SQLSyntax): JoinDefinition[Entity] = {
     val (leftMapper, leftAlias) = left
     val (rightMapper, rightAlias) = right
@@ -203,7 +224,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
   // has-many
 
-  def setAsByDefault(extractor: ToManyExtractor[Entity]): Unit = {
+  def setAsByDefault(extractor: HasManyExtractor[Entity]): Unit = {
     extractor.byDefault = true
     defaultOneToManyExtractors.add(extractor)
   }
@@ -242,6 +263,15 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
   // Query Builder
   // ----------------------
 
+  /**
+   * Returns a select query builder that all associations are joined.
+   *
+   * @param sql sql object
+   * @param belongsToAssociations belongsTo associations
+   * @param hasOneAssociations hasOne associations
+   * @param hasManyAssociations hasMany associations
+   * @return select query builder
+   */
   def selectQueryWithAssociations(
     sql: SelectSQLBuilder[Entity],
     belongsToAssociations: Set[BelongsToAssociation[Entity]],
@@ -261,6 +291,11 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
     }
   }
 
+  /**
+   * Returns th default select query builder for this mapper.
+   *
+   * @return select query builder
+   */
   def defaultSelectQuery: SelectSQLBuilder[Entity] = {
     defaultJoinDefinitions.foldLeft(singleSelectQuery) { (query, join) =>
       join.joinType match {
@@ -277,6 +312,15 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
   def withExtractor(sql: SQL[Entity, NoExtractor]): SQL[Entity, HasExtractor] = withExtractor(sql, Set(), Set(), Set())
 
+  /**
+   * Creates an extractor for this query.
+   *
+   * @param sql sql object
+   * @param belongsToAssociations belongsTo associations
+   * @param hasOneAssociations hasOne associations
+   * @param oneToManyAssociations hasMany associations
+   * @return sql object
+   */
   def withExtractor(
     sql: SQL[Entity, NoExtractor],
     belongsToAssociations: Set[BelongsToAssociation[Entity]],
@@ -287,7 +331,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
     val enabledOneToManyExtractors = defaultOneToManyExtractors ++ oneToManyAssociations.map(_.extractor)
 
     if (enabledJoinDefinitions.isEmpty) {
-      sql.map(apply(defaultAlias))
+      sql.map(rs => extract(rs, defaultAlias.resultName))
 
     } else if (enabledOneToManyExtractors.size > 0) {
 
@@ -298,7 +342,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
       if (enabledOneToManyExtractors.size == 1) {
         // one-to-many
-        val ex: ToManyExtractor[Entity] = defaultOneToManyExtractors.head
+        val ex: HasManyExtractor[Entity] = defaultOneToManyExtractors.head
         val mapper = ex.mapper.asInstanceOf[AssociationsFeature[Any]]
         val alias = ex.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManySQL[Entity, _, HasExtractor, Entity] = oneExtractedSql
@@ -310,7 +354,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
       } else if (enabledOneToManyExtractors.size == 2) {
         // one-to-manies 2
-        val Seq(ex1: ToManyExtractor[Entity], ex2: ToManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
+        val Seq(ex1: HasManyExtractor[Entity], ex2: HasManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
         val mapper1 = ex1.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper2 = ex2.mapper.asInstanceOf[AssociationsFeature[Any]]
         val alias1 = ex1.alias.asInstanceOf[Alias[Any]]
@@ -327,7 +371,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
       } else if (enabledOneToManyExtractors.size == 3) {
         // one-to-manies 3
-        val Seq(ex1: ToManyExtractor[Entity], ex2: ToManyExtractor[Entity], ex3: ToManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
+        val Seq(ex1: HasManyExtractor[Entity], ex2: HasManyExtractor[Entity], ex3: HasManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
         val mapper1 = ex1.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper2 = ex2.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper3 = ex3.mapper.asInstanceOf[AssociationsFeature[Any]]
@@ -348,7 +392,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
       } else if (enabledOneToManyExtractors.size == 4) {
         // one-to-manies 4
-        val Seq(ex1: ToManyExtractor[Entity], ex2: ToManyExtractor[Entity], ex3: ToManyExtractor[Entity], ex4: ToManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
+        val Seq(ex1: HasManyExtractor[Entity], ex2: HasManyExtractor[Entity], ex3: HasManyExtractor[Entity], ex4: HasManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
         val mapper1 = ex1.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper2 = ex2.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper3 = ex3.mapper.asInstanceOf[AssociationsFeature[Any]]
@@ -373,7 +417,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
 
       } else if (enabledOneToManyExtractors.size == 5) {
         // one-to-manies 5
-        val Seq(ex1: ToManyExtractor[Entity], ex2: ToManyExtractor[Entity], ex3: ToManyExtractor[Entity], ex4: ToManyExtractor[Entity], ex5: ToManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
+        val Seq(ex1: HasManyExtractor[Entity], ex2: HasManyExtractor[Entity], ex3: HasManyExtractor[Entity], ex4: HasManyExtractor[Entity], ex5: HasManyExtractor[Entity]) = enabledOneToManyExtractors.toSeq
         val mapper1 = ex1.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper2 = ex2.mapper.asInstanceOf[AssociationsFeature[Any]]
         val mapper3 = ex3.mapper.asInstanceOf[AssociationsFeature[Any]]
@@ -412,13 +456,21 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
     }
   }
 
+  /**
+   * Extracts entity with one-to-one tables.
+   *
+   * @param rs result set
+   * @param belongsToExtractors belongsTo extractors
+   * @param hasOneExtractors hasOne extractors
+   * @return entity
+   */
   def extractWithOneToOneTables(
     rs: WrappedResultSet,
     belongsToExtractors: Set[BelongsToExtractor[Entity]],
     hasOneExtractors: Set[HasOneExtractor[Entity]]): Entity = {
 
     val allBelongsTo = (defaultBelongsToExtractors ++ belongsToExtractors)
-    val withBelongsTo = allBelongsTo.foldLeft(apply(rs)) {
+    val withBelongsTo = allBelongsTo.foldLeft(extract(rs, defaultAlias.resultName)) {
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
         val toOne: Option[_] = rs.longOpt(this.defaultAlias.resultName.field(extractor.fk))
@@ -456,7 +508,7 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
   // One to Many Relation
   // -----------------------------------------
 
-  val defaultOneToManyExtractors = new mutable.LinkedHashSet[ToManyExtractor[Entity]]()
+  val defaultOneToManyExtractors = new mutable.LinkedHashSet[HasManyExtractor[Entity]]()
 
   /**
    * One-to-Many relationship definition.
@@ -470,15 +522,15 @@ trait AssociationsFeature[Entity] extends BasicFeature[Entity]
    * }
    * }}}
    */
-  def extractOneToManyWithDefaults[M1](mapper: AssociationsFeature[M1], merge: (Entity, Seq[M1]) => Entity): ToManyExtractor[Entity] = {
+  def extractOneToManyWithDefaults[M1](mapper: AssociationsFeature[M1], merge: (Entity, Seq[M1]) => Entity): HasManyExtractor[Entity] = {
     extractOneToMany[M1](mapper, mapper.defaultAlias, merge)
   }
 
-  def extractOneToMany[M1](mapper: AssociationsFeature[M1], alias: Alias[M1], merge: (Entity, Seq[M1]) => Entity): ToManyExtractor[Entity] = {
+  def extractOneToMany[M1](mapper: AssociationsFeature[M1], alias: Alias[M1], merge: (Entity, Seq[M1]) => Entity): HasManyExtractor[Entity] = {
     if (defaultOneToManyExtractors.size > 5) {
       throw new IllegalStateException("Skinny ORM doesn't support more than 5 one-to-many tables.")
     }
-    ToManyExtractor[Entity](
+    HasManyExtractor[Entity](
       mapper = mapper,
       alias = alias,
       merge = merge.asInstanceOf[(Entity, Seq[Any]) => Entity])

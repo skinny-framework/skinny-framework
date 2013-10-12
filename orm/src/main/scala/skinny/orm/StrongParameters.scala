@@ -1,5 +1,10 @@
 package skinny.orm
 
+/**
+ * Strong parameters which is inspired by Rails4's mass assignment protection.
+ *
+ * @param params params
+ */
 case class StrongParameters(params: Map[String, Any]) {
   def permit(nameAndTypes: (String, ParamType)*): PermittedStrongParameters = {
     new PermittedStrongParameters(
@@ -11,4 +16,9 @@ case class StrongParameters(params: Map[String, Any]) {
   }
 }
 
+/**
+ * Permitted strong parameters.
+ *
+ * @param params params
+ */
 class PermittedStrongParameters(val params: Map[String, (Any, ParamType)])

@@ -340,7 +340,7 @@ object Name extends SkinnyCRUDMapper[Name]
     with OptimisticLockWithTimestampFeature[Name] {
 
   override val tableName = "names"
-  override val lockTimestampName = "updatedAt"
+  override val lockTimestampFieldName = "updatedAt"
 
   override val useAutoIncrementPrimaryKey = false
   override val primaryKeyName = "memberId"

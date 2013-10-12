@@ -2,40 +2,74 @@ package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.exception.OptimisticLockException
+import org.slf4j.LoggerFactory
 
+/**
+ * Optimistic lock with version.
+ *
+ * @tparam Entity entity
+ */
 trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
 
-  val lockVersionName = "lockVersion"
+  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithVersionFeature[Entity]])
 
+  /**
+   * Lock version field name.
+   */
+  val lockVersionFieldName = "lockVersion"
+
+  /**
+   * Returns where condition part which search by primary key and lock vesion.
+   *
+   * @param id primary key
+   * @param version lock version
+   * @return query part
+   */
   def updateByIdAndVersion(id: Long, version: Long) = {
-    updateBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionName), version))
+    updateBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
-  class UpdateOperationBuilderWithVersion(self: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(self, where) {
-    private[this] val c = defaultAlias.support.column.field(lockVersionName)
+  /**
+   * Update query builder/executor.
+   *
+   * @param mapper mapper
+   * @param where condition
+   */
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(mapper, where) {
+
+    // appends additional part of update query
+    private[this] val c = defaultAlias.support.column.field(lockVersionFieldName)
     addUpdateSQLPart(sqls"${c} = ${c} + 1")
 
-    override def onComplete(count: Int): Int = {
-      super.onComplete(count)
+    override def onUpdateByCompletion(where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Int = {
+      super.onUpdateByCompletion(where, namedValues, count)
       if (count == 0) {
         throw new OptimisticLockException(
-          s"Conflict ${lockVersionName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+          s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
       }
       count
     }
   }
 
+  /**
+   * Deletes a single entity by primary key and lock version.
+   *
+   * @param id primary key
+   * @param version lock version
+   * @param s db session
+   * @return deleted count
+   */
   def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession) = {
-    deleteBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionName), version))
+    deleteBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
   override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
     val count = super.deleteBy(where)
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockVersionName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
     } else {
       count
     }
