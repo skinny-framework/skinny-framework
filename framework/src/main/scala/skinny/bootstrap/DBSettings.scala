@@ -4,8 +4,16 @@ import scalikejdbc._, config._
 import skinny.SkinnyEnv
 import skinny.exception._
 
+/**
+ * Skinny ORM Database settings initializer.
+ *
+ * @see https://github.com/seratch/scalikejdbc
+ */
 object DBSettings {
 
+  /**
+   * Initializes DB settings.
+   */
   def initialize(): Unit = {
 
     // logging SQL & time
@@ -59,6 +67,9 @@ object DBSettings {
     }
   }
 
+  /**
+   * Wipes out all DB settings.
+   */
   def destroy() = DBs.closeAll()
 
 }

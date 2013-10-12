@@ -3,20 +3,48 @@ package skinny.controller.feature
 import org.scalatra._
 import grizzled.slf4j.Logging
 
-trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with BasicFeature with RequestScopeFeature with Logging =>
+/**
+ * Provides Cross-Site Request Forgery (CSRF) protection.
+ */
+trait CSRFProtectionFeature extends CsrfTokenSupport {
 
-  private[this] var forgeryProtectionEnabled: Boolean = false
-  private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
-  private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
+  self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
 
+  /**
+   * Overrides Scalatra's default key name.
+   */
   override def csrfKey: String = "csrfToken"
 
+  /**
+   * Enabled if true.
+   */
+  private[this] var forgeryProtectionEnabled: Boolean = false
+
+  /**
+   * Excluded actions.
+   */
+  private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
+
+  /**
+   * Included actions.
+   */
+  private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
+
+  /**
+   * Declarative activation of CSRF protection. Of course, highly inspired by Ruby on Rails.
+   *
+   * @param only should be applied only for these action methods
+   * @param except should not be applied for these action methods
+   */
   def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
     forgeryProtectionExcludedActionNames ++= except
   }
 
+  /**
+   * Overrides to skip execution when the current request matches excluded patterns.
+   */
   override def handleForgery() {
     if (forgeryProtectionEnabled) {
       logger.debug {
@@ -47,9 +75,12 @@ trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with B
     }
   }
 
-  // TODO default implementation
-  def handleForgeryIfDetected(): Unit = super.handleForgery()
+  /**
+   * Handles when CSRF is detected.
+   */
+  def handleForgeryIfDetected(): Unit = haltWithBody(403)
 
+  // Registers csrfKey & csrfToken to request scope.
   before() {
     if (requestScope("csrfKey").isEmpty) {
       set("csrfKey", csrfKey)

@@ -64,6 +64,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
       Programmer.withColumns { c =>
         Programmer.updateById(programmerId).withNamedValues(c.companyId -> company.id)
       }
+      status = 200
     }) getOrElse haltWithBody(404)
   }
 
@@ -75,6 +76,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
       Programmer.withColumns { c =>
         Programmer.updateById(programmerId).withNamedValues(c.companyId -> None)
       }
+      status = 200
     }) getOrElse haltWithBody(404)
   }
 

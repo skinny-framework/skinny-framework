@@ -1,10 +1,16 @@
 package skinny
 
+/**
+ * Response body format.
+ */
 trait Format {
   val name: String
   val contentType: String
 }
 
+/**
+ * Response body formats.
+ */
 object Format {
 
   case object HTML extends Format {

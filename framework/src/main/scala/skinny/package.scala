@@ -1,3 +1,9 @@
+/**
+ * Skinny framework for rapid web app development in Scala.
+ *
+ * Skinny is a full-stack web app framework, which is built on Scalatra and additional components are integrated.
+ * To put it simply, Skinny framework's concept is Scala on Rails. Skinny is highly inspired by Ruby on Rails and it is optimized for sustainable productivity for ordinary Servlet-based app development.
+ */
 package object skinny {
 
   type SkinnyLifeCycle = bootstrap.SkinnyLifeCycle
