@@ -18,6 +18,9 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    */
   val lockVersionFieldName = "lockVersion"
 
+  // add default lockVersion value to creation query
+  addAttributeForCreation(column.field(lockVersionFieldName), 1L)
+
   /**
    * Returns where condition part which search by primary key and lock vesion.
    *

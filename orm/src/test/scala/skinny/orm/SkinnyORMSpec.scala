@@ -468,7 +468,8 @@ create table skills (
   name varchar(255) not null,
   created_at timestamp not null,
   updated_at timestamp,
-  lock_version bigint not null default 1
+  -- lock_version bigint not null default 1
+  lock_version bigint not null
 );
 create table members_skills (
   member_id bigint not null,

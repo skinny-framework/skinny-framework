@@ -137,16 +137,74 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Attributes to be inserted when creation.
+   */
+  private[this] val attributesForCreation = new mutable.LinkedHashSet[(SQLSyntax, Any)]()
+
+  /**
+   * Accepted factories for attributesForCreation.
+   */
+  private[this] val attributesForCreationFactories = new mutable.LinkedHashSet[() => Boolean]()
+
+  /**
+   * Adds new attribute to be inserted when creation.
+   *
+   * @param namedValue named value
+   * @return self
+   */
+  protected def addAttributeForCreation(namedValue: => (SQLSyntax, Any)) = {
+    acceptAttributeForCreation(namedValue)
+    this
+  }
+
+  /**
+   * Attributes for creation are ready if true
+   */
+  private[this] lazy val attributesForCreationReady: Boolean = {
+    attributesForCreationFactories.foreach(_.apply())
+    true
+  }
+
+  /**
+   * Accepts an attribute for creation.
+   *
+   * @param namedValue named value
+   */
+  private[this] def acceptAttributeForCreation(namedValue: => (SQLSyntax, Any)): Unit = {
+    attributesForCreationFactories.add(() => attributesForCreation.add(namedValue))
+  }
+
+  /**
+   * Merges already registered attributes to be inserted and parameters.
+   *
+   * @param namedValues named values
+   * @return merged attributes
+   */
+  protected def mergeNamedValuesForCreation(namedValues: Seq[(SQLSyntax, Any)]): Seq[(SQLSyntax, Any)] = {
+    if (!attributesForCreationReady) {
+      throw new IllegalStateException("Attributes for creation query is not ready!")
+    }
+
+    namedValues.foldLeft(attributesForCreation) {
+      case (xs, (column, newValue)) =>
+        if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
+        else xs + (column -> newValue)
+    }
+    val toBeInserted = attributesForCreation.++(namedValues).toSeq
+    toBeInserted
+  }
+
+  /**
    * Extracts named values from the permitted parameters.
    *
    * @param strongParameters permitted parameters
    * @return named values
    */
   protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
-    strongParameters.params.map {
+    mergeNamedValuesForCreation(strongParameters.params.map {
       case (name, (value, paramType)) =>
         column.field(name) -> getTypedValueFromStrongParameter(name, value, paramType)
-    }.toSeq
+    }.toSeq)
   }
 
   /**
@@ -168,11 +226,12 @@ trait CRUDFeature[Entity]
    * @return created count
    */
   def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
+    val allNamedValues = mergeNamedValuesForCreation(namedValues)
     if (useAutoIncrementPrimaryKey) {
-      withSQL { insert.into(this).namedValues(namedValues: _*) }.updateAndReturnGeneratedKey.apply()
+      withSQL { insert.into(this).namedValues(allNamedValues: _*) }.updateAndReturnGeneratedKey.apply()
     } else {
-      withSQL { insert.into(this).namedValues(namedValues: _*) }.update.apply()
-      namedValues.find(v => v._1 == column.field(primaryKeyName)).map {
+      withSQL { insert.into(this).namedValues(allNamedValues: _*) }.update.apply()
+      allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
         case (_, value) =>
           try value.toString.toLong
           catch { case e: Exception => 0L }
