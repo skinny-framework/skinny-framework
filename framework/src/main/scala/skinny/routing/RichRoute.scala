@@ -4,8 +4,21 @@ import org.scalatra._
 import skinny.controller.{ ActionDefinition, Constants, SkinnyControllerBase }
 import skinny.exception.RouteMetadataException
 
+/**
+ * Route wrapper.
+ *
+ * @param route route
+ * @param method HTTP method
+ * @param controller controller
+ */
 case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControllerBase) {
 
+  /**
+   * Registers action name to the controller.
+   *
+   * @param name action name
+   * @return route
+   */
   def as(name: Symbol): Route = {
     val expectedMethod = route.metadata.get(Constants.RouteMetadataHttpMethodCacheKey)
       .map(_.asInstanceOf[HttpMethod]).getOrElse {
@@ -20,4 +33,5 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
 
     route
   }
+
 }

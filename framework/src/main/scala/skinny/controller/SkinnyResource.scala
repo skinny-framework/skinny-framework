@@ -6,62 +6,187 @@ import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
 
+/**
+ * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
+ *
+ * SkinnyResource is surely inspired by Rails ActiveSupport.
+ */
 trait SkinnyResource extends SkinnyController {
 
+  /**
+   * SkinnyCRUDMapper for this resource.
+   */
   protected def skinnyCRUDMapper: SkinnyCRUDMapper[_]
+
+  /**
+   * Resource name in the plural. This name will be used for path and directory name to locale template files.
+   */
   protected def resourcesName: String
+
+  /**
+   * Resource name in the singular. This name will be used for path and validator's prefix.
+   */
   protected def resourceName: String
 
+  /**
+   * Creates validator with prefix(resourceName).
+   *
+   * @param validations validations validations
+   * @param locale current locale
+   * @return validator
+   */
   override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
     validationWithPrefix(resourceName, validations: _*)
   }
 
-  protected def responseFormats: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
+  /**
+   * Defines formats to be respond. By default, HTML, JSON, XML are available.
+   *
+   * @return formats
+   */
+  protected def respondTo: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
+
+  /**
+   * Provides code block with format. If absent, halt as status 406.
+   *
+   * @param format format
+   * @param action action
+   * @tparam A response type
+   * @return result
+   */
   protected def withFormat[A](format: Format)(action: => A): A = {
-    responseFormats.find(_ == format) getOrElse haltWithBody(406)
+    respondTo.find(_ == format) getOrElse haltWithBody(406)
     action
   }
 
+  /**
+   * Use relative path if true. This is set as false by default.
+   *
+   * If you set this as true, routing will become simpler but /${resources}.xml or /${resources}.json don't work.
+   */
   protected def useRelativePath: Boolean = false
+
+  /**
+   * Base path.
+   */
   protected def basePath: String = if (useRelativePath) "" else s"/${resourcesName}"
+
+  /**
+   * Creates [[skinny.I18n]] instance for current locale.
+   *
+   * @param locale current locale
+   * @return i18n provider
+   */
   protected def createI18n()(implicit locale: java.util.Locale = currentLocale.orNull[Locale]) = I18n(locale)
 
+  /**
+   * Outputs debug logging for passed parameters.
+   *
+   * @param form input form
+   * @param id id if exists
+   */
   protected def debugLoggingParameters(form: MapValidator, id: Option[Long] = None) = {
     val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = form.paramMap.map { case (name, value) => s"${name} -> '${value}'" }.mkString("[", ", ", "]")
     logger.debug(s"Parameters${forId}: ${params}")
   }
+
+  /**
+   * Outputs debug logging for permitted parameters.
+   *
+   * @param parameters permitted strong parameters
+   * @param id id if exists
+   */
   protected def debugLoggingPermittedParameters(parameters: PermittedStrongParameters, id: Option[Long] = None) = {
     val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = parameters.params.map { case (name, (v, t)) => s"${name} -> '${v}' as ${t}" }.mkString("[", ", ", "]")
     logger.debug(s"Permitted parameters${forId}: ${params}")
   }
 
+  // ----------------------------
+  //  Actions for this resource
+  // ----------------------------
+
+  /**
+   * Shows a list of resource.
+   *
+   * GET /{resources}/
+   * GET /{resources}
+   * GET /{resources}.xml
+   * GET /{resources}.json
+   *
+   * @param format format
+   * @return list of resource
+   */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(resourcesName, skinnyCRUDMapper.findAll())
     render(s"/${resourcesName}/index")
   }
 
+  /**
+   * Show single resource.
+   *
+   * GET /{resources}/{id}
+   * GET /{resources}/{id}.xml
+   * GET /{resources}/{id}.json
+   *
+   * @param id id
+   * @param format format
+   * @return single resource
+   */
   def showResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
     render(s"/${resourcesName}/show")
   }
 
+  /**
+   * Shows input form for creation.
+   *
+   * GET /{resources}/new
+   *
+   * @param format format
+   * @return input form
+   */
   def newResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     render(s"/${resourcesName}/new")
   }
 
+  /**
+   * Input form for creation
+   */
   protected def createForm: MapValidator
+
+  /**
+   * Strong parameter definitions for creation form
+   */
   protected def createFormStrongParameters: Seq[(String, ParamType)]
 
-  protected def doCreateAndReturnId(parameters: PermittedStrongParameters) = {
+  /**
+   * Executes resource creation.
+   *
+   * @param parameters permitted parameters
+   * @return generated resource id
+   */
+  protected def doCreateAndReturnId(parameters: PermittedStrongParameters): Long = {
     debugLoggingPermittedParameters(parameters)
     skinnyCRUDMapper.createWithAttributes(parameters)
   }
-  protected def setCreateFlash() = {
+
+  /**
+   * Set notice flash message for successful completion of creation.
+   */
+  protected def setCreateCompletionFlash(): Unit = {
     flash += ("notice" -> createI18n().get(s"${resourceName}.flash.created").getOrElse(s"The ${resourceName} was created."))
   }
 
+  /**
+   * Creates new resource.
+   *
+   * POST /{resources}
+   *
+   * @param format format
+   * @return created response if success
+   */
   def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
@@ -74,7 +199,7 @@ trait SkinnyResource extends SkinnyController {
       }
       format match {
         case Format.HTML =>
-          setCreateFlash()
+          setCreateCompletionFlash()
           redirect(s"/${resourcesName}/${id}")
         case _ =>
           status = 201
@@ -85,6 +210,15 @@ trait SkinnyResource extends SkinnyController {
     }
   }
 
+  /**
+   * Shows input form for modification.
+   *
+   * GET /{resources}/{id}/edit
+   *
+   * @param id id
+   * @param format format
+   * @return input form
+   */
   def editResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map {
       m =>
@@ -98,17 +232,44 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
+  /**
+   * Input form for modification
+   */
   protected def updateForm: MapValidator
+
+  /**
+   * Strong parameter definitions for mofidication form
+   */
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
 
+  /**
+   * Executes modification for the specified resource.
+   *
+   * @param id  id
+   * @param parameters permitted parameters
+   * @return count
+   */
   protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
     debugLoggingPermittedParameters(parameters, Some(id))
     skinnyCRUDMapper.updateById(id).withAttributes(parameters)
   }
-  protected def setUpdateFlash() = {
+
+  /**
+   * Set notice flash message for successful completion of modification.
+   */
+  protected def setUpdateCompletionFlash() = {
     flash += ("notice" -> createI18n().get(s"${resourceName}.flash.updated").getOrElse(s"The ${resourceName} was updated."))
   }
 
+  /**
+   * Updates the specified single resource.
+   *
+   * PUT /{resources}/{id}
+   *
+   * @param id id
+   * @param format format
+   * @return result
+   */
   def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
@@ -124,7 +285,7 @@ trait SkinnyResource extends SkinnyController {
         status = 200
         format match {
           case Format.HTML =>
-            setUpdateFlash()
+            setUpdateCompletionFlash()
             set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
             render(s"/${resourcesName}/show")
           case _ =>
@@ -135,17 +296,36 @@ trait SkinnyResource extends SkinnyController {
     } getOrElse haltWithBody(404)
   }
 
+  /**
+   * Executes deletion of the specified single resource.
+   *
+   * @param id id
+   * @return count
+   */
   protected def doDestroy(id: Long): Int = {
     skinnyCRUDMapper.deleteById(id)
   }
-  protected def setDestroyFlash() = {
+
+  /**
+   * Set notice flash message for successful completion of deletion.
+   */
+  protected def setDestroyCompletionFlash() = {
     flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
   }
 
+  /**
+   * Destroys the specified resource.
+   *
+   * DELETE /{resources}/{id}
+   *
+   * @param id id
+   * @param format format
+   * @return result
+   */
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     skinnyCRUDMapper.findById(id).map { m =>
       doDestroy(id)
-      setDestroyFlash()
+      setDestroyCompletionFlash()
       status = 200
     } getOrElse haltWithBody(404)
   }
@@ -154,8 +334,13 @@ trait SkinnyResource extends SkinnyController {
   // Routing
   // ------------------
 
+  /**
+   * Pass this controller instance implicitly
+   * because [[skinny.routing.implicits.RoutesAsImplicits]] expects [[skinny.controller.SkinnyControllerBase]].
+   */
   private[this] implicit val skinnyController: SkinnyController = this
 
+  // set resoureceName/resourcesName to the request scope
   before() {
     set("resourceName", resourceName)
     set("resourcesName", resourcesName)

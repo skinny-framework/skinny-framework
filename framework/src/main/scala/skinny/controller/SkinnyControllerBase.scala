@@ -1,15 +1,16 @@
 package skinny.controller
 
-import org.scalatra._
 import skinny.controller.feature._
-import grizzled.slf4j.Logging
 import skinny.validator.implicits.ParamsGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
 
-trait SkinnyControllerBase extends ScalatraBase
-  with BasicFeature
+trait SkinnyControllerBase
+  extends org.scalatra.ScalatraBase
+  with EnvFeature
+  with RichRouteFeature
   with RequestScopeFeature
+  with ActionDefinitionFeature
   with BeforeAfterActionFeature
   with SessionLocaleFeature
   with FlashFeature
@@ -20,4 +21,4 @@ trait SkinnyControllerBase extends ScalatraBase
   with RoutesAsImplicits
   with ParamsGetAsImplicits
   with ParamsPermitImplicits
-  with Logging
+  with grizzled.slf4j.Logging
