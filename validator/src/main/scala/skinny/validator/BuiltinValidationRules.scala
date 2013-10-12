@@ -2,6 +2,10 @@ package skinny.validator
 
 import scala.language.reflectiveCalls
 
+/**
+ * Built-in validation rules.
+ */
+
 // ----
 // param("x" -> "") is notNull
 
