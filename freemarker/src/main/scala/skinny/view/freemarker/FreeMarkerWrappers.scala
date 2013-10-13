@@ -92,7 +92,7 @@ class ScalaSeqWrapper[T](val seq: Seq[T], wrapper: ObjectWrapper)
  * @param map Map object
  * @param wrapper object wrapper
  */
-class ScalaMapWrapper(val map: Map[String, _], wrapper: ObjectWrapper)
+class ScalaMapWrapper(val map: collection.Map[String, _], wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(map, wrapper)
     with TemplateHashModelEx {
 
