@@ -7,8 +7,17 @@ import freemarker.template._
 import freemarker.cache._
 import javax.servlet.ServletContext
 
+/**
+ * FreeMarker configuration factory.
+ */
 object FreeMarkerConfig {
 
+  /**
+   * Returns default configuration from ServletContext.
+   *
+   * @param ctx servlet context
+   * @return configuration
+   */
   def defaultWithServletContext(ctx: ServletContext): Configuration = {
     val config = new Configuration {
       private[this] var _loaders: Seq[TemplateLoader] = Nil

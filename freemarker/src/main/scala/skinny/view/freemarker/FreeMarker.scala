@@ -2,6 +2,11 @@ package skinny.view.freemarker
 
 import freemarker.template.Configuration
 
+/**
+ * FreeMarker renderer.
+ *
+ * @param config configuration
+ */
 case class FreeMarker(config: Configuration) {
 
   def render(path: String, values: Map[String, Any]): String = {
