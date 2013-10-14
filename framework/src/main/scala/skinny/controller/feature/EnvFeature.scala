@@ -20,27 +20,27 @@ trait EnvFeature extends ScalatraBase {
    *
    * @return true/false
    */
-  def isDevelopment(): Boolean = skinnyEnv.exists(e => e == "development" || e == "dev")
+  def isDevelopment(): Boolean = SkinnyEnv.isDevelopment(skinnyEnv)
 
   /**
    * Predicates current env is "test".
    *
    * @return true/false
    */
-  def isTest(): Boolean = skinnyEnv.exists(e => e == "test")
+  def isTest(): Boolean = SkinnyEnv.isTest(skinnyEnv)
 
   /**
    * Predicates current env is "staging" or "qa".
    *
    * @return true/false
    */
-  def isStaging(): Boolean = skinnyEnv.exists(e => e == "staging" || e == "qa")
+  def isStaging(): Boolean = SkinnyEnv.isStaging(skinnyEnv)
 
   /**
    * Predicates current env is "production" or "prod".
    *
    * @return true/false
    */
-  def isProduction(): Boolean = skinnyEnv.exists(env => env == "production" || env == "prod")
+  def isProduction(): Boolean = SkinnyEnv.isProduction(skinnyEnv)
 
 }

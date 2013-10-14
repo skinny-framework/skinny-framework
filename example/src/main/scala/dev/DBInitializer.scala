@@ -1,4 +1,4 @@
-package tool
+package dev
 
 import scalikejdbc._, SQLInterpolation._
 import skinny.dbmigration.DBSeeds
