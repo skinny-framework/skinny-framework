@@ -69,7 +69,6 @@ npm install -g generator-skinny
 mkdir skinny-app
 cd skinny-app
 yo skinny
-cd skinny
 ./skinny run
 ```
 
