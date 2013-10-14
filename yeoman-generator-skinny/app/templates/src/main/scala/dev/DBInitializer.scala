@@ -18,5 +18,15 @@ object DBInitializer extends DBSeeds {
     """
   )
 
+  addSeed {
+    DB localTx { implicit s =>
+      sql"insert into companies (name, url, created_at) values (?, ?, current_timestamp)".batch(
+        Seq("Google", "http://www.google.com/"),
+        Seq("Microsoft", "http://www.microsoft.com/"),
+        Seq("Yahoo!", "http://www.yahoo.com/")
+      ).apply()
+    }
+  }
+
 }
 
