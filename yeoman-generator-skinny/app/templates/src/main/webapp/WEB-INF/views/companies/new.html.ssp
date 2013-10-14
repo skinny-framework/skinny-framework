@@ -1,0 +1,39 @@
+<%@val params: skinny.Params %>
+<%@val errorMessages: Seq[String] %>
+<%@val i18n: skinny.I18n %>
+
+<h3>${i18n.get("company.new")}</h3>
+<hr/>
+
+#for (e <- errorMessages)
+<p class="alert alert-danger">${e}</p>
+#end
+
+<form method="post" action="${uri("/companies")}" class="form">
+<div class="form-group">
+  <label class="control-label" for="name">
+    ${i18n.get("company.name")}
+  </label>
+  <div class="controls">
+    <div class="row col-md-12">
+    <input type="text" name="name" class="input-lg col-lg-6" value="${params.name}" />
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="url">
+    ${i18n.get("company.url")}
+  </label>
+  <div class="controls">
+    <div class="row col-md-12">
+      <input type="text" name="url" class="input-lg col-lg-8" value="${params.url}" />
+    </div>
+  </div>
+</div>
+<input type="hidden" name="${csrfKey}" value="${csrfToken}"/>
+
+<div class="form-actions">
+  <input type="submit" class="btn btn-primary" value="${i18n.get("submit")}" />
+  <a class="btn btn-default" href="${uri("/companies")}">${i18n.get("cancel")}</a>
+</div>
+</form>

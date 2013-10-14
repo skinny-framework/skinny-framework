@@ -1,10 +1,31 @@
-package skinny.orm.feature.associations
+package skinny.orm.feature
 
 import skinny.orm._
 import scala.collection.mutable
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature._
+import skinny.orm.feature.associations._
+import scalikejdbc.WrappedResultSet
+import scalikejdbc.WrappedResultSet
+import scalikejdbc.WrappedResultSet
+import skinny.orm.feature.associations.BelongsToExtractor
+import skinny.orm.feature.associations.HasManyExtractor
+import skinny.orm.feature.associations.HasManyAssociation
+import skinny.orm.feature.associations.BelongsToAssociation
+import scalikejdbc.WrappedResultSet
+import skinny.orm.feature.associations.HasOneExtractor
+import skinny.orm.feature.associations.JoinDefinition
+import skinny.orm.feature.associations.HasOneAssociation
 
+/**
+ * Extended CRUDFeature which supports associations.
+ *
+ * @param underlying CRUDFeature
+ * @param belongsTo belongsTo associations
+ * @param hasOne hasOne associations
+ * @param hasMany hasMany associations
+ * @tparam Entity entity
+ */
 class CRUDFeatureWithAssociations[Entity](
     val underlying: CRUDFeature[Entity],
     belongsTo: Seq[BelongsToAssociation[Entity]],
@@ -25,9 +46,12 @@ class CRUDFeatureWithAssociations[Entity](
   }
 
   override val defaultJoinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]] = underlying.defaultJoinDefinitions
+
   override val defaultBelongsToExtractors: mutable.LinkedHashSet[BelongsToExtractor[Entity]] = underlying.defaultBelongsToExtractors
+
   override val defaultHasOneExtractors: mutable.LinkedHashSet[HasOneExtractor[Entity]] = underlying.defaultHasOneExtractors
-  override val defaultOneToManyExtractors: mutable.LinkedHashSet[ToManyExtractor[Entity]] = underlying.defaultOneToManyExtractors
+
+  override val defaultOneToManyExtractors: mutable.LinkedHashSet[HasManyExtractor[Entity]] = underlying.defaultOneToManyExtractors
 
   override def extract(rs: WrappedResultSet, n: ResultName[Entity]) = underlying.extract(rs, n)
 

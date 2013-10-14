@@ -1,5 +1,8 @@
 package skinny.validator
 
+/**
+ * Results projection.
+ */
 object ResultsProjection {
 
   val defaultOnSuccess: (Params) => Nothing = {
@@ -12,6 +15,11 @@ object ResultsProjection {
 
 }
 
+/**
+ * Results projection.
+ *
+ * @tparam A result type
+ */
 sealed trait ResultsProjection[+A] {
 
   val results: Validations
@@ -35,6 +43,14 @@ sealed trait ResultsProjection[+A] {
 
 }
 
+/**
+ * Successes projection.
+ *
+ * @param results results
+ * @param onSuccess success event handler
+ * @param onFailures failure event handler
+ * @tparam A result type
+ */
 case class SuccessesProjection[+A](override val results: Validations,
     override val onSuccess: (Params) => A,
     override val onFailures: (Params, Errors) => A) extends ResultsProjection[A] {
@@ -45,6 +61,14 @@ case class SuccessesProjection[+A](override val results: Validations,
 
 }
 
+/**
+ * Failures projection.
+ *
+ * @param results results
+ * @param onSuccess success event handler
+ * @param onFailures failure event handler
+ * @tparam A result type
+ */
 case class FailuresProjection[+A](override val results: Validations,
     override val onSuccess: (Params) => A,
     override val onFailures: (Params, Errors) => A) extends ResultsProjection[A] {

@@ -4,13 +4,14 @@ import skinny._
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
-    /* verbose query logger
-    import scalikejdbc._
-    val className = "skinny.orm.formatter.HibernateSQLFormatter"
-    GlobalSettings.sqlFormatter = SQLFormatterSettings(className)
-    GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
-     */
-    tool.DBInitializer.initialize()
+
+    if (SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()) {
+      /* verbose query logger
+      import scalikejdbc._
+      GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
+       */
+      dev.DBInitializer.initialize()
+    }
 
     ctx.mount(Controllers.root, "/*")
     ctx.mount(Controllers.programmers, "/*")

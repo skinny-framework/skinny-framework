@@ -1,8 +1,11 @@
 package skinny.validator
 
-sealed trait Validation {
+/**
+ * Validation object which has param definition and validation results
+ */
+sealed trait ValidationState {
 
-  val param: ParamDefinition
+  val paramDef: ParamDefinition
   val errors: Seq[Error] = Nil
 
   def isDone: Boolean = true
@@ -19,19 +22,42 @@ sealed trait Validation {
 
 }
 
-case class NewValidation(override val param: ParamDefinition, validations: ValidationRule) extends Validation {
-  override def isDone: Boolean = false
+/**
+ * Newly created validation which hasn't be applied yet.
+ *
+ * @param paramDef param definition
+ * @param validations validation rules
+ */
+case class NewValidation(override val paramDef: ParamDefinition, validations: ValidationRule) extends ValidationState {
+
   def toEither: Either[ValidationFailure, ValidationSuccess] = throw new IllegalStateException
+
+  override def isDone: Boolean = false
 }
 
-case class ValidationSuccess(override val param: ParamDefinition) extends Validation {
+/**
+ * Success.
+ *
+ * @param paramDef param definition
+ */
+case class ValidationSuccess(override val paramDef: ParamDefinition) extends ValidationState {
+
   def toEither: Either[ValidationFailure, ValidationSuccess] = Right(this)
+
   override def toSuccessOption: Option[ValidationSuccess] = Some(this)
 }
 
-case class ValidationFailure(override val param: ParamDefinition, override val errors: Seq[Error]) extends Validation {
-  override def isSuccess: Boolean = false
+/**
+ * Failure.
+ *
+ * @param paramDef param definition
+ * @param errors errors
+ */
+case class ValidationFailure(override val paramDef: ParamDefinition, override val errors: Seq[Error]) extends ValidationState {
+
   def toEither: Either[ValidationFailure, ValidationSuccess] = Left(this)
+
+  override def isSuccess: Boolean = false
   override def toFailureOption: Option[ValidationFailure] = Some(this)
 }
 

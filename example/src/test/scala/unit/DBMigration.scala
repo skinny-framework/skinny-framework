@@ -1,6 +1,6 @@
 package unit
 
-import tool.DBInitializer
+import dev.DBInitializer
 
 trait DBMigration extends DBSettings {
   DBInitializer.synchronized {

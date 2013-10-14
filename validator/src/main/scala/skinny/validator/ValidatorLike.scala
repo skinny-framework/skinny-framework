@@ -1,19 +1,43 @@
 package skinny.validator
 
+/**
+ * Validator like feature.
+ */
 trait ValidatorLike {
 
+  /**
+   * Underlying validations.
+   */
   val validations: Validations
 
+  /**
+   * Params
+   */
   lazy val params: Params = ParamsFromValidations(validations)
 
-  lazy val errors: Errors = Errors(validations.toSeq.filter {
+  /**
+   * Errors
+   */
+  lazy val errors: Errors = Errors(validations.statesAsSeq.filter {
     result => result.isInstanceOf[ValidationFailure]
-  }.groupBy(_.param.key).map {
+  }.groupBy(_.paramDef.key).map {
     case (key, failures) => (key, failures.flatMap(_.errors))
   })
 
+  /**
+   * Executes validation.
+   *
+   * @return valid if true
+   */
   def validate(): Boolean = !hasErrors
 
+  /**
+   * Extract a form from params.
+   *
+   * @param extractor extractor
+   * @tparam A form response type
+   * @return form
+   */
   def map[A](extractor: Params => A): Form[A] = {
     if (hasErrors) {
       Form(validations, None)
@@ -22,18 +46,51 @@ trait ValidatorLike {
     }
   }
 
-  def fold[A](errorsHandler: (Params, Errors) => A, paramsHandler: (Params) => A): A = {
-    if (hasErrors) errorsHandler.apply(params, errors)
-    else paramsHandler.apply(params)
+  /**
+   * Fold operation.
+   *
+   * @param failureHandler failure handler
+   * @param successHandler success handler
+   * @tparam A return type
+   * @return result
+   */
+  def fold[A](failureHandler: (Params, Errors) => A, successHandler: (Params) => A): A = {
+    if (hasErrors) failureHandler.apply(params, errors)
+    else successHandler.apply(params)
   }
 
+  /**
+   * Success event handler.
+   *
+   * @param f operation
+   * @tparam B extracted value type
+   * @return projection
+   */
   def success[B](f: (Params) => B) = validations.success[B](f)
 
+  /**
+   * Failure event handler.
+   *
+   * @param f operation
+   * @tparam B extracted value type
+   * @return projection
+   */
   def failure[B](f: (Params, Errors) => B) = validations.failure[B](f)
 
+  /**
+   * Errors exist if true.
+   *
+   * @return true if errors exist
+   */
   def hasErrors: Boolean = !errors.isEmpty
 
-  protected def extractValue(value: Any): Any = value match {
+  /**
+   * Extracts value from optional value.
+   *
+   * @param value optional value
+   * @return raw value
+   */
+  protected def extractRawValue(value: Any): Any = value match {
     case Some(v) => v
     case None => null
     case v => v

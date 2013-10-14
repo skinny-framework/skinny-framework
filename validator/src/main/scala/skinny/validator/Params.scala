@@ -3,6 +3,9 @@ package skinny.validator
 import java.util.Date
 import skinny.validator.implicits.ParamsGetAsImplicits
 
+/**
+ * Params
+ */
 sealed trait Params { self: ParamsGetAsImplicits =>
 
   protected val paramsMap: Map[String, Any]
@@ -33,11 +36,23 @@ sealed trait Params { self: ParamsGetAsImplicits =>
 
 }
 
+/**
+ * Params from validations.
+ *
+ * @param validations validations
+ */
 case class ParamsFromValidations(validations: Validations) extends Params with ParamsGetAsImplicits {
-  override protected val paramsMap: Map[String, Any] = validations.toMap()
+
+  override protected val paramsMap: Map[String, Any] = validations.statesAsMap()
 }
 
+/**
+ * Params from a Map value.
+ *
+ * @param map Map value
+ */
 case class ParamsFromMap(map: Map[String, Any]) extends Params with ParamsGetAsImplicits {
+
   override protected val paramsMap: Map[String, Any] = map
 }
 

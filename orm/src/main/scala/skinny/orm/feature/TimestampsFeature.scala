@@ -4,9 +4,21 @@ import scalikejdbc._, SQLInterpolation._
 import skinny.orm.PermittedStrongParameters
 import org.joda.time.DateTime
 
+/**
+ * ActiveRecord timestamps feature.
+ *
+ * @tparam Entity entity
+ */
 trait TimestampsFeature[Entity] extends CRUDFeature[Entity] {
 
+  /**
+   * createdAt field name.
+   */
   val createdAtFieldName = "createdAt"
+
+  /**
+   * updatedAt field name.
+   */
   val updatedAtFieldName = "updatedAt"
 
   override protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {

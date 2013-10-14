@@ -4,8 +4,19 @@ import org.joda.time._
 import java.text.SimpleDateFormat
 import skinny.orm.ParamType
 
+/**
+ * Strong parameters support.
+ */
 trait StrongParametersFeature {
 
+  /**
+   * Returns typed value from a strong parameter.
+   *
+   * @param fieldName field name
+   * @param value actual value
+   * @param paramType param type definition
+   * @return typed value if exists
+   */
   protected def getTypedValueFromStrongParameter(fieldName: String, value: Any, paramType: ParamType): Option[Any] = {
     Option(value).map { value =>
       value match {

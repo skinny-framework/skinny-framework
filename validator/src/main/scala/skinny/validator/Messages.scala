@@ -6,9 +6,19 @@ import java.util.Locale
 import com.typesafe.config._
 import scala.collection.JavaConverters._
 
+/**
+ * Messages loader.
+ */
 object Messages {
 
-  def loadFromConfig(prefix: String = "messages", locale: Option[Locale] = None) = {
+  /**
+   * Loads from *.conf file.
+   *
+   * @param prefix prefix
+   * @param locale locale
+   * @return messages
+   */
+  def loadFromConfig(prefix: String = "messages", locale: Option[Locale] = None): Messages = {
     val ext = ".conf"
     val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
     val config = ConfigFactory.load(this.getClass.getClassLoader, file)
@@ -16,6 +26,13 @@ object Messages {
     new Messages(map)
   }
 
+  /**
+   * Loads from *.properties file.
+   *
+   * @param prefix prefix
+   * @param locale locale
+   * @return messages
+   */
   def loadFromProperties(prefix: String = "messages", locale: Option[Locale] = None) = {
     val ext = ".properties"
     val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
@@ -31,10 +48,28 @@ object Messages {
   }
 }
 
+/**
+ * Messages for validation errors.
+ *
+ * @param map messages
+ */
 class Messages(map: Map[String, String]) {
 
+  /**
+   * Returns message for the key.
+   *
+   * @param key key
+   * @return message
+   */
   def get(key: String): Option[String] = map.get(key)
 
+  /**
+   * Returns message for the key.
+   *
+   * @param key key
+   * @param params params to be embedded
+   * @return message
+   */
   def get(key: String, params: Seq[Any]): Option[String] = {
     get(key).map(template =>
       MessageFormat.format(template, params.map(_.asInstanceOf[Object]): _*))

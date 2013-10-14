@@ -2,43 +2,75 @@ package skinny
 
 import scala.language.implicitConversions
 
+/**
+ * Skinny validator provides easy-to-understand and readable DSLs to validate inputs.
+ */
 package object validator {
 
+  /**
+   * Accepts key and value.
+   *
+   * @param kv key and value
+   * @return param definition
+   */
   def param(kv: (String, Any)): KeyValueParamDefinition = KeyValueParamDefinition(kv._1, kv._2)
 
-  def paramKey(name: String): KeyParamDefinition = KeyParamDefinition(name)
+  /**
+   * Accepts key.
+   *
+   * @param name key
+   * @return param definition
+   */
+  def paramKey(name: String): OnlyKeyParamDefinition = OnlyKeyParamDefinition(name)
 
-  def checkAll(vs: ValidationRule*): ValidationRule = {
+  /**
+   * Converts validation rules to a combined validation rule which verify all the rules even if some of them has errors.
+   *
+   * @param validationRules validation rules
+   * @return validation rule
+   */
+  def checkAll(validationRules: ValidationRule*): ValidationRule = {
     def merge(v1: ValidationRule, v2: ValidationRule): ValidationRule = {
       new Object with ValidationRule {
 
         def name: String = "combined-results"
         def isValid(value: Any): Boolean = throw new IllegalStateException
 
-        override def apply(param: KeyValueParamDefinition): Validation = {
-          v1.apply(param) match {
-            case res1: ValidationSuccess => v2.apply(param)
+        override def apply(paramDef: KeyValueParamDefinition): ValidationState = {
+          v1.apply(paramDef) match {
+            case res1: ValidationSuccess => v2.apply(paramDef)
             case res1: ValidationFailure =>
-              ValidationFailure(param = param, errors = res1.errors ++ v2.apply(param).errors)
+              ValidationFailure(paramDef = paramDef, errors = res1.errors ++ v2.apply(paramDef).errors)
             case _ => throw new IllegalStateException
           }
         }
 
       }
     }
-    vs.tail.foldLeft(vs.head) { case (vs, v) => merge(vs, v) }
+    validationRules.tail.foldLeft(validationRules.head) { case (vs, v) => merge(vs, v) }
   }
 
-  private[validator] class ParamDefinitionWithIs(param: ParamDefinition) {
+  /**
+   * Param definition which has #is and #are DSL methods.
+   *
+   * @param paramDef param definition
+   */
+  private[validator] class ParamDefinitionWithIsDSL(paramDef: ParamDefinition) {
 
-    def is(validations: ValidationRule): NewValidation = NewValidation(param, validations)
+    def is(validations: ValidationRule): NewValidation = NewValidation(paramDef, validations)
 
-    def are(validations: ValidationRule): NewValidation = NewValidation(param, validations)
+    def are(validations: ValidationRule): NewValidation = NewValidation(paramDef, validations)
 
   }
 
-  implicit def convertParamDefinitionToParamDefinitionWithIs(param: ParamDefinition): ParamDefinitionWithIs = {
-    new ParamDefinitionWithIs(param)
+  /**
+   * Converts ParamDefinition to ParamDefinitionWithIsDSL implicitly.
+   *
+   * @param paramDef param definition
+   * @return with dsl
+   */
+  implicit def convertParamDefinitionToParamDefinitionWithIs(paramDef: ParamDefinition): ParamDefinitionWithIsDSL = {
+    new ParamDefinitionWithIsDSL(paramDef)
   }
 
 }

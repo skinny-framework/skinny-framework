@@ -4,8 +4,14 @@ import skinny.Format
 import java.io.IOException
 import skinny.view.freemarker._
 
+/**
+ * FreeMarker template engine support.
+ */
 trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
 
+  /**
+   * FreeMarker Scala wrapper.
+   */
   lazy val freeMarker: FreeMarker = FreeMarker(FreeMarkerConfig.defaultWithServletContext(servletContext))
 
   override protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {

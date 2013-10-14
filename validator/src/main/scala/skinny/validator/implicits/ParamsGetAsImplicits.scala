@@ -7,8 +7,14 @@ import java.util.Date
 import java.text.{ DateFormat, SimpleDateFormat }
 import skinny.validator.TypeConverter
 
+/**
+ * Implicits to enable using #getAs[Type]("name") for params.
+ */
 object ParamsGetAsImplicits extends ParamsGetAsImplicits
 
+/**
+ * Implicits to enable using #getAs[Type]("name") for params.
+ */
 trait ParamsGetAsImplicits {
 
   implicit def skinnyValidatorSafe[S, T](f: S => T): TypeConverter[S, T] = new TypeConverter[S, T] {

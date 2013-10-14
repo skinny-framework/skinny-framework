@@ -1,12 +1,3 @@
-package skinny.view.freemarker
-
-import scala.language.existentials
-import scala.language.reflectiveCalls
-
-import org.slf4j._
-import freemarker.template._
-import scala.collection.JavaConverters._
-
 /*
 The Circumflex License
 ======================
@@ -35,7 +26,18 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
  */
+package skinny.view.freemarker
 
+import scala.language.existentials
+import scala.language.reflectiveCalls
+
+import org.slf4j._
+import freemarker.template._
+import scala.collection.JavaConverters._
+
+/**
+ * Scala object wrapper.
+ */
 class ScalaObjectWrapper extends ObjectWrapper {
 
   override def wrap(obj: Any): TemplateModel = obj match {
@@ -48,14 +50,20 @@ class ScalaObjectWrapper extends ObjectWrapper {
     case it: Iterable[_] => new ScalaIterableWrapper(it, this)
     case it: Iterator[_] => new ScalaIteratorWrapper(it, this)
     case str: String => new SimpleScalar(str)
-    case date: java.util.Date => new ScalaDateWrapper(date, this)
+    case date: java.util.Date => new ScalaJUDateWrapper(date, this)
     case num: Number => new SimpleNumber(num)
     case bool: Boolean => if (bool) TemplateBooleanModel.TRUE else TemplateBooleanModel.FALSE
     case o => new ScalaBaseWrapper(o, this)
   }
 }
 
-class ScalaDateWrapper(val date: java.util.Date, wrapper: ObjectWrapper)
+/**
+ * Scala java.util.Date wrapper.
+ *
+ * @param date date
+ * @param wrapper object wrapper
+ */
+class ScalaJUDateWrapper(val date: java.util.Date, wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(date, wrapper)
     with TemplateDateModel {
 
@@ -63,6 +71,13 @@ class ScalaDateWrapper(val date: java.util.Date, wrapper: ObjectWrapper)
   def getAsDate = date
 }
 
+/**
+ * Scala Seq wrapper.
+ *
+ * @param seq seq
+ * @param wrapper object wrapper
+ * @tparam T seq element type
+ */
 class ScalaSeqWrapper[T](val seq: Seq[T], wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(seq, wrapper)
     with TemplateSequenceModel {
@@ -71,6 +86,12 @@ class ScalaSeqWrapper[T](val seq: Seq[T], wrapper: ObjectWrapper)
   def size = seq.size
 }
 
+/**
+ * Scala Map wrapper.
+ *
+ * @param map Map object
+ * @param wrapper object wrapper
+ */
 class ScalaMapWrapper(val map: collection.Map[String, _], wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(map, wrapper)
     with TemplateHashModelEx {
@@ -83,6 +104,13 @@ class ScalaMapWrapper(val map: collection.Map[String, _], wrapper: ObjectWrapper
   def size = map.size
 }
 
+/**
+ * Scala Iterable wrapper.
+ *
+ * @param it iterable
+ * @param wrapper object wrapper
+ * @tparam T iterable element type
+ */
 class ScalaIterableWrapper[T](val it: Iterable[T], wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(it, wrapper)
     with TemplateCollectionModel {
@@ -90,6 +118,13 @@ class ScalaIterableWrapper[T](val it: Iterable[T], wrapper: ObjectWrapper)
   def iterator = new ScalaIteratorWrapper(it.iterator, wrapper)
 }
 
+/**
+ * Scala Iterator wrapper.
+ *
+ * @param it iterator
+ * @param wrapper object wrapper
+ * @tparam T iterator element type
+ */
 class ScalaIteratorWrapper[T](val it: Iterator[T], wrapper: ObjectWrapper)
     extends ScalaBaseWrapper(it, wrapper)
     with TemplateModelIterator
@@ -100,6 +135,13 @@ class ScalaIteratorWrapper[T](val it: Iterator[T], wrapper: ObjectWrapper)
   def iterator = this
 }
 
+/**
+ * Scala method wrapper.
+ *
+ * @param target invocation target
+ * @param methodName method name
+ * @param wrapper object wrapper
+ */
 class ScalaMethodWrapper(
   val target: Any,
   val methodName: String,
@@ -147,7 +189,13 @@ class ScalaMethodWrapper(
   }
 }
 
-class ScalaXmlWrapper(val node: scala.xml.NodeSeq, val wrapper: ObjectWrapper)
+/**
+ * Scala XML wrapper.
+ *
+ * @param nodes mxl node seq
+ * @param wrapper object wrapper
+ */
+class ScalaXmlWrapper(val nodes: scala.xml.NodeSeq, val wrapper: ObjectWrapper)
     extends TemplateNodeModel
     with TemplateHashModel
     with TemplateSequenceModel
@@ -155,7 +203,7 @@ class ScalaXmlWrapper(val node: scala.xml.NodeSeq, val wrapper: ObjectWrapper)
 
   import scala.xml._
 
-  def children: Seq[Node] = node match {
+  def children: Seq[Node] = nodes match {
     case node: Elem => node.child.flatMap {
       case e: Elem => Option(e)
       case a: Attribute => Option(a)
@@ -165,19 +213,19 @@ class ScalaXmlWrapper(val node: scala.xml.NodeSeq, val wrapper: ObjectWrapper)
     case _ => Nil
   }
 
-  def getNodeNamespace: String = node match {
+  def getNodeNamespace: String = nodes match {
     case e: Elem => e.namespace
     case _ => ""
   }
 
-  def getNodeType: String = node match {
+  def getNodeType: String = nodes match {
     case e: Elem => "element"
     case t: Text => "text"
     case a: Attribute => "attribute"
     case _ => null
   }
 
-  def getNodeName: String = node match {
+  def getNodeName: String = nodes match {
     case e: Elem => e.label
     case _ => null
   }
@@ -188,29 +236,35 @@ class ScalaXmlWrapper(val node: scala.xml.NodeSeq, val wrapper: ObjectWrapper)
   def getParentNode: TemplateNodeModel = new ScalaXmlWrapper(null, wrapper)
 
   // as hash
-  def isEmpty: Boolean = node.size == 0
+  def isEmpty: Boolean = nodes.size == 0
 
   def get(key: String): TemplateModel = {
-    val children = node \ key
+    val children = nodes \ key
     if (children.size == 0) wrapper.wrap(None)
     if (children.size == 1) wrapper.wrap(children(0))
     else wrapper.wrap(children)
   }
 
   // as sequence
-  def size: Int = node.size
+  def size: Int = nodes.size
 
-  def get(index: Int): TemplateModel = new ScalaXmlWrapper(node(index), wrapper)
+  def get(index: Int): TemplateModel = new ScalaXmlWrapper(nodes(index), wrapper)
 
   // as scalar
-  def getAsString: String = node.text
+  def getAsString: String = nodes.text
 }
 
+/**
+ * Scala basic wrapper.
+ *
+ * @param obj object
+ * @param wrapper object wrapper
+ */
 class ScalaBaseWrapper(val obj: Any, val wrapper: ObjectWrapper)
     extends TemplateHashModel
     with TemplateScalarModel {
 
-  val logger: Logger = LoggerFactory.getLogger(classOf[ScalaBaseWrapper])
+  private[this] val logger: Logger = LoggerFactory.getLogger(classOf[ScalaBaseWrapper])
 
   import java.lang.reflect.{ Modifier, Field, Method }
 

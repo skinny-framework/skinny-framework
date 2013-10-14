@@ -1,0 +1,21 @@
+-@val body: String
+-@val csrfToken: String
+-@val i18n: skinny.I18n
+!!! 5
+%html(lang="en")
+ %head
+  %meta(charset="utf-8")
+  %meta(content={csrfToken} name="csrf-token")
+  %script(type="text/javascript" src={uri("/assets/js/jquery-2.0.3.min.js")})
+  %link(rel="stylesheet" href={uri("/assets/css/bootstrap.min.css")})
+
+ %body
+  %div.container.span12
+   =unescape(body)
+   %hr
+   %a(href={uri("/")} class="btn btn-default") #{i18n.get("top")}
+   %a(href={uri("/companies")} class="btn btn-default") #{i18n.get("company.list")}
+
+  %script(type="text/javascript" src={uri("/assets/js/bootstrap.min.js")})
+  %script(type="text/javascript" src={uri("/assets/js/application.js")})
+

@@ -56,7 +56,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
   def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = withExtractor {
     withSQL {
       defaultSelectQuery.where.notIn(p.id,
-        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeWithoutAlias)
+        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeForUpdateOperations)
     }
   }.list.apply()
 
