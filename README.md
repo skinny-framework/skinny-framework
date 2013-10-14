@@ -59,6 +59,20 @@ sbt
 
 Access `http://localhost:8080/example/` from your browser.
 
+### Yeoman generator
+
+or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
+
+```sh
+npm install -g yo
+npm install -g generator-skinny
+mkdir skinny-app
+cd skinny-app
+yo skinny
+cd skinny
+./skinny run
+```
+
 ## Components
 
 ### Routing & Controller & Validator

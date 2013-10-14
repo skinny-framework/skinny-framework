@@ -1,0 +1,29 @@
+#!/bin/sh 
+
+sbt_path=`which sbt`
+if [ "`which sbt`" == "" ]; then
+  brew install sbt
+fi
+
+function run_app() {
+  sbt "~;container:stop;container:start"
+}
+
+command="$1"
+if [ $command == "run" ];then
+  run_app
+elif [ $command == "clean" ];then
+  sbt clean
+elif [ $command == "package" ];then
+  sbt package
+else
+  echo ""
+  echo "Usage: grep [COMMAND] [OPTIONS]..."
+  echo ""
+  echo "  clean:   will clear target directory"
+  echo "  run:     will run Skinny app for local development"
+  echo "  package: will create *.war file to deploy"
+  echo ""
+fi
+
+
