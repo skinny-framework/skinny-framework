@@ -61,6 +61,8 @@ Access `http://localhost:8080/example/` from your browser.
 
 ### Yeoman generator
 
+![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/yeoman-logo.png)
+
 or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
 ```sh
