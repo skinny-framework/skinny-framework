@@ -46,7 +46,7 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "org.hibernate"  %  "hibernate-core"  % "4.1.12.Final" % "compile",
+        "org.hibernate"  %  "hibernate-core"  % "4.1.12.Final" % "test",
         "com.h2database" %  "h2"              % "1.3.173"      % "test",
         "ch.qos.logback" %  "logback-classic" % "1.0.13"       % "test"
       ) ++ testDependencies,

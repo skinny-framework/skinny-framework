@@ -8,8 +8,6 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     if (SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()) {
       /* verbose query logger
       import scalikejdbc._
-      val className = "skinny.orm.formatter.HibernateSQLFormatter"
-      GlobalSettings.sqlFormatter = SQLFormatterSettings(className)
       GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
        */
       dev.DBInitializer.initialize()
