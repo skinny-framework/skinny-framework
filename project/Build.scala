@@ -43,12 +43,14 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
+        Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
         "org.hibernate"  %  "hibernate-core"  % "4.1.12.Final" % "test",
         "com.h2database" %  "h2"              % "1.3.173"      % "test",
-        "ch.qos.logback" %  "logback-classic" % "1.0.13"       % "test"
+        "ch.qos.logback" %  "logback-classic" % "1.0.13"       % "test",
+        "ar.com.gonto"   %% "factory_pal"     % "0.2.1"        % "test"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

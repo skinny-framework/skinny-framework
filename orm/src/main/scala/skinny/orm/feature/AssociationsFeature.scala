@@ -537,7 +537,7 @@ trait AssociationsFeature[Entity]
   }
 
   protected def toDefaultForeignKeyName[A](mapper: AssociationsFeature[A]): String = {
-    val name = JavaReflectAPI.getSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
+    val name = JavaReflectAPI.classSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
     name.head.toString.toLowerCase + name.tail
   }
 
