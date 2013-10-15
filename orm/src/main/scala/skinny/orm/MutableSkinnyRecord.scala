@@ -27,6 +27,20 @@ import scalikejdbc._, SQLInterpolation._
 trait MutableSkinnyRecord[Entity] extends SkinnyRecordBase[Entity] {
 
   /**
+   * Predicates this entity is new entity.
+   *
+   * @return true if not persisted
+   */
+  def isNewRecord: Boolean = id.isEmpty
+
+  /**
+   * Predicates this entity is NOT new entity.
+   *
+   * @return true if persisted
+   */
+  def isPersisted: Boolean = id.isDefined
+
+  /**
    * Id as the primary key.
    *
    * If your entity's primary key is not single numeric value,

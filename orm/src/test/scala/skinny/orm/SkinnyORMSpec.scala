@@ -9,7 +9,6 @@ import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
-import ar.com.gonto.factorypal.objects.{ ObjectSetter, ObjectBuilder }
 
 // --------------------------------
 // Sample entities and mappers
@@ -231,8 +230,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
   describe("MutableSkinnyRecord") {
     it("should act like ActiveRecord") { implicit session =>
-      val companyId = Company(name = "Sun").create()
+      val newCompany = Company(name = "Sun")
+      newCompany.isNewRecord should be(true)
+      newCompany.isPersisted should be(false)
+
+      val companyId = newCompany.create()
+
       val company = Company.findById(companyId).get
+      company.isNewRecord should be(false)
+      company.isPersisted should be(true)
 
       company.copy(name = "Oracle").save()
       Company.findById(companyId).get.name should equal("Oracle")

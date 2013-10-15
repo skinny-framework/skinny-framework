@@ -41,7 +41,8 @@ trait TimestampsFeature[Entity] extends CRUDFeature[Entity] {
 
   override def updateById(id: Long): UpdateOperationBuilder = new UpdateOperationBuilderWithUpdateAt(this, id)
 
-  class UpdateOperationBuilderWithUpdateAt(self: CRUDFeature[Entity], id: Long) extends UpdateOperationBuilder(self, byId(id)) {
+  class UpdateOperationBuilderWithUpdateAt(self: CRUDFeature[Entity], id: Long)
+      extends UpdateOperationBuilder(self, byId(id), beforeUpdateByHandlers, afterUpdateByHandlers) {
     val column = defaultAlias.support.column
     addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
   }

@@ -32,6 +32,14 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
     updateBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
+  private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
+    if (count == 0) {
+      throw new OptimisticLockException(
+        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+    }
+  }
+  afterUpdateBy(updateByHandler _)
+
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
   /**
@@ -40,20 +48,11 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    * @param mapper mapper
    * @param where condition
    */
-  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(mapper, where) {
-
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax)
+      extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockVersionFieldName)
     addUpdateSQLPart(sqls"${c} = ${c} + 1")
-
-    override def onUpdateByCompletion(where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Int = {
-      super.onUpdateByCompletion(where, namedValues, count)
-      if (count == 0) {
-        throw new OptimisticLockException(
-          s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
-      }
-      count
-    }
   }
 
   /**
