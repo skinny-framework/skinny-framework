@@ -9,6 +9,7 @@ import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
+import org.slf4j.LoggerFactory
 
 // --------------------------------
 // Sample entities and mappers
@@ -94,18 +95,22 @@ object Name extends SkinnyCRUDMapper[Name]
   )
 }
 
-case class Company(id: Long, name: String)
+case class Company(id: Option[Long] = None, name: String) extends MutableSkinnyRecord[Company] {
+  def skinnyCRUDMapper = Company
+}
 
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
   override val defaultAlias = createAlias("cmp")
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
-    id = rs.long(s.id),
+    id = rs.longOpt(s.id),
     name = rs.string(s.name)
   )
 }
 
-case class Country(id: Long, name: String)
+case class Country(id: Long, name: String) extends SkinnyRecord[Country] {
+  def skinnyCRUDMapper = Country
+}
 
 object Country extends SkinnyCRUDMapper[Country] {
   override val tableName = "countries"
@@ -124,6 +129,16 @@ object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature
     id = rs.long(s.id),
     name = rs.string(s.name)
   )
+
+  private[this] val logger = LoggerFactory.getLogger(classOf[Group])
+  override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession) = {
+    super.beforeCreate(namedValues)(s)
+    logger.info(s"Before creation. params: ${namedValues}")
+  }
+  override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(implicit s: DBSession) = {
+    super.afterCreate(namedValues, generatedId)(s)
+    logger.info(s"Created Group's id: ${generatedId}")
+  }
 }
 
 case class GroupMember(groupId: Long, memberId: Long)
@@ -180,17 +195,11 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     val groupId3 = Group.withColumns { g =>
       Group.createWithNamedValues(g.name -> "PHP Users")
     }
-    Group.deleteById(groupId3)
-    Group.countAll() should equal(2L)
 
     val companyId = Company.withColumns(c => Company.createWithNamedValues(c.name -> "Typesafe"))
-
     val companyId2 = Company.withColumns(c => Company.createWithNamedValues(c.name -> "Oracle"))
-    Company.deleteById(companyId2)
-    Company.countAll() should equal(1L)
 
     Member.withColumns { m =>
-
       // Member doesn't use TimestampsFeature
       val alice = Member.createWithNamedValues(
         m.countryId -> countryId1,
@@ -228,6 +237,63 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       }
     }
 
+  }
+
+  describe("MutableSkinnyRecord") {
+    it("should act like ActiveRecord") { implicit session =>
+      val newCompany = Company(name = "Sun")
+      newCompany.isNewRecord should be(true)
+      newCompany.isPersisted should be(false)
+
+      val companyId = newCompany.create()
+
+      val company = Company.findById(companyId).get
+      company.isNewRecord should be(false)
+      company.isPersisted should be(true)
+
+      company.copy(name = "Oracle").save()
+      Company.findById(companyId).get.name should equal("Oracle")
+
+      company.destroy()
+      Company.findById(companyId) should equal(None)
+    }
+
+    /* TODO
+[info]   java.lang.IllegalStateException: No builder register for None
+[info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
+[info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
+[info]   at scala.Option.getOrElse(Option.scala:120)
+[info]   at ar.com.gonto.factorypal.FactoryPal$.create(FactoryPal.scala:42)
+
+    it("should work with FactoryPal") { implicit session =>
+      import ar.com.gonto.factorypal.FactoryPal
+      val companyByFactoryPal = FactoryPal.create[Company]() { company =>
+        company.name.mapsTo("Sun")
+      }
+      val companyId = companyByFactoryPal.create()
+      val company = Company.findById(companyId).get
+
+      company.copy(name = "Oracle").save()
+      Company.findById(companyId).get.name should equal("Oracle")
+
+      company.destroy()
+      Company.findById(companyId) should equal(None)
+    }
+    */
+  }
+
+  describe("SkinnyRecord") {
+    it("should act like ActiveRecord") { implicit session =>
+      val cnt = Country.column
+      val countryId = Country.createWithNamedValues(cnt.name -> "Brazil")
+      val country = Country.findById(countryId).get
+
+      country.copy(name = "BRAZIL").save()
+      Country.findById(countryId).get.name should equal("BRAZIL")
+
+      country.destroy()
+      Country.findById(countryId) should equal(None)
+    }
   }
 
   describe("Operations") {

@@ -39,7 +39,7 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
    * @return prefix
    */
   def factoryName: String = {
-    val n = Option(name).getOrElse(JavaReflectAPI.getSimpleName(mapper))
+    val n = Option(name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
     (n.head.toLower + n.tail).replaceFirst("\\$$", "")
   }
 

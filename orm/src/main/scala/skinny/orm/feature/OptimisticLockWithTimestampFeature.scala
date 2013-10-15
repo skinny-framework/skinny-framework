@@ -54,6 +54,14 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     updateBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
+  private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
+    if (count == 0) {
+      throw new OptimisticLockException(
+        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+    }
+  }
+  afterUpdateBy(updateByHandler _)
+
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
   /**
@@ -62,20 +70,11 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param mapper mapper
    * @param where condition
    */
-  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax) extends UpdateOperationBuilder(mapper, where) {
-
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax)
+      extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockTimestampFieldName)
     addUpdateSQLPart(sqls"${c} = ${sqls.currentTimestamp}")
-
-    override def onUpdateByCompletion(where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Int = {
-      super.onUpdateByCompletion(where, namedValues, count)
-      if (count == 0) {
-        throw new OptimisticLockException(
-          s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
-      }
-      count
-    }
   }
 
   /**

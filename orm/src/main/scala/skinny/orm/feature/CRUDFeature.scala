@@ -4,6 +4,9 @@ import scalikejdbc._, SQLInterpolation._
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scala.collection.mutable
+import skinny.orm.feature.associations.HasManyAssociation
+import skinny.orm.feature.associations.BelongsToAssociation
+import skinny.orm.feature.associations.HasOneAssociation
 
 /**
  * Provides auto-generated CRUD feature.
@@ -219,6 +222,22 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * #createWithNamedValues pre-execution.
+   *
+   * @param namedValues named values
+   */
+  protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession = autoSession): Unit = {}
+
+  /**
+   * #createWithNamedValues post-execution.
+   *
+   * @param namedValues named values
+   * @param generatedId generated id
+   */
+  protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(
+    implicit s: DBSession = autoSession): Unit = {}
+
+  /**
    * Creates a new entity with named values.
    *
    * @param namedValues named values
@@ -227,15 +246,20 @@ trait CRUDFeature[Entity]
    */
   def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
     val allNamedValues = mergeNamedValuesForCreation(namedValues)
+    beforeCreate(allNamedValues)
     if (useAutoIncrementPrimaryKey) {
-      withSQL { insert.into(this).namedValues(allNamedValues: _*) }.updateAndReturnGeneratedKey.apply()
+      val id = withSQL { insert.into(this).namedValues(allNamedValues: _*) }.updateAndReturnGeneratedKey.apply()
+      afterCreate(allNamedValues, Some(id))
+      id
     } else {
       withSQL { insert.into(this).namedValues(allNamedValues: _*) }.update.apply()
-      allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
+      val idOpt = allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
         case (_, value) =>
           try value.toString.toLong
           catch { case e: Exception => 0L }
-      }.getOrElse(0L)
+      }
+      afterCreate(allNamedValues, idOpt)
+      idOpt.getOrElse(-1L)
     }
   }
 
@@ -246,7 +270,7 @@ trait CRUDFeature[Entity]
    * @return update query builder
    */
   def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
-    new UpdateOperationBuilder(this, where)
+    new UpdateOperationBuilder(this, where, beforeUpdateByHandlers.toSeq, afterUpdateByHandlers.toSeq)
   }
 
   /**
@@ -266,12 +290,50 @@ trait CRUDFeature[Entity]
   protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
 
   /**
+   * Registered beforeUpdateByHandlers.
+   */
+  protected val beforeUpdateByHandlers = new scala.collection.mutable.ListBuffer[BeforeUpdateByHandler]
+
+  /**
+   * Registered afterUpdateByHandlers.
+   */
+  protected val afterUpdateByHandlers = new scala.collection.mutable.ListBuffer[AfterUpdateByHandler]
+
+  /**
+   * #updateBy pre-execution handler.
+   */
+  type BeforeUpdateByHandler = (DBSession, SQLSyntax, Seq[(SQLSyntax, Any)]) => Unit
+
+  /**
+   * #updateBy post-execution handler.
+   */
+  type AfterUpdateByHandler = (DBSession, SQLSyntax, Seq[(SQLSyntax, Any)], Int) => Unit
+
+  /**
+   * Registers #updateBy pre-execution handler.
+   *
+   * @param handler event handler
+   */
+  protected def beforeUpdateBy(handler: BeforeUpdateByHandler): Unit = beforeUpdateByHandlers.append(handler)
+
+  /**
+   * Registers #updateBy post-execution handler.
+   *
+   * @param handler event handler
+   */
+  protected def afterUpdateBy(handler: AfterUpdateByHandler): Unit = afterUpdateByHandlers.append(handler)
+
+  /**
    * Update query builder/executor.
    *
    * @param mapper mapper
    * @param where condition
    */
-  class UpdateOperationBuilder(mapper: CRUDFeature[Entity], where: SQLSyntax) {
+  class UpdateOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      where: SQLSyntax,
+      beforeHandlers: Seq[BeforeUpdateByHandler],
+      afterHandlers: Seq[AfterUpdateByHandler]) {
 
     /**
      * Attributes to be updated.
@@ -371,24 +433,14 @@ trait CRUDFeature[Entity]
      */
     def withNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Int = {
       val allValues = mergeNamedValues(namedValues)
-      val query = update(mapper).set(allValues: _*)
-
+      beforeHandlers.foreach(_.apply(s, where, allValues))
       val updatedCount = withSQL {
-        mergeAdditionalUpdateSQLs(query, allValues.isEmpty).where.append(where).and(defaultScopeForUpdateOperations)
+        mergeAdditionalUpdateSQLs(update(mapper).set(allValues: _*), allValues.isEmpty)
+          .where.append(where).and(defaultScopeForUpdateOperations)
       }.update.apply()
-
-      // query completion event handler
-      onUpdateByCompletion(where, allValues, updatedCount)
+      afterHandlers.foreach(_.apply(s, where, allValues, updatedCount))
+      updatedCount
     }
-
-    /**
-     * Query completion event handler.
-     *
-     * @param namedValues named values
-     * @param count updated count
-     * @return count
-     */
-    def onUpdateByCompletion(where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Int = count
 
   }
 
@@ -400,19 +452,28 @@ trait CRUDFeature[Entity]
    * @return deleted count
    */
   def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
-    withSQL {
+    beforeDeleteBy(where)
+    val count = withSQL {
       delete.from(this).where(where).and(defaultScopeForUpdateOperations)
     }.update.apply()
+    afterDeleteBy(where, count)
   }
 
   /**
-   * Delete query completion event handler.
+   * #deleteBy pre-execution.
+   *
+   * @param where condition
+   */
+  protected def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {}
+
+  /**
+   * #deleteBy post-execution.
    *
    * @param where condition
    * @param deletedCount deleted count
    * @return count
    */
-  def onDeleteByCompletion(where: SQLSyntax, deletedCount: Int): Int = deletedCount
+  protected def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession = autoSession): Int = deletedCount
 
   /**
    * Deletes a single entity by primary key.

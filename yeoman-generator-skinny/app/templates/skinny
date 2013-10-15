@@ -14,15 +14,24 @@ if [ $command == "run" ];then
   run_app
 elif [ $command == "clean" ];then
   sbt clean
+elif [ $command == "compile" ];then
+  sbt compile
+elif [ $command == "test" ];then
+  sbt test
+elif [ $command == "test-only" ];then
+  sbt "test-only $2"
 elif [ $command == "package" ];then
   sbt package
 else
   echo ""
   echo "Usage: grep [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  clean:   will clear target directory"
-  echo "  run:     will run Skinny app for local development"
-  echo "  package: will create *.war file to deploy"
+  echo "  clean:     will clear target directory"
+  echo "  run:       will run Skinny app for local development"
+  echo "  compile:   will compile all the classes"
+  echo "  test:      will run all the tests"
+  echo "  test-only: will run the specified test"
+  echo "  package:   will create *.war file to deploy"
   echo ""
 fi
 
