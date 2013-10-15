@@ -222,6 +222,22 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * #createWithNamedValues pre-execution.
+   *
+   * @param namedValues named values
+   */
+  protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession = autoSession): Unit = {}
+
+  /**
+   * #createWithNamedValues post-execution.
+   *
+   * @param namedValues named values
+   * @param generatedId generated id
+   */
+  protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(
+    implicit s: DBSession = autoSession): Unit = {}
+
+  /**
    * Creates a new entity with named values.
    *
    * @param namedValues named values
@@ -230,15 +246,20 @@ trait CRUDFeature[Entity]
    */
   def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Long = {
     val allNamedValues = mergeNamedValuesForCreation(namedValues)
+    beforeCreate(allNamedValues)
     if (useAutoIncrementPrimaryKey) {
-      withSQL { insert.into(this).namedValues(allNamedValues: _*) }.updateAndReturnGeneratedKey.apply()
+      val id = withSQL { insert.into(this).namedValues(allNamedValues: _*) }.updateAndReturnGeneratedKey.apply()
+      afterCreate(allNamedValues, Some(id))
+      id
     } else {
       withSQL { insert.into(this).namedValues(allNamedValues: _*) }.update.apply()
-      allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
+      val idOpt = allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
         case (_, value) =>
           try value.toString.toLong
           catch { case e: Exception => 0L }
-      }.getOrElse(0L)
+      }
+      afterCreate(allNamedValues, idOpt)
+      idOpt.getOrElse(-1L)
     }
   }
 
@@ -293,14 +314,14 @@ trait CRUDFeature[Entity]
    *
    * @param handler event handler
    */
-  def beforeUpdateBy(handler: BeforeUpdateByHandler): Unit = beforeUpdateByHandlers.append(handler)
+  protected def beforeUpdateBy(handler: BeforeUpdateByHandler): Unit = beforeUpdateByHandlers.append(handler)
 
   /**
    * Registers #updateBy post-execution handler.
    *
    * @param handler event handler
    */
-  def afterUpdateBy(handler: AfterUpdateByHandler): Unit = afterUpdateByHandlers.append(handler)
+  protected def afterUpdateBy(handler: AfterUpdateByHandler): Unit = afterUpdateByHandlers.append(handler)
 
   /**
    * Update query builder/executor.
@@ -443,7 +464,7 @@ trait CRUDFeature[Entity]
    *
    * @param where condition
    */
-  def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {}
+  protected def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {}
 
   /**
    * #deleteBy post-execution.
@@ -452,7 +473,7 @@ trait CRUDFeature[Entity]
    * @param deletedCount deleted count
    * @return count
    */
-  def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession = autoSession): Int = deletedCount
+  protected def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession = autoSession): Int = deletedCount
 
   /**
    * Deletes a single entity by primary key.

@@ -9,6 +9,7 @@ import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
+import org.slf4j.LoggerFactory
 
 // --------------------------------
 // Sample entities and mappers
@@ -128,6 +129,16 @@ object Group extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature
     id = rs.long(s.id),
     name = rs.string(s.name)
   )
+
+  private[this] val logger = LoggerFactory.getLogger(classOf[Group])
+  override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession) = {
+    super.beforeCreate(namedValues)(s)
+    logger.info(s"Before creation. params: ${namedValues}")
+  }
+  override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(implicit s: DBSession) = {
+    super.afterCreate(namedValues, generatedId)(s)
+    logger.info(s"Created Group's id: ${generatedId}")
+  }
 }
 
 case class GroupMember(groupId: Long, memberId: Long)
