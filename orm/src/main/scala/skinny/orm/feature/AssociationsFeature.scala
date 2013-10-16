@@ -246,6 +246,15 @@ trait AssociationsFeature[Entity]
       merge)
   }
 
+  def hasManyThroughWithFk[M2](through: AssociationsFeature[_], many: AssociationsFeature[M2], throughFk: String, manyFk: String, merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+    hasManyThrough(
+      through = through.asInstanceOf[AssociationsFeature[Any]] -> through.defaultAlias.asInstanceOf[Alias[Any]],
+      throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyName), m1.field(throughFk)),
+      many = many -> many.defaultAlias,
+      on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyName)),
+      merge)
+  }
+
   def hasManyThrough[M1, M2](
     through: (AssociationsFeature[M1], Alias[M1]),
     throughOn: (Alias[Entity], Alias[M1]) => SQLSyntax,
@@ -536,6 +545,13 @@ trait AssociationsFeature[Entity]
       merge = merge.asInstanceOf[(Entity, Seq[Any]) => Entity])
   }
 
+  /**
+   * Expects mapper's name + "Id" by default.
+   *
+   * @param mapper mapper
+   * @tparam A enitty type
+   * @return fk name
+   */
   protected def toDefaultForeignKeyName[A](mapper: AssociationsFeature[A]): String = {
     val name = JavaReflectAPI.classSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
     name.head.toString.toLowerCase + name.tail
