@@ -13,6 +13,26 @@ object SkinnyFrameworkBuild extends Build {
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
 
+  lazy val common = Project (id = "common", base = file("common"),
+   settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-common",
+      version := Version,
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= Seq(
+        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) 
+
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
@@ -33,7 +53,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     ) ++ _jettyOrbitHack
-  ) dependsOn(validator, orm)
+  ) dependsOn(common, validator, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
     settings = Defaults.defaultSettings ++ Seq(
@@ -61,7 +81,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     )
-  )
+  ) dependsOn(common)
 
   lazy val freemarker = Project (id = "freemarker", base = file("freemarker"),
     settings = Defaults.defaultSettings ++ Seq(

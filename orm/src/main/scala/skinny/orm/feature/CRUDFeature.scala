@@ -1,6 +1,7 @@
 package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
+import skinny._
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scala.collection.mutable

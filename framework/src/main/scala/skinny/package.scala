@@ -22,12 +22,4 @@ package object skinny {
   type SkinnyMapper[A] = skinny.orm.SkinnyMapper[A]
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
 
-  type StrongParameters = skinny.orm.StrongParameters
-  val StrongParameters = skinny.orm.StrongParameters
-
-  type PermittedStrongParameters = skinny.orm.PermittedStrongParameters
-
-  type ParamType = skinny.orm.ParamType
-  val ParamType = skinny.orm.ParamType
-
 }

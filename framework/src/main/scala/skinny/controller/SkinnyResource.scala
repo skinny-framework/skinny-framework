@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny._
-import skinny.orm.ParamType
+import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale

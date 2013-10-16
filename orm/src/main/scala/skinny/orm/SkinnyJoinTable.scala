@@ -1,6 +1,7 @@
 package skinny.orm
 
 import scalikejdbc._, SQLInterpolation._
+import skinny._
 
 /**
  * SkinnyMapper which represents join table which is used for associations.

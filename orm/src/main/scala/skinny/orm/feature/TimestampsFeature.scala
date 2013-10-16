@@ -1,7 +1,7 @@
 package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
-import skinny.orm.PermittedStrongParameters
+import skinny.PermittedStrongParameters
 import org.joda.time.DateTime
 
 /**
