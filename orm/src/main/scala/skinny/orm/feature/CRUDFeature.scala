@@ -243,7 +243,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return created count
    */
-  def createWithAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Long = {
+  def createWithPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Long = {
     createWithNamedValues(namedValuesForCreation(strongParameters): _*)
   }
 
@@ -256,7 +256,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return created count
    */
-  def createWithUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Long = {
+  def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Long = {
     createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
       case (name, value) => column.field(name.name) -> value
     }.toSeq): _*)
@@ -331,16 +331,6 @@ trait CRUDFeature[Entity]
   protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
 
   /**
-   * Registered beforeUpdateByHandlers.
-   */
-  protected val beforeUpdateByHandlers = new scala.collection.mutable.ListBuffer[BeforeUpdateByHandler]
-
-  /**
-   * Registered afterUpdateByHandlers.
-   */
-  protected val afterUpdateByHandlers = new scala.collection.mutable.ListBuffer[AfterUpdateByHandler]
-
-  /**
    * #updateBy pre-execution handler.
    */
   type BeforeUpdateByHandler = (DBSession, SQLSyntax, Seq[(SQLSyntax, Any)]) => Unit
@@ -349,6 +339,16 @@ trait CRUDFeature[Entity]
    * #updateBy post-execution handler.
    */
   type AfterUpdateByHandler = (DBSession, SQLSyntax, Seq[(SQLSyntax, Any)], Int) => Unit
+
+  /**
+   * Registered beforeUpdateByHandlers.
+   */
+  protected val beforeUpdateByHandlers = new scala.collection.mutable.ListBuffer[BeforeUpdateByHandler]
+
+  /**
+   * Registered afterUpdateByHandlers.
+   */
+  protected val afterUpdateByHandlers = new scala.collection.mutable.ListBuffer[AfterUpdateByHandler]
 
   /**
    * Registers #updateBy pre-execution handler.
@@ -461,7 +461,7 @@ trait CRUDFeature[Entity]
      * @param s db session
      * @return updated count
      */
-    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
+    def withPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(toNamedValuesToBeUpdated(strongParameters): _*)
     }
 
@@ -474,7 +474,7 @@ trait CRUDFeature[Entity]
      * @param s db session
      * @return updated count
      */
-    def withUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
+    def withAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(parameters.map {
         case (name, value) => column.field(name.name) -> value
       }: _*)

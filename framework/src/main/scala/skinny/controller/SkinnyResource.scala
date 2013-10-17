@@ -169,7 +169,7 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def doCreateAndReturnId(parameters: PermittedStrongParameters): Long = {
     debugLoggingPermittedParameters(parameters)
-    skinnyCRUDMapper.createWithAttributes(parameters)
+    skinnyCRUDMapper.createWithPermittedAttributes(parameters)
   }
 
   /**
@@ -251,7 +251,7 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
     debugLoggingPermittedParameters(parameters, Some(id))
-    skinnyCRUDMapper.updateById(id).withAttributes(parameters)
+    skinnyCRUDMapper.updateById(id).withPermittedAttributes(parameters)
   }
 
   /**

@@ -86,7 +86,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "delete a programmer" in {
-    val id = Programmer.createWithUnsafeAttributes('name -> "Unit Test Programmer")
+    val id = Programmer.createWithAttributes('name -> "Unit Test Programmer")
     delete(s"/programmers/${id}") {
       status should equal(403)
     }
@@ -98,7 +98,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "add a programmer to a company" in {
-    val id = Programmer.createWithUnsafeAttributes('name -> "JoinCompany Test Programmer")
+    val id = Programmer.createWithAttributes('name -> "JoinCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
@@ -111,7 +111,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "remove a programmer from a company" in {
-    val id = Programmer.createWithUnsafeAttributes('name -> "LeaveCompany Test Programmer")
+    val id = Programmer.createWithAttributes('name -> "LeaveCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {

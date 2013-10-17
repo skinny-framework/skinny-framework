@@ -50,7 +50,7 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
     }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 
-  def createWithAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
+  def createWithPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Unit = {
     withSQL {
       val values = strongParameters.params.map {
         case (name, (value, paramType)) =>
@@ -66,7 +66,7 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
     }.update.apply()
   }
 
-  def createWithUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Unit = {
+  def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Unit = {
     createWithNamedValues(parameters.map {
       case (name, value) => column.field(name.name) -> value
     }: _*)

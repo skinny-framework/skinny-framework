@@ -107,7 +107,7 @@ class MembersController extends SkinnyController {
     "groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
 
   def create = if (createForm.validate()) {
-    Member.createWithAttributes(createFormParams)
+    Member.createWithPermittedAttributes(createFormParams)
     redirect("/members")
   } else {
     render("/members/new")
@@ -203,10 +203,10 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // create with stong parameters
   val params = Map("name" -> "Bob")
-  val id = Member.createWithAttributes(params.permit("name" -> ParamType.String))
+  val id = Member.createWithPermittedAttributes(params.permit("name" -> ParamType.String))
 
   // create with unsafe parameters
-  Member.createWithUnsafeAttributes(
+  Member.createWithAttributes(
     'id -> 123,
     'name -> "Chris",
     'createdAt -> DateTime.now
@@ -224,7 +224,7 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
 
   // update with unsafe parameters
-  Member.updateById(123).withUnsafeAttributes('name -> "Alice")
+  Member.updateById(123).withAttributes('name -> "Alice")
 
   // delete
   Member.deleteById(234)
