@@ -205,6 +205,13 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val params = Map("name" -> "Bob")
   val id = Member.createWithAttributes(params.permit("name" -> ParamType.String))
 
+  // create with unsafe parameters
+  Member.createWithUnsafeAttributes(
+    'id -> 123,
+    'name -> "Chris",
+    'createdAt -> DateTime.now
+  )
+
   // create with named values
   val column = Member.column
   Member.createWithNamedValues(
@@ -215,6 +222,9 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
+
+  // update with unsafe parameters
+  Member.updateById(123).withUnsafeAttributes('name -> "Alice")
 
   // delete
   Member.deleteById(234)
