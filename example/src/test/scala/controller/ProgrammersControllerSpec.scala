@@ -8,9 +8,9 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
 
   addFilter(Controllers.programmers, "/*")
 
-  def skill = Skill.findAll(1, 0).head
-  def company = Company.findAll(1, 0).head
-  def programmer = Programmer.findAll(1, 0).head
+  def skill = Skill.findAllPaging(1, 0).head
+  def company = Company.findAllPaging(1, 0).head
+  def programmer = Programmer.findAllPaging(1, 0).head
 
   it should "show programmers" in {
     get("/programmers") {
@@ -86,8 +86,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "delete a programmer" in {
-    val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "Unit Test Programmer")
+    val id = Programmer.createWithUnsafeAttributes('name -> "Unit Test Programmer")
     delete(s"/programmers/${id}") {
       status should equal(403)
     }
@@ -99,8 +98,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "add a programmer to a company" in {
-    val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "JoinCompany Test Programmer")
+    val id = Programmer.createWithUnsafeAttributes('name -> "JoinCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
@@ -113,8 +111,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   }
 
   it should "remove a programmer from a company" in {
-    val c = Programmer.column
-    val id = Programmer.createWithNamedValues(c.name -> "LeaveCompany Test Programmer")
+    val id = Programmer.createWithUnsafeAttributes('name -> "LeaveCompany Test Programmer")
     try {
       withSession("csrfToken" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {

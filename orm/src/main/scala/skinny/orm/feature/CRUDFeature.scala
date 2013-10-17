@@ -87,6 +87,18 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Finds all entities.
+   *
+   * @param s db session
+   * @return entities
+   */
+  def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+    }).list.apply()
+  }
+
+  /**
    * Finds all entities by paging.
    *
    * @param limit limit
@@ -94,7 +106,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAll(limit: Int = 1000, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
@@ -113,6 +125,19 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Finds all entities by condition.
+   *
+   * @param where where condition
+   * @param s db session
+   * @return entities
+   */
+  def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+    }).list.apply()
+  }
+
+  /**
    * Finds all entities by condition and paging.
    *
    * @param where where condition
@@ -121,7 +146,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllBy(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()

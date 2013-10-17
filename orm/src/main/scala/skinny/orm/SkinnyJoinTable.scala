@@ -14,7 +14,13 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
 
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 
-  def findAll(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      defaultSelectQuery.orderBy(syntax.id)
+    }).list.apply()
+  }
+
+  def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       defaultSelectQuery.orderBy(syntax.id).limit(limit).offset(offset)
     }).list.apply()
@@ -26,7 +32,13 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
     }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 
-  def findAllBy(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      defaultSelectQuery.where.append(where).orderBy(syntax.id)
+    }).list.apply()
+  }
+
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       defaultSelectQuery.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
     }).list.apply()

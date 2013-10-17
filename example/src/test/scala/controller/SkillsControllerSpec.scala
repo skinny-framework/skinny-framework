@@ -8,7 +8,7 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(SkillsController, "/*")
 
-  def skill = Skill.findAll(1, 0).head
+  def skill = Skill.findAllPaging(1, 0).head
 
   it should "show skills" in {
     get("/skills") {

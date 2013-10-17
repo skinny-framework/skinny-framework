@@ -140,8 +140,8 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val countryId = Country.findAll().map(_.id).head
       Member.withAlias { m =>
         Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
-        Member.findAllBy(sqls.eq(m.countryId, countryId), 10, 0).size should be > (0)
-        Member.findAllBy(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
+        Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
+        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
       }
     }
 
