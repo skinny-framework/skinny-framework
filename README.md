@@ -28,8 +28,8 @@ Actually, An application built with Skinny framework is a Scalatra application. 
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.gitub.seratch" %% "skinny-framework" % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+  "com.github.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
 
@@ -37,9 +37,9 @@ If you need only Skinny-ORM or Skinny-Validator, you can use only what you need.
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.gitub.seratch" %% "skinny-orm"       % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-validator" % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+  "com.github.seratch" %% "skinny-orm"       % "[0.9,)",
+  "com.github.seratch" %% "skinny-validator" % "[0.9,)",
+  "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
 
