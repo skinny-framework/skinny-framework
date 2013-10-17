@@ -54,4 +54,10 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] {
     }.update.apply()
   }
 
+  def createWithUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Unit = {
+    createWithNamedValues(parameters.map {
+      case (name, value) => column.field(name.name) -> value
+    }: _*)
+  }
+
 }

@@ -223,6 +223,21 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Creates a new entity with non-permitted parameters.
+   *
+   * CAUTION: If you use this method in some web apps, you might have mass assignment vulnerability.
+   *
+   * @param parameters parameters
+   * @param s db session
+   * @return created count
+   */
+  def createWithUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Long = {
+    createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
+      case (name, value) => column.field(name.name) -> value
+    }.toSeq): _*)
+  }
+
+  /**
    * #createWithNamedValues pre-execution.
    *
    * @param namedValues named values
@@ -423,6 +438,21 @@ trait CRUDFeature[Entity]
      */
     def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(toNamedValuesToBeUpdated(strongParameters): _*)
+    }
+
+    /**
+     * Updates entities with these non-permitted parameters.
+     *
+     * CAUTION: If you use this method in some web apps, you might have mass assignment vulnerability.
+     *
+     * @param parameters unsafe parameters
+     * @param s db session
+     * @return updated count
+     */
+    def withUnsafeAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
+      withNamedValues(parameters.map {
+        case (name, value) => column.field(name.name) -> value
+      }: _*)
     }
 
     /**

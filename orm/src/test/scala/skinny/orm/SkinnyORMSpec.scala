@@ -19,22 +19,13 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
   override def fixture(implicit session: DBSession) {
 
     // #createWithNamedValues
-    val countryId1 = Country.withColumns { c => Country.createWithNamedValues(c.name -> "Japan") }
-    val countryId2 = Country.withColumns { c => Country.createWithNamedValues(c.name -> "China") }
+    val countryId1 = Country.createWithUnsafeAttributes('name -> "Japan")
+    val countryId2 = Country.createWithUnsafeAttributes('name -> "China")
 
-    // #withColumns
-    val groupId1 = GroupMapper.withColumns { g =>
-      GroupMapper.createWithNamedValues(g.name -> "Scala Users Group")
-    }
-    val groupId2 = GroupMapper.withColumns { g =>
-      GroupMapper.createWithNamedValues(g.name -> "Java Community")
-    }
-    val groupId3 = GroupMapper.withColumns { g =>
-      GroupMapper.createWithNamedValues(g.name -> "PHP Users")
-    }
+    val groupId1 = GroupMapper.createWithUnsafeAttributes('name -> "Scala Users Group")
+    val groupId2 = GroupMapper.createWithUnsafeAttributes('name -> "Java Group")
 
-    val companyId = Company.withColumns(c => Company.createWithNamedValues(c.name -> "Typesafe"))
-    val companyId2 = Company.withColumns(c => Company.createWithNamedValues(c.name -> "Oracle"))
+    val companyId = Company.createWithUnsafeAttributes('name -> "Typesafe")
 
     Member.withColumns { m =>
       // Member doesn't use TimestampsFeature
@@ -53,25 +44,18 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         m.mentorId -> alice,
         m.createdAt -> DateTime.now
       )
-      Name.withColumns { mn =>
-        Name.createWithNamedValues(mn.memberId -> alice, mn.first -> "Alice", mn.last -> "Cooper")
-        Name.createWithNamedValues(mn.memberId -> bob, mn.first -> "Bob", mn.last -> "Marley")
-        Name.createWithNamedValues(mn.memberId -> chris, mn.first -> "Chris", mn.last -> "Birchall")
-      }
 
-      GroupMember.withColumns { gm =>
-        GroupMember.createWithNamedValues(gm.memberId -> alice, gm.groupId -> groupId1)
-        GroupMember.createWithNamedValues(gm.memberId -> bob, gm.groupId -> groupId1)
-        GroupMember.createWithNamedValues(gm.memberId -> bob, gm.groupId -> groupId2)
-      }
+      Name.createWithUnsafeAttributes('memberId -> alice, 'first -> "Alice", 'last -> "Cooper")
+      Name.createWithUnsafeAttributes('memberId -> bob, 'first -> "Bob", 'last -> "Marley")
+      Name.createWithUnsafeAttributes('memberId -> chris, 'first -> "Chris", 'last -> "Birchall")
 
-      Skill.withColumns { s =>
-        val skillId = Skill.createWithNamedValues(s.name -> "Programming")
-        Skill.updateById(skillId).withNamedValues(s.name -> "Web development")
+      GroupMember.createWithUnsafeAttributes('memberId -> alice, 'groupId -> groupId1)
+      GroupMember.createWithUnsafeAttributes('memberId -> bob, 'groupId -> groupId1)
+      GroupMember.createWithUnsafeAttributes('memberId -> bob, 'groupId -> groupId2)
 
-        MemberSkill.withColumns(ms =>
-          MemberSkill.createWithNamedValues(ms.memberId -> alice, ms.skillId -> skillId))
-      }
+      val skillId = Skill.createWithUnsafeAttributes('name -> "Programming")
+      Skill.updateById(skillId).withUnsafeAttributes('name -> "Web development")
+      MemberSkill.createWithUnsafeAttributes('memberId -> alice, 'skillId -> skillId)
     }
 
   }
@@ -121,8 +105,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
   describe("SkinnyRecord") {
     it("should act like ActiveRecord") { implicit session =>
-      val cnt = Country.column
-      val countryId = Country.createWithNamedValues(cnt.name -> "Brazil")
+      val countryId = Country.createWithUnsafeAttributes('name -> "Brazil")
       val country = Country.findById(countryId).get
 
       country.copy(name = "BRAZIL").save()
@@ -171,22 +154,20 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should have #updateById(Long)") { implicit session =>
       val countryId = Country.findAll().map(_.id).head
-      val memberId = Member.withColumns(c => Member.createWithNamedValues(
-        c.countryId -> countryId, c.createdAt -> DateTime.now
-      ))
+      val memberId = Member.createWithUnsafeAttributes(
+        'countryId -> countryId, 'createdAt -> DateTime.now
+      )
       val mentorId = Member.findAll().head.id
-      Member.withColumns { m =>
-        Member.updateById(memberId).withNamedValues(m.mentorId -> mentorId)
-      }
+      Member.updateById(memberId).withUnsafeAttributes('mentorId -> mentorId)
       val updated = Member.findById(memberId)
       updated.get.mentorId should equal(Some(mentorId))
     }
 
     it("should have #deleteById(Long)") { implicit session =>
       val countryId = Country.findAll().map(_.id).head
-      val memberId = Member.withColumns(m => Member.createWithNamedValues(
-        m.countryId -> countryId, m.createdAt -> DateTime.now
-      ))
+      val memberId = Member.createWithUnsafeAttributes(
+        'countryId -> countryId, 'createdAt -> DateTime.now
+      )
       Member.deleteById(memberId)
     }
   }
@@ -247,16 +228,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
   describe("Optimistic Lock") {
 
     it("should update with lock version") { implicit session =>
-      val s = Skill.column
       val skill = FactoryGirl(Skill).create()
 
       // with optimistic lock
-      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Java Programming")
+      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withUnsafeAttributes('name -> "Java Programming")
       intercept[OptimisticLockException] {
-        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withNamedValues(s.name -> "Ruby Programming")
+        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withUnsafeAttributes('name -> "Ruby Programming")
       }
       // without lock
-      Skill.updateById(skill.id).withNamedValues(s.name -> "Ruby Programming")
+      Skill.updateById(skill.id).withUnsafeAttributes('name -> "Ruby Programming")
     }
 
     it("should delete with lock version") { implicit session =>
@@ -272,19 +252,18 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should update with lock timestamp") { implicit session =>
-      val n = Name.column
       val member = FactoryGirl(Member)
         .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
         .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
       val name = FactoryGirl(Name).create("memberId" -> member.id)
 
       // with optimistic lock
-      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withUnsafeAttributes('first -> "Kaz")
       intercept[OptimisticLockException] {
-        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withNamedValues(n.first -> "Kaz")
+        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withUnsafeAttributes('first -> "Kaz")
       }
       // without lock
-      Name.updateById(name.memberId).withNamedValues(n.first -> "Kaz")
+      Name.updateById(name.memberId).withUnsafeAttributes('first -> "Kaz")
     }
 
     it("should delete with lock timestamp") { implicit session =>
