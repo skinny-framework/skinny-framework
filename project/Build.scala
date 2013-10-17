@@ -67,10 +67,11 @@ object SkinnyFrameworkBuild extends Build {
         Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "org.hibernate"  %  "hibernate-core"  % "4.1.12.Final" % "test",
-        "com.h2database" %  "h2"              % "1.3.173"      % "test",
-        "ch.qos.logback" %  "logback-classic" % "1.0.13"       % "test",
-        "ar.com.gonto"   %% "factory_pal"     % "0.2.1"        % "test"
+        "javax.servlet"  %  "javax.servlet-api" % "3.0.1"        % "provided",
+        "org.hibernate"  %  "hibernate-core"    % "4.1.12.Final" % "test",
+        "com.h2database" %  "h2"                % "1.3.173"      % "test",
+        "ch.qos.logback" %  "logback-classic"   % "1.0.13"       % "test",
+        "ar.com.gonto"   %% "factory_pal"       % "0.2.1"        % "test"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

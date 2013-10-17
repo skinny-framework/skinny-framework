@@ -13,6 +13,9 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
       dev.DBInitializer.initialize()
     }
 
+    // Enables open-session-in-view pattern
+    //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
+
     ctx.mount(Controllers.root, "/*")
     ctx.mount(Controllers.programmers, "/*")
     ctx.mount(CompaniesController, "/*")
