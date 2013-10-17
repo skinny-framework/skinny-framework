@@ -17,15 +17,11 @@ object notNull extends ValidationRule {
 // ----
 // param("x" -> "y") is required
 
-object required extends ValidationRule {
-  private[this] val instance = required()
-  def name = instance.name
-  def isValid(v: Any) = instance.isValid(v)
-}
+object required extends required(true)
 
 case class required(trim: Boolean = true) extends ValidationRule {
   def name = "required"
-  def isValid(v: Any) = !utils.isEmpty(v) && {
+  def isValid(v: Any) = !isEmpty(v) && {
     if (trim) v.toString.trim.length > 0
     else v.toString.length > 0
   }
@@ -35,15 +31,12 @@ case class required(trim: Boolean = true) extends ValidationRule {
 // param("x" -> "y") is notEmpty
 // param("list" -> Seq(1,2,3)) is notEmpty
 
-object notEmpty extends ValidationRule {
-  private[this] val instance = notEmpty()
-  def name = instance.name
-  def isValid(v: Any) = instance.isValid(v)
-}
+object notEmpty extends notEmpty(true)
+
 case class notEmpty(trim: Boolean = true) extends ValidationRule {
   def name = "notEmpty"
-  def isValid(v: Any) = !utils.isEmpty(v) && {
-    utils.toHasSize(v).map {
+  def isValid(v: Any) = !isEmpty(v) && {
+    toHasSize(v).map {
       x => x.size > 0
     }.getOrElse {
       if (trim) v.toString.trim.length > 0
@@ -55,8 +48,8 @@ case class notEmpty(trim: Boolean = true) extends ValidationRule {
 case class length(len: Int) extends ValidationRule {
   def name = "length"
   override def messageParams = Seq(len.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || {
-    utils.toHasSize(v).map {
+  def isValid(v: Any) = isEmpty(v) || {
+    toHasSize(v).map {
       x => x.size == len
     }.getOrElse {
       v.toString.length == len
@@ -71,8 +64,8 @@ case class length(len: Int) extends ValidationRule {
 case class minLength(min: Int) extends ValidationRule {
   def name = "minLength"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || {
-    utils.toHasSize(v).map {
+  def isValid(v: Any) = isEmpty(v) || {
+    toHasSize(v).map {
       x => x.size >= min
     }.getOrElse {
       v.toString.length >= min
@@ -87,8 +80,8 @@ case class minLength(min: Int) extends ValidationRule {
 case class maxLength(max: Int) extends ValidationRule {
   def name = "maxLength"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || {
-    utils.toHasSize(v).map {
+  def isValid(v: Any) = isEmpty(v) || {
+    toHasSize(v).map {
       x => x.size <= max
     }.getOrElse {
       v.toString.length <= max
@@ -103,8 +96,8 @@ case class maxLength(max: Int) extends ValidationRule {
 case class minMaxLength(min: Int, max: Int) extends ValidationRule {
   def name = "minMaxLength"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || {
-    utils.toHasSize(v).map {
+  def isValid(v: Any) = isEmpty(v) || {
+    toHasSize(v).map {
       x => x.size >= min && x.size <= max
     }.getOrElse {
       v.toString.length >= min && v.toString.length <= max
@@ -118,7 +111,7 @@ case class minMaxLength(min: Int, max: Int) extends ValidationRule {
 
 object numeric extends ValidationRule {
   def name = "numeric"
-  def isValid(v: Any) = utils.isEmpty(v) ||
+  def isValid(v: Any) = isEmpty(v) ||
     "^((-|\\+)?[0-9]+(\\.[0-9]+)?)+$".r.findFirstIn(v.toString).isDefined
 }
 
@@ -137,7 +130,7 @@ case class intMinMaxValue(min: Int, max: Int) extends ValidationRule {
 case class intMinValue(min: Int) extends ValidationRule {
   def name = "intMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || v.toString.toInt >= min
+  def isValid(v: Any) = isEmpty(v) || v.toString.toInt >= min
 }
 
 // ----
@@ -146,7 +139,7 @@ case class intMinValue(min: Int) extends ValidationRule {
 case class intMaxValue(max: Int) extends ValidationRule {
   def name = "intMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || v.toString.toInt <= max
+  def isValid(v: Any) = isEmpty(v) || v.toString.toInt <= max
 }
 
 // ----
@@ -155,7 +148,7 @@ case class intMaxValue(max: Int) extends ValidationRule {
 case class longMinMaxValue(min: Long, max: Long) extends ValidationRule {
   def name = "longMinMaxValue"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || v.toString.toLong >= min && v.toString.toLong <= max
+  def isValid(v: Any) = isEmpty(v) || v.toString.toLong >= min && v.toString.toLong <= max
 }
 
 // ----
@@ -164,7 +157,7 @@ case class longMinMaxValue(min: Long, max: Long) extends ValidationRule {
 case class longMinValue(min: Long) extends ValidationRule {
   def name = "longMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || v.toString.toLong >= min
+  def isValid(v: Any) = isEmpty(v) || v.toString.toLong >= min
 }
 
 // ----
@@ -173,7 +166,7 @@ case class longMinValue(min: Long) extends ValidationRule {
 case class longMaxValue(max: Long) extends ValidationRule {
   def name = "longMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = utils.isEmpty(v) || v.toString.toLong <= max
+  def isValid(v: Any) = isEmpty(v) || v.toString.toLong <= max
 }
 
 // ----
@@ -198,7 +191,7 @@ object same extends ValidationRule {
 
 object email extends ValidationRule {
   def name = "email"
-  def isValid(v: Any) = utils.isEmpty(v) ||
+  def isValid(v: Any) = isEmpty(v) ||
     """^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$""".r.findFirstIn(v.toString).isDefined
 }
 
@@ -210,8 +203,8 @@ object past extends ValidationRule {
   def name = "past"
   def isValid(v: Any): Boolean = {
     if (v != null) {
-      utils.toHasGetTime(v) match {
-        case Some(time) => time.getTime < utils.nowMillis()
+      toHasGetTime(v) match {
+        case Some(time) => time.getTime < nowMillis()
         case _ => false
       }
     } else false
@@ -225,49 +218,11 @@ object future extends ValidationRule {
   def name = "future"
   def isValid(v: Any): Boolean = {
     if (v != null) {
-      utils.toHasGetTime(v) match {
-        case Some(time) => time.getTime > utils.nowMillis()
+      toHasGetTime(v) match {
+        case Some(time) => time.getTime > nowMillis()
         case _ => false
       }
     } else false
   }
-}
-
-private[skinny] object utils {
-
-  def isEmpty(v: Any): Boolean = v == null || v == ""
-
-  def toHasSize(v: Any): Option[{ def size(): Int }] = {
-    Option.apply {
-      try {
-        val x = v.asInstanceOf[{ def size(): Int }]
-        x.size
-        x
-      } catch {
-        case e: NoSuchMethodException => null
-      }
-    }
-  }
-
-  def toHasGetTime(v: Any): Option[{ def getTime(): Long }] = {
-    Option.apply {
-      try {
-        v.asInstanceOf[{ def toDate(): java.util.Date }].toDate
-      } catch {
-        case e: NoSuchMethodException =>
-          try {
-            val x = v.asInstanceOf[{ def getTime(): Long }]
-            x.getTime
-            x
-          } catch {
-            case e: NoSuchMethodException =>
-              null
-          }
-      }
-    }
-  }
-
-  def nowMillis(): Long = System.currentTimeMillis
-
 }
 
