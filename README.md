@@ -117,13 +117,16 @@ class MembersController extends SkinnyController {
 // src/main/scala/ScalatraBootstrap.scala
 
 class ScalatraBootstrap exnteds SkinnyLifeCycle {
+
+  val members = new MembersController with Routes {
+    get("/members/?")(index).as('index)
+    get("/members/new")(newOne).as('new)
+    post("/members/?")(create).as('create)
+  }
+
   override def initSkinnyApp(ctx: ServletContext) {
     // register routes
-    ctx.mount(new MembersController with Routes {
-      get("/members/?")(index).as('index)
-      get("/members/new")(newOne).as('new)
-      post("/members/?")(create).as('create)
-    }, "/*")
+    ctx.mount(members, "/*")
   }
 }
 ```
@@ -140,7 +143,7 @@ def createForm = validation(
 
 object alphabetOnly extends ValidationRule {
   def name = "alphabetOnly"
-  def isValid(v: Any) = v == null || v.toString.matches("^[a-zA-Z]*$")
+  def isValid(v: Any) = isEmpty(v) || v.toString.matches("^[a-zA-Z]*$")
 }
 ```
 
@@ -198,7 +201,7 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false)
+  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false))
   val groupMembers = Member.where('groupName -> "Scala Users Group", 'deleted -> false).apply()
 
   // count
@@ -416,12 +419,12 @@ object Company extends SkinnyCRUDMapper[Company] {
 }
 
 val company1 = FactoryGirl(Company).create()
-val company2 = FactoryGirl(Company).create("name" -> "FactoryPal, Inc.")
+val company2 = FactoryGirl(Company).create('name -> "FactoryPal, Inc.")
 
-val country = FactoryGirl(Country, "countryyy").create()
+val country = FactoryGirl(Country, 'countryyy).create()
 
-val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
-val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
+val memberFactory = FactoryGirl(Member).withValues('countryId -> country.id)
+val member = memberFactory.create('companyId -> company1.id, 'createdAt -> DateTime.now)
 ```
 
 Settings is not in yaml files but typesafe-config conf file. In this example, `src/test/resources/factories.conf` is like this:
