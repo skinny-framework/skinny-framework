@@ -162,7 +162,7 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
+Company object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
