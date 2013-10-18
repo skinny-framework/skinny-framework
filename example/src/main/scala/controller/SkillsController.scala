@@ -9,7 +9,7 @@ object SkillsController extends SkinnyResource with ApplicationController {
 
   override lazy val scalateExtension: String = "scaml"
 
-  override def skinnyCRUDMapper = Skill
+  override def model = Skill
   override def resourcesName = "skills"
   override def resourceName = "skill"
 
@@ -19,6 +19,6 @@ object SkillsController extends SkinnyResource with ApplicationController {
   override def updateForm = createForm
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
 
-  override def doDestroy(id: Long) = skinnyCRUDMapper.deleteByIdCascade(id)
+  override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 
 }

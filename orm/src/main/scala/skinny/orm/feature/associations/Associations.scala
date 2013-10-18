@@ -30,7 +30,7 @@ sealed trait Association[Entity] {
   /**
    * Activates this association by default.
    */
-  def byDefault(): Association[Entity] = {
+  def byDefault: Association[Entity] = {
     joinDefinitions.foreach { joinDef =>
       joinDef.byDefault(joinDef.enabledEvenIfAssociated)
       mapper.defaultJoinDefinitions.add(joinDef)

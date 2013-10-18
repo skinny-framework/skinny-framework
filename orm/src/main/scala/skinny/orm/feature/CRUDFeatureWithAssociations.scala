@@ -16,6 +16,7 @@ import scalikejdbc.WrappedResultSet
 import skinny.orm.feature.associations.HasOneExtractor
 import skinny.orm.feature.associations.JoinDefinition
 import skinny.orm.feature.associations.HasOneAssociation
+import skinny.PermittedStrongParameters
 
 /**
  * Extended CRUDFeature which supports associations.
@@ -81,4 +82,5 @@ class CRUDFeatureWithAssociations[Entity](
       newHasOne,
       newHasMany)
   }
+
 }

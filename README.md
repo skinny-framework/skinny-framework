@@ -28,8 +28,8 @@ Actually, An application built with Skinny framework is a Scalatra application. 
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.gitub.seratch" %% "skinny-framework" % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+  "com.github.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
 
@@ -37,9 +37,9 @@ If you need only Skinny-ORM or Skinny-Validator, you can use only what you need.
 
 ```scala
 libraryDependencies ++= Seq(
-  "com.gitub.seratch" %% "skinny-orm"       % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-validator" % "[0.9,)",
-  "com.gitub.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+  "com.github.seratch" %% "skinny-orm"       % "[0.9,)",
+  "com.github.seratch" %% "skinny-validator" % "[0.9,)",
+  "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
 
@@ -107,7 +107,7 @@ class MembersController extends SkinnyController {
     "groupId" -> ParamType.Int , "countryId" -> ParamType.Long)
 
   def create = if (createForm.validate()) {
-    Member.createWithAttributes(createFormParams)
+    Member.createWithPermittedAttributes(createFormParams)
     redirect("/members")
   } else {
     render("/members/new")
@@ -150,7 +150,7 @@ object alphabetOnly extends ValidationRule {
 object CompaniesController extends SkinnyResource {
   protectFromForgery()
 
-  override def skinnyCRUDMapper = Company
+  override def model = Company
   override def resourcesName = "companies"
   override def resourceName = "company"
 
@@ -162,7 +162,7 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should extend `SkinnyCRUDMapper` and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
+Company object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
@@ -191,19 +191,31 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // find by primary key
   val member: Option[Member] = Member.findById(123)
+  val member: Option[Member] = Member.where('id -> 123).apply().headOption
+
   val members: List[Member] = Member.findByIds(123, 234, 345)
+  val members: List[Member] = Member.where('id -> Seq(123, 234, 345)).apply()
 
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group"))
+  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false)
+  val groupMembers = Member.where('groupName -> "Scala Users Group", 'deleted -> false).apply()
 
   // count
   val allCount: Long = Member.countAll()
   val count = Member.countBy(sqls.isNotNull(m.deletedAt).and.eq(m.countryId, 123))
+  val count = Member.where('deletedAt -> None, 'countryId -> 123).count.apply()
 
   // create with stong parameters
   val params = Map("name" -> "Bob")
-  val id = Member.createWithAttributes(params.permit("name" -> ParamType.String))
+  val id = Member.createWithPermittedAttributes(params.permit("name" -> ParamType.String))
+
+  // create with unsafe parameters
+  Member.createWithAttributes(
+    'id -> 123,
+    'name -> "Chris",
+    'createdAt -> DateTime.now
+  )
 
   // create with named values
   val column = Member.column
@@ -215,6 +227,9 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
+
+  // update with unsafe parameters
+  Member.updateById(123).withAttributes('name -> "Alice")
 
   // delete
   Member.deleteById(234)

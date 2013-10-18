@@ -8,10 +8,30 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.3-SNAPSHOT"
+  val Version = "0.9.3"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
+
+  lazy val common = Project (id = "common", base = file("common"),
+   settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-common",
+      version := Version,
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= Seq(
+        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) 
 
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
@@ -33,7 +53,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     ) ++ _jettyOrbitHack
-  ) dependsOn(validator, orm)
+  ) dependsOn(common, validator, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
     settings = Defaults.defaultSettings ++ Seq(
@@ -47,10 +67,11 @@ object SkinnyFrameworkBuild extends Build {
         Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "org.hibernate"  %  "hibernate-core"  % "4.1.12.Final" % "test",
-        "com.h2database" %  "h2"              % "1.3.173"      % "test",
-        "ch.qos.logback" %  "logback-classic" % "1.0.13"       % "test",
-        "ar.com.gonto"   %% "factory_pal"     % "0.2.1"        % "test"
+        "javax.servlet"  %  "javax.servlet-api" % "3.0.1"        % "provided",
+        "org.hibernate"  %  "hibernate-core"    % "4.1.12.Final" % "test",
+        "com.h2database" %  "h2"                % "1.3.173"      % "test",
+        "ch.qos.logback" %  "logback-classic"   % "1.0.13"       % "test",
+        "ar.com.gonto"   %% "factory_pal"       % "0.2.1"        % "test"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -61,7 +82,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     )
-  )
+  ) dependsOn(common)
 
   lazy val freemarker = Project (id = "freemarker", base = file("freemarker"),
     settings = Defaults.defaultSettings ++ Seq(

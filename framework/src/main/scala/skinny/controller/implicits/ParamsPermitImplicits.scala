@@ -3,7 +3,7 @@ package skinny.controller.implicits
 import scala.language.implicitConversions
 
 import org.scalatra._
-import skinny.orm._
+import skinny.StrongParameters
 
 /**
  * Implicit conversions for enabling Params acts as factory of strong parameters.

@@ -8,7 +8,7 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(CompaniesController, "/*")
 
-  def company = Company.findAll(1, 0).head
+  def company = Company.findAllPaging(1, 0).head
 
   it should "show companies" in {
     get("/companies") {

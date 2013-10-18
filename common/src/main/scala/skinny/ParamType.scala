@@ -1,4 +1,4 @@
-package skinny.orm
+package skinny
 
 /**
  * Strong parameter type definition.

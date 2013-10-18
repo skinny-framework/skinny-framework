@@ -1,6 +1,7 @@
 package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
+import skinny._
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scala.collection.mutable
@@ -15,6 +16,7 @@ import skinny.orm.feature.associations.HasOneAssociation
  */
 trait CRUDFeature[Entity]
     extends SkinnyMapperBase[Entity]
+    with SkinnyModel[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
@@ -60,6 +62,164 @@ trait CRUDFeature[Entity]
   def selectQuery: SelectSQLBuilder[Entity] = defaultSelectQuery
 
   /**
+   * Appends where conditions.
+   *
+   * @param conditions
+   * @return query builder
+   */
+  def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+    mapper = this,
+    conditions = conditions.map {
+      case (key, value) =>
+        value match {
+          case None => sqls.isNull(defaultAlias.field(key.name)) // TODO Null/NotNull
+          case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
+          case value => sqls.eq(defaultAlias.field(key.name), value)
+        }
+    }
+  )
+
+  /**
+   * Appends limit part.
+   *
+   * @param n value
+   * @return query builder
+   */
+  def limit(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
+
+  /**
+   * Appends offset part.
+   *
+   * @param n value
+   * @return query builder
+   */
+  def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
+
+  /**
+   * Count only.
+   *
+   * @return query builder
+   */
+  def count(): CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
+
+  /**
+   * Select query builder.
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   * @param limit limit
+   * @param offset offset
+   */
+  abstract class SelectOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None,
+      isCountOnly: Boolean = false) {
+
+    /**
+     * Appends where conditions.
+     *
+     * @param additionalConditions conditions
+     * @return query builder
+     */
+    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+      mapper = this.mapper,
+      conditions = conditions ++ additionalConditions.map {
+        case (key, value) =>
+          value match {
+            case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
+            case value => sqls.eq(defaultAlias.field(key.name), value)
+          }
+      },
+      limit = None,
+      offset = None
+    )
+  }
+
+  /**
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   * @param limit limit
+   * @param offset offset
+   */
+  case class EntitiesSelectOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
+
+    /**
+     * Appends limit part.
+     *
+     * @param n value
+     * @return query builder
+     */
+    def limit(n: Int): EntitiesSelectOperationBuilder = this.copy(limit = Some(n))
+
+    /**
+     * Appends offset part.
+     *
+     * @param n value
+     * @return query builder
+     */
+    def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
+
+    /**
+     * Count only.
+     *
+     * @return query builder
+     */
+    def count(): CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): List[Entity] = {
+      withExtractor(withSQL {
+        val query: SQLBuilder[Entity] = {
+          conditions match {
+            case Nil => selectQuery.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(selectQuery.where(conditions.head)) {
+              case (query, condition) => query.and.append(condition)
+            }.and(defaultScopeWithDefaultAlias)
+          }
+        }
+        val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
+        paging.foldLeft(query) { case (query, part) => query.append(part) }
+      }).list.apply()
+    }
+
+  }
+
+  case class CountSelectOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): Long = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.long(1)).single.apply().getOrElse(0L)
+    }
+  }
+
+  /**
    * Finds a single entity by primary key.
    *
    * @param id id
@@ -86,6 +246,18 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Finds all entities.
+   *
+   * @param s db session
+   * @return entities
+   */
+  def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+    }).list.apply()
+  }
+
+  /**
    * Finds all entities by paging.
    *
    * @param limit limit
@@ -93,7 +265,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAll(limit: Int = 1000, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
@@ -112,6 +284,19 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Finds all entities by condition.
+   *
+   * @param where where condition
+   * @param s db session
+   * @return entities
+   */
+  def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
+    withExtractor(withSQL {
+      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+    }).list.apply()
+  }
+
+  /**
    * Finds all entities by condition and paging.
    *
    * @param where where condition
@@ -120,7 +305,7 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllBy(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
@@ -217,8 +402,23 @@ trait CRUDFeature[Entity]
    * @param s db session
    * @return created count
    */
-  def createWithAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Long = {
+  def createWithPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Long = {
     createWithNamedValues(namedValuesForCreation(strongParameters): _*)
+  }
+
+  /**
+   * Creates a new entity with non-permitted parameters.
+   *
+   * CAUTION: If you use this method in some web apps, you might have mass assignment vulnerability.
+   *
+   * @param parameters parameters
+   * @param s db session
+   * @return created count
+   */
+  def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Long = {
+    createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
+      case (name, value) => column.field(name.name) -> value
+    }.toSeq): _*)
   }
 
   /**
@@ -282,22 +482,21 @@ trait CRUDFeature[Entity]
   def updateById(id: Long): UpdateOperationBuilder = updateBy(byId(id))
 
   /**
+   * Updates entities with parameters.
+   *
+   * @param id primary key
+   * @param parameters parameters
+   * @return updated count
+   */
+  def updateById(id: Long, parameters: PermittedStrongParameters): Int = updateById(id).withPermittedAttributes(parameters)
+
+  /**
    * Returns a query part which represents primary key search condition.
    *
    * @param id primary key
    * @return query part
    */
   protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
-
-  /**
-   * Registered beforeUpdateByHandlers.
-   */
-  protected val beforeUpdateByHandlers = new scala.collection.mutable.ListBuffer[BeforeUpdateByHandler]
-
-  /**
-   * Registered afterUpdateByHandlers.
-   */
-  protected val afterUpdateByHandlers = new scala.collection.mutable.ListBuffer[AfterUpdateByHandler]
 
   /**
    * #updateBy pre-execution handler.
@@ -308,6 +507,16 @@ trait CRUDFeature[Entity]
    * #updateBy post-execution handler.
    */
   type AfterUpdateByHandler = (DBSession, SQLSyntax, Seq[(SQLSyntax, Any)], Int) => Unit
+
+  /**
+   * Registered beforeUpdateByHandlers.
+   */
+  protected val beforeUpdateByHandlers = new scala.collection.mutable.ListBuffer[BeforeUpdateByHandler]
+
+  /**
+   * Registered afterUpdateByHandlers.
+   */
+  protected val afterUpdateByHandlers = new scala.collection.mutable.ListBuffer[AfterUpdateByHandler]
 
   /**
    * Registers #updateBy pre-execution handler.
@@ -420,8 +629,23 @@ trait CRUDFeature[Entity]
      * @param s db session
      * @return updated count
      */
-    def withAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
+    def withPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(toNamedValuesToBeUpdated(strongParameters): _*)
+    }
+
+    /**
+     * Updates entities with these non-permitted parameters.
+     *
+     * CAUTION: If you use this method in some web apps, you might have mass assignment vulnerability.
+     *
+     * @param parameters unsafe parameters
+     * @param s db session
+     * @return updated count
+     */
+    def withAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
+      withNamedValues(parameters.map {
+        case (name, value) => column.field(name.name) -> value
+      }: _*)
     }
 
     /**
@@ -483,5 +707,17 @@ trait CRUDFeature[Entity]
    * @return deleted count
    */
   def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = deleteBy(byId(id))
+
+  // for SkinnyModel
+
+  override def createNewModel(parameters: PermittedStrongParameters) = createWithPermittedAttributes(parameters)
+
+  override def findAllModels() = findAll()
+
+  override def findModel(id: Long) = findById(id)
+
+  override def updateModelById(id: Long, parameters: PermittedStrongParameters) = updateById(id, parameters)
+
+  override def deleteModelById(id: Long) = deleteById(id)
 
 }

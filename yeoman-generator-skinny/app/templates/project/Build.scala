@@ -5,7 +5,7 @@ import org.scalatra.sbt.PluginKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.2"
+  val skinnyVersion = "0.9.3"
   val scalatraVersion = "2.2.1"
 
   lazy val app = Project (id = "app", base = file("."),

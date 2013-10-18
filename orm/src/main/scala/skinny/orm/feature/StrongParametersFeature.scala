@@ -1,8 +1,7 @@
 package skinny.orm.feature
 
 import org.joda.time._
-import java.text.SimpleDateFormat
-import skinny.orm.ParamType
+import skinny.ParamType
 
 /**
  * Strong parameters support.

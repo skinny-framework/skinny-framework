@@ -1,4 +1,4 @@
-package skinny.orm
+package skinny
 
 /**
  * Strong parameters which is inspired by Rails4's mass assignment protection.

@@ -7,7 +7,7 @@ import model._
 class ProgrammersController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
-  override def skinnyCRUDMapper = Programmer
+  override def model = Programmer
   override def resourcesName = "programmers"
   override def resourceName = "programmer"
 
@@ -29,7 +29,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
   )
   override def updateFormStrongParameters = Seq("name" -> ParamType.String, "companyId" -> ParamType.Long)
 
-  override def doDestroy(id: Long) = skinnyCRUDMapper.deleteByIdCascade(id)
+  override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 
   def addSkill = {
     (for {

@@ -2,8 +2,8 @@ package skinny
 
 import java.text.MessageFormat
 import java.util.Locale
-import com.typesafe.config._
 import scala.collection.JavaConverters._
+import com.typesafe.config.{Config, ConfigFactory}
 
 /**
  * i18n message provider.
