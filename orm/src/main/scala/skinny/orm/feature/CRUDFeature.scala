@@ -110,11 +110,11 @@ trait CRUDFeature[Entity]
    * @param offset offset
    */
   abstract class SelectOperationBuilder(
-                                         mapper: CRUDFeature[Entity],
-                                         conditions: Seq[SQLSyntax] = Nil,
-                                         limit: Option[Int] = None,
-                                         offset: Option[Int] = None,
-                                         isCountOnly: Boolean = false) {
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None,
+      isCountOnly: Boolean = false) {
 
     /**
      * Appends where conditions.
