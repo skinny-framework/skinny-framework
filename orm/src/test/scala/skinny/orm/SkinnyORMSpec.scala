@@ -1,14 +1,12 @@
 package skinny.orm
 
 import scalikejdbc._, SQLInterpolation._
-import skinny.orm.feature._
 import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
-import org.slf4j.LoggerFactory
 
 class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
@@ -140,31 +138,30 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val countryId = Country.findAll().map(_.id).head
       Member.withAlias { m =>
         Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
-        Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
         Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
       }
     }
 
     it("should have #countBy(SQLSyntax)") { implicit session =>
-      val countryId = Country.findAll().map(_.id).head
+      val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       Member.withAlias(s =>
         Member.countBy(sqls.eq(s.countryId, countryId))
       ) should be > (0L)
     }
 
     it("should have #updateById(Long)") { implicit session =>
-      val countryId = Country.findAll().map(_.id).head
+      val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       val memberId = Member.createWithAttributes(
         'countryId -> countryId, 'createdAt -> DateTime.now
       )
-      val mentorId = Member.findAll().head.id
+      val mentorId = Member.limit(1).offset(0).apply().head.id
       Member.updateById(memberId).withAttributes('mentorId -> mentorId)
       val updated = Member.findById(memberId)
       updated.get.mentorId should equal(Some(mentorId))
     }
 
     it("should have #deleteById(Long)") { implicit session =>
-      val countryId = Country.findAll().map(_.id).head
+      val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       val memberId = Member.createWithAttributes(
         'countryId -> countryId, 'createdAt -> DateTime.now
       )
@@ -192,8 +189,10 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should have #hasMany") { implicit session =>
       Member.withAlias { m =>
-
         val members = Member.findAll()
+        val membersByIds = Member.where('id -> members.map(_.id)).apply()
+        membersByIds.size should equal(members.size)
+        Member.where('id -> members.map(_.id)).count.apply() should equal(members.size)
 
         val withGroups = members.filter(_.name.get.first == "Bob").head
         withGroups.groups.size should equal(2)

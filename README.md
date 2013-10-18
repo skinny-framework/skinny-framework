@@ -191,15 +191,20 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // find by primary key
   val member: Option[Member] = Member.findById(123)
+  val member: Option[Member] = Member.where('id -> 123).apply().headOption
+
   val members: List[Member] = Member.findByIds(123, 234, 345)
+  val members: List[Member] = Member.where('id -> Seq(123, 234, 345)).apply()
 
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group"))
+  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false)
+  val groupMembers = Member.where('groupName -> "Scala Users Group", 'deleted -> false).apply()
 
   // count
   val allCount: Long = Member.countAll()
   val count = Member.countBy(sqls.isNotNull(m.deletedAt).and.eq(m.countryId, 123))
+  val count = Member.where('deletedAt -> None, 'countryId -> 123).count.apply()
 
   // create with stong parameters
   val params = Map("name" -> "Bob")

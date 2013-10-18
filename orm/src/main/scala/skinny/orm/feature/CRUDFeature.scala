@@ -61,6 +61,164 @@ trait CRUDFeature[Entity]
   def selectQuery: SelectSQLBuilder[Entity] = defaultSelectQuery
 
   /**
+   * Appends where conditions.
+   *
+   * @param conditions
+   * @return query builder
+   */
+  def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+    mapper = this,
+    conditions = conditions.map {
+      case (key, value) =>
+        value match {
+          case None => sqls.isNull(defaultAlias.field(key.name)) // TODO Null/NotNull
+          case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
+          case value => sqls.eq(defaultAlias.field(key.name), value)
+        }
+    }
+  )
+
+  /**
+   * Appends limit part.
+   *
+   * @param n value
+   * @return query builder
+   */
+  def limit(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
+
+  /**
+   * Appends offset part.
+   *
+   * @param n value
+   * @return query builder
+   */
+  def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
+
+  /**
+   * Count only.
+   *
+   * @return query builder
+   */
+  def count(): CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
+
+  /**
+   * Select query builder.
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   * @param limit limit
+   * @param offset offset
+   */
+  abstract class SelectOperationBuilder(
+                                         mapper: CRUDFeature[Entity],
+                                         conditions: Seq[SQLSyntax] = Nil,
+                                         limit: Option[Int] = None,
+                                         offset: Option[Int] = None,
+                                         isCountOnly: Boolean = false) {
+
+    /**
+     * Appends where conditions.
+     *
+     * @param additionalConditions conditions
+     * @return query builder
+     */
+    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+      mapper = this.mapper,
+      conditions = conditions ++ additionalConditions.map {
+        case (key, value) =>
+          value match {
+            case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
+            case value => sqls.eq(defaultAlias.field(key.name), value)
+          }
+      },
+      limit = None,
+      offset = None
+    )
+  }
+
+  /**
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   * @param limit limit
+   * @param offset offset
+   */
+  case class EntitiesSelectOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil,
+      limit: Option[Int] = None,
+      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
+
+    /**
+     * Appends limit part.
+     *
+     * @param n value
+     * @return query builder
+     */
+    def limit(n: Int): EntitiesSelectOperationBuilder = this.copy(limit = Some(n))
+
+    /**
+     * Appends offset part.
+     *
+     * @param n value
+     * @return query builder
+     */
+    def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
+
+    /**
+     * Count only.
+     *
+     * @return query builder
+     */
+    def count(): CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): List[Entity] = {
+      withExtractor(withSQL {
+        val query: SQLBuilder[Entity] = {
+          conditions match {
+            case Nil => selectQuery.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(selectQuery.where(conditions.head)) {
+              case (query, condition) => query.and.append(condition)
+            }.and(defaultScopeWithDefaultAlias)
+          }
+        }
+        val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
+        paging.foldLeft(query) { case (query, part) => query.append(part) }
+      }).list.apply()
+    }
+
+  }
+
+  case class CountSelectOperationBuilder(
+      mapper: CRUDFeature[Entity],
+      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): Long = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.long(1)).single.apply().getOrElse(0L)
+    }
+  }
+
+  /**
    * Finds a single entity by primary key.
    *
    * @param id id
