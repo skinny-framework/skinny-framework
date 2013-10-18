@@ -150,7 +150,7 @@ object alphabetOnly extends ValidationRule {
 object CompaniesController extends SkinnyResource {
   protectFromForgery()
 
-  override def skinnyCRUDMapper = Company
+  override def model = Company
   override def resourcesName = "companies"
   override def resourceName = "company"
 

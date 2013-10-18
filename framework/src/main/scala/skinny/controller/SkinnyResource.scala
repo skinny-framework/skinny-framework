@@ -14,9 +14,9 @@ import java.util.Locale
 trait SkinnyResource extends SkinnyController {
 
   /**
-   * SkinnyCRUDMapper for this resource.
+   * SkinnyModel for this resource.
    */
-  protected def skinnyCRUDMapper: SkinnyCRUDMapper[_]
+  protected def model: SkinnyModel[_]
 
   /**
    * Resource name in the plural. This name will be used for path and directory name to locale template files.
@@ -119,7 +119,7 @@ trait SkinnyResource extends SkinnyController {
    * @return list of resource
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(resourcesName, skinnyCRUDMapper.findAll())
+    set(resourcesName, model.findAllModels())
     render(s"/${resourcesName}/index")
   }
 
@@ -135,7 +135,7 @@ trait SkinnyResource extends SkinnyController {
    * @return single resource
    */
   def showResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
+    set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
     render(s"/${resourcesName}/show")
   }
 
@@ -169,7 +169,7 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def doCreateAndReturnId(parameters: PermittedStrongParameters): Long = {
     debugLoggingPermittedParameters(parameters)
-    skinnyCRUDMapper.createWithPermittedAttributes(parameters)
+    model.createNewModel(parameters)
   }
 
   /**
@@ -220,7 +220,7 @@ trait SkinnyResource extends SkinnyController {
    * @return input form
    */
   def editResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    skinnyCRUDMapper.findById(id).map {
+    model.findModel(id).map {
       m =>
         status = 200
         format match {
@@ -251,7 +251,7 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
     debugLoggingPermittedParameters(parameters, Some(id))
-    skinnyCRUDMapper.updateById(id).withPermittedAttributes(parameters)
+    model.updateModelById(id, parameters)
   }
 
   /**
@@ -273,7 +273,7 @@ trait SkinnyResource extends SkinnyController {
   def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
-    skinnyCRUDMapper.findById(id).map { m =>
+    model.findModel(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
           val parameters = params.permit(updateFormStrongParameters: _*)
@@ -286,7 +286,7 @@ trait SkinnyResource extends SkinnyController {
         format match {
           case Format.HTML =>
             setUpdateCompletionFlash()
-            set(resourceName, skinnyCRUDMapper.findById(id).getOrElse(haltWithBody(404)))
+            set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
             render(s"/${resourcesName}/show")
           case _ =>
         }
@@ -303,7 +303,7 @@ trait SkinnyResource extends SkinnyController {
    * @return count
    */
   protected def doDestroy(id: Long): Int = {
-    skinnyCRUDMapper.deleteById(id)
+    model.deleteModelById(id)
   }
 
   /**
@@ -323,7 +323,7 @@ trait SkinnyResource extends SkinnyController {
    * @return result
    */
   def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    skinnyCRUDMapper.findById(id).map { m =>
+    model.findModel(id).map { m =>
       doDestroy(id)
       setDestroyCompletionFlash()
       status = 200

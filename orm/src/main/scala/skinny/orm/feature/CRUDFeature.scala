@@ -16,6 +16,7 @@ import skinny.orm.feature.associations.HasOneAssociation
  */
 trait CRUDFeature[Entity]
     extends SkinnyMapperBase[Entity]
+    with SkinnyModel[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
@@ -481,6 +482,15 @@ trait CRUDFeature[Entity]
   def updateById(id: Long): UpdateOperationBuilder = updateBy(byId(id))
 
   /**
+   * Updates entities with parameters.
+   *
+   * @param id primary key
+   * @param parameters parameters
+   * @return updated count
+   */
+  def updateById(id: Long, parameters: PermittedStrongParameters): Int = updateById(id).withPermittedAttributes(parameters)
+
+  /**
    * Returns a query part which represents primary key search condition.
    *
    * @param id primary key
@@ -697,5 +707,17 @@ trait CRUDFeature[Entity]
    * @return deleted count
    */
   def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = deleteBy(byId(id))
+
+  // for SkinnyModel
+
+  override def createNewModel(parameters: PermittedStrongParameters) = createWithPermittedAttributes(parameters)
+
+  override def findAllModels() = findAll()
+
+  override def findModel(id: Long) = findById(id)
+
+  override def updateModelById(id: Long, parameters: PermittedStrongParameters) = updateById(id, parameters)
+
+  override def deleteModelById(id: Long) = deleteById(id)
 
 }
