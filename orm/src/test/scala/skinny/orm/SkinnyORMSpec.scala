@@ -252,9 +252,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should update with lock timestamp") { implicit session =>
       val member = FactoryGirl(Member)
-        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
-        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
-      val name = FactoryGirl(Name).create("memberId" -> member.id)
+        .withValues('countryId -> FactoryGirl(Country, 'countryyy).create().id)
+        .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
+      val name = FactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
       Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes('first -> "Kaz")
@@ -267,9 +267,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should delete with lock timestamp") { implicit session =>
       val member = FactoryGirl(Member)
-        .withValues("countryId" -> FactoryGirl(Country, "countryyy").create().id)
-        .create("companyId" -> FactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
-      val name = FactoryGirl(Name).create("memberId" -> member.id)
+        .withValues('countryId -> FactoryGirl(Country, 'countryyy).create().id)
+        .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
+      val name = FactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
       Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
@@ -287,14 +287,14 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val company1 = FactoryGirl(Company).create()
       company1.name should equal("FactoryGirl")
 
-      val company2 = FactoryGirl(Company).create("name" -> "FactoryPal")
+      val company2 = FactoryGirl(Company).create('name -> "FactoryPal")
       company2.name should equal("FactoryPal")
 
-      val country = FactoryGirl(Country, "countryyy").create()
+      val country = FactoryGirl(Country, 'countryyy).create()
 
-      val memberFactory = FactoryGirl(Member).withValues("countryId" -> country.id)
-      val member = memberFactory.create("companyId" -> company1.id, "createdAt" -> DateTime.now)
-      val name = FactoryGirl(Name).create("memberId" -> member.id)
+      val memberFactory = FactoryGirl(Member).withValues('countryId -> country.id)
+      val member = memberFactory.create('companyId -> company1.id, 'createdAt -> DateTime.now)
+      val name = FactoryGirl(Name).create('memberId -> member.id)
 
       name.first should equal("Kazuhiro")
       name.last should equal("Sera")

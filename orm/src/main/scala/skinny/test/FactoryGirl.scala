@@ -11,13 +11,13 @@ import skinny.util.JavaReflectAPI
  *
  * @see "https://github.com/thoughtbot/factory_girl"
  */
-case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = null) {
+case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: Symbol = null) {
 
   private[this] val c = mapper.column
 
   val autoSession = AutoSession
 
-  private[this] val registeredValues = new scala.collection.concurrent.TrieMap[String, Any]()
+  private[this] val registeredValues = new scala.collection.concurrent.TrieMap[Symbol, Any]()
 
   /**
    * Set named values to bind #{name} in "src/test/resources/factories.conf".
@@ -25,10 +25,10 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
    * @param namedValues named values
    * @return self
    */
-  def withValues(namedValues: (String, Any)*): FactoryGirl[Entity] = {
+  def withValues(namedValues: (Symbol, Any)*): FactoryGirl[Entity] = {
     namedValues foreach {
-      case (name, value) =>
-        registeredValues.put(name, value)
+      case (key, value) =>
+        registeredValues.put(key, value)
     }
     this
   }
@@ -38,9 +38,9 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
    *
    * @return prefix
    */
-  def factoryName: String = {
-    val n = Option(name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
-    (n.head.toLower + n.tail).replaceFirst("\\$$", "")
+  def factoryName: Symbol = {
+    val n = Option(name).map(_.name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
+    Symbol((n.head.toLower + n.tail).replaceFirst("\\$$", ""))
   }
 
   /**
@@ -50,7 +50,7 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     // TODO directory scan and work with factories/*.conf
-    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName)
+    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName.name)
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
@@ -61,14 +61,14 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: String = 
    * @param s session
    * @return created entity
    */
-  def create(attributes: (String, Any)*)(implicit s: DBSession = autoSession): Entity = {
+  def create(attributes: (Symbol, Any)*)(implicit s: DBSession = autoSession): Entity = {
     val mergedAttributes = attributes.foldLeft(loadedAttributes()) {
-      case (xs, (key: String, value)) =>
+      case (xs, (Symbol(key), value)) =>
         if (xs.exists(_._1.value == key)) xs.map { case (k, _) => k -> value }
         else xs.updated(c.field(key), value)
     }.map {
       case (key, value) =>
-        if (value.toString.startsWith("#")) key -> registeredValues.get(value.toString.replaceAll("[#{}]", ""))
+        if (value.toString.startsWith("#")) key -> registeredValues.get(Symbol(value.toString.replaceAll("[#{}]", "")))
         else key -> value
     }.toSeq
 
