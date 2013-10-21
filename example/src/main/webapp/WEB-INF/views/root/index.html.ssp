@@ -1,4 +1,5 @@
 <%@val i18n: skinny.I18n %>
+<%@val echo: String = "" %>
 
 <h3>Skinny Framework Demo</h3>
 <hr/>
@@ -27,3 +28,12 @@ To put it simply, Skinny framework's concept is Scala on Rails. Skinny is highly
 <li>O/R Mapper = Skinny-ORM (built with ScalikeJDBC QueryDSL)</li>
 <li>Template engine = Scalatra's ScalateSupport or Skinny-FreeMarker</li>
 </ul>
+
+#if (!echo.isEmpty)
+  <hr/>
+  <h4>Echo String</h4>
+  <p>
+  ${echo}
+  </p>
+#end
+
