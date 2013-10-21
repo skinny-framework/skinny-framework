@@ -13,7 +13,7 @@ class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
 
   addFilter(Controllers.root, "/*")
   addFilter(new RootController with Routes {
-    override val echoService: EchoService = new EchoServiceMock
+    override val echoService = new EchoServiceMock
     get("/mock/?")(index).as('index)
   }, "/*")
 
