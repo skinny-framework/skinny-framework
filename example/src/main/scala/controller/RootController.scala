@@ -1,8 +1,15 @@
 package controller
 
+import service._
+
 class RootController extends ApplicationController {
 
-  def index = render("/root/index")
+  val echoService: EchoService = EchoService()
+
+  def index = {
+    set("echo" -> params.get("echo").map(v => echoService.echo(v)))
+    render("/root/index")
+  }
 
   def renewSessionAttributes = {
     val locale = params.getAs[String]("locale").filter(_.length > 0).orNull[String]

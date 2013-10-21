@@ -1,15 +1,30 @@
 package controller
 
+import service._
 import org.scalatra.test.scalatest._
+import skinny._
 import skinny.test.SkinnyTestSupport
 
 class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
 
+  class EchoServiceMock extends EchoService {
+    override def echo(s: String): String = s.toUpperCase
+  }
+
   addFilter(Controllers.root, "/*")
+  addFilter(new RootController with Routes {
+    override val echoService: EchoService = new EchoServiceMock
+    get("/mock/?")(index).as('index)
+  }, "/*")
 
   it should "show top page" in {
-    get("/") {
+    get("/?echo=abcdEFG") {
       status should equal(200)
+      body should include("abcdEFG")
+    }
+    get("/mock/?echo=abcdEFG") {
+      status should equal(200)
+      body should include("ABCDEFG")
     }
   }
 
