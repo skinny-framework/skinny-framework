@@ -3,6 +3,9 @@ package skinny.orm.feature
 import skinny.orm.SkinnyMapperBase
 import scalikejdbc._, SQLInterpolation._
 
+/**
+ * Querying APIs feature.
+ */
 trait QueryingFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
@@ -100,6 +103,7 @@ trait QueryingFeature[Entity]
   }
 
   /**
+   * Entities finder builder.
    *
    * @param mapper mapper
    * @param conditions registered conditions
@@ -158,6 +162,12 @@ trait QueryingFeature[Entity]
 
   }
 
+  /**
+   * Count operation builder.
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   */
   case class CountSelectOperationBuilder(
       mapper: QueryingFeature[Entity],
       conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
