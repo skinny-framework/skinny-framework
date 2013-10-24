@@ -69,6 +69,17 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   def withColumns[A](op: ColumnName[Entity] => A): A = op(column)
 
   /**
+   * Predicates the field name is valid.
+   *
+   * @param name field name
+   * @return valid if true
+   */
+  def isValidFieldName(name: String): Boolean = {
+    try Option(this.column.field(name)).isDefined
+    catch { case e: InvalidColumnNameException => false }
+  }
+
+  /**
    * Extracts entity from ResultSet.
    *
    * @param a table alias
