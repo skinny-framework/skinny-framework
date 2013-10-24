@@ -14,11 +14,11 @@ What does the name of `Skinny` actually mean?
 
 #### Application should be skinny
 
-All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view tempaltes in an efficient way (ssp, scaml, jade, FreeMarker or something else) in most cases.
+All the parts of web application - controllers, models, views, routings and other settings - should be skinny. If you use Skinny framework, you don't need to have non-essential code anymore. For instance, when you create a simple registration form, all you need to do is just defining parameters and validation rules and creating view templates in an efficient way (ssp, scaml, jade, FreeMarker or something else) in most cases.
 
 #### Framework should be skinny
 
-Even if you need to investigate Skinny's inside, don't worry. Skinny keeps itself skinny, too. I believe that if the framework is well-designed, eventually the implemetation is skinny. 
+Even if you need to investigate Skinny's inside, don't worry. Skinny keeps itself skinny, too. I believe that if the framework is well-designed, eventually the implementation is skinny. 
 
 #### "su-ki-ni" in Japanese means "as you like it"
 
@@ -243,7 +243,7 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
 If you need to join other tables, just add `belongsTo`, `hasOne` or `hasMany` (`hasManyThrough`) to the companion.
 
-**[Notice]** Unfortunately, Skinny-ORM doesn't retrieve nested associations (e.g. members.head.groups.head.country) automatically though we're still seeking a way to resolove this issue.
+**[Notice]** Unfortunately, Skinny-ORM doesn't retrieve nested associations (e.g. members.head.groups.head.country) automatically though we're still seeking a way to resolve this issue.
 
 ```scala
 class Member(id: Long, name: String, companyId: Long, company: Option[Company] = None, skills: Seq[Skill] = Nil)
@@ -318,7 +318,7 @@ create table meber(
 
 Skinny framework basically follows Scalatra's ScalateSupport, but Skinny has an additional convention.
 
-Templates' path should be `{path}.{format}.{extension}`. Expeted {format} are `html`, `json`, `js` and `xml`.
+Templates' path should be `{path}.{format}.{extension}`. Expected {format} are `html`, `json`, `js` and `xml`.
 
 The following ssp is `src/main/webapp/WEB-INF/views/members/index.html.ssp`.
 
@@ -392,7 +392,7 @@ class MembersController extends SkinnyServlet {
 
 ### Testing support
 
-You can use Scalatra's great test support. Some optional feature is provieded by skinny-test library.
+You can use Scalatra's great test support. Some optional feature is provided by skinny-test library.
 
 ```scala
 class ControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
