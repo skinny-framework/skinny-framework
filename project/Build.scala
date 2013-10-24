@@ -167,8 +167,9 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
-        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "compile",
-        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "compile"
+        "com.github.seratch" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
+        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion    % "compile",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion    % "compile"
       ),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
