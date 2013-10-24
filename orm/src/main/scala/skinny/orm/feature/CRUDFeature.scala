@@ -113,6 +113,19 @@ trait CRUDFeature[Entity]
   }
 
   /**
+   * Finds an entity by condition.
+   *
+   * @param where where condition
+   * @param s db session
+   * @return single entity
+   */
+  def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
+    withExtractor(withSQL {
+      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+    }).single.apply()
+  }
+
+  /**
    * Finds all entities by condition.
    *
    * @param where where condition

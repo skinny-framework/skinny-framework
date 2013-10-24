@@ -33,6 +33,12 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
     }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 
+  def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
+    withExtractor(withSQL {
+      defaultSelectQuery.where.append(where).orderBy(syntax.id)
+    }).single.apply()
+  }
+
   def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
       defaultSelectQuery.where.append(where).orderBy(syntax.id)
