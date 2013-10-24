@@ -20,8 +20,9 @@ trait CRUDFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
-    with FinderFeature[Entity]
     with QueryingFeature[Entity]
+    with JoinsFeature[Entity]
+    with FinderFeature[Entity]
     with StrongParametersFeature {
 
   /**
@@ -36,17 +37,31 @@ trait CRUDFeature[Entity]
    */
   def defaultScopeForUpdateOperations: Option[SQLSyntax] = None
 
-  /**
-   * Appends join definition on runtime.
-   *
-   * @param associations associations
-   * @return self
-   */
-  def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
-    val belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
-    val hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
-    val hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
-    new CRUDFeatureWithAssociations[Entity](this, belongsTo, hasOne, hasMany)
+  override def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
+    val _self = this
+    val _associations = associations
+    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
+    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
+    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
+
+    new CRUDFeatureWithAssociations[Entity] {
+      override protected val underlying = _self
+      override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
+      override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
+      override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
+
+      override val associations = _self.associations ++ _associations
+      override val defaultJoinDefinitions = _self.defaultJoinDefinitions
+      override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
+      override val defaultHasOneExtractors = _self.defaultHasOneExtractors
+      override val defaultOneToManyExtractors = _self.defaultOneToManyExtractors
+
+      override def autoSession = underlying.autoSession
+      override def connectionPoolName = underlying.connectionPoolName
+      override def connectionPool = underlying.connectionPool
+
+      def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
+    }
   }
 
   /**
