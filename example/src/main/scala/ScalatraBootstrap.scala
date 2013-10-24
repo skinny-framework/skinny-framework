@@ -17,10 +17,10 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
 
     ctx.mount(Controllers.root, "/*")
-    ctx.mount(Controllers.programmers, "/*")
-    ctx.mount(CompaniesController, "/*")
-    ctx.mount(SkillsController, "/*")
-    ctx.mount(Controllers.thymeleaf, "/*")
+    ctx.mount(Controllers.programmers, "/programmers/*")
+    ctx.mount(CompaniesController, "/companies/*")
+    ctx.mount(SkillsController, "/skills/*")
+    ctx.mount(Controllers.thymeleaf, "/thymeleaf/*")
   }
 
 }
