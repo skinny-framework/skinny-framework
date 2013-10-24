@@ -10,7 +10,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
       dev.DBInitializer.runIfFailed(sql"select 1 from companies limit 1")
     }
     ctx.mount(Controllers.root, "/*")
-    ctx.mount(CompaniesController, "/*")
+    ctx.mount(CompaniesController, "/companies/*")
   }
 
 }
