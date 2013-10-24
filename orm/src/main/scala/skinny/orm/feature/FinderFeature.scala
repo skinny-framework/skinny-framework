@@ -11,6 +11,7 @@ trait FinderFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
+    with JoinsFeature[Entity]
     with QueryingFeature[Entity] {
 
   /**

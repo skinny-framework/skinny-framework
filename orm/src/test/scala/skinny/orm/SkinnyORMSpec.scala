@@ -220,6 +220,14 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
           withoutSkills.skills.size should equal(0)
         }
 
+        {
+          val membersWithSkills = Member.joins(Member.skills).where('id -> Member.findAll().map(_.id)).apply()
+          val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
+          withSkills.skills.size should equal(1)
+          val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
+          withoutSkills.skills.size should equal(0)
+        }
+
       }
     }
   }

@@ -9,6 +9,16 @@ import scalikejdbc._, SQLInterpolation._
  */
 trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
 
+  private[this] val _tableName = super.tableName
+  private[this] val _columnNames = super.columnNames
+  private[this] val _self: SkinnyMapperBase[Entity] = this
+
+  protected def underlying: SkinnyMapperBase[Entity] = new SkinnyMapperBase[Entity] {
+    override val tableName = _tableName
+    override val columnNames = _columnNames
+    def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = _self.extract(rs, n)
+  }
+
   /**
    * Returns select query builder object to simply fetch rows without other joined tables.
    *
@@ -30,7 +40,21 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
    *
    * @return default table alias
    */
-  def defaultAlias: Alias[Entity] = syntax
+  def defaultAlias: Alias[Entity] = underlying.defaultAlias
+
+  /**
+   * Returns table name.
+   *
+   * @return table name
+   */
+  override def tableName = underlying.tableName
+
+  /**
+   * Returns column names.
+   *
+   * @return column names
+   */
+  override def columnNames = underlying.columnNames
 
   /**
    * Creates a new table alias for this mapper.
