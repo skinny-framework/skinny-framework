@@ -128,7 +128,7 @@ class ScalatraBootstrap exnteds SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
     // register routes
-    ctx.mount(members, "/*")
+    ctx.mount(members, "/members/*")
   }
 }
 ```
