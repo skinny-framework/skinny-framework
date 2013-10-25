@@ -68,8 +68,8 @@ trait SkinnyRecordBase[Entity] {
    *
    * @return attributes
    */
-  protected def attributesToPersist(): Seq[(SQLSyntax, Any)] = JavaReflectAPI.getterNames(this).map { name =>
-    skinnyCRUDMapper.column.field(name) -> JavaReflectAPI.getter(this, name)
-  }
+  protected def attributesToPersist(): Seq[(SQLSyntax, Any)] = JavaReflectAPI.getterNames(this)
+    .filter { name => skinnyCRUDMapper.isValidFieldName(name) }
+    .map { name => skinnyCRUDMapper.column.field(name) -> JavaReflectAPI.getter(this, name) }
 
 }

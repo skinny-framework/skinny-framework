@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.5-SNAPSHOT"
+  val Version = "0.9.5"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
@@ -109,6 +109,31 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
+  lazy val thymeleaf = Project (id = "thymeleaf", base = file("thymeleaf"),
+    settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-thymeleaf",
+      version := Version,
+      scalaVersion := "2.10.0",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "org.thymeleaf"             %  "thymeleaf" % "2.0.18" % "compile",
+        "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.18" % "compile"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) dependsOn(framework)
+
   lazy val validator = Project (id = "validator", base = file("validator"),
     settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
@@ -142,8 +167,9 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
-        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "compile",
-        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "compile"
+        "com.github.seratch" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
+        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion    % "compile",
+        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion    % "compile"
       ),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -178,7 +204,7 @@ object SkinnyFrameworkBuild extends Build {
       )
       , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
-  ) dependsOn(framework, test)
+  ) dependsOn(framework, thymeleaf, test)
 
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",

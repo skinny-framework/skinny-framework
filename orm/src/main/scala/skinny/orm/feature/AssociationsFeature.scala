@@ -19,8 +19,6 @@ trait AssociationsFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature {
 
-  private[this] val logger = LoggerFactory.getLogger(classOf[AssociationsFeature[Entity]])
-
   /**
    * Associations
    */

@@ -20,6 +20,9 @@ trait CRUDFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
+    with QueryingFeature[Entity]
+    with JoinsFeature[Entity]
+    with FinderFeature[Entity]
     with StrongParametersFeature {
 
   /**
@@ -34,294 +37,31 @@ trait CRUDFeature[Entity]
    */
   def defaultScopeForUpdateOperations: Option[SQLSyntax] = None
 
-  /**
-   * Returns default scope for select queries.
-   *
-   * @return default scope
-   */
-  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
+  override def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
+    val _self = this
+    val _associations = associations
+    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
+    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
+    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
-  /**
-   * Appends join definition on runtime.
-   *
-   * @param associations associations
-   * @return self
-   */
-  def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
-    val belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
-    val hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
-    val hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
-    new CRUDFeatureWithAssociations[Entity](this, belongsTo, hasOne, hasMany)
-  }
+    new CRUDFeatureWithAssociations[Entity] {
+      override protected val underlying = _self
+      override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
+      override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
+      override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
 
-  /**
-   * Returns select query builder.
-   *
-   * @return query builder
-   */
-  def selectQuery: SelectSQLBuilder[Entity] = defaultSelectQuery
+      override val associations = _self.associations ++ _associations
+      override val defaultJoinDefinitions = _self.defaultJoinDefinitions
+      override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
+      override val defaultHasOneExtractors = _self.defaultHasOneExtractors
+      override val defaultOneToManyExtractors = _self.defaultOneToManyExtractors
 
-  /**
-   * Appends where conditions.
-   *
-   * @param conditions
-   * @return query builder
-   */
-  def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
-    mapper = this,
-    conditions = conditions.map {
-      case (key, value) =>
-        value match {
-          case None => sqls.isNull(defaultAlias.field(key.name)) // TODO Null/NotNull
-          case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-          case value => sqls.eq(defaultAlias.field(key.name), value)
-        }
+      override def autoSession = underlying.autoSession
+      override def connectionPoolName = underlying.connectionPoolName
+      override def connectionPool = underlying.connectionPool
+
+      def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
     }
-  )
-
-  /**
-   * Appends limit part.
-   *
-   * @param n value
-   * @return query builder
-   */
-  def limit(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
-
-  /**
-   * Appends offset part.
-   *
-   * @param n value
-   * @return query builder
-   */
-  def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
-
-  /**
-   * Count only.
-   *
-   * @return query builder
-   */
-  def count(): CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
-
-  /**
-   * Select query builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   * @param limit limit
-   * @param offset offset
-   */
-  abstract class SelectOperationBuilder(
-      mapper: CRUDFeature[Entity],
-      conditions: Seq[SQLSyntax] = Nil,
-      limit: Option[Int] = None,
-      offset: Option[Int] = None,
-      isCountOnly: Boolean = false) {
-
-    /**
-     * Appends where conditions.
-     *
-     * @param additionalConditions conditions
-     * @return query builder
-     */
-    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
-      mapper = this.mapper,
-      conditions = conditions ++ additionalConditions.map {
-        case (key, value) =>
-          value match {
-            case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-            case value => sqls.eq(defaultAlias.field(key.name), value)
-          }
-      },
-      limit = None,
-      offset = None
-    )
-  }
-
-  /**
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   * @param limit limit
-   * @param offset offset
-   */
-  case class EntitiesSelectOperationBuilder(
-      mapper: CRUDFeature[Entity],
-      conditions: Seq[SQLSyntax] = Nil,
-      limit: Option[Int] = None,
-      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
-
-    /**
-     * Appends limit part.
-     *
-     * @param n value
-     * @return query builder
-     */
-    def limit(n: Int): EntitiesSelectOperationBuilder = this.copy(limit = Some(n))
-
-    /**
-     * Appends offset part.
-     *
-     * @param n value
-     * @return query builder
-     */
-    def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
-
-    /**
-     * Count only.
-     *
-     * @return query builder
-     */
-    def count(): CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): List[Entity] = {
-      withExtractor(withSQL {
-        val query: SQLBuilder[Entity] = {
-          conditions match {
-            case Nil => selectQuery.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(selectQuery.where(conditions.head)) {
-              case (query, condition) => query.and.append(condition)
-            }.and(defaultScopeWithDefaultAlias)
-          }
-        }
-        val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
-        paging.foldLeft(query) { case (query, part) => query.append(part) }
-      }).list.apply()
-    }
-
-  }
-
-  case class CountSelectOperationBuilder(
-      mapper: CRUDFeature[Entity],
-      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): Long = {
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.long(1)).single.apply().getOrElse(0L)
-    }
-  }
-
-  /**
-   * Finds a single entity by primary key.
-   *
-   * @param id id
-   * @param s db session
-   * @return single entity if exists
-   */
-  def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
-    }).single.apply()
-  }
-
-  /**
-   * Finds all entities by several primary keys.
-   *
-   * @param ids several ids
-   * @param s db session
-   * @return entities
-   */
-  def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
-    }).list.apply()
-  }
-
-  /**
-   * Finds all entities.
-   *
-   * @param s db session
-   * @return entities
-   */
-  def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
-    }).list.apply()
-  }
-
-  /**
-   * Finds all entities by paging.
-   *
-   * @param limit limit
-   * @param offset offset
-   * @param s db session
-   * @return entities
-   */
-  def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
-    }).list.apply()
-  }
-
-  /**
-   * Counts all rows.
-   *
-   * @param s db session
-   * @return count
-   */
-  def countAll()(implicit s: DBSession = autoSession): Long = {
-    withSQL {
-      select(sqls.count).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
-    }.map(_.long(1)).single.apply().getOrElse(0L)
-  }
-
-  /**
-   * Finds all entities by condition.
-   *
-   * @param where where condition
-   * @param s db session
-   * @return entities
-   */
-  def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
-    }).list.apply()
-  }
-
-  /**
-   * Finds all entities by condition and paging.
-   *
-   * @param where where condition
-   * @param limit limit
-   * @param offset offset
-   * @param s db session
-   * @return entities
-   */
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
-    }).list.apply()
-  }
-
-  /**
-   * Counts all rows by condition.
-   *
-   * @param where where condition
-   * @param s db session
-   * @return entities
-   */
-  def countBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {
-    withSQL {
-      select(sqls.count).from(as(defaultAlias)).where(where).and(defaultScopeWithDefaultAlias)
-    }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 
   /**
