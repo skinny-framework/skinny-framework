@@ -6,9 +6,7 @@ import model._
 
 class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
-  addFilter(SkillsController, "/skills/*")
-  addFilter(SkillsController, "/skills.json")
-  addFilter(SkillsController, "/skills.xml")
+  addFilter(SkillsController, "/*")
 
   def skill = Skill.findAllPaging(1, 0).head
 

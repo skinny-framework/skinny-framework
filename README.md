@@ -116,19 +116,23 @@ class MembersController extends SkinnyController {
   }
 }
 
-// src/main/scala/ScalatraBootstrap.scala
+// src/main/scala/controller/Controllers.scala
 
-class ScalatraBootstrap exnteds SkinnyLifeCycle {
-
+object Controllers {
   val members = new MembersController with Routes {
     get("/members/?")(index).as('index)
     get("/members/new")(newOne).as('new)
     post("/members/?")(create).as('create)
   }
+}
+
+// src/main/scala/ScalatraBootstrap.scala
+
+class ScalatraBootstrap exntends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
     // register routes
-    ctx.mount(members, "/members/*")
+    Controllers.members.mount(ctx)
   }
 }
 ```

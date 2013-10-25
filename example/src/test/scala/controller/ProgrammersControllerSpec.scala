@@ -6,9 +6,7 @@ import model._
 
 class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
-  addFilter(Controllers.programmers, "/programmers/*")
-  addFilter(Controllers.programmers, "/programmers.json")
-  addFilter(Controllers.programmers, "/programmers.xml")
+  addFilter(Controllers.programmers, "/*")
 
   def skill = Skill.findAllPaging(1, 0).head
   def company = Company.findAllPaging(1, 0).head

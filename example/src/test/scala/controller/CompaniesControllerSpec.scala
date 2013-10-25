@@ -6,9 +6,7 @@ import model._
 
 class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
-  addFilter(CompaniesController, "/companies/*")
-  addFilter(CompaniesController, "/companies.json")
-  addFilter(CompaniesController, "/companies.xml")
+  addFilter(CompaniesController, "/*")
 
   def company = Company.findAllPaging(1, 0).head
 
