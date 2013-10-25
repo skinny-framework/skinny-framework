@@ -138,6 +138,8 @@ trait TemplateEngineFeature
     }
   }
 
+  protected def xmlItemName: String = "item"
+
   /**
    * {@link org.json4s.Xml.toXml(JValue)}
    */
@@ -155,7 +157,7 @@ trait TemplateEngineFeature
     }
     json match {
       case JObject(fields) => fields flatMap { case (n, v) => _toXml(n, v) }
-      case x => _toXml("item", x)
+      case x => _toXml(xmlItemName, x)
     }
   }
   private[this] class XmlNode(name: String, children: Seq[Node])

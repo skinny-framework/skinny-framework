@@ -10,27 +10,17 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
       import scalikejdbc._
       GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
        */
-      dev.DBInitializer.initialize()
+      lib.DBInitializer.initialize()
     }
 
     // Enables open-session-in-view pattern
     //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
 
-    ctx.mount(Controllers.root, "/*")
-
-    ctx.mount(Controllers.programmers, "/programmers/*")
-    ctx.mount(Controllers.programmers, "/programmers.xml")
-    ctx.mount(Controllers.programmers, "/programmers.json")
-
-    ctx.mount(CompaniesController, "/companies/*")
-    ctx.mount(CompaniesController, "/companies.xml")
-    ctx.mount(CompaniesController, "/companies.json")
-
-    ctx.mount(SkillsController, "/skills/*")
-    ctx.mount(SkillsController, "/skills.xml")
-    ctx.mount(SkillsController, "/skills.json")
-
-    ctx.mount(Controllers.thymeleaf, "/thymeleaf/*")
+    Controllers.root.mount(ctx)
+    Controllers.programmers.mount(ctx)
+    CompaniesController.mount(ctx)
+    SkillsController.mount(ctx)
+    Controllers.thymeleaf.mount(ctx)
   }
 
 }

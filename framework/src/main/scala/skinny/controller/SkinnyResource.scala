@@ -28,6 +28,8 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def resourceName: String
 
+  override protected def xmlItemName = resourceName
+
   /**
    * Creates validator with prefix(resourceName).
    *
@@ -37,26 +39,6 @@ trait SkinnyResource extends SkinnyController {
    */
   override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
     validationWithPrefix(resourceName, validations: _*)
-  }
-
-  /**
-   * Defines formats to be respond. By default, HTML, JSON, XML are available.
-   *
-   * @return formats
-   */
-  protected def respondTo: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
-
-  /**
-   * Provides code block with format. If absent, halt as status 406.
-   *
-   * @param format format
-   * @param action action
-   * @tparam A response type
-   * @return result
-   */
-  protected def withFormat[A](format: Format)(action: => A): A = {
-    respondTo.find(_ == format) getOrElse haltWithBody(406)
-    action
   }
 
   /**
@@ -70,14 +52,6 @@ trait SkinnyResource extends SkinnyController {
    * Base path.
    */
   protected def basePath: String = if (useRelativePath) "" else s"/${resourcesName}"
-
-  /**
-   * Creates [[skinny.I18n]] instance for current locale.
-   *
-   * @param locale current locale
-   * @return i18n provider
-   */
-  protected def createI18n()(implicit locale: java.util.Locale = currentLocale.orNull[Locale]) = I18n(locale)
 
   /**
    * Outputs debug logging for passed parameters.

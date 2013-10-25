@@ -1,6 +1,6 @@
 package unit
 
-import dev.DBInitializer
+import lib.DBInitializer
 import scalikejdbc._, SQLInterpolation._
 
 trait DBMigration extends DBSettings {
