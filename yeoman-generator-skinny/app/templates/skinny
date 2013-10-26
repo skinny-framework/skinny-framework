@@ -14,6 +14,8 @@ if [ $command == "run" ];then
   run_app
 elif [ $command == "clean" ];then
   sbt clean
+elif [ $command == "update" ];then
+  sbt update
 elif [ $command == "console" ];then
   sbt console
 elif [ $command == "compile" ];then
@@ -30,6 +32,7 @@ else
   echo ""
   echo "  clean:     will clear target directory"
   echo "  run:       will run Skinny app for local development"
+  echo "  console:   will run sbt console"
   echo "  compile:   will compile all the classes"
   echo "  test:      will run all the tests"
   echo "  test-only: will run the specified test"

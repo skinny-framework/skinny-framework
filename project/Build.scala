@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.5"
+  val Version = "0.9.6"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
@@ -53,7 +53,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm)
+  ) dependsOn(common, assets, validator, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
     settings = Defaults.defaultSettings ++ Seq(
@@ -144,6 +144,26 @@ object SkinnyFrameworkBuild extends Build {
         "com.typesafe" %  "config"       % "1.0.2" % "compile",
         "joda-time"    %  "joda-time"    % "2.3"   % "test",
         "org.joda"     %  "joda-convert" % "1.4"   % "test"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    )
+  )
+
+  lazy val assets = Project (id = "assets", base = file("assets"),
+    settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-assets",
+      version := Version,
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= Seq(
+        "ro.isdc.wro4j" % "rhino"        % "1.7R5-20130223-1"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

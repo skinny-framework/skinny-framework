@@ -10,6 +10,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     }
     Controllers.root.mount(ctx)
     CompaniesController.mount(ctx)
+    AssetsController.mount(ctx)
   }
 
 }

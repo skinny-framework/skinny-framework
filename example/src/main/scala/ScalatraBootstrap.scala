@@ -6,14 +6,12 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
   override def initSkinnyApp(ctx: ServletContext) {
 
     if (SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()) {
-      /* verbose query logger
-      import scalikejdbc._
-      GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
-       */
+      // Notice: if you'd like to use verbose query logger
+      // import scalikejdbc._
+      // GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings()
       lib.DBInitializer.initialize()
     }
-
-    // Enables open-session-in-view pattern
+    // Notice: Enables open-session-in-view pattern
     //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
 
     Controllers.root.mount(ctx)
@@ -21,6 +19,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     CompaniesController.mount(ctx)
     SkillsController.mount(ctx)
     Controllers.thymeleaf.mount(ctx)
+    AssetsController.mount(ctx)
   }
 
 }
