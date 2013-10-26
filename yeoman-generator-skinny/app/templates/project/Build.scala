@@ -19,6 +19,7 @@ object SkinnyAppBuild extends Build {
       ),
       libraryDependencies ++= Seq(
         "com.github.seratch" %% "skinny-framework"   % skinnyVersion,
+        "com.github.seratch" %% "skinny-assets"      % skinnyVersion,
         "com.h2database"     %  "h2"                 % "1.3.173", // your JDBC driver
         "com.github.seratch" %% "skinny-test"        % skinnyVersion         % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",

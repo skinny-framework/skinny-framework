@@ -33,6 +33,27 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) 
 
+  lazy val assets = Project (id = "assets", base = file("assets"),
+    settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-assets",
+      version := Version,
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "ro.isdc.wro4j"    % "rhino"        % "1.7R5-20130223-1",
+        "com.mangofactory" % "typescript4j" % "0.2.0"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    )
+  ) dependsOn(framework)
+
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
@@ -53,7 +74,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, assets, validator, orm)
+  ) dependsOn(common, validator, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
     settings = Defaults.defaultSettings ++ Seq(
@@ -156,26 +177,6 @@ object SkinnyFrameworkBuild extends Build {
     )
   )
 
-  lazy val assets = Project (id = "assets", base = file("assets"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
-      name := "skinny-assets",
-      version := Version,
-      scalaVersion := "2.10.0",
-      libraryDependencies ++= Seq(
-        "ro.isdc.wro4j" % "rhino"        % "1.7R5-20130223-1"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
-    )
-  )
-
   lazy val test = Project (id = "test", base = file("test"),
    settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
@@ -224,7 +225,7 @@ object SkinnyFrameworkBuild extends Build {
       )
       , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
-  ) dependsOn(framework, thymeleaf, test)
+  ) dependsOn(framework, assets, thymeleaf, test)
 
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",

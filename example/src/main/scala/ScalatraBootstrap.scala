@@ -1,5 +1,6 @@
 import _root_.controller._
 import skinny._
+import skinny.controller.AssetsController
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
 

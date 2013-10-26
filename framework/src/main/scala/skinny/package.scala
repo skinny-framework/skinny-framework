@@ -14,9 +14,6 @@ package object skinny {
   type SkinnyResource = skinny.controller.SkinnyResource
   type SkinnyServlet = skinny.controller.SkinnyServlet
 
-  type AssetsController = skinny.controller.AssetsController
-  val AssetsController = skinny.controller.AssetsController
-
   type Params = skinny.controller.Params
   type Flash = skinny.controller.Flash
   type Routes = skinny.routing.Routes
