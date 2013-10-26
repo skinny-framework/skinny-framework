@@ -9,13 +9,15 @@ import java.io.File
  */
 class AssetsController extends SkinnyController {
 
-  val isEnabledInProduction: Boolean = false
+  protected val isEnabledInProduction: Boolean = false
 
-  def isEnabled: Boolean = if (isEnabledInProduction) true else !SkinnyEnv.isProduction()
+  protected def isEnabled: Boolean = if (isEnabledInProduction) true else !SkinnyEnv.isProduction()
 
-  val coffeeScriptCompiler = CoffeeScriptCompiler()
+  protected val coffeeScriptCompiler = CoffeeScriptCompiler()
 
-  private[this] val basePath = "/WEB-INF/assets/"
+  protected val lessCompiler = LessCompiler
+
+  protected val basePath = "/WEB-INF/assets/"
 
   def jsOrCoffee() = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
@@ -57,12 +59,53 @@ class AssetsController extends SkinnyController {
     pass()
   }
 
+  def cssOrLess() = if (isEnabled) {
+    multiParams("splat").headOption.flatMap {
+      _.split("\\.") match {
+        case Array(path, "css") => Some(path)
+        case _ => None
+      }
+    }.map { path =>
+
+      // try to load from class path resources
+      val cssResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/css/${path}.css")
+      val lessResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/less/${path}.less")
+      if (cssResource.isDefined) {
+        cssResource.map { resource =>
+          using(Source.fromInputStream(resource))(_.mkString)
+        } getOrElse (halt(404))
+      } else if (lessResource.isDefined) {
+        lessResource.map { resource =>
+          lessCompiler.compile(using(Source.fromInputStream(resource))(_.mkString))
+        }.getOrElse(halt(404))
+
+      } else {
+        // load content from real files
+        val cssFile = new File(servletContext.getRealPath(s"${basePath}/css/${path}.css"))
+        val lessFile = new File(servletContext.getRealPath(s"${basePath}/less/${path}.less"))
+        if (cssFile.exists()) {
+          using(Source.fromFile(cssFile))(js => js.mkString)
+        } else if (lessFile.exists()) {
+          using(Source.fromFile(lessFile))(coffee => lessCompiler.compile(coffee.mkString))
+        } else {
+          pass()
+        }
+
+      }
+    } getOrElse {
+      pass()
+    }
+  } else {
+    pass()
+  }
+
 }
 
 object AssetsController extends AssetsController with Routes {
 
-  override val isEnabledInProduction = false
+  override protected val isEnabledInProduction = false
 
   // Unfortunately, *.* seems not to work.
   get("/assets/js/*")(jsOrCoffee).as('jsOrCoffee)
+  get("/assets/css/*")(cssOrLess).as('cssOrLess)
 }
