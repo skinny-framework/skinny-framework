@@ -9,16 +9,58 @@ import java.io.File
  */
 class AssetsController extends SkinnyController {
 
-  protected val isEnabledInProduction: Boolean = false
+  /**
+   * Returns assets root path.
+   */
+  protected def assetsRootPath = "/assets"
 
-  protected def isEnabled: Boolean = if (isEnabledInProduction) true else !SkinnyEnv.isProduction()
+  /**
+   * Returns assets/js root path.
+   */
+  protected def jsRootPath = s"${assetsRootPath}/js"
 
+  /**
+   * Returns assets/css root path.
+   */
+  protected def cssRootPath = s"${assetsRootPath}/css"
+
+  /**
+   * Predicates this controller in staging env.
+   */
+  protected def isDisabledInStaging: Boolean = true
+
+  /**
+   * Predicates this controller in production env.
+   */
+  protected def isDisabledInProduction: Boolean = true
+
+  /**
+   * Predicates this controller is enabled in the current env.
+   */
+  protected def isEnabled: Boolean = {
+    if (SkinnyEnv.isProduction()) !isDisabledInProduction
+    if (SkinnyEnv.isStaging()) !isDisabledInStaging
+    else true
+  }
+
+  /**
+   * CoffeeScript compiler.
+   */
   protected val coffeeScriptCompiler = CoffeeScriptCompiler()
 
+  /**
+   * LESS compiler.
+   */
   protected val lessCompiler = LessCompiler
 
+  /**
+   * Base path for assets files.
+   */
   protected val basePath = "/WEB-INF/assets"
 
+  /**
+   * Returns js or coffee assets.
+   */
   def jsOrCoffee() = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
       _.split("\\.") match {
@@ -59,6 +101,9 @@ class AssetsController extends SkinnyController {
     pass()
   }
 
+  /**
+   * Returns css or less assets.
+   */
   def cssOrLess() = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
       _.split("\\.") match {
@@ -101,11 +146,14 @@ class AssetsController extends SkinnyController {
 
 }
 
+/**
+ * AssetsController with default configurations.
+ */
 object AssetsController extends AssetsController with Routes {
 
-  override protected val isEnabledInProduction = false
-
   // Unfortunately, *.* seems not to work.
-  get("/assets/js/*")(jsOrCoffee).as('jsOrCoffee)
-  get("/assets/css/*")(cssOrLess).as('cssOrLess)
+  get(s"${jsRootPath}/*")(jsOrCoffee).as('jsOrCoffee)
+  get(s"${cssRootPath}/*")(cssOrLess).as('cssOrLess)
+
 }
+
