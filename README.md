@@ -394,9 +394,9 @@ class MembersController extends SkinnyServlet {
     %a(data-method="delete" data-confirm="Are you sure?" href={"/members/"+member.id} class="btn btn-danger") Delete
 ```
 
-### CoffeeScript, LESS support
+### CoffeeScript, TypeScript and LESS support
 
-You can easily use CoffeeScript and Less via `AssetsController`.
+You can easily use CoffeeScript, TypeScript and LESS via `AssetsController`.
 
 ```scala
 // src/main/scala/ScalatraBootstrap.scala
@@ -416,7 +416,7 @@ echo = (v) -> console.log v
 echo "foo"
 ```
 
-You can access the latest compiled JavaScript at `http://localhost:8080/assets/js/echo.js`.
+You can access the latest compiled JavaScript code at `http://localhost:8080/assets/js/echo.js`.
 
 ```javascript
 (function() {
@@ -429,6 +429,38 @@ You can access the latest compiled JavaScript at `http://localhost:8080/assets/j
   echo("foo");
 
 }).call(this);
+```
+
+If you use TypeScript, just put *.ts files under `WEB-INF/assets/ts`:
+
+```typescript
+// src/main/webapp/WEB-INF/assets/ts/greeting.ts
+class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+var greeter = new Greeter("world");
+```
+
+You can access the latest compiled JavaScript code at `http://localhost:8080/assets/js/greeting.js`.
+
+```javascript
+var Greeter = (function () {
+    function Greeter(message) {
+        this.greeting = message;
+    }
+    Greeter.prototype.greet = function () {
+        return "Hello, " + this.greeting;
+    };
+    return Greeter;
+})();
+var greeter = new Greeter("world");
 ```
 
 If you use LESS, just put *.less files under `WEB-INF/assets/less`:
