@@ -17,7 +17,7 @@ class AssetsController extends SkinnyController {
 
   protected val lessCompiler = LessCompiler
 
-  protected val basePath = "/WEB-INF/assets/"
+  protected val basePath = "/WEB-INF/assets"
 
   def jsOrCoffee() = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
