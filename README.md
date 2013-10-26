@@ -394,6 +394,67 @@ class MembersController extends SkinnyServlet {
     %a(data-method="delete" data-confirm="Are you sure?" href={"/members/"+member.id} class="btn btn-danger") Delete
 ```
 
+### CoffeeScript, LESS support
+
+You can easily use CoffeeScript and Less via `AssetsController`.
+
+```scala
+// src/main/scala/ScalatraBootstrap.scala
+
+class ScalatraBootstrap exntends SkinnyLifeCycle {
+  override def initSkinnyApp(ctx: ServletContext) {
+    AssetsController.mount(ctx)
+  }
+}
+```
+
+If you use CoffeeScript, just put *.coffee files under `WEB-INF/assets/coffee`:
+
+```coffeescript
+# src/main/webapp/WEB-INF/assets/coffee/echo.coffee
+echo = (v) -> console.log v
+echo "foo"
+```
+
+You can access the latest compiled JavaScript at `http://localhost:8080/assets/js/echo.js`.
+
+```javascript
+(function() {
+  var echo;
+
+  echo = function(v) {
+    return console.log(v);
+  };
+
+  echo("foo");
+
+}).call(this);
+```
+
+If you use LESS, just put *.less files under `WEB-INF/assets/less`:
+
+```less
+// src/main/webapp/WEB-INF/assets/less/box.less
+
+@base: #f938ab;
+.box { 
+  color: saturate(@base, 5%);
+  border-color: lighten(@base, 30%);
+}
+```
+
+You can access the latest compiled CSS at `http://localhost:8080/assets/css/box.css`.
+
+```css
+.box {
+  color: #fe33ac;
+  border-color: #fdcdea;
+}
+```
+
+In production environment, precompiling coffee/less files to js/css is recommended.
+
+
 ### Testing support
 
 You can use Scalatra's great test support. Some optional feature is provided by skinny-test library.
@@ -460,7 +521,6 @@ These are major tasks that Skinny should fix.
 
  - Scaffold generator support
  - Designing Authentication API
- - CoffeeScript and so on (basically wro4j)
  - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.
