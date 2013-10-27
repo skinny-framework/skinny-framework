@@ -68,6 +68,7 @@ Access `http://localhost:8080/example/` from your browser.
 or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
 ```sh
+# brew instsall node
 npm install -g yo
 npm install -g generator-skinny
 mkdir skinny-app
@@ -371,8 +372,6 @@ And then, use scaml instead.
 
 ### CoffeeScript, TypeScript and LESS support
 
-You can easily use CoffeeScript, TypeScript and LESS with Skinny apps.
-
 First, add `skinny-assets` to libraryDependencies.
 
 ```scala
@@ -383,7 +382,7 @@ libraryDependencies ++= Seq(
 )
 ```
 
-You can easily use CoffeeScript, TypeScript and LESS after adding `AssetsController` to routes.
+And then, add `AssetsController` to routes. Now you can easily use CoffeeScript, TypeScript and LESS.
 
 ```scala
 // src/main/scala/ScalatraBootstrap.scala
@@ -460,7 +459,7 @@ If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 }
 ```
 
-You can access the latest compiled CSS at `http://localhost:8080/assets/css/box.css`.
+You can access the latest compiled CSS file at `http://localhost:8080/assets/css/box.css`.
 
 ```css
 .box {
@@ -538,6 +537,7 @@ These are major tasks that Skinny should fix.
 
  - Scaffold generator support
  - Designing Authentication API
+ - Production packaging example
  - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.
