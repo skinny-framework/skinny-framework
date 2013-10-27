@@ -5,7 +5,7 @@ import org.scalatra.sbt.PluginKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.6"
+  val skinnyVersion = "0.9.7"
   val scalatraVersion = "2.2.1"
 
   lazy val app = Project (id = "app", base = file("."),
@@ -19,6 +19,7 @@ object SkinnyAppBuild extends Build {
       ),
       libraryDependencies ++= Seq(
         "com.github.seratch" %% "skinny-framework"   % skinnyVersion,
+        "com.github.seratch" %% "skinny-assets"      % skinnyVersion,
         "com.h2database"     %  "h2"                 % "1.3.173", // your JDBC driver
         "com.github.seratch" %% "skinny-test"        % skinnyVersion         % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",

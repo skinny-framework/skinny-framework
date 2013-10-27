@@ -31,6 +31,7 @@ else
   echo "Usage: grep [COMMAND] [OPTIONS]..."
   echo ""
   echo "  clean:     will clear target directory"
+  echo "  update:    will update dependencies"
   echo "  run:       will run Skinny app for local development"
   echo "  console:   will run sbt console"
   echo "  compile:   will compile all the classes"
