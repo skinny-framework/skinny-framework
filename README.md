@@ -86,7 +86,6 @@ Skinny's routing mechanism and controller layer on MVC architecture is a **rich 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
-
 class MembersController extends SkinnyController {
   protectFromForgery()
 
@@ -117,7 +116,6 @@ class MembersController extends SkinnyController {
 }
 
 // src/main/scala/controller/Controllers.scala
-
 object Controllers {
   val members = new MembersController with Routes {
     get("/members/?")(index).as('index)
@@ -127,9 +125,7 @@ object Controllers {
 }
 
 // src/main/scala/ScalatraBootstrap.scala
-
 class ScalatraBootstrap exntends SkinnyLifeCycle {
-
   override def initSkinnyApp(ctx: ServletContext) {
     // register routes
     Controllers.members.mount(ctx)
@@ -141,12 +137,10 @@ Skinny-Validator is newly created validator which is based on [seratch/inputvali
 
 ```scala
 import skinny.validator._
-
 def createForm = validation(
   paramKey("name") is required & minLength(2) & alphabetOnly, 
   paramKey("countryId") is numeric
 )
-
 object alphabetOnly extends ValidationRule {
   def name = "alphabetOnly"
   def isValid(v: Any) = isEmpty(v) || v.toString.matches("^[a-zA-Z]*$")
@@ -163,8 +157,10 @@ object CompaniesController extends SkinnyResource {
   override def resourcesName = "companies"
   override def resourceName = "company"
 
-  override def createForm = validation(paramKey("name") is required & maxLegnth(64), paramKey("registrationCode" is numeric)
-  override def createFormStrongParameters = Seq("name" -> ParamType.String, "registrationCode" -> ParamType.Int)
+  override def createForm = validation(
+    paramKey("name") is required & maxLegnth(64), paramKey("registrationCode" is numeric)
+  override def createFormStrongParameters = 
+    Seq("name" -> ParamType.String, "registrationCode" -> ParamType.Int)
 
   override def updateForm = validation(paramKey("name") is required & maxLegnth(64))
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
@@ -183,9 +179,8 @@ Skinny-ORM is simple but much powerful. Your first model class and companion are
 case class Member(id: Long, name: String, createdAt: DateTime)
 
 object Member extends SkinnyCRUDMapper[Member] {
-
   // only define ResultSet extractor at minimum
-  override def extract(rs: WrappedResultSet, n: ResultName[Member]): Member = new Member(
+  override def extract(rs: WrappedResultSet, n: ResultName[Member]) = new Member(
     id = rs.long(n.id),
     name = rs.string(n.name),
     createdAt = rs.dateTime(n.createdAt)
@@ -197,18 +192,16 @@ That's all! Now you can use the following APIs.
 
 ```scala
 Member.withAlias { m => // or "val m = Member.defaultAlias"
-
   // find by primary key
   val member: Option[Member] = Member.findById(123)
   val member: Option[Member] = Member.where('id -> 123).apply().headOption
-
-  val members: List[Member] = Member.findByIds(123, 234, 345)
   val members: List[Member] = Member.where('id -> Seq(123, 234, 345)).apply()
 
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false))
-  val groupMembers = Member.where('groupName -> "Scala Users Group", 'deleted -> false).apply()
+  val groupMembers = Member.findAllBy(
+    sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false))
+  val groupMembers = Member.where('groupName -> "Scala Users", 'deleted -> false).apply()
 
   // count
   val allCount: Long = Member.countAll()
@@ -217,7 +210,8 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
 
   // create with stong parameters
   val params = Map("name" -> "Bob")
-  val id = Member.createWithPermittedAttributes(params.permit("name" -> ParamType.String))
+  val id = Member.createWithPermittedAttributes(
+    params.permit("name" -> ParamType.String))
 
   // create with unsafe parameters
   Member.createWithAttributes(
@@ -250,12 +244,12 @@ If you need to join other tables, just add `belongsTo`, `hasOne` or `hasMany` (`
 **[Notice]** Unfortunately, Skinny-ORM doesn't retrieve nested associations (e.g. members.head.groups.head.country) automatically though we're still seeking a way to resolve this issue.
 
 ```scala
-class Member(id: Long, name: String, companyId: Long, company: Option[Company] = None, skills: Seq[Skill] = Nil)
-object Member extends SkinnyCRUDMapper[Member] {
+class Member(id: Long, name: String, companyId: Long, 
+  company: Option[Company] = None, skills: Seq[Skill] = Nil)
 
+object Member extends SkinnyCRUDMapper[Member] {
   // If byDefault is called, this join condition is enabled by default
   belongsTo[Company](Company, (m, c) => m.copy(company = Some(c))).byDefault
-
   val skills = hasManyThrough[Skill](
     MemberSkill, Skill, (m, skills) => m.copy(skills = skills))
 }
@@ -269,10 +263,9 @@ If you need to add methods, just write methods that use ScalikeJDBC' APIs direct
 ```scala
 object Member extends SkinnyCRUDMapper[Member] {
   val m = defaultAlias
-  def findByGroupId(groupId: Long)(implicit s: DBSession = autoSession): List[Member] = {
+  def findByGroupId(groupId: Long)(implicit s: DBSession = autoSession): List[Member] = 
     withSQL { select.from(Member as m).where.eq(m.groupId, groupId) }
       .map(apply(m)).list.apply()
-  }
 }
 ```
 
@@ -282,7 +275,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 class Member(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
 object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member]
 /* -- expects following table by default
-create table meber(
+create table member(
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   created_at timestamp not null,
@@ -294,7 +287,8 @@ create table meber(
 Soft delete support is also available.
 
 ```scala
-object Member extends SkinnyCRUDMapper[Member] with SoftDeleteWithTimestamp[Member]
+object Member extends SkinnyCRUDMapper[Member] 
+  with SoftDeleteWithTimestamp[Member]
 /* -- expects following table by default
 create table meber(
   id bigint auto_increment primary key not null,
@@ -307,7 +301,8 @@ create table meber(
 Furthermore, optimistic lock is also available.
 
 ```scala
-object Member extends SkinnyCRUDMapper[Member] with OptimisticLockWithVersionFeature[Member]
+object Member extends SkinnyCRUDMapper[Member] 
+  with OptimisticLockWithVersionFeature[Member]
 /* -- expects following table by default
 create table meber(
   id bigint auto_increment primary key not null,
@@ -330,7 +325,6 @@ The following ssp is `src/main/webapp/WEB-INF/views/members/index.html.ssp`.
 <%@val members: Seq[model.Member] %>
 <h3>Members</h3>
 <hr/>
-
 <table class="table table-bordered">
 <thead>
   <tr>
@@ -373,34 +367,26 @@ class MembersController extends SkinnyServlet {
 }
 ```
 
-```scala
--@val members: Seq[model.Member]
-%h3 Members
-%hr
-
-%table(class="table table-bordered")
-%thead
- %tr
-  %th ID
-  %th Name
-  %th
-%tbody
- -for(member <- members)
-  %tr
-   %td #{member.id}
-   %td #{member.name}
-   %td
-    %a(href={"/members/"+member.id+"/edit"} class="btn btn-info") Edit
-    %a(data-method="delete" data-confirm="Are you sure?" href={"/members/"+member.id} class="btn btn-danger") Delete
-```
+And then, use scaml instead.
 
 ### CoffeeScript, TypeScript and LESS support
 
-You can easily use CoffeeScript, TypeScript and LESS via `AssetsController`.
+You can easily use CoffeeScript, TypeScript and LESS with Skinny apps.
+
+First, add `skinny-assets` to libraryDependencies.
+
+```scala
+libraryDependencies ++= Seq(
+  "com.github.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.github.seratch" %% "skinny-assets"    % "[0.9,)",
+  "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
+)
+```
+
+You can easily use CoffeeScript, TypeScript and LESS after adding `AssetsController` to routes.
 
 ```scala
 // src/main/scala/ScalatraBootstrap.scala
-
 class ScalatraBootstrap exntends SkinnyLifeCycle {
   override def initSkinnyApp(ctx: ServletContext) {
     AssetsController.mount(ctx)
@@ -467,7 +453,6 @@ If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 
 ```less
 // src/main/webapp/WEB-INF/assets/less/box.less
-
 @base: #f938ab;
 .box { 
   color: saturate(@base, 5%);
