@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.7"
+  val Version = "0.9.8"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
@@ -40,8 +40,8 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "ro.isdc.wro4j"    % "rhino"        % "1.7R5-20130223-1",
-        "com.mangofactory" % "typescript4j" % "0.2.0"
+        "ro.isdc.wro4j" %  "rhino"      % "1.7R5-20130223-1",
+        "commons-io"    %  "commons-io" % "2.4"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

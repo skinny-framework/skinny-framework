@@ -3,7 +3,6 @@ package skinny.controller
 import skinny._, assets._, LoanPattern._
 import scala.io.Source
 import java.io.File
-import com.mangofactory.typescript.TypescriptCompiler
 
 /**
  * Assets controller.
@@ -55,11 +54,6 @@ class AssetsController extends SkinnyController {
   protected val lessCompiler = LessCompiler
 
   /**
-   * TypeScript Compiler.
-   */
-  protected val typeScriptCompiler = new TypescriptCompiler
-
-  /**
    * Base path for assets files.
    */
   protected val basePath = "/WEB-INF/assets"
@@ -78,7 +72,6 @@ class AssetsController extends SkinnyController {
       // try to load from class path resources
       val jsResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/js/${path}.js")
       val coffeeResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/coffee/${path}.coffee")
-      val tsResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/ts/${path}.ts")
       if (jsResource.isDefined) {
         jsResource.map { resource =>
           using(Source.fromInputStream(resource))(_.mkString)
@@ -87,22 +80,15 @@ class AssetsController extends SkinnyController {
         coffeeResource.map { resource =>
           coffeeScriptCompiler.compile(using(Source.fromInputStream(resource))(_.mkString))
         }.getOrElse(halt(404))
-      } else if (tsResource.isDefined) {
-        tsResource.map { resource =>
-          typeScriptCompiler.compile(using(Source.fromInputStream(resource))(_.mkString))
-        }.getOrElse(halt(404))
 
       } else {
         // load content from real files
         val jsFile = new File(servletContext.getRealPath(s"${basePath}/js/${path}.js"))
         val coffeeFile = new File(servletContext.getRealPath(s"${basePath}/coffee/${path}.coffee"))
-        val tsFile = new File(servletContext.getRealPath(s"${basePath}/ts/${path}.ts"))
         if (jsFile.exists()) {
           using(Source.fromFile(jsFile))(js => js.mkString)
         } else if (coffeeFile.exists()) {
           using(Source.fromFile(coffeeFile))(coffee => coffeeScriptCompiler.compile(coffee.mkString))
-        } else if (tsFile.exists()) {
-          using(Source.fromFile(tsFile))(ts => typeScriptCompiler.compile(ts.mkString))
         } else {
           pass()
         }

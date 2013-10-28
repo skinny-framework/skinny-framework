@@ -2,6 +2,7 @@ package controller
 
 import org.scalatra.test.scalatest._
 import skinny._
+import skinny.controller._
 import skinny.test.SkinnyTestSupport
 
 class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {

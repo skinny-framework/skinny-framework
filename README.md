@@ -68,6 +68,7 @@ Access `http://localhost:8080/example/` from your browser.
 or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
 ```sh
+# brew instsall node
 npm install -g yo
 npm install -g generator-skinny
 mkdir skinny-app
@@ -369,9 +370,7 @@ class MembersController extends SkinnyServlet {
 
 And then, use scaml instead.
 
-### CoffeeScript, TypeScript and LESS support
-
-You can easily use CoffeeScript, TypeScript and LESS with Skinny apps.
+### CoffeeScript & LESS support
 
 First, add `skinny-assets` to libraryDependencies.
 
@@ -383,7 +382,7 @@ libraryDependencies ++= Seq(
 )
 ```
 
-You can easily use CoffeeScript, TypeScript and LESS after adding `AssetsController` to routes.
+And then, add `AssetsController` to routes. Now you can easily use CoffeeScript, TypeScript and LESS.
 
 ```scala
 // src/main/scala/ScalatraBootstrap.scala
@@ -417,38 +416,6 @@ You can access the latest compiled JavaScript code at `http://localhost:8080/ass
 }).call(this);
 ```
 
-If you use TypeScript, just put *.ts files under `WEB-INF/assets/ts`:
-
-```typescript
-// src/main/webapp/WEB-INF/assets/ts/greeting.ts
-class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter = new Greeter("world");
-```
-
-You can access the latest compiled JavaScript code at `http://localhost:8080/assets/js/greeting.js`.
-
-```javascript
-var Greeter = (function () {
-    function Greeter(message) {
-        this.greeting = message;
-    }
-    Greeter.prototype.greet = function () {
-        return "Hello, " + this.greeting;
-    };
-    return Greeter;
-})();
-var greeter = new Greeter("world");
-```
-
 If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 
 ```less
@@ -460,7 +427,7 @@ If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 }
 ```
 
-You can access the latest compiled CSS at `http://localhost:8080/assets/css/box.css`.
+You can access the latest compiled CSS file at `http://localhost:8080/assets/css/box.css`.
 
 ```css
 .box {
@@ -538,6 +505,7 @@ These are major tasks that Skinny should fix.
 
  - Scaffold generator support
  - Designing Authentication API
+ - Production packaging example
  - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.
