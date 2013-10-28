@@ -45,21 +45,12 @@ libraryDependencies ++= Seq(
 )
 ```
 
-## Try example
+## Try blank app now
 
-You can try the example right now.
+Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-https://github.com/seratch/skinny-framework/tree/develop/example
+https://github.com/seratch/skinny-framework/releases
 
-```
-git clone https://github.com/seratch/skinny-framework.git
-cd skinny-framework
-sbt 
-// project example
-// ~;container:stop;container:start
-```
-
-Access `http://localhost:8080/example/` from your browser.
 
 ### Yeoman generator
 
