@@ -291,7 +291,7 @@ Soft delete support is also available.
 object Member extends SkinnyCRUDMapper[Member] 
   with SoftDeleteWithTimestamp[Member]
 /* -- expects following table by default
-create table meber(
+create table member(
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   deleted_at timestamp
@@ -305,7 +305,7 @@ Furthermore, optimistic lock is also available.
 object Member extends SkinnyCRUDMapper[Member] 
   with OptimisticLockWithVersionFeature[Member]
 /* -- expects following table by default
-create table meber(
+create table member(
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   lock_version bigint
