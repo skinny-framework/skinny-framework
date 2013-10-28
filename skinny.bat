@@ -20,6 +20,11 @@ IF %COMMAND%==clean (
   GOTO :end
 )
 
+IF %COMMAND%==update (
+  sbt update
+  GOTO :end
+)
+
 IF %COMMAND%==console (
   sbt console
   GOTO :end
@@ -48,14 +53,15 @@ IF %COMMAND%==package (
 REM Didn't select command.
 :message
 echo.
-echo Usage: grep [COMMAND] [OPTIONS]...
+echo Usage: skinny [COMMAND] [OPTIONS]...
 echo.
-echo   clean:     : will clear target directory
-echo   run:       : will run Skinny app for local development
-echo   compile:   : will compile all the classes
-echo   test:      : will run all the tests
-echo   test-only: : will run the specified test
-echo   package:   : will create *.war file to deploy
+echo   clean     : will clear target directory
+echo   run       : will run Skinny app for local development
+echo   compile   : will compile all the classes
+echo   update    : will update dependencies
+echo   test      : will run all the tests
+echo   test-only : will run the specified test
+echo   package   : will create *.war file to deploy
 echo.
 
 

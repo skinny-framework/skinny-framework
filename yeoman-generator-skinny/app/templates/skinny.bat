@@ -20,6 +20,11 @@ IF %COMMAND%==clean (
   GOTO :end
 )
 
+IF %COMMAND%==update (
+  sbt update
+  GOTO :end
+)
+
 IF %COMMAND%==console (
   sbt "dev/console"
   GOTO :end
