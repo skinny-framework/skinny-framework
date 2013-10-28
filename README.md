@@ -370,7 +370,7 @@ class MembersController extends SkinnyServlet {
 
 And then, use scaml instead.
 
-### CoffeeScript, TypeScript and LESS support
+### CoffeeScript & LESS support
 
 First, add `skinny-assets` to libraryDependencies.
 
@@ -414,38 +414,6 @@ You can access the latest compiled JavaScript code at `http://localhost:8080/ass
   echo("foo");
 
 }).call(this);
-```
-
-If you use TypeScript, just put *.ts files under `WEB-INF/assets/ts`:
-
-```typescript
-// src/main/webapp/WEB-INF/assets/ts/greeting.ts
-class Greeter {
-    greeting: string;
-    constructor(message: string) {
-        this.greeting = message;
-    }
-    greet() {
-        return "Hello, " + this.greeting;
-    }
-}
-
-var greeter = new Greeter("world");
-```
-
-You can access the latest compiled JavaScript code at `http://localhost:8080/assets/js/greeting.js`.
-
-```javascript
-var Greeter = (function () {
-    function Greeter(message) {
-        this.greeting = message;
-    }
-    Greeter.prototype.greet = function () {
-        return "Hello, " + this.greeting;
-    };
-    return Greeter;
-})();
-var greeter = new Greeter("world");
 ```
 
 If you use LESS, just put *.less files under `WEB-INF/assets/less`:
