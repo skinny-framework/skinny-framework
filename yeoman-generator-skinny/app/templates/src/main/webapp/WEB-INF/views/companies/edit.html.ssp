@@ -1,6 +1,8 @@
 <%@val params: skinny.Params %>
 <%@val errorMessages: Seq[String] %>
 <%@val i18n: skinny.I18n %>
+<%@val csrfKey: String %>
+<%@val csrfToken: String %>
 
 <h3>${i18n.get("company.edit")}</h3>
 <hr/>

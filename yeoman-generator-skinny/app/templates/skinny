@@ -6,33 +6,37 @@ if [ "`which sbt`" == "" ]; then
 fi
 
 function run_app() {
-  sbt "~;container:stop;container:start"
+  sbt "project dev" "~;container:stop;container:start"
 }
 
 command="$1"
 if [ $command == "run" ];then
   run_app
 elif [ $command == "clean" ];then
-  sbt clean
+  sbt dev/clean
 elif [ $command == "update" ];then
   sbt update
 elif [ $command == "console" ];then
-  sbt console
+  sbt dev/console
 elif [ $command == "compile" ];then
-  sbt compile
+  sbt dev/compile
 elif [ $command == "test" ];then
-  sbt test
+  sbt dev/test
 elif [ $command == "test-only" ];then
-  sbt "test-only $2"
+  sbt "dev/test-only $2"
 elif [ $command == "package" ];then
-  sbt package
+  rm -rf build
+  mkdir build
+  cp -pr src build/src
+  cp -pr build.sbt build/build.sbt
+  sbt build/package
 else
   echo ""
   echo "Usage: grep [COMMAND] [OPTIONS]..."
   echo ""
+  echo "  run:       will run Skinny app for local development"
   echo "  clean:     will clear target directory"
   echo "  update:    will update dependencies"
-  echo "  run:       will run Skinny app for local development"
   echo "  console:   will run sbt console"
   echo "  compile:   will compile all the classes"
   echo "  test:      will run all the tests"
