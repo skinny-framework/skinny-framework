@@ -24,6 +24,7 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     get("/companies.xml") {
       logger.debug(body)
       status should equal(200)
+      body should include("<companies><company>")
     }
   }
 

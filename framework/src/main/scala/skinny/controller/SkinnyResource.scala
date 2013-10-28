@@ -28,6 +28,8 @@ trait SkinnyResource extends SkinnyController {
    */
   protected def resourceName: String
 
+  override protected def xmlRootName = resourcesName
+
   override protected def xmlItemName = resourceName
 
   /**
