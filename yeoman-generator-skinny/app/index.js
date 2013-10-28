@@ -21,5 +21,6 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('package.json', 'package.json');
   this.copy('README.md', 'README.md');
   this.copy('skinny', 'skinny');
+  this.copy('skinny.bat', 'skinny.bat');
 };
 
