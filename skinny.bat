@@ -10,12 +10,12 @@ IF NOT DEFINED COMMAND (
 GOTO :message
 )
 
-IF %COMMAND% == run (
+IF %COMMAND%==run (
 sbt "~;container:stop;container:start"
 GOTO :end
 )
 
-IF %COMMAND%== clean (
+IF %COMMAND%==clean (
   sbt clean
   GOTO :end
 )
@@ -47,15 +47,16 @@ IF %COMMAND%==package (
 
 REM Didn't select command.
 :message
-echo ""
+echo.
 echo Usage: grep [COMMAND] [OPTIONS]...
+echo.
 echo   clean:     : will clear target directory
 echo   run:       : will run Skinny app for local development
 echo   compile:   : will compile all the classes
 echo   test:      : will run all the tests
 echo   test-only: : will run the specified test
 echo   package:   : will create *.war file to deploy
-echo ""
+echo.
 
 
 :end
