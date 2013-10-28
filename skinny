@@ -28,7 +28,7 @@ elif [ $command == "package" ];then
   sbt package
 else
   echo ""
-  echo "Usage: grep [COMMAND] [OPTIONS]..."
+  echo "Usage: skinny [COMMAND] [OPTIONS]..."
   echo ""
   echo "  run       : will run Skinny app for local development"
   echo "  clean     : will clear target directory"
