@@ -54,6 +54,15 @@ IF %COMMAND%==package (
   GOTO :end
 )
 
+IF %COMMAND%==publish (
+  rmdir build /s /q
+  mkdir build
+  xcopy src build\src /E /D
+  xcopy build.sbt build\build.sbt /E /D
+  sbt "build/run" "build/publish"
+  GOTO :end
+)
+
 REM Didn't select command.
 :message
 echo.
@@ -67,6 +76,7 @@ echo   compile   : will compile all the classes
 echo   test      : will run all the tests
 echo   test-only : will run the specified test
 echo   package   : will create *.war file to deploy
+echo   publish   : will publish *.war file to repository
 echo.
 
 

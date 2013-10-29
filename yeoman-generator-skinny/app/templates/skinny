@@ -30,6 +30,12 @@ elif [ $command == "package" ];then
   cp -pr src build/src
   cp -pr build.sbt build/build.sbt
   sbt build/run build/package
+elif [ $command == "publish" ];then
+  rm -rf build
+  mkdir build
+  cp -pr src build/src
+  cp -pr build.sbt build/build.sbt
+  sbt build/run build/publish
 else
   echo ""
   echo "Usage: skinny [COMMAND] [OPTIONS]..."
@@ -42,6 +48,7 @@ else
   echo "  test      : will run all the tests"
   echo "  test-only : will run the specified test"
   echo "  package   : will create *.war file to deploy"
+  echo "  publish   : will publish *.war file to repository"
   echo ""
 fi
 

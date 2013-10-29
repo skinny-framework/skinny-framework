@@ -24,8 +24,8 @@ object SkinnyAppBuild extends Build {
 
   lazy val dev = Project(id = "dev", base = file("."),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ Seq(
-      organization := "your.organization",
-      name := "skinny-app-dev",
+      organization := "com.github.seratch",
+      name := "skinny-blank-app-dev",
       version := "0.0.0",
       scalaVersion := "2.10.3",
       resolvers ++= Seq(
@@ -39,8 +39,8 @@ object SkinnyAppBuild extends Build {
 
   lazy val build = Project(id = "build", base = file("build"),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
-      organization := "your.organization",
-      name := "skinny-app",
+      organization := "com.github.seratch",
+      name := "skinny-blank-app",
       version := "0.0.1-SNAPSHOT",
       scalaVersion := "2.10.3",
       resolvers ++= Seq(
@@ -48,7 +48,12 @@ object SkinnyAppBuild extends Build {
         "sonatype snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= dependencies,
-      mainClass := Some("BuildTasks")
+      mainClass := Some("BuildTasks"),
+      publishTo <<= version { (v: String) =>
+        val base = "https://oss.sonatype.org/"
+        if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
+        else Some("releases" at base + "service/local/staging/deploy/maven2")
+      }
     )
   )
 
