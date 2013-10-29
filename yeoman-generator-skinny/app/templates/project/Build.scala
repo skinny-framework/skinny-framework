@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.8"
+  val skinnyVersion = "0.9.9-SNAPSHOT"
   val scalatraVersion = "2.2.1"
 
   val dependencies = Seq(
@@ -37,6 +37,21 @@ object SkinnyAppBuild extends Build {
     )
   )
 
+  lazy val task = Project(id = "task", base = file("task"),
+    settings = Defaults.defaultSettings ++ Seq(
+      scalaVersion := "2.10.3",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= Seq(
+        "com.github.seratch" %% "skinny-task"   % skinnyVersion,
+        "com.github.seratch" %% "skinny-assets" % skinnyVersion
+      ),
+      mainClass := Some("TaskLauncher")
+    )
+  )
+
   lazy val build = Project(id = "build", base = file("build"),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       organization := "com.github.seratch",
@@ -48,7 +63,6 @@ object SkinnyAppBuild extends Build {
         "sonatype snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= dependencies,
-      mainClass := Some("BuildTasks"),
       publishTo <<= version { (v: String) =>
         val base = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")

@@ -8,6 +8,12 @@ fi
 function run_app() {
   sbt "project dev" "~;container:stop;container:start"
 }
+function clean_build() {
+  rm -rf build
+  mkdir build
+  cp -pr src build/src
+  cp -pr build.sbt build/build.sbt
+}
 
 command="$1"
 if [ $command == "run" ];then
@@ -24,18 +30,22 @@ elif [ $command == "test" ];then
   sbt dev/test
 elif [ $command == "test-only" ];then
   sbt "dev/test-only $2"
+elif [ $command == "g" -o $command == "generate" ];then
+  type="$2"
+  shift
+  shift
+  if [ $type == "scaffold" ]; then
+    command="task/run scaffold $@"
+    sbt "${command}"
+  else
+    echo "Generator for ${type} not found."
+  fi
 elif [ $command == "package" ];then
-  rm -rf build
-  mkdir build
-  cp -pr src build/src
-  cp -pr build.sbt build/build.sbt
-  sbt build/run build/package
+  clean_build
+  sbt "task/run assets:precompile" build/package
 elif [ $command == "publish" ];then
-  rm -rf build
-  mkdir build
-  cp -pr src build/src
-  cp -pr build.sbt build/build.sbt
-  sbt build/run build/publish
+  clean_build
+  sbt "task/run assets:precompile" build/publish
 else
   echo ""
   echo "Usage: skinny [COMMAND] [OPTIONS]..."

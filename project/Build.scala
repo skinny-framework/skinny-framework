@@ -54,6 +54,26 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework)
 
+  lazy val task = Project (id = "task", base = file("task"),
+    settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-task",
+      version := Version,
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "commons-io"    %  "commons-io" % "2.4"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    )
+  )
+
   lazy val framework = Project (id = "framework", base = file("framework"), 
    settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
