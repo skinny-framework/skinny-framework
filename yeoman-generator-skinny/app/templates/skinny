@@ -37,6 +37,12 @@ elif [ $command == "g" -o $command == "generate" ];then
   if [ $type == "scaffold" ]; then
     command="task/run scaffold $@"
     sbt "${command}"
+  elif [ $type == "controller" ]; then
+    command="task/run controller $@"
+    sbt "${command}"
+  elif [ $type == "model" ]; then
+    command="task/run model $@"
+    sbt "${command}"
   else
     echo "Generator for ${type} not found."
   fi

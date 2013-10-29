@@ -42,7 +42,7 @@ trait ControllerGenerator {
         |  // src/main/scala/ScalatraBootstrap.scala
         |  // class ScalatraBootstrap extends SkinnyLifeCycle {
         |  //   override def initSkinnyApp(ctx: ServletContext) {
-        |  //     ${controllerClassName}.mount(ctx)
+        |  //     Controllers.${name}.mount(ctx)
         |  //   }
         |  // }
         |
