@@ -8,6 +8,8 @@ trait TaskLauncher {
   private[this] val tasks = new scala.collection.mutable.ListBuffer[(String, (List[String]) => Unit)]
 
   // built-in tasks
+  register("controller", (params) => ControllerGenerator.run(params))
+  register("model", (params) => ModelGenerator.run(params))
   register("scaffold", (params) => ScaffoldSspGenerator.run(params))
   register("scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
   register("scaffold:scaml", (params) => ScaffoldSspGenerator.run(params))
