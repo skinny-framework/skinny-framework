@@ -8,6 +8,10 @@ import java.io.File
  */
 trait ScaffoldGenerator extends CodeGenerator {
 
+  private def showUsage = {
+    println("Usage: sbt \"task/run scaffold members member name:String birthday:Option[DateTime]\"")
+  }
+
   def run(args: List[String]) {
     if (args.size < 3) {
       showUsage
@@ -30,7 +34,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         generateResourceControllerSpec(resources, resource, attributePairs)
 
         // Model
-        ModelGenerator.generate(resource, attributePairs)
+        ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
         ModelGenerator.generateSpec(resource, attributePairs)
 
         // Views
@@ -46,7 +50,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         generateSQLs(resources, resource, attributePairs)
 
       case _ =>
-        println("Usage: ./skinny scaffold members member firstName:String lastName:String")
+        showUsage
     }
   }
 
@@ -54,7 +58,6 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    FileUtils.forceMkdir(file.getParentFile)
     val code =
       s"""package controller
         |
@@ -85,7 +88,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |}
         |""".stripMargin
-    FileUtils.write(file, code)
+    writeIfAbsent(file, code)
     println(s"${file.getAbsolutePath} is created.")
   }
 
@@ -93,7 +96,6 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val file = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
-    FileUtils.forceMkdir(file.getParentFile)
     val code =
       s"""package controller
         |
@@ -191,8 +193,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |}
         |""".stripMargin
-    FileUtils.write(file, code)
-    println(s"${file.getAbsolutePath} is created.")
+    writeIfAbsent(file, code)
   }
 
   def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
@@ -220,16 +221,52 @@ trait ScaffoldGenerator extends CodeGenerator {
         |}
         |""".stripMargin
     val file = new File(s"src/main/resources/messages.conf")
-    FileUtils.write(file, messages, true)
-    println(s"${file.getAbsolutePath} is created.")
+    writeAppending(file, messages)
   }
 
   def generateSQLs(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    // TODO
+    val name = toSnakeCase(resources)
+    val file = new File(s"src/main/resources/sql/development/${name}_create_table.sql")
+    val columns = attributePairs.map {
+      case (k, t) =>
+        s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null") + ","
+    }.mkString("\n")
+    val code =
+      s"""-- DDL for H2 database
+        |create table ${name} (
+        |  id identity not null primary key,
+        |${columns},
+        |  created_at timestamp not null,
+        |  updated_at timestamp
+        |)
+        |""".stripMargin
+    writeIfAbsent(file, code)
   }
 
-  protected def showUsage = {
-    println("Usage: sbt \"task/run scaffold members member name:String birthday:Option[DateTime]\"")
+  private def toSnakeCase(resources: String): String = {
+    resources.map(c => if (c.isUpper) "_" + c.toLower else c)
+      .mkString
+      .replaceFirst("^_", "")
+      .replaceFirst("_$", "")
+      .replaceFirst("__", "_")
+  }
+
+  private def toDBType(t: String): String = {
+    toParamType(t) match {
+      case "String" => "varchar(512)"
+      case "Long" => "bigint"
+      case "Int" => "int"
+      case "Short" => "int"
+      case "Byte" => "tinyint"
+      case "ByteArray" => "binary"
+      case "DateTime" => "timestamp"
+      case "LocalDate" => "date"
+      case "LocalTime" => "time"
+      case "Boolean" => "boolean"
+      case "Double" => "double"
+      case "Float" => "float"
+      case _ => "other"
+    }
   }
 
 }

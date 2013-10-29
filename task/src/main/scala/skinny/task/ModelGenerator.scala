@@ -10,6 +10,10 @@ object ModelGenerator extends ModelGenerator
 
 trait ModelGenerator extends CodeGenerator {
 
+  private def showUsage = {
+    println("Usage: sbt \"task/run g model member name:String birthday:Option[LocalDate]\"")
+  }
+
   def run(args: List[String]) {
     args.toList match {
       case name :: attributes =>
@@ -19,16 +23,14 @@ trait ModelGenerator extends CodeGenerator {
             case _ => None
           }
         }
-        generate(name, attributePairs)
-      case _ =>
-        println("Usage: sbt \"task/run g model member name:String birthday:Option[LocalDate]\"")
+        generate(name, None, attributePairs)
+      case _ => showUsage
     }
   }
 
-  def generate(name: String, attributePairs: Seq[(String, String)]) {
+  def generate(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
     val modelClassName = toClassName(name)
     val productionFile = new File(s"src/main/scala/model/${modelClassName}.scala")
-    FileUtils.forceMkdir(productionFile.getParentFile)
     val productionCode =
       s"""package model
         |
@@ -44,7 +46,7 @@ trait ModelGenerator extends CodeGenerator {
         |)
         |
         |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] with TimestampsFeature[${modelClassName}] {
-        |
+        |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
         |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
@@ -55,8 +57,7 @@ trait ModelGenerator extends CodeGenerator {
         |  )
         |}
         |""".stripMargin
-    FileUtils.write(productionFile, productionCode)
-    println(s"${productionFile.getAbsolutePath} is created.")
+    writeIfAbsent(productionFile, productionCode)
   }
 
   def generateSpec(name: String, attributePairs: Seq[(String, String)]) {
@@ -75,7 +76,6 @@ trait ModelGenerator extends CodeGenerator {
         |class ${modelClassName}Spec extends ScalatraFlatSpec with AutoRollback {
         |}
         |""".stripMargin
-    FileUtils.write(specFile, specCode)
-    println(s"${specFile.getAbsolutePath} is created.")
+    writeIfAbsent(specFile, specCode)
   }
 }

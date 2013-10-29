@@ -1,9 +1,14 @@
 package skinny.task
 
+import java.io.File
+import org.apache.commons.io.FileUtils
+
 /**
  * Code generator.
  */
 trait CodeGenerator {
+
+  protected def toVariable(name: String) = name.head.toLower + name.tail
 
   protected def toClassName(name: String) = name.head.toUpper + name.tail
 
@@ -19,6 +24,27 @@ trait CodeGenerator {
     val method = toParamType(t).head.toLower + toParamType(t).tail
     if (t.startsWith("Option")) method + "Opt"
     else method
+  }
+
+  protected def writeIfAbsent(file: File, code: String) {
+    FileUtils.forceMkdir(file.getParentFile)
+    if (file.exists()) {
+      println("\"" + file.getAbsolutePath + "\" skipped.")
+    } else {
+      FileUtils.write(file, code)
+      println("\"" + file.getAbsolutePath + "\" created.")
+    }
+  }
+
+  protected def writeAppending(file: File, code: String) {
+    FileUtils.forceMkdir(file.getParentFile)
+    if (file.exists()) {
+      FileUtils.write(file, code, true)
+      println("\"" + file.getAbsolutePath + "\" modified.")
+    } else {
+      FileUtils.write(file, code)
+      println("\"" + file.getAbsolutePath + "\" created.")
+    }
   }
 
 }

@@ -18,7 +18,13 @@ trait TaskLauncher {
   def register(name: String, runner: (List[String]) => Unit) = tasks.append(name -> runner)
 
   def showUsage = {
-    println("Usage: sbt \"task/run scaffold name:String birthday:Option[LocalDate]\"")
+    println(
+      s"""
+        | Usage: sbt "task/run [task] [options...]
+        |
+        |${tasks.map(t => "  " + t._1).mkString("\n")}
+        |
+        |""".stripMargin)
   }
 
   def main(args: Array[String]) {
