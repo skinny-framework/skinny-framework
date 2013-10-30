@@ -84,7 +84,9 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
-      libraryDependencies ++= scalatraDependencies ++ testDependencies,
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "commons-io"    %  "commons-io" % "2.4"
+      ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       sbtPlugin := false,

@@ -35,13 +35,13 @@ elif [ $command == "g" -o $command == "generate" ];then
   shift
   shift
   if [ $type == "scaffold" ]; then
-    command="task/run scaffold $@"
+    command="task/run generate-scaffold $@"
     sbt "${command}"
   elif [ $type == "controller" ]; then
-    command="task/run controller $@"
+    command="task/run generate-controller $@"
     sbt "${command}"
   elif [ $type == "model" ]; then
-    command="task/run model $@"
+    command="task/run generate-model $@"
     sbt "${command}"
   else
     echo "Generator for ${type} not found."
@@ -65,6 +65,10 @@ else
   echo "  test-only : will run the specified test"
   echo "  package   : will create *.war file to deploy"
   echo "  publish   : will publish *.war file to repository"
+  echo ""
+  echo "  g/generate controller : will generate controller"
+  echo "  g/generate model      : will generate model"
+  echo "  g/generate scaffold   : will generate scaffold files"
   echo ""
 fi
 

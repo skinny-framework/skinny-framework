@@ -46,14 +46,19 @@ trait SkinnyResource extends SkinnyController {
   /**
    * Use relative path if true. This is set as false by default.
    *
-   * If you set this as true, routing will become simpler but /${resources}.xml or /${resources}.json don't work.
+   * If you set this as true, routing will become simpler but /{resources}.xml or /{resources}.json don't work.
    */
   protected def useRelativePath: Boolean = false
 
   /**
+   * Base path prefix. (e.g. /admin/{resourcesName} )
+   */
+  protected def basePathPrefix: String = ""
+
+  /**
    * Base path.
    */
-  protected def basePath: String = if (useRelativePath) "" else s"/${resourcesName}"
+  protected def basePath: String = basePathPrefix + (if (useRelativePath) "" else s"/${resourcesName}")
 
   /**
    * Outputs debug logging for passed parameters.

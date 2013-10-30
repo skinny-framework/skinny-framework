@@ -3,7 +3,7 @@ package skinny.controller
 import scala.language.dynamics
 
 /**
- * [[org.scalatra.FlashMap]] wrapper.
+ * org.scalatra.FlashMap wrapper.
  *
  * @param underlying scalatra's FlashMap
  */
