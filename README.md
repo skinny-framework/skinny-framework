@@ -26,7 +26,7 @@ A sound-alike word **"好きに (su-ki-ni)"** in Japanese means **"as you like i
 
 ## How to use
 
-Actually, An application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
+Actually, application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
 
 ```scala
 libraryDependencies ++= Seq(
@@ -79,7 +79,7 @@ Let's create war file to deploy.
 
 ![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/yeoman-logo.png)
 
-or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
+If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
 ```sh
 # brew instsall node
@@ -95,9 +95,9 @@ yo skinny
 
 ### Routing & Controller & Validator
 
-Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you need to use Scalatra's API directly, Skinny never bother you.
+Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler/rich syntax. Of course, if you need to use Scalatra's API directly, Skinny never bothers you.
 
-`SkinnyController` is a class which extends `ScalatraBase` and out-of-the-box components are integrated. 
+`SkinnyController` is a trait which extends `ScalatraFilter` and out-of-the-box components are integrated. 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
@@ -152,14 +152,15 @@ Skinny-Validator is newly created validator which is based on [seratch/inputvali
 
 ```scala
 import skinny.validator._
-def createForm = validation(
-  paramKey("name") is required & minLength(2) & alphabetOnly, 
-  paramKey("countryId") is numeric
-)
 object alphabetOnly extends ValidationRule {
   def name = "alphabetOnly"
   def isValid(v: Any) = isEmpty(v) || v.toString.matches("^[a-zA-Z]*$")
 }
+
+def createForm = validation(
+  paramKey("name") is required & minLength(2) & alphabetOnly, 
+  paramKey("countryId") is numeric
+)
 ```
 
 `SkinnyResource` which is similar to Rails ActiveResource is available. That's a pretty DRY way.
@@ -182,13 +183,13 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
+`Company` object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
 Skinny provides you Skinny-ORM as the default O/R mapper, which is built with [ScalikeJDBC](https://github.com/seratch/scalikejdbc).
 
-Skinny-ORM is simple but much powerful. Your first model class and companion are here.
+Skinny-ORM is much powerful, so you don't need to write much code. Your first model class and companion are here.
 
 ```scala
 case class Member(id: Long, name: String, createdAt: DateTime)
@@ -275,14 +276,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 ```scala
 class Member(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
 object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  created_at timestamp not null,
-  updated_at timestamp
-);
-*/
+// created_at timestamp not null, updated_at timestamp
 ```
 
 Soft delete support is also available.
@@ -290,13 +284,7 @@ Soft delete support is also available.
 ```scala
 object Member extends SkinnyCRUDMapper[Member] 
   with SoftDeleteWithTimestamp[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  deleted_at timestamp
-);
-*/
+// deleted_at timestamp
 ```
 
 Furthermore, optimistic lock is also available.
@@ -304,19 +292,15 @@ Furthermore, optimistic lock is also available.
 ```scala
 object Member extends SkinnyCRUDMapper[Member] 
   with OptimisticLockWithVersionFeature[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  lock_version bigint
-);
-*/
+// lock_version bigint
 ```
 
 
 ### DB Migration
 
 DB migration comes with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+
+![Flyway Logo](http://flywaydb.org/assets/logo/flyway-logo-transparent-100.png)
 
 ```sh
 ./skinny db:migrate [env]
