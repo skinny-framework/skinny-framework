@@ -315,7 +315,7 @@ create table member(
 
 ### DB Migration
 
-DB migration is came with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+DB migration comes with [Flyway](http://flywaydb.org/). Usage is pretty simple.
 
 ```sh
 ./skinny db:migrate [env]
