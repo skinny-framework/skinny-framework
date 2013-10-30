@@ -1,4 +1,4 @@
-package skinny.task
+package skinny.task.generator
 
 /**
  * Scaffold generator with jade template.

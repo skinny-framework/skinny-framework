@@ -1,13 +1,13 @@
 #!/bin/sh
 
 sbt ++2.10.0 \
-  common/publish-local-signed \
-  assets/publish-local-signed \
-  orm/publish-local-signed \
-  validator/publish-local-signed \
-  framework/publish-local-signed \
-  task/publish-local-signed \
-  test/publish-local-signed \
-  freemarker/publish-local-signed \
-  thymeleaf/publish-local-signed 
+  common/publish-local \
+  assets/publish-local \
+  orm/publish-local \
+  validator/publish-local \
+  framework/publish-local \
+  task/publish-local \
+  test/publish-local \
+  freemarker/publish-local \
+  thymeleaf/publish-local 
 

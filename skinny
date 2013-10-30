@@ -6,7 +6,7 @@ if [ "`which sbt`" == "" ]; then
 fi
 
 function run_app() {
-  sbt "~;container:stop;container:start"
+  sbt "project example" "~;container:stop;container:start"
 }
 
 command="$1"
@@ -24,6 +24,9 @@ elif [ $command == "test" ];then
   sbt test
 elif [ $command == "test-only" ];then
   sbt "test-only $2"
+elif [ $command == "db:migrate" ];then
+  shift
+  sbt "example/run db:migrate $2"
 elif [ $command == "package" ];then
   sbt package
 else

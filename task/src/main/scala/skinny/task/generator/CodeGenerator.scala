@@ -1,4 +1,4 @@
-package skinny.task
+package skinny.task.generator
 
 import java.io.File
 import org.apache.commons.io.FileUtils
@@ -26,13 +26,24 @@ trait CodeGenerator {
     else method
   }
 
+  protected def forceWrite(file: File, code: String) {
+    FileUtils.forceMkdir(file.getParentFile)
+    if (file.exists()) {
+      FileUtils.write(file, code)
+      println("\"" + file.getPath + "\" modified.")
+    } else {
+      FileUtils.write(file, code)
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
   protected def writeIfAbsent(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
-      println("\"" + file.getAbsolutePath + "\" skipped.")
+      println("\"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, code)
-      println("\"" + file.getAbsolutePath + "\" created.")
+      println("\"" + file.getPath + "\" created.")
     }
   }
 
@@ -40,10 +51,10 @@ trait CodeGenerator {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       FileUtils.write(file, code, true)
-      println("\"" + file.getAbsolutePath + "\" modified.")
+      println("\"" + file.getPath + "\" modified.")
     } else {
       FileUtils.write(file, code)
-      println("\"" + file.getAbsolutePath + "\" created.")
+      println("\"" + file.getPath + "\" created.")
     }
   }
 

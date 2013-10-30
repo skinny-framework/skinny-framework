@@ -6,13 +6,21 @@ package skinny
  * @param params params
  */
 case class StrongParameters(params: Map[String, Any]) {
-  def permit(nameAndTypes: (String, ParamType)*): PermittedStrongParameters = {
-    new PermittedStrongParameters(
-      params.filter { case (name, _) => nameAndTypes.exists(_._1 == name) }.map {
-        case (name, value) =>
-          name -> (value -> nameAndTypes.find(_._1 == name).get._2)
+  def permit(paramKeyAndParamTypes: (String, ParamType)*): PermittedStrongParameters = {
+    val _params = params
+      .filter { case (name, _) => paramKeyAndParamTypes.exists(_._1 == name) }
+      .flatMap { case (name, value) =>
+      paramKeyAndParamTypes.find(_._1 == name).map {
+        case (_, paramType) => name -> (value -> paramType)
+        case (_, ParamType.Boolean) => name -> (Option(value).getOrElse(false) -> ParamType.Boolean)
       }
-    )
+    }
+    val nullableBooleanParams = paramKeyAndParamTypes
+      .filter(_._2 == ParamType.Boolean)
+      .filterNot { case (paramKey, _) => params.keys.exists(_ == paramKey) }
+      .map { case (name, _) => name -> (false, ParamType.Boolean) }
+
+    new PermittedStrongParameters(_params ++ nullableBooleanParams)
   }
 }
 

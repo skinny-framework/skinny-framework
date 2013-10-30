@@ -1,5 +1,8 @@
 package skinny.task
 
+import skinny.task.generator._
+import skinny.dbmigration.DBMigration
+
 /**
  * Task launcher.
  */
@@ -12,8 +15,10 @@ trait TaskLauncher {
   register("generate-model", (params) => ModelGenerator.run(params))
   register("generate-scaffold", (params) => ScaffoldSspGenerator.run(params))
   register("generate-scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
-  register("genarate-scaffold:scaml", (params) => ScaffoldSspGenerator.run(params))
-  register("generate-scaffold:jade", (params) => ScaffoldSspGenerator.run(params))
+  // TODO
+  //register("genarate-scaffold:scaml", (params) => ScaffoldSspGenerator.run(params))
+  //register("generate-scaffold:jade", (params) => ScaffoldSspGenerator.run(params))
+  register("db:migrate", (params) => DBMigration.migrate(params.headOption.getOrElse("development")))
 
   def register(name: String, runner: (List[String]) => Unit) = tasks.append(name -> runner)
 

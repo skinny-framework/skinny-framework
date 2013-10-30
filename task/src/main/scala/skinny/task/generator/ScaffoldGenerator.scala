@@ -1,7 +1,8 @@
-package skinny.task
+package skinny.task.generator
 
-import org.apache.commons.io.FileUtils
 import java.io.File
+import scala.io.Source
+import org.joda.time._
 
 /**
  * Scaffold generator.
@@ -9,8 +10,35 @@ import java.io.File
 trait ScaffoldGenerator extends CodeGenerator {
 
   private def showUsage = {
-    println("Usage: sbt \"task/run scaffold members member name:String birthday:Option[DateTime]\"")
+    println("Usage: sbt \"task/run generate-scaffold members member name:String birthday:Option[DateTime]\"")
   }
+
+  private[this] def paramTypes = Seq(
+    "Boolean",
+    "Double",
+    "Float",
+    "Long",
+    "Int",
+    "Short",
+    "String",
+    "Byte",
+    "ByteArray",
+    "DateTime",
+    "LocalDate",
+    "LocalTime",
+    "Option[Boolean]",
+    "Option[Double]",
+    "Option[Float]",
+    "Option[Long]",
+    "Option[Int]",
+    "Option[Short]",
+    "Option[String]",
+    "Option[Byte]",
+    "Option[ByteArray]",
+    "Option[DateTime]",
+    "Option[LocalDate]",
+    "Option[LocalTime]"
+  )
 
   def run(args: List[String]) {
     if (args.size < 3) {
@@ -23,31 +51,45 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     args match {
       case resources :: resource :: attributes =>
-        val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
-          attribute.toString.split(":") match {
-            case Array(k, v) => Some(k -> v)
-            case _ => None
+        val hasInvalidAttribute = attributes.exists { attr =>
+          if (!attr.contains(":")) true
+          else attr.split(":") match {
+            case Array(_, paramType) => !paramTypes.contains(paramType)
+            case _ => true
           }
         }
-        // Controller
-        generateResourceController(resources, resource, attributePairs)
-        generateResourceControllerSpec(resources, resource, attributePairs)
+        if (hasInvalidAttribute) {
+          showUsage
+        } else {
 
-        // Model
-        ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
-        ModelGenerator.generateSpec(resource, attributePairs)
+          val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
+            attribute.toString.split(":") match {
+              case Array(k, v) => Some(k -> v)
+              case _ => None
+            }
+          }
+          // Controller
+          generateResourceController(resources, resource, attributePairs)
+          appendToScalatraBootstrap(resources)
+          generateResourceControllerSpec(resources, resource, attributePairs)
+          appendToFactoriesConf(resource, attributePairs)
 
-        // Views
-        generateNewView(resources, resource, attributePairs)
-        generateEditView(resources, resource, attributePairs)
-        generateIndexView(resources, resource, attributePairs)
-        generateShowView(resources, resource, attributePairs)
+          // Model
+          ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
+          ModelGenerator.generateSpec(resource, attributePairs)
 
-        // messages.conf
-        generateMessages(resources, resource, attributePairs)
+          // Views
+          generateNewView(resources, resource, attributePairs)
+          generateEditView(resources, resource, attributePairs)
+          generateIndexView(resources, resource, attributePairs)
+          generateShowView(resources, resource, attributePairs)
 
-        // SQL
-        generateSQLs(resources, resource, attributePairs)
+          // messages.conf
+          generateMessages(resources, resource, attributePairs)
+
+          // SQL
+          generateSQLs(resources, resource, attributePairs)
+        }
 
       case _ =>
         showUsage
@@ -58,6 +100,12 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
+
+    val validations = attributePairs
+      .filterNot { case (_, t) => isOptionClassName(t) }
+      .filterNot { case (_, t) => toParamType(t) == "Boolean" }
+      .map { case (k, t) => "    paramKey(\"" + k + "\") is required" }
+      .mkString(",\n")
     val code =
       s"""package controller
         |
@@ -73,14 +121,14 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def resourceName = "${resource}"
         |
         |  override def createForm = validation(
-        |${attributePairs.filterNot { case (_, t) => isOptionClassName(t) }.map { case (k, t) => "    paramKey(\"" + k + "\") is required" }.mkString(",\n")}
+        |${validations}
         |  )
         |  override def createFormStrongParameters = Seq(
         |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
         |  )
         |
         |  override def updateForm = validation(
-        |${attributePairs.filterNot { case (_, t) => isOptionClassName(t) }.map { case (k, t) => "    paramKey(\"" + k + "\") is required" }.mkString(",\n")}
+        |${validations}
         |  )
         |  override def updateFormStrongParameters = Seq(
         |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
@@ -89,22 +137,53 @@ trait ScaffoldGenerator extends CodeGenerator {
         |}
         |""".stripMargin
     writeIfAbsent(file, code)
-    println(s"${file.getAbsolutePath} is created.")
+    println("\"" + file.getPath + "\" is created.")
+  }
+
+  def appendToFactoriesConf(resource: String, attributePairs: Seq[(String, String)]) {
+    val file = new File(s"src/test/resources/factories.conf")
+    val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+      case (k, "Boolean") => "  " + k + "=true"
+      case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
+      case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
+      case (k, "DateTime") => "  " + k + "=\"" + new DateTime().toString() + "\""
+      case (k, _) => "  " + k + "=\"Something New\""
+    }.mkString("\n")
+
+    val code =
+      s"""${resource} {
+          |${params}
+          |}
+          |""".stripMargin
+
+    writeAppending(file, code)
   }
 
   def generateResourceControllerSpec(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val file = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
+
+    val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+      case (k, "Boolean") => "\"" + k + "\" -> \"true\""
+      case (k, "DateTime") => "\"" + k + "\" -> new DateTime().toString()"
+      case (k, "LocalDate") => "\"" + k + "\" -> new LocalDate().toString()"
+      case (k, "LocalTime") => "\"" + k + "\" -> new LocalTime().toString()"
+      case (k, _) => "\"" + k + "\" -> \"dummy\""
+    }.mkString(",")
+
     val code =
       s"""package controller
         |
         |import org.scalatra.test.scalatest._
-        |import skinny.test._
+        |import skinny._, test._
+        |import org.joda.time._
         |import model._
         |
-        |class ${controllerClassName}Spec extends ScalatraFlatSpec {
+        |class ${controllerClassName}Spec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
         |  addFilter(${controllerClassName}, "/*")
+        |
+        |  def ${resource} = FactoryGirl(${modelClassName}).create()
         |
         |  it should "show ${resources}" in {
         |    get("/${resources}") {
@@ -114,11 +193,9 @@ trait ScaffoldGenerator extends CodeGenerator {
         |      status should equal(200)
         |    }
         |    get("/${resources}.json") {
-        |      logger.debug(body)
         |      status should equal(200)
         |    }
         |    get("/${resources}.xml") {
-        |      logger.debug(body)
         |      status should equal(200)
         |    }
         |  }
@@ -128,11 +205,9 @@ trait ScaffoldGenerator extends CodeGenerator {
         |      status should equal(200)
         |    }
         |    get(s"/${resources}/$${${resource}.id}.xml") {
-        |      logger.debug(body)
         |      status should equal(200)
         |    }
         |    get(s"/${resources}/$${${resource}.id}.json") {
-        |      logger.debug(body)
         |      status should equal(200)
         |    }
         |  }
@@ -144,14 +219,12 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "create a ${resource}" in {
-        |    post(s"/${resources}",
-        |      ${attributePairs.map { case (k, _) => "\"" + k + "\" -> null" }.mkString(",")}) {
+        |    post(s"/${resources}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrfToken" -> "12345") {
-        |      post(s"/${resources}",
-        |        ${attributePairs.map { case (k, _) => "\"" + k + "\" -> null" }.mkString(",")}, "csrfToken" -> "12345") {
+        |      post(s"/${resources}", ${params}, "csrfToken" -> "12345") {
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -166,14 +239,12 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "update a ${resource}" in {
-        |    put(s"/${resources}/$${${resource}.id}",
-        |      ${attributePairs.map { case (k, _) => "\"" + k + "\" -> null" }.mkString(",")}) {
+        |    put(s"/${resources}/$${${resource}.id}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrfToken" -> "12345") {
-        |      put(s"/${resources}/$${${resource}.id}", "
-        |        ${attributePairs.map { case (k, _) => "\"" + k + "\" -> null" }.mkString(",")}, "csrfToken" -> "12345") {
+        |      put(s"/${resources}/$${${resource}.id}", ${params}, "csrfToken" -> "12345") {
         |        status should equal(200)
         |      }
         |    }
@@ -194,6 +265,31 @@ trait ScaffoldGenerator extends CodeGenerator {
         |}
         |""".stripMargin
     writeIfAbsent(file, code)
+  }
+
+  def appendToScalatraBootstrap(resources: String) {
+    val controllerClassName = toClassName(resources) + "Controller"
+    val newCode =
+      s"""override def initSkinnyApp(ctx: ServletContext) {
+        |    ${controllerClassName}.mount(ctx)
+        |""".stripMargin
+    val file = new File("src/main/scala/ScalatraBootstrap.scala")
+    if (file.exists()) {
+      val code = Source.fromFile(file).mkString.replaceFirst(
+        "(override\\s+def\\s+initSkinnyApp\\s*\\(ctx:\\s+ServletContext\\)\\s*\\{)", newCode)
+      forceWrite(file, code)
+    } else {
+      val fullNewCode =
+        """import _root_.controller._
+          |import skinny._
+          |
+          |class ScalatraBootstrap extends SkinnyLifeCycle {
+          |  ${newCode}
+          |  }
+          |}
+          |""".stripMargin
+      forceWrite(file, fullNewCode)
+    }
   }
 
   def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
@@ -217,6 +313,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  edit="Edit ${_resource}"
         |  new="New ${_resource}"
         |  delete.confirm="Are you sure?"
+        |  id="ID"
         |${attributePairs.map { case (k, _) => "  " + k + "=\"" + toClassName(k) + "\"" }.mkString("\n")}
         |}
         |""".stripMargin
@@ -226,15 +323,16 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateSQLs(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val name = toSnakeCase(resources)
-    val file = new File(s"src/main/resources/sql/development/${name}_create_table.sql")
+    val version = DateTime.now.toString("yyyyMMddHHmm")
+    val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
     val columns = attributePairs.map {
       case (k, t) =>
-        s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null") + ","
-    }.mkString("\n")
+        s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null")
+    }.mkString(",\n")
     val code =
-      s"""-- DDL for H2 database
+      s"""-- Notice: H2 database compatible
         |create table ${name} (
-        |  id identity not null primary key,
+        |  id bigserial not null primary key,
         |${columns},
         |  created_at timestamp not null,
         |  updated_at timestamp

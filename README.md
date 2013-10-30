@@ -45,12 +45,32 @@ libraryDependencies ++= Seq(
 )
 ```
 
-## Try blank app now
+## Try Skinny now
 
 Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
 https://github.com/seratch/skinny-framework/releases
 
+Let's create your first Skinny app by using scaffold generator.
+
+```sh
+./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Long
+./skinny db:migrate
+./skinny run
+```
+
+You can run generated tests.
+
+```sh
+./skinny db:migrate test
+./skinny test
+```
+
+Let's create war file to deploy.
+
+```sh
+./skinny package
+```
 
 ### Yeoman generator
 

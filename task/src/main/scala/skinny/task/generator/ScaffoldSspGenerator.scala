@@ -1,4 +1,4 @@
-package skinny.task
+package skinny.task.generator
 
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -12,6 +12,36 @@ object ScaffoldSspGenerator extends ScaffoldSspGenerator
  * Scaffold generator with ssp template.
  */
 trait ScaffoldSspGenerator extends ScaffoldGenerator {
+
+  private def formInputsPart(resource: String, attributePairs: Seq[(String, String)]) = {
+    // TODO timestamp
+    attributePairs.toList.map { case (k, t) => k -> toParamType(t) }.map {
+      case (name, "Boolean") =>
+        s"""<div class="form-group">
+        |  <label class="control-label" for="name">
+        |    $${i18n.get("${resource}.${name}")}
+        |  </label>
+        |  <div class="controls">
+        |    <div class="row col-md-12">
+        |    <input type="checkbox" name="${name}" value="true" #if(params.${name} == Some(true)) checked #end />
+        |    </div>
+        |  </div>
+        |</div>
+        |""".stripMargin
+      case (name, _) =>
+        s"""<div class="form-group">
+        |  <label class="control-label" for="name">
+        |    $${i18n.get("${resource}.${name}")}
+        |  </label>
+        |  <div class="controls">
+        |    <div class="row col-md-12">
+        |    <input type="text" name="${name}" class="input-lg col-lg-6" value="$${params.${name}}" />
+        |    </div>
+        |  </div>
+        |</div>
+        |""".stripMargin
+    }.mkString
+  }
 
   override def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
@@ -32,28 +62,8 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#end
         |
         |<form method="post" action="$${uri("/${resources}")}" class="form">
-        |<div class="form-group">
-        |  <label class="control-label" for="name">
-        |    $${i18n.get("${resource}.name")}
-        |  </label>
-        |  <div class="controls">
-        |    <div class="row col-md-12">
-        |    <input type="text" name="name" class="input-lg col-lg-6" value="$${params.name}" />
-        |    </div>
-        |  </div>
-        |</div>
-        |<div class="form-group">
-        |  <label class="control-label" for="url">
-        |    $${i18n.get("${resource}.url")}
-        |  </label>
-        |  <div class="controls">
-        |    <div class="row col-md-12">
-        |      <input type="text" name="url" class="input-lg col-lg-8" value="$${params.url}" />
-        |    </div>
-        |  </div>
-        |</div>
+        |${formInputsPart(resource, attributePairs)}
         |<input type="hidden" name="$${csrfKey}" value="$${csrfToken}"/>
-        |
         |<div class="form-actions">
         |  <input type="submit" class="btn btn-primary" value="$${i18n.get("submit")}" />
         |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${i18n.get("cancel")}</a>
@@ -62,7 +72,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/new.html.ssp")
     FileUtils.write(file, newSsp)
-    println(s"${file.getAbsolutePath} is created.")
+    println("\"" + file.getPath + "\" is created.")
   }
 
   override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
@@ -83,28 +93,8 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#end
         |
         |<form method="post" action="$${uri("/${resources}/"+params.id.get)}" class="form">
-        |<div class="form-group">
-        |  <label class="control-label" for="name">
-        |    $${i18n.get("${resource}.name")}
-        |  </label>
-        |  <div class="controls">
-        |    <div class="row col-md-12">
-        |    <input type="text" name="name" class="input-lg col-lg-6" value="$${params.name}" />
-        |    </div>
-        |  </div>
-        |</div>
-        |<div class="form-group">
-        |  <label class="control-label" for="url">
-        |    $${i18n.get("${resource}.url")}
-        |  </label>
-        |  <div class="controls">
-        |    <div class="row col-md-12">
-        |      <input type="text" name="url" class="input-lg col-lg-8" value="$${params.url}" />
-        |    </div>
-        |  </div>
-        |</div>
+        |${formInputsPart(resource, attributePairs)}
         |<input type="hidden" name="$${csrfKey}" value="$${csrfToken}"/>
-        |
         |<div class="form-actions">
         |  <input type="submit" class="btn btn-primary" value="$${i18n.get("submit")}"/>
         |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${i18n.get("cancel")}</a>
@@ -113,7 +103,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         | """.stripMargin
     val file = new File(s"${viewDir}/edit.html.ssp")
     FileUtils.write(file, editSsp)
-    println(s"${file.getAbsolutePath} is created.")
+    println("\"" + file.getPath + "\" is created.")
   }
 
   override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
@@ -134,14 +124,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<table class="table table-bordered">
         |<thead>
         |  <tr>
-        |${attributePairs.map { case (k, _) => "    <th>${i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString(",\n")}
+        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
         |    <th></th>
         |  </tr>
         |</thead>
         |<tbody>
         |  #for (${resource} <- ${resources})
         |  <tr>
-        |${attributePairs.map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString(",\n")}
+        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString("\n")}
         |    <td>
         |      <a href="$${uri("/${resources}/"+${resource}.id)}" class="btn btn-default">$${i18n.get("detail")}</a>
         |      <a href="$${uri("/${resources}/"+${resource}.id+"/edit")}" class="btn btn-info">$${i18n.get("edit")}</a>
@@ -157,14 +147,25 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/index.html.ssp")
     FileUtils.write(file, indexSsp)
-    println(s"${file.getAbsolutePath} is created.")
+    println("\"" + file.getPath + "\" is created.")
   }
 
   override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val modelClassName = toClassName(resource)
     val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
+
+    val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
+      case (name, _) =>
+        s"""  <tr>
+        |    <th>$${i18n.get("${resource}.${name}")}</th>
+        |    <td>$${${resource}.${name}}</td>
+        |  </tr>
+        |""".stripMargin
+    }.mkString
+
     val showSsp =
-      s"""<%@val ${resource}: model.Company %>
+      s"""<%@val ${resource}: model.${modelClassName} %>
         |<%@val i18n: skinny.I18n %>
         |<%@val flash: skinny.Flash %>
         |
@@ -175,18 +176,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#end
         |<table class="table table-bordered">
         |<thead>
-        |  <tr>
-        |    <th>$${i18n.get("${resource}.id")}</th>
-        |    <td>$${${resource}.id}</td>
-        |  </tr>
-        |  <tr>
-        |    <th>$${i18n.get("${resource}.name")}</th>
-        |    <td>$${${resource}.name}</td>
-        |  </tr>
-        |  <tr>
-        |    <th>$${i18n.get("${resource}.url")}</th>
-        |    <td>$${${resource}.url}</td>
-        |  </tr>
+        |${attributesPart}
         |</tbody>
         |</table>
         |
@@ -200,7 +190,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/show.html.ssp")
     FileUtils.write(file, showSsp)
-    println(s"${file.getAbsolutePath} is created.")
+    println("\"" + file.getPath + "\" is created.")
   }
 
 }

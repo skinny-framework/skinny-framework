@@ -1,4 +1,4 @@
-package skinny.task
+package skinny.task.generator
 
 import java.io.File
 import org.apache.commons.io.FileUtils
@@ -11,7 +11,7 @@ object ModelGenerator extends ModelGenerator
 trait ModelGenerator extends CodeGenerator {
 
   private def showUsage = {
-    println("Usage: sbt \"task/run g model member name:String birthday:Option[LocalDate]\"")
+    println("Usage: sbt \"task/run g generate-model member name:String birthday:Option[LocalDate]\"")
   }
 
   def run(args: List[String]) {
@@ -51,7 +51,7 @@ trait ModelGenerator extends CodeGenerator {
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |    id = rs.long(rn.id),
-        |${attributePairs.map { case (k, t) => "    " + k + "= rs." + toExtractorMethodName(t) + "(rn." + k + ")" }.mkString(",\n")},
+        |${attributePairs.map { case (k, t) => "    " + k + " = rs." + toExtractorMethodName(t) + "(rn." + k + ")" }.mkString(",\n")},
         |    createdAt = rs.dateTime(rn.createdAt),
         |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
         |  )
@@ -67,13 +67,14 @@ trait ModelGenerator extends CodeGenerator {
     val specCode =
       s"""package model
         |
-        |import org.scalatra.test.scalatest._
         |import skinny.test._
-        |import scalikejdbc._, SQLInterpolation._, test._
+        |import org.scalatest.fixture.FlatSpec
+        |import scalikejdbc._, SQLInterpolation._
+        |import scalikejdbc.scalatest._
         |import org.joda.time._
         |import model._
         |
-        |class ${modelClassName}Spec extends ScalatraFlatSpec with AutoRollback {
+        |class ${modelClassName}Spec extends FlatSpec with AutoRollback {
         |}
         |""".stripMargin
     writeIfAbsent(specFile, specCode)
