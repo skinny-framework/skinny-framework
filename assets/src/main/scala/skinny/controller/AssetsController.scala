@@ -3,10 +3,8 @@ package skinny.controller
 import skinny._, assets._, LoanPattern._
 import scala.io.Source
 import java.io.File
-import org.joda.time.{DateTimeZone, DateTime}
-import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
-import java.text.SimpleDateFormat
-import java.util.{TimeZone, Locale}
+import org.joda.time.DateTimeZone
+import org.joda.time.format.DateTimeFormat
 
 /**
  * Assets controller.
