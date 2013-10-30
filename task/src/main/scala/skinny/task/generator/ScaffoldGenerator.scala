@@ -137,7 +137,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |}
         |""".stripMargin
     writeIfAbsent(file, code)
-    println("\"" + file.getPath + "\" is created.")
+    println("\"" + file.getPath + "\" created.")
   }
 
   def appendToFactoriesConf(resource: String, attributePairs: Seq[(String, String)]) {

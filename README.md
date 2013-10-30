@@ -59,6 +59,8 @@ Let's create your first Skinny app by using scaffold generator.
 ./skinny run
 ```
 
+And then, access `http://localhost:8080/members`.
+
 You can run generated tests.
 
 ```sh

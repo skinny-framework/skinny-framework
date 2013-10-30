@@ -72,7 +72,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/new.html.ssp")
     FileUtils.write(file, newSsp)
-    println("\"" + file.getPath + "\" is created.")
+    println("\"" + file.getPath + "\" created.")
   }
 
   override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
@@ -103,7 +103,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         | """.stripMargin
     val file = new File(s"${viewDir}/edit.html.ssp")
     FileUtils.write(file, editSsp)
-    println("\"" + file.getPath + "\" is created.")
+    println("\"" + file.getPath + "\" created.")
   }
 
   override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
@@ -147,7 +147,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/index.html.ssp")
     FileUtils.write(file, indexSsp)
-    println("\"" + file.getPath + "\" is created.")
+    println("\"" + file.getPath + "\" created.")
   }
 
   override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
@@ -190,7 +190,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     val file = new File(s"${viewDir}/show.html.ssp")
     FileUtils.write(file, showSsp)
-    println("\"" + file.getPath + "\" is created.")
+    println("\"" + file.getPath + "\" created.")
   }
 
 }
