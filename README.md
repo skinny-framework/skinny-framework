@@ -6,7 +6,7 @@ To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is hi
 
 ![screen shot](https://github.com/seratch/skinny-framework/raw/develop/logo.png)
 
-**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release.
+**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release (2013 4Q).
 
 ### Why Skinny?
 
@@ -31,6 +31,7 @@ Actually, An application built with Skinny framework is a Scalatra application. 
 ```scala
 libraryDependencies ++= Seq(
   "com.github.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.github.seratch" %% "skinny-task"      % "[0.9,)",
   "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
@@ -49,12 +50,12 @@ libraryDependencies ++= Seq(
 
 Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-https://github.com/seratch/skinny-framework/releases
+[skinny-blank-app.zip](https://github.com/seratch/skinny-framework/releases/download/0.9.9/skinny-blank-app.zip)
 
 Let's create your first Skinny app by using scaffold generator.
 
 ```sh
-./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Long
+./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Option[Long]
 ./skinny db:migrate
 ./skinny run
 ```
@@ -515,8 +516,12 @@ skill {
 
 These are major tasks that Skinny should fix.
 
- - Designing Authentication API
+ - Official website
  - Documentation (wiki)
+ - Designing Authentication API
+ - View helper API
+ - Framework test coverage
+ - Executable war file generation
 
 Your feedback or pull requests are always welcome.
 

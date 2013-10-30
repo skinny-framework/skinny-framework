@@ -1,7 +1,7 @@
 package skinny.assets
 
 import org.mozilla.javascript._
-import skinny.assets.LoanPattern._
+import skinny.util.LoanPattern._
 import java.io.InputStreamReader
 import org.mozilla.javascript.tools.shell.Global
 import skinny.ClassPathResourceLoader

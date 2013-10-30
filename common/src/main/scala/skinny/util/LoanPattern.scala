@@ -1,4 +1,4 @@
-package skinny.assets
+package skinny.util
 
 import scala.language.reflectiveCalls
 

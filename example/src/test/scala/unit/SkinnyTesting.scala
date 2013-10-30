@@ -8,7 +8,7 @@ trait SkinnyTesting
     extends SkinnyTestSupport
     with Logging { self: org.scalatra.test.ScalatraTests =>
 
-  skinny.bootstrap.DBSettings.initialize()
+  skinny.DBSettings.initialize()
   lib.DBInitializer.synchronized {
     lib.DBInitializer.initialize()
   }
