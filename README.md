@@ -208,13 +208,9 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val member: Option[Member] = Member.findById(123)
   val member: Option[Member] = Member.where('id -> 123).apply().headOption
   val members: List[Member] = Member.where('id -> Seq(123, 234, 345)).apply()
-
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(
-    sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false))
   val groupMembers = Member.where('groupName -> "Scala Users", 'deleted -> false).apply()
-
   // count
   val allCount: Long = Member.countAll()
   val count = Member.countBy(sqls.isNotNull(m.deletedAt).and.eq(m.countryId, 123))
@@ -224,7 +220,6 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val params = Map("name" -> "Bob")
   val id = Member.createWithPermittedAttributes(
     params.permit("name" -> ParamType.String))
-
   // create with unsafe parameters
   Member.createWithAttributes(
     'id -> 123,
@@ -232,17 +227,8 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
     'createdAt -> DateTime.now
   )
 
-  // create with named values
-  val column = Member.column
-  Member.createWithNamedValues(
-    column.id -> 123,
-    column.name -> "Chris",
-    column.createdAt -> DateTime.now  
-  )
-
   // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
-
   // update with unsafe parameters
   Member.updateById(123).withAttributes('name -> "Alice")
 
@@ -323,6 +309,19 @@ create table member(
 );
 */
 ```
+
+
+### DB Migration
+
+DB migration is came with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+
+```sh
+./skinny db:migrate [env]
+````
+
+This command expects `src/main/resources/db/migration/V***_***.sql` files. 
+
+Try it with [blank-app](https://github.com/seratch/skinny-framework/releases) right now!
 
 
 ### View Templates
@@ -514,9 +513,7 @@ skill {
 
 These are major tasks that Skinny should fix.
 
- - Scaffold generator support
  - Designing Authentication API
- - Production packaging example
  - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.
