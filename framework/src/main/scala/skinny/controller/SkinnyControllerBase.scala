@@ -47,7 +47,7 @@ trait SkinnyControllerBase
   }
 
   /**
-   * Creates [[skinny.I18n]] instance for current locale.
+   * Creates skinny.I18n instance for current locale.
    *
    * @param locale current locale
    * @return i18n provider

@@ -15,6 +15,7 @@ util.inherits(SkinnyGenerator, yeoman.generators.Base);
 
 SkinnyGenerator.prototype.app = function app() {
   this.directory('src', 'src');
+  this.directory('task', 'task');
   this.directory('project', 'project');
   this.copy('_gitignore', '.gitignore');
   this.copy('build.sbt', 'build.sbt');

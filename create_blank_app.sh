@@ -2,6 +2,7 @@
 
 script_dir=`dirname $0`
 mkdir -p ${script_dir}/release
+rm -rf release/*
 cd ${script_dir}/yeoman-generator-skinny
 npm link
 cd -

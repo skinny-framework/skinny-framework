@@ -109,7 +109,7 @@ trait TemplateEngineFeature
             s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?>${entityXml}"""
           } catch {
             case e: Exception =>
-              s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><response>${entityXml}</response>"""
+              s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
           }
         case Format.JSON =>
           val jsonString = compact(render(Extraction.decompose(entity)))
@@ -137,6 +137,8 @@ trait TemplateEngineFeature
       halt(status = httpStatus)
     }
   }
+
+  protected def xmlRootName: String = "response"
 
   protected def xmlItemName: String = "item"
 

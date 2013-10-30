@@ -3,7 +3,7 @@ package skinny.controller.feature
 import org.scalatra.scalate._
 import org.fusesource.scalate.{ TemplateEngine, Binding }
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
-import skinny.Format
+import skinny._
 
 /**
  * Scalate implementation of TemplateEngineSupport.
@@ -70,7 +70,32 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
    * @return true/false
    */
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {
-    findTemplate(templatePath(path)).isDefined
+    val exists = findTemplate(templatePath(path)).isDefined
+    if (!exists && SkinnyEnv.isDevelopment()) {
+      generateWelcomePageIfAbsent(path)
+      true
+    } else {
+      exists
+    }
+  }
+
+  /**
+   * Generates a sample page for absent page.
+   */
+  protected def generateWelcomePageIfAbsent(path: String)(implicit format: Format = Format.HTML): Unit = {
+    import org.apache.commons.io.FileUtils
+    import java.io.File
+    val filePath = servletContext.getRealPath(s"/WEB-INF/views/${templatePath(path)}")
+    val file = new File(filePath)
+    // TODO scaml, jade support
+    val code =
+      """<h3>Welcome</h3>
+        |<hr/>
+        |<p class="alert alert-success">
+        |  <strong>TODO:</strong> This is an auto-generated file by <a href="http://git.io/skinny">Skinny framework</a>!<br/>
+        |</p>
+        |""".stripMargin
+    FileUtils.write(file, code)
   }
 
   /**

@@ -50,7 +50,16 @@ IF %COMMAND%==package (
   mkdir build
   xcopy src build\src /E /D
   xcopy build.sbt build\build.sbt /E /D
-  sbt "build/run" "build/package"
+  sbt "task/run assets:precompile" "build/package"
+  GOTO :end
+)
+
+IF %COMMAND%==publish (
+  rmdir build /s /q
+  mkdir build
+  xcopy src build\src /E /D
+  xcopy build.sbt build\build.sbt /E /D
+  sbt "task/run assets:precompile" "build/publish"
   GOTO :end
 )
 
@@ -67,6 +76,7 @@ echo   compile   : will compile all the classes
 echo   test      : will run all the tests
 echo   test-only : will run the specified test
 echo   package   : will create *.war file to deploy
+echo   publish   : will publish *.war file to repository
 echo.
 
 

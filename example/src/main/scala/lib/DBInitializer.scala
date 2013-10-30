@@ -5,48 +5,6 @@ import skinny.dbmigration.DBSeeds
 
 object DBInitializer extends DBSeeds {
 
-  addSeedSQL(
-    sql"create sequence programmer_id_seq start with 1",
-    sql"""
-      create table programmer (
-        id bigint not null default nextval('programmer_id_seq') primary key,
-        name varchar(64) not null,
-        company_id bigint,
-        created_timestamp timestamp not null,
-        updated_timestamp timestamp,
-        deleted_timestamp timestamp
-      )
-    """,
-    sql"create sequence company_id_seq start with 1",
-    sql"""
-      create table company (
-        id bigint not null default nextval('company_id_seq') primary key,
-        name varchar(64) not null,
-        url varchar(128),
-        created_at timestamp not null,
-        updated_at timestamp,
-        deleted_at timestamp
-      )
-    """,
-    sql"create sequence skill_id_seq start with 1",
-    sql"""
-      create table skill (
-        id bigint not null default nextval('skill_id_seq') primary key,
-        name varchar(64) not null
-      )
-    """,
-    sql"""
-      create table programmer_skill (
-        programmer_id bigint not null,
-        skill_id bigint not null,
-        primary key(programmer_id, skill_id)
-      )
-    """,
-    sql"alter table programmer add foreign key(company_id) references company(id)",
-    sql"alter table programmer_skill add foreign key(skill_id) references skill(id)",
-    sql"alter table programmer_skill add foreign key(programmer_id) references programmer(id)"
-  )
-
   addSeed {
     DB localTx { implicit s =>
       val company1 = sql"insert into company (name, url, created_at) values (?, ?, current_timestamp)"
@@ -87,6 +45,10 @@ object DBInitializer extends DBSeeds {
     }
   }
 
-  def initialize() = runIfFailed(sql"select 1 from programmer limit 1")
+  def initialize() = runUnless {
+    DB readOnly { implicit s =>
+      sql"select count(1) from company".map(_.long(1)).single.apply().get > 0
+    }
+  }
 
 }

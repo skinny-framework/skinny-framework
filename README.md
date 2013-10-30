@@ -45,21 +45,32 @@ libraryDependencies ++= Seq(
 )
 ```
 
-## Try example
+## Try Skinny now
 
-You can try the example right now.
+Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-https://github.com/seratch/skinny-framework/tree/develop/example
+https://github.com/seratch/skinny-framework/releases
 
+Let's create your first Skinny app by using scaffold generator.
+
+```sh
+./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Long
+./skinny db:migrate
+./skinny run
 ```
-git clone https://github.com/seratch/skinny-framework.git
-cd skinny-framework
-sbt 
-// project example
-// ~;container:stop;container:start
+
+You can run generated tests.
+
+```sh
+./skinny db:migrate test
+./skinny test
 ```
 
-Access `http://localhost:8080/example/` from your browser.
+Let's create war file to deploy.
+
+```sh
+./skinny package
+```
 
 ### Yeoman generator
 
@@ -197,13 +208,9 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val member: Option[Member] = Member.findById(123)
   val member: Option[Member] = Member.where('id -> 123).apply().headOption
   val members: List[Member] = Member.where('id -> Seq(123, 234, 345)).apply()
-
   // find many
   val members: List[Member] = Member.findAll()
-  val groupMembers = Member.findAllBy(
-    sqls.eq(m.groupName, "Scala Users Group").and.eq(m.deleted, false))
   val groupMembers = Member.where('groupName -> "Scala Users", 'deleted -> false).apply()
-
   // count
   val allCount: Long = Member.countAll()
   val count = Member.countBy(sqls.isNotNull(m.deletedAt).and.eq(m.countryId, 123))
@@ -213,7 +220,6 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
   val params = Map("name" -> "Bob")
   val id = Member.createWithPermittedAttributes(
     params.permit("name" -> ParamType.String))
-
   // create with unsafe parameters
   Member.createWithAttributes(
     'id -> 123,
@@ -221,17 +227,8 @@ Member.withAlias { m => // or "val m = Member.defaultAlias"
     'createdAt -> DateTime.now
   )
 
-  // create with named values
-  val column = Member.column
-  Member.createWithNamedValues(
-    column.id -> 123,
-    column.name -> "Chris",
-    column.createdAt -> DateTime.now  
-  )
-
   // update with strong parameters
   Member.updateById(123).withAttributes(params.permit("name" -> ParamType.String))
-
   // update with unsafe parameters
   Member.updateById(123).withAttributes('name -> "Alice")
 
@@ -291,7 +288,7 @@ Soft delete support is also available.
 object Member extends SkinnyCRUDMapper[Member] 
   with SoftDeleteWithTimestamp[Member]
 /* -- expects following table by default
-create table meber(
+create table member(
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   deleted_at timestamp
@@ -305,13 +302,26 @@ Furthermore, optimistic lock is also available.
 object Member extends SkinnyCRUDMapper[Member] 
   with OptimisticLockWithVersionFeature[Member]
 /* -- expects following table by default
-create table meber(
+create table member(
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   lock_version bigint
 );
 */
 ```
+
+
+### DB Migration
+
+DB migration is came with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+
+```sh
+./skinny db:migrate [env]
+````
+
+This command expects `src/main/resources/db/migration/V***_***.sql` files. 
+
+Try it with [blank-app](https://github.com/seratch/skinny-framework/releases) right now!
 
 
 ### View Templates
@@ -503,9 +513,7 @@ skill {
 
 These are major tasks that Skinny should fix.
 
- - Scaffold generator support
  - Designing Authentication API
- - Production packaging example
  - Documentation (wiki)
 
 Your feedback or pull requests are always welcome.

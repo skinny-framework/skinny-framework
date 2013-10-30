@@ -13,6 +13,8 @@ import skinny.util.JavaReflectAPI
  */
 case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: Symbol = null) {
 
+  // TODO initialize error handling
+
   private[this] val c = mapper.column
 
   val autoSession = AutoSession

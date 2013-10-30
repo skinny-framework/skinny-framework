@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.8"
+  val Version = "0.9.9"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
@@ -33,6 +33,30 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) 
 
+  lazy val framework = Project (id = "framework", base = file("framework"),
+   settings = Defaults.defaultSettings ++ Seq(
+      organization := Organization,
+      name := "skinny-framework",
+      version := Version,
+      scalaVersion := "2.10.0",
+      resolvers ++= Seq(
+        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      ),
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "commons-io"    %  "commons-io" % "2.4"
+      ) ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
+    ) ++ _jettyOrbitHack
+  ) dependsOn(common, validator, orm)
+
   lazy val assets = Project (id = "assets", base = file("assets"),
     settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
@@ -54,17 +78,15 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework)
 
-  lazy val framework = Project (id = "framework", base = file("framework"), 
-   settings = Defaults.defaultSettings ++ Seq(
+  lazy val task = Project (id = "task", base = file("task"),
+    settings = Defaults.defaultSettings ++ Seq(
       organization := Organization,
-      name := "skinny-framework",
+      name := "skinny-task",
       version := Version,
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
-      libraryDependencies ++= scalatraDependencies ++ testDependencies,
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "commons-io"    %  "commons-io" % "2.4"
+      ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       sbtPlugin := false,
@@ -73,8 +95,8 @@ object SkinnyFrameworkBuild extends Build {
       publishArtifact in Test := false,
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
-    ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm)
+    )
+  ) dependsOn(assets, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
     settings = Defaults.defaultSettings ++ Seq(
@@ -88,11 +110,12 @@ object SkinnyFrameworkBuild extends Build {
         Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "javax.servlet"  %  "javax.servlet-api" % "3.0.1"        % "provided",
-        "org.hibernate"  %  "hibernate-core"    % "4.1.12.Final" % "test",
-        "com.h2database" %  "h2"                % "1.3.173"      % "test",
-        "ch.qos.logback" %  "logback-classic"   % "1.0.13"       % "test",
-        "ar.com.gonto"   %% "factory_pal"       % "0.2.1"        % "test"
+        "com.googlecode.flyway" %  "flyway-core"       % "2.2.1"        % "compile",
+        "javax.servlet"         %  "javax.servlet-api" % "3.0.1"        % "provided",
+        "org.hibernate"         %  "hibernate-core"    % "4.1.12.Final" % "test",
+        "com.h2database"        %  "h2"                % "1.3.173"      % "test",
+        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
+        "ar.com.gonto"          %% "factory_pal"       % "0.2.1"        % "test"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -222,10 +245,11 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty"  % "jetty-plus"          % "8.1.13.v20130916" % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
            artifacts (Artifact("javax.servlet", "jar", "jar"))
-      )
-      , unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
+      ),
+      mainClass := Some("TaskLauncher"),
+      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
-  ) dependsOn(framework, assets, thymeleaf, test)
+  ) dependsOn(framework, assets, thymeleaf, test, task)
 
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
