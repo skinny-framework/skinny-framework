@@ -4,6 +4,7 @@ package skinny.assets
 import org.mozilla.javascript._
 import java.io.InputStreamReader
 import skinny.assets.LoanPattern._
+import skinny.ClassPathResourceLoader
 
 /**
  * CoffeeScript compiler.
@@ -17,9 +18,11 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
     context.setOptimizationLevel(-1)
     val globalScope = context.initStandardObjects
 
-    ClassPathResourceLoader.getResourceAsStream("META-INF/skinny-assets/coffee-script.js").map { coffee =>
-      using(new InputStreamReader(coffee)) { input =>
-        context.evaluateReader(globalScope, input, "coffeeScript", 0, null)
+    ClassPathResourceLoader.getClassPathResource("META-INF/skinny-assets/coffee-script.js").map { coffee =>
+      using(coffee.stream) { stream =>
+        using(new InputStreamReader(stream)) { input =>
+          context.evaluateReader(globalScope, input, "coffeeScript", 0, null)
+        }
       }
     }
 

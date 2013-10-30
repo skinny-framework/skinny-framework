@@ -3,6 +3,10 @@ package skinny.controller
 import skinny._, assets._, LoanPattern._
 import scala.io.Source
 import java.io.File
+import org.joda.time.{DateTimeZone, DateTime}
+import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
+import java.text.SimpleDateFormat
+import java.util.{TimeZone, Locale}
 
 /**
  * Assets controller.
@@ -70,15 +74,23 @@ class AssetsController extends SkinnyController {
     }.map { path =>
 
       // try to load from class path resources
-      val jsResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/js/${path}.js")
-      val coffeeResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/coffee/${path}.coffee")
+      val jsResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/js/${path}.js")
+      val coffeeResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/coffee/${path}.coffee")
       if (jsResource.isDefined) {
         jsResource.map { resource =>
-          using(Source.fromInputStream(resource))(_.mkString)
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isNotModified(resource.lastModified)) halt(304)
+            else using(Source.fromInputStream(resource.stream))(_.mkString)
+          }
         } getOrElse (halt(404))
       } else if (coffeeResource.isDefined) {
         coffeeResource.map { resource =>
-          coffeeScriptCompiler.compile(using(Source.fromInputStream(resource))(_.mkString))
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isNotModified(resource.lastModified)) halt(304)
+            else coffeeScriptCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+          }
         }.getOrElse(halt(404))
 
       } else {
@@ -86,9 +98,13 @@ class AssetsController extends SkinnyController {
         val jsFile = new File(servletContext.getRealPath(s"${basePath}/js/${path}.js"))
         val coffeeFile = new File(servletContext.getRealPath(s"${basePath}/coffee/${path}.coffee"))
         if (jsFile.exists()) {
-          using(Source.fromFile(jsFile))(js => js.mkString)
+          setLastModified(jsFile.lastModified)
+          if (isNotModified(jsFile.lastModified)) halt(304)
+          else using(Source.fromFile(jsFile))(js => js.mkString)
         } else if (coffeeFile.exists()) {
-          using(Source.fromFile(coffeeFile))(coffee => coffeeScriptCompiler.compile(coffee.mkString))
+          setLastModified(coffeeFile.lastModified)
+          if (isNotModified(coffeeFile.lastModified)) halt(304)
+          else using(Source.fromFile(coffeeFile))(coffee => coffeeScriptCompiler.compile(coffee.mkString))
         } else {
           pass()
         }
@@ -113,15 +129,23 @@ class AssetsController extends SkinnyController {
     }.map { path =>
 
       // try to load from class path resources
-      val cssResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/css/${path}.css")
-      val lessResource = ClassPathResourceLoader.getResourceAsStream(s"${basePath}/less/${path}.less")
+      val cssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css")
+      val lessResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/less/${path}.less")
       if (cssResource.isDefined) {
         cssResource.map { resource =>
-          using(Source.fromInputStream(resource))(_.mkString)
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isNotModified(resource.lastModified)) halt(304)
+            else using(Source.fromInputStream(resource.stream))(_.mkString)
+          }
         } getOrElse (halt(404))
       } else if (lessResource.isDefined) {
         lessResource.map { resource =>
-          lessCompiler.compile(using(Source.fromInputStream(resource))(_.mkString))
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isNotModified(resource.lastModified)) halt(304)
+            else lessCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+          }
         }.getOrElse(halt(404))
 
       } else {
@@ -129,9 +153,13 @@ class AssetsController extends SkinnyController {
         val cssFile = new File(servletContext.getRealPath(s"${basePath}/css/${path}.css"))
         val lessFile = new File(servletContext.getRealPath(s"${basePath}/less/${path}.less"))
         if (cssFile.exists()) {
-          using(Source.fromFile(cssFile))(js => js.mkString)
+          setLastModified(cssFile.lastModified)
+          if (isNotModified(cssFile.lastModified)) halt(304)
+          else using(Source.fromFile(cssFile))(js => js.mkString)
         } else if (lessFile.exists()) {
-          using(Source.fromFile(lessFile))(coffee => lessCompiler.compile(coffee.mkString))
+          setLastModified(lessFile.lastModified)
+          if (isNotModified(lessFile.lastModified)) halt(304)
+          else using(Source.fromFile(lessFile))(less => lessCompiler.compile(less.mkString))
         } else {
           pass()
         }
@@ -144,6 +172,29 @@ class AssetsController extends SkinnyController {
     pass()
   }
 
+  protected val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
+  protected val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
+  protected val PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy"
+
+  protected val modifiedHeaderFormats = Seq(
+    DateTimeFormat.forPattern(PATTERN_RFC1123).withZone(DateTimeZone.UTC),
+    DateTimeFormat.forPattern(PATTERN_RFC1036).withZone(DateTimeZone.UTC),
+    DateTimeFormat.forPattern(PATTERN_ASCTIME).withZone(DateTimeZone.UTC)
+  )
+
+  protected def setLastModified(lastModified: Long): Unit = {
+    val format =modifiedHeaderFormats.head
+    response.setHeader("Last-Modified", format.print(lastModified).replaceFirst("UTC$", "GMT"))
+  }
+
+  protected def isNotModified(lastModified: Long): Boolean = {
+    request.header("If-Modified-Since").map(_.replaceFirst("^\"", "").replaceFirst("\"$", "")).map { ifModifiedSince =>
+      modifiedHeaderFormats.flatMap { formatter =>
+        try Option(formatter.parseDateTime(ifModifiedSince))
+        catch { case e: Exception => None }
+      }.headOption.map(_.getMillis <= lastModified) getOrElse false
+    } getOrElse false
+  }
 }
 
 /**

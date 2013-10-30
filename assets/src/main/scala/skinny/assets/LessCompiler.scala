@@ -4,6 +4,7 @@ import org.mozilla.javascript._
 import skinny.assets.LoanPattern._
 import java.io.InputStreamReader
 import org.mozilla.javascript.tools.shell.Global
+import skinny.ClassPathResourceLoader
 
 /**
  * Less Compiler
@@ -24,9 +25,11 @@ class LessCompiler {
       "META-INF/skinny-assets/less/less.js",
       "META-INF/skinny-assets/less/engine.js"
     ).foreach { jsName =>
-      ClassPathResourceLoader.getResourceAsStream(jsName).map { js =>
-        using(new InputStreamReader(js)) { input =>
-          context.evaluateReader(scope, input, jsName, 0, null)
+      ClassPathResourceLoader.getClassPathResource(jsName).map { js =>
+        using(js.stream) { stream =>
+          using(new InputStreamReader(stream)) { input =>
+            context.evaluateReader(scope, input, jsName, 0, null)
+          }
         }
       }
     }
