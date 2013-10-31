@@ -9,6 +9,8 @@ import org.joda.time._
  */
 trait ScaffoldGenerator extends CodeGenerator {
 
+  protected def template: String = "ssp"
+
   private def showUsage = {
     println("Usage: sbt \"task/run generate-scaffold members member name:String birthday:Option[DateTime]\"")
   }
@@ -95,7 +97,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             }
           }
           // Controller
-          generateResourceController(resources, resource, attributePairs)
+          generateResourceController(resources, resource, template, attributePairs)
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
@@ -120,7 +122,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Controller
   // --------------------------
 
-  def controllerCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  def controllerCode(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val validations = attributePairs
@@ -137,7 +139,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |object ${controllerClassName} extends SkinnyResource {
         |  protectFromForgery()
-        |
+        |${if (template != "ssp") "  override def scalateExtension = \"" + template + "\"" else ""}
         |  override def model = ${modelClassName}
         |  override def resourcesName = "${resources}"
         |  override def resourceName = "${resource}"
@@ -160,10 +162,10 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateResourceController(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateResourceController(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    writeIfAbsent(file, controllerCode(resources, resource, attributePairs))
+    writeIfAbsent(file, controllerCode(resources, resource, template, attributePairs))
     println("\"" + file.getPath + "\" created.")
   }
 

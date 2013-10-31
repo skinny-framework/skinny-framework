@@ -49,21 +49,10 @@ SET is_generator=false
 IF "%command%"=="g"        SET is_generator=true
 IF "%command%"=="generate" SET is_generator=true
 IF "%is_generator%"=="true" (
-  IF "%2"=="scaffold" (
-    sbt "task/run generate:scaffold %3 %4 %5 %6 %7 %8 %9"
-    GOTO script_eof
-  )
-  IF "%2"=="controller" (
-    sbt "task/run generate:controller %3 %4 %5 %6 %7 %8 %9"
-    GOTO script_eof
-  )
-  IF "%2"=="model" (
-    sbt "task/run generate:model %3 %4 %5 %6 %7 %8 %9"
-    GOTO script_eof
-  )
-  IF "%2"=="migration" (
-    sbt "task/run generate:migration %3 %4 %5 %6 %7 %8 %9"
-    GOTO script_eof
+  IF "%2"=="" (
+    ECHO Usage: skinny g/generate [type] [options...]
+  ) ELSE (
+    sbt "task/run generate:%2 %3 %4 %5 %6 %7 %8 %9"
   )
   GOTO script_eof
 )
@@ -113,7 +102,10 @@ ECHO.
 ECHO   g/generate controller : will generate controller
 ECHO   g/generate model      : will generate model
 ECHO   g/generate migration  : will generate db migration file
-ECHO   g/generate scaffold   : will generate scaffold files
+ECHO.
+ECHO   g/generate scaffold       : will generate scaffold files with ssp templates
+ECHO   g/generate scaffold:scaml : will generate scaffold files with scaml templates
+ECHO   g/generate scaffold:jade  : will generate scaffold files with jade templates
 
 :script_eof
 

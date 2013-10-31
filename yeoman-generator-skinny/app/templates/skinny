@@ -36,20 +36,9 @@ elif [ "$command" == "g" -o "$command" == "generate" ];then
   shift
   if [ "$generator_type" == "" ]; then
     echo "Usage: ./skinny g/generate [type] [options...]"
-  elif [ "$generator_type" == "scaffold" ]; then
-    command="task/run generate:scaffold $@"
-    sbt "${command}"
-  elif [ $generator_type == "controller" ]; then
-    command="task/run generate:controller $@"
-    sbt "${command}"
-  elif [ $generator_type == "model" ]; then
-    command="task/run generate:model $@"
-    sbt "${command}"
-  elif [ $generator_type == "migration" ]; then
-    command="task/run generate:migration $@"
-    sbt "${command}"
   else
-    echo "Generator for ${generator_type} not found."
+    command="task/run generate:$generator_type $@"
+    sbt "${command}"
   fi
 elif [ "$command" == "db:migrate" ];then
   rm -rf task/src/main/resources
@@ -65,7 +54,7 @@ elif [ "$command" == "publish" ];then
   sbt "task/run assets:precompile" build/publish
 else
   echo ""
-  echo "Usage: skinny [COMMAND] [OPTIONS]..."
+  echo "Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
   echo "  run        : will run Skinny app for local development"
   echo "  clean      : will clear target directory"
@@ -81,7 +70,10 @@ else
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"
   echo "  g/generate migration  : will generate db migration file"
-  echo "  g/generate scaffold   : will generate scaffold files"
+  echo ""
+  echo "  g/generate scaffold       : will generate scaffold files with ssp templates"
+  echo "  g/generate scaffold:scaml : will generate scaffold files with scaml templates"
+  echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
   echo ""
 fi
 

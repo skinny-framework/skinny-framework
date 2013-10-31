@@ -49,7 +49,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
   /**
    * Scalate extension name. If you'd like to use another one, override this attribute.
    */
-  lazy val scalateExtension: String = "ssp"
+  def scalateExtension: String = "ssp"
 
   /**
    * Returns the actual template path for the name.

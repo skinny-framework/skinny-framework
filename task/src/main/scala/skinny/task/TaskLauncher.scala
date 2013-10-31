@@ -20,10 +20,8 @@ trait TaskLauncher {
   register("generate:migration", (params) => DBMigrationFileGenerator.run(params))
   register("generate:scaffold", (params) => ScaffoldSspGenerator.run(params))
   register("generate:scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
-
-  // TODO
-  //register("generate-scaffold:scaml", (params) => ScaffoldSspGenerator.run(params))
-  //register("generate-scaffold:jade", (params) => ScaffoldSspGenerator.run(params))
+  register("generate:scaffold:scaml", (params) => ScaffoldScamlGenerator.run(params))
+  register("generate:scaffold:jade", (params) => ScaffoldJadeGenerator.run(params))
 
   register("db:migrate", (params) => DBMigration.migrate(params.headOption.getOrElse(SkinnyEnv.Development)))
 
