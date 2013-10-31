@@ -396,6 +396,8 @@ class ScalatraBootstrap exntends SkinnyLifeCycle {
 }
 ```
 
+#### CoffeeScript 
+
 ![CoffeeScript Logo](https://github.com/seratch/skinny-framework/raw/develop/img/coffeescript.png)
 
 If you use CoffeeScript, just put *.coffee files under `WEB-INF/assets/coffee`:
@@ -420,6 +422,8 @@ You can access the latest compiled JavaScript code at `http://localhost:8080/ass
 
 }).call(this);
 ```
+
+#### LESS 
 
 ![LESS Logo](https://github.com/seratch/skinny-framework/raw/develop/img/less.png)
 
