@@ -31,22 +31,25 @@ elif [ "$command" == "test" ];then
 elif [ "$command" == "test-only" ];then
   sbt "dev/test-only $2"
 elif [ "$command" == "g" -o "$command" == "generate" ];then
-  type="$2"
+  generator_type="$2"
   shift
   shift
-  if [ "$type" == "" ]; then
+  if [ "$generator_type" == "" ]; then
     echo "Usage: ./skinny g/generate [type] [options...]"
-  elif [ "$type" == "scaffold" ]; then
-    command="task/run generate-scaffold $@"
+  elif [ "$generator_type" == "scaffold" ]; then
+    command="task/run generate:scaffold $@"
     sbt "${command}"
-  elif [ $type == "controller" ]; then
-    command="task/run generate-controller $@"
+  elif [ $generator_type == "controller" ]; then
+    command="task/run generate:controller $@"
     sbt "${command}"
-  elif [ $type == "model" ]; then
-    command="task/run generate-model $@"
+  elif [ $generator_type == "model" ]; then
+    command="task/run generate:model $@"
+    sbt "${command}"
+  elif [ $generator_type == "migration" ]; then
+    command="task/run generate:migration $@"
     sbt "${command}"
   else
-    echo "Generator for ${type} not found."
+    echo "Generator for ${generator_type} not found."
   fi
 elif [ "$command" == "db:migrate" ];then
   rm -rf task/src/main/resources
@@ -77,6 +80,7 @@ else
   echo ""
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"
+  echo "  g/generate migration  : will generate db migration file"
   echo "  g/generate scaffold   : will generate scaffold files"
   echo ""
 fi

@@ -15,10 +15,11 @@ trait TaskLauncher {
   private[this] val tasks = new scala.collection.mutable.HashMap[String, (List[String]) => Unit]
 
   // built-in tasks
-  register("generate-controller", (params) => ControllerGenerator.run(params))
-  register("generate-model", (params) => ModelGenerator.run(params))
-  register("generate-scaffold", (params) => ScaffoldSspGenerator.run(params))
-  register("generate-scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
+  register("generate:controller", (params) => ControllerGenerator.run(params))
+  register("generate:model", (params) => ModelGenerator.run(params))
+  register("generate:migration", (params) => DBMigrationFileGenerator.run(params))
+  register("generate:scaffold", (params) => ScaffoldSspGenerator.run(params))
+  register("generate:scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
 
   // TODO
   //register("generate-scaffold:scaml", (params) => ScaffoldSspGenerator.run(params))

@@ -40,6 +40,32 @@ trait ScaffoldGenerator extends CodeGenerator {
     "Option[LocalTime]"
   )
 
+  private[this] def toSnakeCase(resources: String): String = {
+    resources.map(c => if (c.isUpper) "_" + c.toLower else c)
+      .mkString
+      .replaceFirst("^_", "")
+      .replaceFirst("_$", "")
+      .replaceFirst("__", "_")
+  }
+
+  private[this] def toDBType(t: String): String = {
+    toParamType(t) match {
+      case "String" => "varchar(512)"
+      case "Long" => "bigint"
+      case "Int" => "int"
+      case "Short" => "int"
+      case "Byte" => "tinyint"
+      case "ByteArray" => "binary"
+      case "DateTime" => "timestamp"
+      case "LocalDate" => "date"
+      case "LocalTime" => "time"
+      case "Boolean" => "boolean"
+      case "Double" => "double"
+      case "Float" => "float"
+      case _ => "other"
+    }
+  }
+
   def run(args: List[String]) {
     if (args.size < 3) {
       showUsage
@@ -73,41 +99,37 @@ trait ScaffoldGenerator extends CodeGenerator {
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
-
           // Model
           ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
           ModelGenerator.generateSpec(resource, attributePairs)
-
           // Views
           generateNewView(resources, resource, attributePairs)
           generateEditView(resources, resource, attributePairs)
           generateIndexView(resources, resource, attributePairs)
           generateShowView(resources, resource, attributePairs)
-
           // messages.conf
           generateMessages(resources, resource, attributePairs)
-
-          // SQL
-          generateSQLs(resources, resource, attributePairs)
+          // migration SQL
+          generateMigrationSQL(resources, resource, attributePairs)
         }
-
-      case _ =>
-        showUsage
+      case _ => showUsage
     }
   }
 
-  def generateResourceController(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  // --------------------------
+  // Controller
+  // --------------------------
+
+  def controllerCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
-    val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-
     val validations = attributePairs
       .filterNot { case (_, t) => isOptionClassName(t) }
       .filterNot { case (_, t) => toParamType(t) == "Boolean" }
       .map { case (k, t) => "    paramKey(\"" + k + "\") is required" }
       .mkString(",\n")
-    val code =
-      s"""package controller
+
+    s"""package controller
         |
         |import skinny._
         |import skinny.validator._
@@ -136,33 +158,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |}
         |""".stripMargin
-    writeIfAbsent(file, code)
+  }
+
+  def generateResourceController(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val controllerClassName = toClassName(resources) + "Controller"
+    val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
+    writeIfAbsent(file, controllerCode(resources, resource, attributePairs))
     println("\"" + file.getPath + "\" created.")
   }
 
-  def appendToFactoriesConf(resource: String, attributePairs: Seq[(String, String)]) {
-    val file = new File(s"src/test/resources/factories.conf")
-    val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
-      case (k, "Boolean") => "  " + k + "=true"
-      case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
-      case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
-      case (k, "DateTime") => "  " + k + "=\"" + new DateTime().toString() + "\""
-      case (k, _) => "  " + k + "=\"Something New\""
-    }.mkString("\n")
-
-    val code =
-      s"""${resource} {
-          |${params}
-          |}
-          |""".stripMargin
-
-    writeAppending(file, code)
-  }
-
-  def generateResourceControllerSpec(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def controllerSpecCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
-    val file = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
 
     val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
       case (k, "Boolean") => "\"" + k + "\" -> \"true\""
@@ -172,8 +179,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       case (k, _) => "\"" + k + "\" -> \"dummy\""
     }.mkString(",")
 
-    val code =
-      s"""package controller
+    s"""package controller
         |
         |import org.scalatra.test.scalatest._
         |import skinny._, test._
@@ -264,8 +270,17 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |}
         |""".stripMargin
-    writeIfAbsent(file, code)
   }
+
+  def generateResourceControllerSpec(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val controllerClassName = toClassName(resources) + "Controller"
+    val file = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
+    writeIfAbsent(file, controllerSpecCode(resources, resource, attributePairs))
+  }
+
+  // --------------------------
+  // ScalatraBootstrap.scala
+  // --------------------------
 
   def appendToScalatraBootstrap(resources: String) {
     val controllerClassName = toClassName(resources) + "Controller"
@@ -292,16 +307,38 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 
-  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  // --------------------------
+  // factories.conf
+  // --------------------------
 
-  def generateMessages(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def appendToFactoriesConf(resource: String, attributePairs: Seq[(String, String)]) {
+    val file = new File(s"src/test/resources/factories.conf")
+    val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+      case (k, "Boolean") => "  " + k + "=true"
+      case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
+      case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
+      case (k, "DateTime") => "  " + k + "=\"" + new DateTime().toString() + "\""
+      case (k, _) => "  " + k + "=\"Something New\""
+    }.mkString("\n")
+
+    val code =
+      s"""${resource} {
+          |${params}
+          |}
+          |""".stripMargin
+
+    writeAppending(file, code)
+  }
+
+  // --------------------------
+  // messages.conf
+  // --------------------------
+
+  def messagesConfCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val _resources = toClassName(resources)
     val _resource = toClassName(resource)
-    val messages =
-      s"""
+
+    s"""
         |${resource} {
         |  flash {
         |    created="The ${resource} was created."
@@ -317,20 +354,24 @@ trait ScaffoldGenerator extends CodeGenerator {
         |${attributePairs.map { case (k, _) => "  " + k + "=\"" + toClassName(k) + "\"" }.mkString("\n")}
         |}
         |""".stripMargin
-    val file = new File(s"src/main/resources/messages.conf")
-    writeAppending(file, messages)
   }
 
-  def generateSQLs(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateMessages(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val file = new File(s"src/main/resources/messages.conf")
+    writeAppending(file, messagesConfCode(resources, resource, attributePairs))
+  }
+
+  // --------------------------
+  // Flyway migration SQL
+  // --------------------------
+
+  def migrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val name = toSnakeCase(resources)
-    val version = DateTime.now.toString("yyyyMMddHHmm")
-    val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
     val columns = attributePairs.map {
       case (k, t) =>
         s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null")
     }.mkString(",\n")
-    val code =
-      s"""-- Notice: H2 database compatible
+    s"""-- For H2 Database
         |create table ${name} (
         |  id bigserial not null primary key,
         |${columns},
@@ -338,34 +379,22 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  updated_at timestamp
         |)
         |""".stripMargin
-    writeIfAbsent(file, code)
   }
 
-  private def toSnakeCase(resources: String): String = {
-    resources.map(c => if (c.isUpper) "_" + c.toLower else c)
-      .mkString
-      .replaceFirst("^_", "")
-      .replaceFirst("_$", "")
-      .replaceFirst("__", "_")
+  def generateMigrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val version = DateTime.now.toString("yyyyMMddHHmmss")
+    val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
+    writeIfAbsent(file, migrationSQL(resources, resource, attributePairs))
   }
 
-  private def toDBType(t: String): String = {
-    toParamType(t) match {
-      case "String" => "varchar(512)"
-      case "Long" => "bigint"
-      case "Int" => "int"
-      case "Short" => "int"
-      case "Byte" => "tinyint"
-      case "ByteArray" => "binary"
-      case "DateTime" => "timestamp"
-      case "LocalDate" => "date"
-      case "LocalTime" => "time"
-      case "Boolean" => "boolean"
-      case "Double" => "double"
-      case "Float" => "float"
-      case _ => "other"
-    }
-  }
+  // --------------------------
+  // Views
+  // --------------------------
+
+  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
 
 }
 
