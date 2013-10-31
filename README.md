@@ -4,7 +4,7 @@ Skinny is a full-stack web app framework, which is built on [Scalatra](http://sc
 
 To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is highly inspired by [Ruby on Rails](http://rubyonrails.org/) and it is optimized for sustainable productivity for ordinary Servlet-based app development. 
 
-![screen shot](https://github.com/seratch/skinny-framework/raw/develop/logo.png)
+![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/logo.png)
 
 **[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release (2013 4Q).
 
@@ -50,7 +50,7 @@ libraryDependencies ++= Seq(
 
 Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-[skinny-blank-app.zip](https://github.com/seratch/skinny-framework/releases/download/0.9.9/skinny-blank-app.zip)
+[![Download](https://github.com/seratch/skinny-framework/raw/develop/img/blank-app-download.png)](https://github.com/seratch/skinny-framework/releases/download/0.9.9/skinny-blank-app.zip)
 
 Let's create your first Skinny app by using scaffold generator.
 
@@ -64,7 +64,7 @@ And then, access `http://localhost:8080/members`.
 
 You can run generated tests.
 
-```sh
+```
 ./skinny db:migrate test
 ./skinny test
 ```
@@ -77,7 +77,7 @@ Let's create war file to deploy.
 
 ### Yeoman generator
 
-![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/yeoman-logo.png)
+![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/img/yeoman.png)
 
 If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
@@ -96,6 +96,8 @@ yo skinny
 ### Routing & Controller & Validator
 
 Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler/rich syntax. Of course, if you need to use Scalatra's API directly, Skinny never bothers you.
+
+![Scalatra](https://github.com/seratch/skinny-framework/raw/develop/img/scalatra.png)
 
 `SkinnyController` is a trait which extends `ScalatraFilter` and out-of-the-box components are integrated. 
 
@@ -188,6 +190,8 @@ object CompaniesController extends SkinnyResource {
 ### ORM
 
 Skinny provides you Skinny-ORM as the default O/R mapper, which is built with [ScalikeJDBC](https://github.com/seratch/scalikejdbc).
+
+![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/scalikejdbc.png)
 
 Skinny-ORM is much powerful, so you don't need to write much code. Your first model class and companion are here.
 
@@ -300,7 +304,7 @@ object Member extends SkinnyCRUDMapper[Member]
 
 DB migration comes with [Flyway](http://flywaydb.org/). Usage is pretty simple.
 
-![Flyway Logo](http://flywaydb.org/assets/logo/flyway-logo-transparent-100.png)
+![Flyway Logo](https://github.com/seratch/skinny-framework/raw/develop/img/flyway.png)
 
 ```sh
 ./skinny db:migrate [env]
@@ -313,7 +317,9 @@ Try it with [blank-app](https://github.com/seratch/skinny-framework/releases) ri
 
 ### View Templates
 
-Skinny framework basically follows Scalatra's ScalateSupport, but Skinny has an additional convention.
+Skinny framework basically follows Scalatra's [Scalate](http://scalate.fusesource.org/)Support, but Skinny has an additional convention.
+
+![Scalate Logo](https://github.com/seratch/skinny-framework/raw/develop/img/scalate.png)
 
 Templates' path should be `{path}.{format}.{extension}`. Expected {format} are `html`, `json`, `js` and `xml`.
 
@@ -390,6 +396,8 @@ class ScalatraBootstrap exntends SkinnyLifeCycle {
 }
 ```
 
+![CoffeeScript Logo](https://github.com/seratch/skinny-framework/raw/develop/img/coffeescript.png)
+
 If you use CoffeeScript, just put *.coffee files under `WEB-INF/assets/coffee`:
 
 ```coffeescript
@@ -412,6 +420,8 @@ You can access the latest compiled JavaScript code at `http://localhost:8080/ass
 
 }).call(this);
 ```
+
+![LESS Logo](https://github.com/seratch/skinny-framework/raw/develop/img/less.png)
 
 If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 
