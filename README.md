@@ -81,6 +81,8 @@ Let's create war file to deploy.
 
 If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
 
+![https://nodei.co/npm/generator-skinny.png?downloads=true](https://npmjs.org/package/generator-skinny)
+
 ```sh
 # brew instsall node
 npm install -g yo
