@@ -10,8 +10,8 @@ object ControllerGenerator extends ControllerGenerator
 
 trait ControllerGenerator extends CodeGenerator {
 
-  private def showUsage = {
-    println("Usage: sbt \"task/run g generate-controller members name:String birthday:Option[LocalDate]\"")
+  private[this] def showUsage = {
+    println("Usage: sbt \"task/run generate-controller members name:String birthday:Option[LocalDate]\"")
   }
 
   def run(args: List[String]) {
@@ -25,23 +25,24 @@ trait ControllerGenerator extends CodeGenerator {
     }
   }
 
-  def generate(name: String) {
-    val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
-    val productionFile = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    val productionCode =
-      s"""package controller
+  def code(name: String): String = {
+    s"""package controller
         |
         |import skinny._
         |import skinny.validator._
         |
-        |class ${controllerClassName} extends SkinnyController {
+        |class ${toClassName(name)}Controller extends SkinnyController {
         |  protectFromForgery()
         |
         |  def index = render("/${toVariable(name)}/index")
         |
         |}
         |""".stripMargin
-    writeIfAbsent(productionFile, productionCode)
+  }
+
+  def generate(name: String) {
+    val file = new File(s"src/main/scala/controller/${toClassName(name)}Controller.scala")
+    writeIfAbsent(file, code(name))
   }
 
   def appendToControllers(name: String) {
@@ -85,23 +86,24 @@ trait ControllerGenerator extends CodeGenerator {
     }
   }
 
-  def generateSpec(name: String) {
-    val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
-    val specFile = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
-    val specCode =
-      s"""package controller
+  def spec(name: String): String = {
+    s"""package controller
         |
         |import _root_.controller._
         |import _root_.model._
         |import org.scalatra.test.scalatest._
         |import skinny.test._
         |
-        |class ${controllerClassName}Spec extends ScalatraFlatSpec {
+        |class ${toClassName(name)}ControllerSpec extends ScalatraFlatSpec {
         |  addFilter(Controllers.${toVariable(name)}, "/*")
         |
         |}
         |""".stripMargin
-    writeIfAbsent(specFile, specCode)
+  }
+
+  def generateSpec(name: String) {
+    val specFile = new File(s"src/test/scala/controller/${toClassName(name)}ControllerSpec.scala")
+    writeIfAbsent(specFile, spec(name))
   }
 
 }

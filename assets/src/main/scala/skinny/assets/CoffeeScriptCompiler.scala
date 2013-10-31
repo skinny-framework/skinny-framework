@@ -3,7 +3,7 @@ package skinny.assets
 
 import org.mozilla.javascript._
 import java.io.InputStreamReader
-import skinny.assets.LoanPattern._
+import skinny.util.LoanPattern._
 import skinny.ClassPathResourceLoader
 
 /**

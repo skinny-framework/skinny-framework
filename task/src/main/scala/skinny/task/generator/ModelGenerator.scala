@@ -10,8 +10,8 @@ object ModelGenerator extends ModelGenerator
 
 trait ModelGenerator extends CodeGenerator {
 
-  private def showUsage = {
-    println("Usage: sbt \"task/run g generate-model member name:String birthday:Option[LocalDate]\"")
+  private[this] def showUsage = {
+    println("Usage: sbt \"task/run generate-model member name:String birthday:Option[LocalDate]\"")
   }
 
   def run(args: List[String]) {
@@ -28,11 +28,9 @@ trait ModelGenerator extends CodeGenerator {
     }
   }
 
-  def generate(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
+  def code(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(name)
-    val productionFile = new File(s"src/main/scala/model/${modelClassName}.scala")
-    val productionCode =
-      s"""package model
+    s"""package model
         |
         |import skinny.orm._, feature._
         |import scalikejdbc._, SQLInterpolation._
@@ -57,26 +55,31 @@ trait ModelGenerator extends CodeGenerator {
         |  )
         |}
         |""".stripMargin
-    writeIfAbsent(productionFile, productionCode)
   }
 
-  def generateSpec(name: String, attributePairs: Seq[(String, String)]) {
-    val modelClassName = toClassName(name)
-    val specFile = new File(s"src/test/scala/model/${modelClassName}Spec.scala")
-    FileUtils.forceMkdir(specFile.getParentFile)
-    val specCode =
-      s"""package model
+  def generate(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
+    val productionFile = new File(s"src/main/scala/model/${toClassName(name)}.scala")
+    writeIfAbsent(productionFile, code(name, tableName, attributePairs))
+  }
+
+  def spec(name: String): String = {
+    s"""package model
         |
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
         |import scalikejdbc._, SQLInterpolation._
         |import scalikejdbc.scalatest._
         |import org.joda.time._
-        |import model._
         |
-        |class ${modelClassName}Spec extends FlatSpec with AutoRollback {
+        |class ${toClassName(name)}Spec extends FlatSpec with AutoRollback {
         |}
         |""".stripMargin
-    writeIfAbsent(specFile, specCode)
   }
+
+  def generateSpec(name: String, attributePairs: Seq[(String, String)]) {
+    val specFile = new File(s"src/test/scala/model/${toClassName(name)}Spec.scala")
+    FileUtils.forceMkdir(specFile.getParentFile)
+    writeIfAbsent(specFile, spec(name))
+  }
+
 }

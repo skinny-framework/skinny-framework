@@ -1,7 +1,5 @@
 package skinny
 
-import java.io.InputStream
-
 /**
  * Class path resource loader.
  */

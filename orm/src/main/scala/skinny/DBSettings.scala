@@ -20,8 +20,8 @@ object DBSettings {
   def initialize(): Unit = {
 
     SkinnyEnv.get().map(env => DBsWithEnv(env).setupAll()).getOrElse {
-      if (!TypesafeConfigReaderWithEnv("development").dbNames.isEmpty) {
-        DBsWithEnv("development").setupAll()
+      if (!TypesafeConfigReaderWithEnv(SkinnyEnv.Development).dbNames.isEmpty) {
+        DBsWithEnv(SkinnyEnv.Development).setupAll()
       } else if (!TypesafeConfigReader.dbNames.isEmpty) {
         DBs.setupAll()
       } else {

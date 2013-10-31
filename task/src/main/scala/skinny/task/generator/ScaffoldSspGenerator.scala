@@ -13,12 +13,11 @@ object ScaffoldSspGenerator extends ScaffoldSspGenerator
  */
 trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
-  private def formInputsPart(resource: String, attributePairs: Seq[(String, String)]) = {
-    // TODO timestamp
+  private[this] def formInputsPart(resource: String, attributePairs: Seq[(String, String)]) = {
     attributePairs.toList.map { case (k, t) => k -> toParamType(t) }.map {
       case (name, "Boolean") =>
         s"""<div class="form-group">
-        |  <label class="control-label" for="name">
+        |  <label class="control-label" for="${name}">
         |    $${i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls">
@@ -30,7 +29,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
       case (name, _) =>
         s"""<div class="form-group">
-        |  <label class="control-label" for="name">
+        |  <label class="control-label" for="${name}">
         |    $${i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls">

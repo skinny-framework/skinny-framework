@@ -4,9 +4,9 @@ Skinny is a full-stack web app framework, which is built on [Scalatra](http://sc
 
 To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is highly inspired by [Ruby on Rails](http://rubyonrails.org/) and it is optimized for sustainable productivity for ordinary Servlet-based app development. 
 
-![screen shot](https://github.com/seratch/skinny-framework/raw/develop/logo.png)
+![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/logo.png)
 
-**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release.
+**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release (2013 4Q).
 
 ### Why Skinny?
 
@@ -26,11 +26,12 @@ A sound-alike word **"好きに (su-ki-ni)"** in Japanese means **"as you like i
 
 ## How to use
 
-Actually, An application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
+Actually, application built with Skinny framework is a Scalatra application. After preparing Scalatra app, just add the following dependency to your `project/Build.scala`.
 
 ```scala
 libraryDependencies ++= Seq(
   "com.github.seratch" %% "skinny-framework" % "[0.9,)",
+  "com.github.seratch" %% "skinny-task"      % "[0.9,)",
   "com.github.seratch" %% "skinny-test"      % "[0.9,)" % "test"
 )
 ```
@@ -49,12 +50,12 @@ libraryDependencies ++= Seq(
 
 Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-https://github.com/seratch/skinny-framework/releases
+[![Download](https://github.com/seratch/skinny-framework/raw/develop/img/blank-app-download.png)](https://github.com/seratch/skinny-framework/releases/download/0.9.10/skinny-blank-app.zip)
 
 Let's create your first Skinny app by using scaffold generator.
 
 ```sh
-./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Long
+./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Option[Long]
 ./skinny db:migrate
 ./skinny run
 ```
@@ -63,7 +64,7 @@ And then, access `http://localhost:8080/members`.
 
 You can run generated tests.
 
-```sh
+```
 ./skinny db:migrate test
 ./skinny test
 ```
@@ -76,9 +77,11 @@ Let's create war file to deploy.
 
 ### Yeoman generator
 
-![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/yeoman-logo.png)
+![Yeoman](https://github.com/seratch/skinny-framework/raw/develop/img/yeoman.png)
 
-or If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
+If you're familiar with [Yeoman](http://yeoman.io), a generator for [Skinny framework](https://github.com/seratch/skinny-framework) is available.
+
+[![NPM](https://nodei.co/npm/generator-skinny.png?downloads=true)](https://npmjs.org/package/generator-skinny)
 
 ```sh
 # brew instsall node
@@ -94,9 +97,11 @@ yo skinny
 
 ### Routing & Controller & Validator
 
-Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler syntax. Of course, if you need to use Scalatra's API directly, Skinny never bother you.
+Skinny's routing mechanism and controller layer on MVC architecture is a **rich Scalatra**. Skinny's extension provides you much simpler/rich syntax. Of course, if you need to use Scalatra's API directly, Skinny never bothers you.
 
-`SkinnyController` is a class which extends `ScalatraBase` and out-of-the-box components are integrated. 
+![Scalatra](https://github.com/seratch/skinny-framework/raw/develop/img/scalatra.png)
+
+`SkinnyController` is a trait which extends `ScalatraFilter` and out-of-the-box components are integrated. 
 
 ```scala
 // src/main/scala/controller/MembersController.scala
@@ -151,14 +156,15 @@ Skinny-Validator is newly created validator which is based on [seratch/inputvali
 
 ```scala
 import skinny.validator._
-def createForm = validation(
-  paramKey("name") is required & minLength(2) & alphabetOnly, 
-  paramKey("countryId") is numeric
-)
 object alphabetOnly extends ValidationRule {
   def name = "alphabetOnly"
   def isValid(v: Any) = isEmpty(v) || v.toString.matches("^[a-zA-Z]*$")
 }
+
+def createForm = validation(
+  paramKey("name") is required & minLength(2) & alphabetOnly, 
+  paramKey("countryId") is numeric
+)
 ```
 
 `SkinnyResource` which is similar to Rails ActiveResource is available. That's a pretty DRY way.
@@ -181,13 +187,15 @@ object CompaniesController extends SkinnyResource {
 }
 ```
 
-Company object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
+`Company` object should implement `skinny.SkinnyModel` APIs and you should prepare some view templates under `src/main/webapp/WEB-INF/views/members/`.
 
 ### ORM
 
 Skinny provides you Skinny-ORM as the default O/R mapper, which is built with [ScalikeJDBC](https://github.com/seratch/scalikejdbc).
 
-Skinny-ORM is simple but much powerful. Your first model class and companion are here.
+![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/scalikejdbc.png)
+
+Skinny-ORM is much powerful, so you don't need to write much code. Your first model class and companion are here.
 
 ```scala
 case class Member(id: Long, name: String, createdAt: DateTime)
@@ -274,14 +282,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 ```scala
 class Member(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None)
 object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  created_at timestamp not null,
-  updated_at timestamp
-);
-*/
+// created_at timestamp not null, updated_at timestamp
 ```
 
 Soft delete support is also available.
@@ -289,13 +290,7 @@ Soft delete support is also available.
 ```scala
 object Member extends SkinnyCRUDMapper[Member] 
   with SoftDeleteWithTimestamp[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  deleted_at timestamp
-);
-*/
+// deleted_at timestamp
 ```
 
 Furthermore, optimistic lock is also available.
@@ -303,19 +298,15 @@ Furthermore, optimistic lock is also available.
 ```scala
 object Member extends SkinnyCRUDMapper[Member] 
   with OptimisticLockWithVersionFeature[Member]
-/* -- expects following table by default
-create table member(
-  id bigint auto_increment primary key not null,
-  name varchar(128) not null,
-  lock_version bigint
-);
-*/
+// lock_version bigint
 ```
 
 
 ### DB Migration
 
-DB migration is came with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+DB migration comes with [Flyway](http://flywaydb.org/). Usage is pretty simple.
+
+![Flyway Logo](https://github.com/seratch/skinny-framework/raw/develop/img/flyway.png)
 
 ```sh
 ./skinny db:migrate [env]
@@ -328,7 +319,9 @@ Try it with [blank-app](https://github.com/seratch/skinny-framework/releases) ri
 
 ### View Templates
 
-Skinny framework basically follows Scalatra's ScalateSupport, but Skinny has an additional convention.
+Skinny framework basically follows Scalatra's [Scalate](http://scalate.fusesource.org/)Support, but Skinny has an additional convention.
+
+![Scalate Logo](https://github.com/seratch/skinny-framework/raw/develop/img/scalate.png)
 
 Templates' path should be `{path}.{format}.{extension}`. Expected {format} are `html`, `json`, `js` and `xml`.
 
@@ -405,6 +398,10 @@ class ScalatraBootstrap exntends SkinnyLifeCycle {
 }
 ```
 
+#### CoffeeScript 
+
+![CoffeeScript Logo](https://github.com/seratch/skinny-framework/raw/develop/img/coffeescript.png)
+
 If you use CoffeeScript, just put *.coffee files under `WEB-INF/assets/coffee`:
 
 ```coffeescript
@@ -427,6 +424,10 @@ You can access the latest compiled JavaScript code at `http://localhost:8080/ass
 
 }).call(this);
 ```
+
+#### LESS 
+
+![LESS Logo](https://github.com/seratch/skinny-framework/raw/develop/img/less.png)
 
 If you use LESS, just put *.less files under `WEB-INF/assets/less`:
 
@@ -515,8 +516,12 @@ skill {
 
 These are major tasks that Skinny should fix.
 
- - Designing Authentication API
+ - Official website
  - Documentation (wiki)
+ - Designing Authentication API
+ - View helper API
+ - Framework test coverage
+ - Executable war file generation
 
 Your feedback or pull requests are always welcome.
 

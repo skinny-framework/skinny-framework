@@ -7,6 +7,7 @@ import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
+import skinny.{ ParamType, StrongParameters }
 
 class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
@@ -166,6 +167,33 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         'countryId -> countryId, 'createdAt -> DateTime.now
       )
       Member.deleteById(memberId)
+    }
+
+    it("should have #createWithPermittedAttributes") { implicit session =>
+      val minutes = java.util.TimeZone.getDefault.getRawOffset / 1000 / 60
+      val prefix = if (minutes >= 0) "+" else "-"
+      val timeZone = prefix + "%02d:%02d".format((math.abs(minutes) / 60), (math.abs(minutes) % 60))
+      val minus2hours = minutes - 120
+      val minus2hoursPrefix = if (minus2hours >= 0) "+" else "-"
+      val minus2hoursTimeZone = minus2hoursPrefix + "%02d:%02d".format((math.abs(minus2hours) / 60), (math.abs(minus2hours) % 60))
+      Seq(
+        s"2013-01-02T03:04:05${timeZone}",
+        s"2013-01-02T01:04:05${minus2hoursTimeZone}",
+        s"2013/01/02T03:04:05${timeZone}",
+        s"2013-01-02 03:04:05${timeZone}",
+        s"2013/1/2 3:4:5${timeZone}",
+        s"2013-1-2 03:4:05${timeZone}",
+        s"2013-01-02 03-04-05${timeZone}",
+        s"2013-01-02 03:04:05",
+        s"2013/1/2 3:4:5",
+        s"2013-1-2 03:4:05",
+        s"2013-01-02 03-04-05"
+      ) foreach { createdAt =>
+          val params = StrongParameters(Map("name" -> "Java Programming", "createdAt" -> createdAt))
+          val id = Skill.createWithPermittedAttributes(params.permit("name" -> ParamType.String, "createdAt" -> ParamType.DateTime))
+          val created = Skill.findById(id)
+          created.get.createdAt should equal(new DateTime(2013, 1, 2, 3, 4, 5))
+        }
     }
   }
 

@@ -1,6 +1,7 @@
 package skinny.controller
 
-import skinny._, assets._, LoanPattern._
+import skinny._, assets._
+import skinny.util.LoanPattern._
 import scala.io.Source
 import java.io.File
 import org.joda.time.DateTimeZone

@@ -1,83 +1,111 @@
-@echo off
+@ECHO OFF
 
 REM
 REM skinny command for Windows
 REM
 
-set COMMAND=%1
+SET command=%1
 
-IF NOT DEFINED COMMAND (
-GOTO :message
+IF NOT DEFINED command (
+  GOTO show_help
 )
 
-IF %COMMAND%==run (
-sbt "project dev" "~;container:stop;container:start"
-GOTO :end
+IF %command%==run (
+  sbt "project dev" "~;container:stop;container:start"
+  GOTO script_eof
 )
 
-IF %COMMAND%==clean (
+IF %command%==clean (
   sbt clean
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==update (
+IF %command%==update (
   sbt update
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==console (
+IF %command%==console (
   sbt "dev/console"
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==compile (
+IF %command%==compile (
   sbt "dev/compile"
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==test (
+IF %command%==test (
   sbt "dev/test"
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==test-only (
+IF %command%==test-only (
   sbt "dev/test-only %2"
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==package (
+SET is_generator=false
+IF "%command%"=="g"        SET is_generator=true
+IF "%command%"=="generate" SET is_generator=true
+IF "%is_generator%"=="true" (
+  IF "%2"=="" (
+    ECHO Usage: skinny g/generate [type] [options...]
+  ) ELSE (
+    sbt "task/run generate:%2 %3 %4 %5 %6 %7 %8 %9"
+  )
+  GOTO script_eof
+)
+
+IF "%command%"=="db:migrate" (
+  rmdir task\src\main\resources /s /q
+  mkdir task\src\main\resources
+  xcopy src\main\resources task\src\main\resources /E /D /q
+  sbt "task/run db:migrate %2"
+  GOTO script_eof
+)
+
+IF %command%==package (
   rmdir build /s /q
   mkdir build
-  xcopy src build\src /E /D
-  xcopy build.sbt build\build.sbt /E /D
+  xcopy src\* build\src\* /E /D /q
+  xcopy build.sbt build\build.sbt /E /D /q
   sbt "task/run assets:precompile" "build/package"
-  GOTO :end
+  GOTO script_eof
 )
 
-IF %COMMAND%==publish (
+IF %command%==publish (
   rmdir build /s /q
   mkdir build
-  xcopy src build\src /E /D
-  xcopy build.sbt build\build.sbt /E /D
+  xcopy src\* build\src\* /E /D /q
+  xcopy build.sbt build\build.sbt /E /D /q
   sbt "task/run assets:precompile" "build/publish"
-  GOTO :end
+  GOTO script_eof
 )
 
 REM Didn't select command.
-:message
-echo.
-echo Usage: skinny [COMMAND] [OPTIONS]...
-echo.
-echo   run       : will run Skinny app for local development
-echo   clean     : will clear target directory
-echo   update    : will update dependencies
-echo   console   : will run sbt console
-echo   compile   : will compile all the classes
-echo   test      : will run all the tests
-echo   test-only : will run the specified test
-echo   package   : will create *.war file to deploy
-echo   publish   : will publish *.war file to repository
-echo.
+:show_help
+ECHO.
+ECHO Usage: skinny [COMMAND] [OPTIONS]...
+ECHO.
+ECHO   run        : will run Skinny app for local development
+ECHO   clean      : will clear target directory
+ECHO   update     : will update depscript_exitencies
+ECHO   console    : will run sbt console
+ECHO   compile    : will compile all the classes
+ECHO   db:migrate : will run all the tests
+ECHO   test       : will run all the tests
+ECHO   test-only  : will run the specified test
+ECHO   package    : will create *.war file to deploy
+ECHO   publish    : will publish *.war file to repository
+ECHO.
+ECHO   g/generate controller : will generate controller
+ECHO   g/generate model      : will generate model
+ECHO   g/generate migration  : will generate db migration file
+ECHO.
+ECHO   g/generate scaffold       : will generate scaffold files with ssp templates
+ECHO   g/generate scaffold:scaml : will generate scaffold files with scaml templates
+ECHO   g/generate scaffold:jade  : will generate scaffold files with jade templates
 
+:script_eof
 
-:end

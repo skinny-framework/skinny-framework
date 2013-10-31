@@ -31,22 +31,14 @@ elif [ "$command" == "test" ];then
 elif [ "$command" == "test-only" ];then
   sbt "dev/test-only $2"
 elif [ "$command" == "g" -o "$command" == "generate" ];then
-  type="$2"
+  generator_type="$2"
   shift
   shift
-  if [ "$type" == "" ]; then
+  if [ "$generator_type" == "" ]; then
     echo "Usage: ./skinny g/generate [type] [options...]"
-  elif [ "$type" == "scaffold" ]; then
-    command="task/run generate-scaffold $@"
-    sbt "${command}"
-  elif [ $type == "controller" ]; then
-    command="task/run generate-controller $@"
-    sbt "${command}"
-  elif [ $type == "model" ]; then
-    command="task/run generate-model $@"
-    sbt "${command}"
   else
-    echo "Generator for ${type} not found."
+    command="task/run generate:$generator_type $@"
+    sbt "${command}"
   fi
 elif [ "$command" == "db:migrate" ];then
   rm -rf task/src/main/resources
@@ -62,22 +54,26 @@ elif [ "$command" == "publish" ];then
   sbt "task/run assets:precompile" build/publish
 else
   echo ""
-  echo "Usage: skinny [COMMAND] [OPTIONS]..."
+  echo "Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
   echo "  run        : will run Skinny app for local development"
   echo "  clean      : will clear target directory"
   echo "  update     : will update dependencies"
   echo "  console    : will run sbt console"
   echo "  compile    : will compile all the classes"
-  echo "  test       : will run all the tests"
   echo "  db:migrate : will execute database migration"
+  echo "  test       : will run all the tests"
   echo "  test-only  : will run the specified test"
   echo "  package    : will create *.war file to deploy"
   echo "  publish    : will publish *.war file to repository"
   echo ""
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"
-  echo "  g/generate scaffold   : will generate scaffold files"
+  echo "  g/generate migration  : will generate db migration file"
+  echo ""
+  echo "  g/generate scaffold       : will generate scaffold files with ssp templates"
+  echo "  g/generate scaffold:scaml : will generate scaffold files with scaml templates"
+  echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
   echo ""
 fi
 
