@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
 import org.scalatra.scalate._
-import org.fusesource.scalate.{ TemplateEngine, Binding }
+import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 
@@ -71,7 +71,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
    */
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {
     val exists = findTemplate(templatePath(path)).isDefined
-    if (!exists && SkinnyEnv.isDevelopment()) {
+    if ((SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()) && !exists && format == Format.HTML) {
       generateWelcomePageIfAbsent(path)
       true
     } else {
