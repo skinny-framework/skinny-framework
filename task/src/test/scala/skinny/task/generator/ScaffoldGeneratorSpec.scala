@@ -11,6 +11,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
     it("should be created as expected") {
       val code = generator.controllerCode("members", "member", "ssp", Seq(
         "name" -> "String",
+        "favoriteNumber" -> "Long",
+        "magicNumber" -> "Option[Int]",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
       ))
@@ -30,19 +32,27 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def resourceName = "member"
           |
           |  override def createForm = validation(
-          |    paramKey("name") is required
+          |    paramKey("name") is required,
+          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("magicNumber") is numeric & intValue
           |  )
           |  override def createFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
+          |    "favoriteNumber" -> ParamType.Long,
+          |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
           |    "birthday" -> ParamType.LocalDate
           |  )
           |
           |  override def updateForm = validation(
-          |    paramKey("name") is required
+          |    paramKey("name") is required,
+          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("magicNumber") is numeric & intValue
           |  )
           |  override def updateFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
+          |    "favoriteNumber" -> ParamType.Long,
+          |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
           |    "birthday" -> ParamType.LocalDate
           |  )
