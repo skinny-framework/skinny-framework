@@ -8,6 +8,7 @@ import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }
 case class Programmer(
     id: Long,
     name: String,
+    favoriteNumber: Long,
     companyId: Option[Long] = None,
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
@@ -40,6 +41,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
   override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = new Programmer(
     id = rs.long(p.id),
     name = rs.string(p.name),
+    favoriteNumber = rs.long(p.favoriteNumber),
     companyId = rs.longOpt(p.companyId),
     createdAt = rs.dateTime(p.createdAt),
     updatedAt = rs.dateTimeOpt(p.updatedAt)

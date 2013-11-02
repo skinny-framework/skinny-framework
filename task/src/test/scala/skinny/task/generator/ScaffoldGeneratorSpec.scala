@@ -9,7 +9,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Controller (SkinnyResource)") {
     it("should be created as expected") {
-      val code = generator.controllerCode("members", "member", Seq(
+      val code = generator.controllerCode("members", "member", "ssp", Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"

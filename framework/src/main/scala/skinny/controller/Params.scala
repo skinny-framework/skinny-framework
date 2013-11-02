@@ -22,9 +22,9 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    */
   def selectDynamic(key: String): Option[Any] = underlying.get(key).map { v =>
     v match {
-      case Some(v) => v
+      case Some(v) => v.toString
       case None => null
-      case v => v
+      case v => v.toString
     }
   }
 

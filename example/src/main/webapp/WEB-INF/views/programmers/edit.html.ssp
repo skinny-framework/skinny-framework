@@ -13,7 +13,7 @@
 <form method="post" action="${uri("/programmers/"+params.id.get)}" class="form">
 <div class="form-group">
   <label class="control-label" for="name">
-    ${i18n.get("company.name")}
+    ${i18n.get("programmer.name")}
   </label>
   <div class="controls">
     <div class="row col-md-12">
@@ -22,7 +22,17 @@
   </div>
 </div>
 <div class="form-group">
-  <label class="control-label" for="url">
+  <label class="control-label" for="favoriteNumber">
+    ${i18n.get("programmer.favoriteNumber")}
+  </label>
+  <div class="controls">
+    <div class="row col-md-12">
+    <input type="text" name="favoriteNumber" class="input-lg col-lg-6" value="${params.favoriteNumber}" />
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <label class="control-label" for="companyId">
     ${i18n.get("programmer.company")}
   </label>
   <div class="controls">

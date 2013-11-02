@@ -3,6 +3,7 @@
 create table programmer (
   id bigserial not null primary key,
   name varchar(64) not null,
+  favorite_number bigint not null,
   company_id bigint,
   created_timestamp timestamp not null,
   updated_timestamp timestamp,
