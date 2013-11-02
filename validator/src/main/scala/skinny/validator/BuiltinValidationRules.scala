@@ -116,6 +116,31 @@ object numeric extends ValidationRule {
 }
 
 // ----
+// param("x" -> "123") is intValue
+object intValue extends ValidationRule {
+  def name = "intValue"
+  def isValid(v: Any) = isEmpty(v) || {
+    try {
+      v.toString.toInt
+      true
+    } catch { case e: NumberFormatException => false }
+  }
+}
+
+// ----
+// param("x" -> "123") is longValue
+
+object longValue extends ValidationRule {
+  def name = "longValue"
+  def isValid(v: Any) = isEmpty(v) || {
+    try {
+      v.toString.toLong
+      true
+    } catch { case e: NumberFormatException => false }
+  }
+}
+
+// ----
 // param("x" -> 4) is intMinMaxValue(3, 5)
 
 case class intMinMaxValue(min: Int, max: Int) extends ValidationRule {

@@ -126,9 +126,20 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val validations = attributePairs
-      .filterNot { case (_, t) => isOptionClassName(t) }
-      .filterNot { case (_, t) => toParamType(t) == "Boolean" }
-      .map { case (k, t) => "    paramKey(\"" + k + "\") is required" }
+      .filterNot { case (_, t) => toParamType(t) == "Boolean" } // boolean param doesn't need required valdiation.
+      .flatMap {
+        case (k, t) =>
+          val validationRules = (if (isOptionClassName(t)) Nil else Seq("required")) ++ (toParamType(t) match {
+            case "Long" => Seq("numeric", "longValue")
+            case "Int" => Seq("numeric", "intValue")
+            case "Short" => Seq("numeric", "intValue")
+            case "Double" => Seq("numeric")
+            case "Float" => Seq("numeric")
+            case _ => Nil
+          })
+          if (validationRules.isEmpty) None
+          else Some("    paramKey(\"" + k + "\") is " + validationRules.mkString(" & "))
+      }
       .mkString(",\n")
 
     s"""package controller
