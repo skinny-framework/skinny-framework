@@ -18,11 +18,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       case (name, "Boolean") =>
         s"""<div class="form-group">
         |  <label class="control-label" for="${name}">
-        |    $${i18n.get("${resource}.${name}")}
+        |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls">
         |    <div class="row col-md-12">
-        |    <input type="checkbox" name="${name}" value="true" #if(params.${name} == Some(true)) checked #end />
+        |    <input type="checkbox" name="${name}" value="true" #if(s.params.${name} == Some(true)) checked #end />
         |    </div>
         |  </div>
         |</div>
@@ -30,11 +30,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       case (name, _) =>
         s"""<div class="form-group">
         |  <label class="control-label" for="${name}">
-        |    $${i18n.get("${resource}.${name}")}
+        |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls">
         |    <div class="row col-md-12">
-        |    <input type="text" name="${name}" class="input-lg col-lg-6" value="$${params.${name}}" />
+        |    <input type="text" name="${name}" class="input-lg col-lg-6" value="$${s.params.${name}}" />
         |    </div>
         |  </div>
         |</div>
@@ -47,25 +47,21 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     FileUtils.forceMkdir(new File(viewDir))
 
     val newSsp =
-      s"""<%@val params: skinny.Params %>
-        |<%@val errorMessages: Seq[String] %>
-        |<%@val i18n: skinny.I18n %>
-        |<%@val csrfKey: String %>
-        |<%@val csrfToken: String %>
+      s"""<%@val s: skinny.Skinny %>
         |
-        |<h3>$${i18n.get("${resource}.new")}</h3>
+        |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
         |
-        |#for (e <- errorMessages)
+        |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
         |
         |<form method="post" action="$${uri("/${resources}")}" class="form">
         |${formInputsPart(resource, attributePairs)}
-        |<input type="hidden" name="$${csrfKey}" value="$${csrfToken}"/>
+        |$${unescape(s.csrfHiddenInputTag)}
         |<div class="form-actions">
-        |  <input type="submit" class="btn btn-primary" value="$${i18n.get("submit")}" />
-        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${i18n.get("cancel")}</a>
+        |  <input type="submit" class="btn btn-primary" value="$${s.i18n.get("submit")}" />
+        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("cancel")}</a>
         |</div>
         |</form>
         |""".stripMargin
@@ -78,25 +74,21 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val editSsp =
-      s"""<%@val params: skinny.Params %>
-        |<%@val errorMessages: Seq[String] %>
-        |<%@val i18n: skinny.I18n %>
-        |<%@val csrfKey: String %>
-        |<%@val csrfToken: String %>
+      s"""<%@val s: skinny.Skinny %>
         |
-        |<h3>$${i18n.get("${resource}.edit")}</h3>
+        |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
         |
-        |#for (e <- errorMessages)
+        |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
         |
-        |<form method="post" action="$${uri("/${resources}/"+params.id.get)}" class="form">
+        |<form method="post" action="$${uri("/${resources}/" + s.params.id.get)}" class="form">
         |${formInputsPart(resource, attributePairs)}
-        |<input type="hidden" name="$${csrfKey}" value="$${csrfToken}"/>
+        |$${unescape(s.csrfHiddenInputTag)}
         |<div class="form-actions">
-        |  <input type="submit" class="btn btn-primary" value="$${i18n.get("submit")}"/>
-        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${i18n.get("cancel")}</a>
+        |  <input type="submit" class="btn btn-primary" value="$${s.i18n.get("submit")}"/>
+        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("cancel")}</a>
         |</div>
         |</form>
         | """.stripMargin
@@ -110,20 +102,18 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val indexSsp =
-      s"""<%@val params: skinny.Params %>
-        |<%@val flash: skinny.Flash %>
+      s"""<%@val s: skinny.Skinny %>
         |<%@val ${resources}: Seq[model.${modelClassName}] %>
-        |<%@val i18n: skinny.I18n %>
         |
-        |<h3>$${i18n.get("${resource}.list")}</h3>
+        |<h3>$${s.i18n.get("${resource}.list")}</h3>
         |<hr/>
-        |#for (notice <- flash.notice)
+        |#for (notice <- s.flash.notice)
         |  <p class="alert alert-info">$${notice}</p>
         |#end
         |<table class="table table-bordered">
         |<thead>
         |  <tr>
-        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
+        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${s.i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
         |    <th></th>
         |  </tr>
         |</thead>
@@ -132,17 +122,17 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <tr>
         |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString("\n")}
         |    <td>
-        |      <a href="$${uri("/${resources}/"+${resource}.id)}" class="btn btn-default">$${i18n.get("detail")}</a>
-        |      <a href="$${uri("/${resources}/"+${resource}.id+"/edit")}" class="btn btn-info">$${i18n.get("edit")}</a>
-        |      <a data-method="delete" data-confirm="$${i18n.get("${resource}.delete.confirm")}"
-        |        href="$${uri("/${resources}/"+${resource}.id)}" rel="nofollow" class="btn btn-danger">$${i18n.get("delete")}</a>
+        |      <a href="$${uri("/${resources}/" + ${resource}.id)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
+        |      <a href="$${uri("/${resources}/" + ${resource}.id + "/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
+        |        href="$${uri("/${resources}/" + ${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
         |</tbody>
         |</table>
         |
-        |<a href="$${uri("/${resources}/new")}" class="btn btn-primary">$${i18n.get("new")}</a>
+        |<a href="$${uri("/${resources}/new")}" class="btn btn-primary">$${s.i18n.get("new")}</a>
         |""".stripMargin
     val file = new File(s"${viewDir}/index.html.ssp")
     FileUtils.write(file, indexSsp)
@@ -157,7 +147,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
-        |    <th>$${i18n.get("${resource}.${name}")}</th>
+        |    <th>$${s.i18n.get("${resource}.${name}")}</th>
         |    <td>$${${resource}.${name}}</td>
         |  </tr>
         |""".stripMargin
@@ -165,12 +155,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
     val showSsp =
       s"""<%@val ${resource}: model.${modelClassName} %>
-        |<%@val i18n: skinny.I18n %>
-        |<%@val flash: skinny.Flash %>
+        |<%@val s: skinny.Skinny %>
         |
-        |<h3>$${i18n.get("${resource}.detail")}</h3>
+        |<h3>$${s.i18n.get("${resource}.detail")}</h3>
         |<hr/>
-        |#for (notice <- flash.notice)
+        |#for (notice <- s.flash.notice)
         |  <p class="alert alert-info">$${notice}</p>
         |#end
         |<table class="table table-bordered">
@@ -181,10 +170,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<hr/>
         |<div class="form-actions">
-        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${i18n.get("backToList")}</a>
-        |  <a href="$${uri("/${resources}/"+${resource}.id+"/edit")}" class="btn btn-info">$${i18n.get("edit")}</a>
-        |  <a data-method="delete" data-confirm="$${i18n.get("${resource}.delete.confirm")}"
-        |    href="$${uri("/${resources}/"+${resource}.id)}" rel="nofollow" class="btn btn-danger">$${i18n.get("delete")}</a>
+        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("backToList")}</a>
+        |  <a href="$${uri("/${resources}/"+${resource}.id+"/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
+        |    href="$${uri("/${resources}/"+${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
     val file = new File(s"${viewDir}/show.html.ssp")

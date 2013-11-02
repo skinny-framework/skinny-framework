@@ -53,8 +53,8 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       status should equal(403)
     }
 
-    withSession("csrfToken" -> "12345") {
-      post(s"/skills", "name" -> newName, "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      post(s"/skills", "name" -> newName, "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
         Skill.findById(id).isDefined should equal(true)
@@ -75,8 +75,8 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     }
     Skill.findById(skill.id).get.name should not equal (newName)
 
-    withSession("csrfToken" -> "12345") {
-      put(s"/skills/${skill.id}", "name" -> newName, "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      put(s"/skills/${skill.id}", "name" -> newName, "csrf-token" -> "12345") {
         status should equal(200)
       }
     }
@@ -89,8 +89,8 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     delete(s"/skills/${id}") {
       status should equal(403)
     }
-    withSession("csrfToken" -> "aaaaaa") {
-      delete(s"/skills/${id}?csrfToken=aaaaaa") {
+    withSession("csrf-token" -> "aaaaaa") {
+      delete(s"/skills/${id}?csrf-token=aaaaaa") {
         status should equal(200)
       }
     }

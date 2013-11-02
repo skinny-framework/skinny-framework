@@ -1,24 +1,23 @@
 -@val body: String
--@val requestPathWithQueryString: String
--@val i18n: skinny.I18n
+-@val s: skinny.Skinny
 !!! 5
 %html(lang="en")
  %head
   %meta(charset="utf-8")
-  %meta(content={csrfToken} name="csrf-token")
+  != s.csrfMetaTags
   %script(type="text/javascript" src="//codeorigin.jquery.com/jquery-2.0.3.min.js")
   %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css")
  %body
   %div.container.span12
    %div(class="pull-right")
-    %a(href={uri("/session/renew?locale=&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8"))} class="btn btn-default") English
-    %a(href={uri("/session/renew?locale=ja&returnTo=" + java.net.URLEncoder.encode(requestPathWithQueryString, "UTF-8"))} class="btn btn-default") 日本語
+    %a(href={uri("/session/renew?locale=&returnTo=" + java.net.URLEncoder.encode(s.requestPathWithQueryString, "UTF-8"))} class="btn btn-default") English
+    %a(href={uri("/session/renew?locale=ja&returnTo=" + java.net.URLEncoder.encode(s.requestPathWithQueryString, "UTF-8"))} class="btn btn-default") 日本語
    =unescape(body)
    %hr
-   %a(href={uri("/")} class="btn btn-default") #{i18n.get("top")}
-   %a(href={uri("/programmers")} class="btn btn-default") #{i18n.get("programmer.list")}
-   %a(href={uri("/companies")} class="btn btn-default") #{i18n.get("company.list")}
-   %a(href={uri("/skills")} class="btn btn-default") #{i18n.get("skill.list")}
+   %a(href={uri("/")} class="btn btn-default") #{s.i18n.get("top")}
+   %a(href={uri("/programmers")} class="btn btn-default") #{s.i18n.get("programmer.list")}
+   %a(href={uri("/companies")} class="btn btn-default") #{s.i18n.get("company.list")}
+   %a(href={uri("/skills")} class="btn btn-default") #{s.i18n.get("skill.list")}
   %script(type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js")
   %script(type="text/javascript" src={uri("/assets/js/skinny.js")})
 

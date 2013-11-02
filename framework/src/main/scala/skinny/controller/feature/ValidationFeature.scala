@@ -33,7 +33,9 @@ trait ValidationFeature {
    * @param locale current locale
    * @return validator
    */
-  def validationWithPrefix(prefix: String, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+  def validationWithPrefix(prefix: String, validations: NewValidation*)(
+    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+
     if (params == null) {
       throw new IllegalStateException("You cannot call #validation when Scalatra's #params is absent.")
     }
@@ -55,7 +57,7 @@ trait ValidationFeature {
         val i18n = I18n(locale)
         def withPrefix(key: String) = if (prefix != null) s"${prefix}.${key}" else key
 
-        requestScope("errorMessages", inputs.keys.flatMap { key =>
+        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, inputs.keys.flatMap { key =>
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
@@ -64,7 +66,7 @@ trait ValidationFeature {
           }
         }.reverse)
 
-        requestScope("keyAndErrorMessages", inputs.keys.map { key =>
+        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, inputs.keys.map { key =>
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,

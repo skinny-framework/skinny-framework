@@ -55,8 +55,8 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
       status should equal(403)
     }
 
-    withSession("csrfToken" -> "12345") {
-      post(s"/programmers", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      post(s"/programmers", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
         Programmer.findById(id).isDefined should equal(true)
@@ -77,8 +77,8 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
     }
     Programmer.findById(programmer.id).get.name should not equal (newName)
 
-    withSession("csrfToken" -> "12345") {
-      put(s"/programmers/${programmer.id}", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      put(s"/programmers/${programmer.id}", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "csrf-token" -> "12345") {
         status should equal(200)
       }
     }
@@ -90,8 +90,8 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
     delete(s"/programmers/${id}") {
       status should equal(403)
     }
-    withSession("csrfToken" -> "aaaaaa") {
-      delete(s"/programmers/${id}?csrfToken=aaaaaa") {
+    withSession("csrf-token" -> "aaaaaa") {
+      delete(s"/programmers/${id}?csrf-token=aaaaaa") {
         status should equal(200)
       }
     }
@@ -100,8 +100,8 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   it should "add a programmer to a company" in {
     val id = Programmer.createWithAttributes('name -> "JoinCompany Test Programmer", 'favoriteNumber -> 123)
     try {
-      withSession("csrfToken" -> "aaaaaa") {
-        post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
+      withSession("csrf-token" -> "aaaaaa") {
+        post(s"/programmers/${id}/company/${company.id}", "csrf-token" -> "aaaaaa") {
           status should equal(200)
         }
       }
@@ -113,11 +113,11 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   it should "remove a programmer from a company" in {
     val id = Programmer.createWithAttributes('name -> "LeaveCompany Test Programmer", 'favoriteNumber -> 123)
     try {
-      withSession("csrfToken" -> "aaaaaa") {
-        post(s"/programmers/${id}/company/${company.id}", "csrfToken" -> "aaaaaa") {
+      withSession("csrf-token" -> "aaaaaa") {
+        post(s"/programmers/${id}/company/${company.id}", "csrf-token" -> "aaaaaa") {
           status should equal(200)
         }
-        delete(s"/programmers/${id}/company?csrfToken=aaaaaa") {
+        delete(s"/programmers/${id}/company?csrf-token=aaaaaa") {
           status should equal(200)
         }
       }
@@ -129,11 +129,11 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   it should "add a skill to a programmer" in {
     val id = FactoryGirl(Programmer).create().id
     try {
-      withSession("csrfToken" -> "aaaaaa") {
-        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+      withSession("csrf-token" -> "aaaaaa") {
+        post(s"/programmers/${id}/skills/${skill.id}", "csrf-token" -> "aaaaaa") {
           status should equal(200)
         }
-        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+        post(s"/programmers/${id}/skills/${skill.id}", "csrf-token" -> "aaaaaa") {
           status should equal(409)
         }
       }
@@ -145,11 +145,11 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
   it should "remove a skill from a programmer" in {
     val id = FactoryGirl(Programmer).create().id
     try {
-      withSession("csrfToken" -> "aaaaaa") {
-        post(s"/programmers/${id}/skills/${skill.id}", "csrfToken" -> "aaaaaa") {
+      withSession("csrf-token" -> "aaaaaa") {
+        post(s"/programmers/${id}/skills/${skill.id}", "csrf-token" -> "aaaaaa") {
           status should equal(200)
         }
-        delete(s"/programmers/${id}/skills/${skill.id}?csrfToken=aaaaaa") {
+        delete(s"/programmers/${id}/skills/${skill.id}?csrf-token=aaaaaa") {
           status should equal(200)
         }
       }

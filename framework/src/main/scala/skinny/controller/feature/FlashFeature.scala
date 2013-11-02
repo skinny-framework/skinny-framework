@@ -12,8 +12,8 @@ trait FlashFeature extends FlashMapSupport {
 
   // just set Flash object to request scope
   before() {
-    if (requestScope("flash").isEmpty) {
-      set("flash", Flash(flash))
+    if (requestScope(RequestScopeFeature.ATTR_FLASH).isEmpty) {
+      set(RequestScopeFeature.ATTR_FLASH, Flash(flash))
     }
   }
 

@@ -5,6 +5,7 @@ import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
+import skinny.controller.feature.RequestScopeFeature
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
@@ -321,10 +322,10 @@ trait SkinnyResource extends SkinnyController {
    */
   private[this] implicit val skinnyController: SkinnyController = this
 
-  // set resoureceName/resourcesName to the request scope
+  // set resourceName/resourcesName to the request scope
   before() {
-    set("resourceName", resourceName)
-    set("resourcesName", resourcesName)
+    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
+    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
   }
 
   // --------------
