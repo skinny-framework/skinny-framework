@@ -135,6 +135,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             case "Short" => Seq("numeric", "intValue")
             case "Double" => Seq("numeric")
             case "Float" => Seq("numeric")
+            case "String" => Seq("maxLength(512)")
             case _ => Nil
           })
           if (validationRules.isEmpty) None

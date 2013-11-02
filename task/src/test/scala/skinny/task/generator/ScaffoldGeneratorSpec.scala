@@ -32,7 +32,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def resourceName = "member"
           |
           |  override def createForm = validation(
-          |    paramKey("name") is required,
+          |    paramKey("name") is required & maxLength(512),
           |    paramKey("favoriteNumber") is required & numeric & longValue,
           |    paramKey("magicNumber") is numeric & intValue
           |  )
@@ -45,7 +45,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  )
           |
           |  override def updateForm = validation(
-          |    paramKey("name") is required,
+          |    paramKey("name") is required & maxLength(512),
           |    paramKey("favoriteNumber") is required & numeric & longValue,
           |    paramKey("magicNumber") is numeric & intValue
           |  )
