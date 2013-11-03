@@ -3,6 +3,7 @@ package skinny.task.generator
 import java.io.File
 import scala.io.Source
 import org.joda.time._
+import org.apache.commons.io.FileUtils
 
 /**
  * Scaffold generator.
@@ -405,10 +406,57 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Views
   // --------------------------
 
-  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
 
+  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/new.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, newHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/edit.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, editHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/index.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, indexHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/show.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, showHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
 }
 

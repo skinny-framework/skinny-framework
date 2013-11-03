@@ -12,6 +12,7 @@ object SkinnyFrameworkBuild extends Build {
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
+  val ScalateVeresion = "1.6.1"
 
   lazy val common = Project (id = "common", base = file("common"),
    settings = Defaults.defaultSettings ++ Seq(
@@ -85,7 +86,8 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-io"    %  "commons-io" % "2.4"
+        "commons-io"             %  "commons-io" % "2.4",
+        "org.fusesource.scalamd" %% "scalamd"    % "1.6"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

@@ -1,8 +1,5 @@
 package skinny.task.generator
 
-import org.apache.commons.io.FileUtils
-import java.io.File
-
 /**
  * Scaffold generator with jade template.
  */
@@ -34,12 +31,8 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     }.mkString
   }
 
-  override def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
-    val newJade =
-      s"""-@val s: skinny.Skinny
+  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
         |h3 #{s.i18n.get("${resource}.new")}
         |hr
@@ -54,16 +47,10 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |  input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
         |  a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/new.html.jade")
-    FileUtils.write(file, newJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val editJade =
-      s"""-@val s: skinny.Skinny
+  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
         |h3 #{s.i18n.get("${resource}.edit")}
         |hr
@@ -77,18 +64,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         | div(class="form-actions")
         |  input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
         |  a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
-        | """.stripMargin
-    val file = new File(s"${viewDir}/edit.html.jade")
-    FileUtils.write(file, editJade)
-    println("\"" + file.getPath + "\" created.")
+        |""".stripMargin
   }
 
-  override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val indexJade =
-      s"""-@val s: skinny.Skinny
+    s"""-@val s: skinny.Skinny
         |-@val ${resources}: Seq[model.${modelClassName}]
         |
         |h3 #{s.i18n.get("${resource}.list")}
@@ -107,21 +88,15 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "   td #{" + resource + "." + k + "}" }.mkString("\n")}
         |   td
         |    a(href={uri("/${resources}/" + ${resource}.id)} class="btn btn-default") #{s.i18n.get("detail")}
-        |    a(href={uri("/${resources}/" + ${resource}.id+"/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+        |    a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
         |    a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |
         |a(href={uri("/${resources}/new")} class="btn btn-primary") #{s.i18n.get("new")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/index.html.jade")
-    FileUtils.write(file, indexJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  tr
@@ -130,8 +105,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    val showJade =
-      s"""-@val ${resource}: model.${modelClassName}
+    s"""-@val ${resource}: model.${modelClassName}
         |-@val s: skinny.Skinny
         |
         |h3 #{s.i18n.get("${resource}.detail")}
@@ -141,16 +115,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |table(class="table table-bordered")
         | thead
         |${attributesPart}
-        |
         |hr
         |div(class="form-actions")
         | a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("backToList")}
         | a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
         | a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/show.html.jade")
-    FileUtils.write(file, showJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
 }

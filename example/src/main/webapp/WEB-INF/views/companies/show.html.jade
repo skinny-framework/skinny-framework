@@ -1,0 +1,28 @@
+-@val company: model.Company 
+-@val s : skinny.Skinny 
+
+h3 #{s.i18n.get("company.detail")}
+hr
+
+-for (notice <- s.flash.notice)
+ p(class="alert alert-info") #{notice}
+
+table(class="table table-bordered")
+ thead
+  tr
+   th #{s.i18n.get("company.id")}
+   td #{company.id}
+  tr
+   th #{s.i18n.get("company.name")}
+   td #{company.name}
+  tr
+   th #{s.i18n.get("company.url")}
+   td #{company.url}
+
+hr
+
+div(class="form-actions")
+ a(class="btn btn-default" href={uri("/companies")}) #{s.i18n.get("backToList")}
+ a(href={uri("/companies/" + company.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+ a(data-method="delete" data-confirm={s.i18n.get("company.delete.confirm")} href={uri("/companies/" + company.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+

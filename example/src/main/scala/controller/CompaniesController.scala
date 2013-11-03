@@ -7,6 +7,8 @@ import model.Company
 object CompaniesController extends SkinnyResource with ApplicationController {
   protectFromForgery()
 
+  override def scalateExtension = "jade"
+
   override def model = Company
   override def resourcesName = "companies"
   override def resourceName = "company"

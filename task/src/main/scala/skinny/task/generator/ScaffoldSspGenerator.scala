@@ -1,8 +1,5 @@
 package skinny.task.generator
 
-import org.apache.commons.io.FileUtils
-import java.io.File
-
 /**
  * Scaffold generator with ssp template.
  */
@@ -42,12 +39,8 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     }.mkString
   }
 
-  override def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
-    val newSsp =
-      s"""<%@val s: skinny.Skinny %>
+  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
@@ -65,16 +58,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |</div>
         |</form>
         |""".stripMargin
-    val file = new File(s"${viewDir}/new.html.ssp")
-    FileUtils.write(file, newSsp)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val editSsp =
-      s"""<%@val s: skinny.Skinny %>
+  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
@@ -91,18 +78,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("cancel")}</a>
         |</div>
         |</form>
-        | """.stripMargin
-    val file = new File(s"${viewDir}/edit.html.ssp")
-    FileUtils.write(file, editSsp)
-    println("\"" + file.getPath + "\" created.")
+        |""".stripMargin
   }
 
-  override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val indexSsp =
-      s"""<%@val s: skinny.Skinny %>
+    s"""<%@val s: skinny.Skinny %>
         |<%@val ${resources}: Seq[model.${modelClassName}] %>
         |
         |<h3>$${s.i18n.get("${resource}.list")}</h3>
@@ -134,16 +115,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<a href="$${uri("/${resources}/new")}" class="btn btn-primary">$${s.i18n.get("new")}</a>
         |""".stripMargin
-    val file = new File(s"${viewDir}/index.html.ssp")
-    FileUtils.write(file, indexSsp)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
@@ -153,8 +128,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    val showSsp =
-      s"""<%@val ${resource}: model.${modelClassName} %>
+    s"""<%@val ${resource}: model.${modelClassName} %>
         |<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.detail")}</h3>
@@ -171,14 +145,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<hr/>
         |<div class="form-actions">
         |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("backToList")}</a>
-        |  <a href="$${uri("/${resources}/"+${resource}.id+"/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a href="$${uri("/${resources}/" + ${resource}.id + "/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${uri("/${resources}/"+${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${uri("/${resources}/" + ${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
-    val file = new File(s"${viewDir}/show.html.ssp")
-    FileUtils.write(file, showSsp)
-    println("\"" + file.getPath + "\" created.")
   }
 
 }

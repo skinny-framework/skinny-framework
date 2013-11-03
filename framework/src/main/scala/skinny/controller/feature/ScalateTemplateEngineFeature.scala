@@ -87,14 +87,33 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
     import java.io.File
     val filePath = servletContext.getRealPath(s"/WEB-INF/views/${templatePath(path)}")
     val file = new File(filePath)
-    // TODO scaml, jade support
-    val code =
-      """<h3>Welcome</h3>
-        |<hr/>
-        |<p class="alert alert-success">
-        |  <strong>TODO:</strong> This is an auto-generated file by <a href="http://git.io/skinny">Skinny framework</a>!<br/>
-        |</p>
-        |""".stripMargin
+    val code: String = scalateExtension match {
+      case "jade" =>
+        """h3 Welcome
+          |hr
+          |p(class="alert alert-success")
+          | b TODO:
+          | | This is an auto-generated file by
+          | a(href="http://git.io/skinny") Skinny framework
+          | |!
+        """.stripMargin
+      case "scaml" =>
+        """%h3 Welcome
+          |%hr
+          |p(class="alert alert-success")
+          | %b TODO:
+          | This is an auto-generated file by
+          | %a(href="http://git.io/skinny") Skinny framework
+          | !
+        """.stripMargin
+      case _ =>
+        """<h3>Welcome</h3>
+          |<hr/>
+          |<p class="alert alert-success">
+          |  <strong>TODO:</strong> This is an auto-generated file by <a href="http://git.io/skinny">Skinny framework</a>!<br/>
+          |</p>
+          |""".stripMargin
+    }
     FileUtils.write(file, code)
   }
 

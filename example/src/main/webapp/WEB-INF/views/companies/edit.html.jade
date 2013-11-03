@@ -1,0 +1,23 @@
+-@val s: skinny.Skinny
+h3 #{s.i18n.get("company.edit")}
+hr
+
+-for (e <- s.errorMessages)
+ p(class="alert alert-danger") #{e}
+
+form(method="post" action={uri("/companies/" + s.params.id.get)} class="form")
+ div(class="form-group")
+  label(class="control-label" for="name") #{s.i18n.get("company.name")}
+  div(class="controls")
+   div(class="row col-md-12")
+    input(type="text" name="name" class="input-lg col-lg-6" value={s.params.name})
+ div(class="form-group")
+  label(class="control-label" for="url") #{s.i18n.get("company.url")}
+  div(class="controls")
+   div(class="row col-md-12")
+    input(type="text" name="url" class="input-lg col-lg-8" value={s.params.url})
+ =unescape(s.csrfHiddenInputTag)
+ div(class="form-actions")
+  input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
+  a(class="btn btn-default" href={uri("/companies")}) #{s.i18n.get("cancel")}
+

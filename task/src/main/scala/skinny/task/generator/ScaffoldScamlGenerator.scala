@@ -1,8 +1,5 @@
 package skinny.task.generator
 
-import org.apache.commons.io.FileUtils
-import java.io.File
-
 /**
  * Scaffold generator with scaml template.
  */
@@ -34,12 +31,8 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
     }.mkString
   }
 
-  override def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
-    val newScaml =
-      s"""-@val s: skinny.Skinny
+  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
         |%h3 #{s.i18n.get("${resource}.new")}
         |%hr
@@ -54,16 +47,10 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |  %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
         |  %a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/new.html.scaml")
-    FileUtils.write(file, newScaml)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val editScaml =
-      s"""-@val s: skinny.Skinny
+  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
         |%h3 #{s.i18n.get("${resource}.edit")}
         |%hr
@@ -77,18 +64,12 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         | %div(class="form-actions")
         |  %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
         |  %a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
-        | """.stripMargin
-    val file = new File(s"${viewDir}/edit.html.scaml")
-    FileUtils.write(file, editScaml)
-    println("\"" + file.getPath + "\" created.")
+        |""".stripMargin
   }
 
-  override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val indexScaml =
-      s"""-@val s: skinny.Skinny
+    s"""-@val s: skinny.Skinny
         |-@val ${resources}: Seq[model.${modelClassName}]
         |
         |%h3 #{s.i18n.get("${resource}.list")}
@@ -112,15 +93,10 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |
         |%a(href={uri("/${resources}/new")} class="btn btn-primary") #{s.i18n.get("new")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/index.html.scaml")
-    FileUtils.write(file, indexScaml)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
 
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
@@ -130,8 +106,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    val showScaml =
-      s"""-@val ${resource}: model.${modelClassName}
+    s"""-@val ${resource}: model.${modelClassName}
         |-@val s: skinny.Skinny
         |
         |%h3 #{s.i18n.get("${resource}.detail")}
@@ -141,16 +116,12 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |%table(class="table table-bordered")
         | %thead
         |${attributesPart}
-        |
         |%hr
         |%div(class="form-actions")
         | %a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("backToList")}
         | %a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
-        | %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/"+${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        | %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/show.html.scaml")
-    FileUtils.write(file, showScaml)
-    println("\"" + file.getPath + "\" created.")
   }
 
 }
