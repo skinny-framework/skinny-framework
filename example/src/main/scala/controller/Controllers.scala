@@ -16,6 +16,10 @@ object Controllers {
     delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as('deleteSkill)
   }
 
+  val mustache = new MustacheController with Routes {
+    get("/mustache/?")(index).as('index)
+  }
+
   val thymeleaf = new ThymeleafController with Routes {
     get("/thymeleaf/?")(index).as('index)
   }
