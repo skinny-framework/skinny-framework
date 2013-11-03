@@ -139,6 +139,11 @@ trait SkinnyResource extends SkinnyController {
   protected def createForm: MapValidator
 
   /**
+   * Params for creation.
+   */
+  protected def createParams: Params = Params(params)
+
+  /**
    * Strong parameter definitions for creation form
    */
   protected def createFormStrongParameters: Seq[(String, ParamType)]
@@ -173,7 +178,7 @@ trait SkinnyResource extends SkinnyController {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
       val id: Long = if (!createFormStrongParameters.isEmpty) {
-        val parameters = params.permit(createFormStrongParameters: _*)
+        val parameters = createParams.permit(createFormStrongParameters: _*)
         doCreateAndReturnId(parameters)
       } else {
         throw new StrongParametersException(
@@ -220,6 +225,11 @@ trait SkinnyResource extends SkinnyController {
   protected def updateForm: MapValidator
 
   /**
+   * Params for modification.
+   */
+  protected def updateParams: Params = Params(params)
+
+  /**
    * Strong parameter definitions for mofidication form
    */
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
@@ -258,7 +268,7 @@ trait SkinnyResource extends SkinnyController {
     model.findModel(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
-          val parameters = params.permit(updateFormStrongParameters: _*)
+          val parameters = updateParams.permit(updateFormStrongParameters: _*)
           doUpdate(id, parameters)
         } else {
           throw new StrongParametersException(

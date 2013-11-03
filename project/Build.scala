@@ -21,7 +21,9 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+        "com.typesafe" %  "config"       % "1.0.2" % "compile",
+        "joda-time"    %  "joda-time"    % "2.3"   % "compile",
+        "org.joda"     %  "joda-convert" % "1.4"   % "compile"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,

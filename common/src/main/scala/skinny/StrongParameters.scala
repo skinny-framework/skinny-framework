@@ -6,6 +6,13 @@ package skinny
  * @param params params
  */
 case class StrongParameters(params: Map[String, Any]) {
+
+  /**
+   * Permits parameters to be updated.
+   *
+   * @param paramKeyAndParamTypes name and param type
+   * @return permitted parameters
+   */
   def permit(paramKeyAndParamTypes: (String, ParamType)*): PermittedStrongParameters = {
     val _params = params
       .filter { case (name, _) => paramKeyAndParamTypes.exists(_._1 == name) }
