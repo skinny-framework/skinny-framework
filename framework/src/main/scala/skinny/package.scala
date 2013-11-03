@@ -15,6 +15,7 @@ package object skinny {
   type SkinnyServlet = skinny.controller.SkinnyServlet
 
   type Params = skinny.controller.Params
+  type MultiParams = skinny.controller.MultiParams
   type Flash = skinny.controller.Flash
   type Routes = skinny.routing.Routes
 

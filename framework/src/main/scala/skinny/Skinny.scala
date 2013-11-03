@@ -14,6 +14,7 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
   def env: String = SkinnyEnv.get().orNull
 
   def params: Params = getAs[Params](ATTR_PARAMS).orNull
+  def multiParams: MultiParams = getAs[MultiParams](ATTR_MULTI_PARAMS).orNull
   def flash: Flash = getAs[Flash](ATTR_FLASH).orNull
 
   def errorMessages: Seq[String] = getAs[Seq[String]](ATTR_ERROR_MESSAGES).getOrElse(Nil)

@@ -21,6 +21,7 @@ object RequestScopeFeature {
   val ATTR_REQUEST_PATH = "requestPath"
   val ATTR_REQUEST_PATH_WITH_QUERY_STRING = "requestPathWithQueryString"
   val ATTR_PARAMS = "params"
+  val ATTR_MULTI_PARAMS = "multiParams"
   val ATTR_FLASH = "flash"
   val ATTR_ERROR_MESSAGES = "errorMessages"
   val ATTR_KEY_AND_ERROR_MESSAGES = "keyAndErrorMessages"
@@ -54,6 +55,7 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
       set(ATTR_REQUEST_PATH_WITH_QUERY_STRING -> s"${requestPathWithContext}${queryStringPart}")
       // for forms/validator
       set(ATTR_PARAMS -> skinny.controller.Params(params))
+      set(ATTR_MULTI_PARAMS -> skinny.controller.MultiParams(multiParams))
       set(ATTR_ERROR_MESSAGES -> Seq())
       set(ATTR_KEY_AND_ERROR_MESSAGES -> Map[String, Seq[String]]())
       // i18n in view templates
