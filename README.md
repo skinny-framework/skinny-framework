@@ -50,12 +50,12 @@ libraryDependencies ++= Seq(
 
 Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
 
-[![Download](https://github.com/seratch/skinny-framework/raw/develop/img/blank-app-download.png)](https://github.com/seratch/skinny-framework/releases/download/0.9.10/skinny-blank-app.zip)
+[![Download](https://github.com/seratch/skinny-framework/raw/develop/img/blank-app-download.png)](https://github.com/seratch/skinny-framework/releases/download/0.9.11/skinny-blank-app.zip)
 
 Let's create your first Skinny app by using scaffold generator.
 
 ```sh
-./skinny g scaffold members member name:String activated:Boolean favoriteNumber:Option[Long]
+./skinny g scaffold members member name:String activated:Boolean luckyNumber:Option[Long] birthday:Option[LocalDate]
 ./skinny db:migrate
 ./skinny run
 ```
