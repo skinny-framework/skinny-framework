@@ -26,15 +26,14 @@ object DBInitializer extends DBSeeds {
         Seq("PostgreSQL")
       ).apply()
 
-      val programmer1 = sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)"
-        .bind("Alice", company1).updateAndReturnGeneratedKey.apply()
-      val programmer2 = sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)"
-        .bind("Bob", company2).updateAndReturnGeneratedKey.apply()
+      val insertProgrammer = sql"insert into programmer (name, favorite_number, company_id, created_timestamp) values (?, ?, ?, current_timestamp)"
+      val programmer1 = insertProgrammer.bind("Alice", 123456, company1).updateAndReturnGeneratedKey.apply()
+      val programmer2 = insertProgrammer.bind("Bob", 777, company2).updateAndReturnGeneratedKey.apply()
 
-      sql"insert into programmer (name, company_id, created_timestamp) values (?, ?, current_timestamp)".batch(
-        Seq("Chris", company1),
-        Seq("Denis", company2),
-        Seq("Eric", company2)
+      insertProgrammer.batch(
+        Seq("Chris", 24, company1),
+        Seq("Denis", 10, company2),
+        Seq("Eric", 99999999, company2)
       ).apply()
 
       sql"insert into programmer_skill (programmer_id, skill_id) values (?, ?)".batch(

@@ -4,6 +4,7 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 import scala.collection.JavaConverters._
 import skinny.assets._
+import skinny.exception._
 
 /**
  * assets:precompile task runner.
@@ -37,7 +38,11 @@ object AssetsPrecompileTask {
       val compiledCode = coffeeScriptCompiler.compile(code)
       val output = new File(outputDir + "/js/" + file.getName.replaceFirst("\\.coffee$", ".js"))
       FileUtils.forceMkdir(output.getParentFile)
-      FileUtils.write(output, compiledCode)
+      if (output.exists()) {
+        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+      } else {
+        FileUtils.write(output, compiledCode)
+      }
     }
 
     // LESS
@@ -46,7 +51,11 @@ object AssetsPrecompileTask {
       val compiledCode = lessCompiler.compile(code)
       val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.less$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
-      FileUtils.write(output, compiledCode)
+      if (output.exists()) {
+        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+      } else {
+        FileUtils.write(output, compiledCode)
+      }
     }
   }
 

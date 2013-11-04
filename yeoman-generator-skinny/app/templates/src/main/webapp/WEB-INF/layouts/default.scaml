@@ -1,20 +1,19 @@
 -@val body: String
--@val csrfToken: String
--@val i18n: skinny.I18n
+-@val s: skinny.Skinny
 !!! 5
 %html(lang="en")
  %head
   %meta(charset="utf-8")
-  %meta(content={csrfToken} name="csrf-token")
+  =unescape(s.csrfMetaTags)
   %script(type="text/javascript" src={uri("/assets/js/jquery-2.0.3.min.js")})
-  %link(rel="stylesheet" href={uri("/assets/css/bootstrap.min.css")})
+  %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css")
 
  %body
   %div.container.span12
    =unescape(body)
    %hr
-   %a(href={uri("/")} class="btn btn-default") #{i18n.get("top")}
+   %a(href={uri("/")} class="btn btn-default") #{s.i18n.get("top")}
 
-  %script(type="text/javascript" src={uri("/assets/js/bootstrap.min.js")})
+  %script(type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js")
   %script(type="text/javascript" src={uri("/assets/js/skinny.js")})
 

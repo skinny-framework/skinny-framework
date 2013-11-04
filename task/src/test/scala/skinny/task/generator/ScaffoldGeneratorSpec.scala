@@ -9,10 +9,14 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Controller (SkinnyResource)") {
     it("should be created as expected") {
-      val code = generator.controllerCode("members", "member", Seq(
+      val code = generator.controllerCode("members", "member", "ssp", Seq(
         "name" -> "String",
+        "favoriteNumber" -> "Long",
+        "magicNumber" -> "Option[Int]",
         "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
+        "birthday" -> "Option[LocalDate]",
+        "timeToWakeUp" -> "Option[LocalTime]",
+        "createdAt" -> "DateTime"
       ))
 
       val expected =
@@ -29,22 +33,48 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def resourcesName = "members"
           |  override def resourceName = "member"
           |
-          |  override def createForm = validation(
-          |    paramKey("name") is required
+          |  override def createForm = validation(createParams,
+          |    paramKey("name") is required & maxLength(512),
+          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("magicNumber") is numeric & intValue,
+          |    paramKey("birthday") is dateFormat,
+          |    paramKey("timeToWakeUp") is timeFormat,
+          |    paramKey("createdAt") is required & dateTimeFormat
           |  )
+          |  override def createParams = Params(params)
+          |    .withDate("birthday")
+          |    .withTime("timeToWakeUp")
+          |    .withDateTime("createdAt")
           |  override def createFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
+          |    "favoriteNumber" -> ParamType.Long,
+          |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
-          |    "birthday" -> ParamType.LocalDate
+          |    "birthday" -> ParamType.LocalDate,
+          |    "timeToWakeUp" -> ParamType.LocalTime,
+          |    "createdAt" -> ParamType.DateTime
           |  )
           |
-          |  override def updateForm = validation(
-          |    paramKey("name") is required
+          |  override def updateForm = validation(updateParams,
+          |    paramKey("name") is required & maxLength(512),
+          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("magicNumber") is numeric & intValue,
+          |    paramKey("birthday") is dateFormat,
+          |    paramKey("timeToWakeUp") is timeFormat,
+          |    paramKey("createdAt") is required & dateTimeFormat
           |  )
+          |  override def updateParams = Params(params)
+          |    .withDate("birthday")
+          |    .withTime("timeToWakeUp")
+          |    .withDateTime("createdAt")
           |  override def updateFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
+          |    "favoriteNumber" -> ParamType.Long,
+          |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
-          |    "birthday" -> ParamType.LocalDate
+          |    "birthday" -> ParamType.LocalDate,
+          |    "timeToWakeUp" -> ParamType.LocalTime,
+          |    "createdAt" -> ParamType.DateTime
           |  )
           |
           |}
@@ -112,8 +142,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrfToken" -> "12345") {
-          |      post(s"/members", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrfToken" -> "12345") {
+          |    withSession("csrf-token" -> "12345") {
+          |      post(s"/members", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -132,8 +162,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrfToken" -> "12345") {
-          |      put(s"/members/${member.id}", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrfToken" -> "12345") {
+          |    withSession("csrf-token" -> "12345") {
+          |      put(s"/members/${member.id}", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
           |        status should equal(200)
           |      }
           |    }
@@ -144,8 +174,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    delete(s"/members/${member.id}") {
           |      status should equal(403)
           |    }
-          |    withSession("csrfToken" -> "aaaaaa") {
-          |      delete(s"/members/${member.id}?csrfToken=aaaaaa") {
+          |    withSession("csrf-token" -> "aaaaaa") {
+          |      delete(s"/members/${member.id}?csrf-token=aaaaaa") {
           |        status should equal(200)
           |      }
           |    }

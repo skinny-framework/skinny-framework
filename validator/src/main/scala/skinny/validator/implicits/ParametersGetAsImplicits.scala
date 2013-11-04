@@ -10,12 +10,12 @@ import skinny.validator.TypeConverter
 /**
  * Implicits to enable using #getAs[Type]("name") for params.
  */
-object ParamsGetAsImplicits extends ParamsGetAsImplicits
+object ParametersGetAsImplicits extends ParametersGetAsImplicits
 
 /**
  * Implicits to enable using #getAs[Type]("name") for params.
  */
-trait ParamsGetAsImplicits {
+trait ParametersGetAsImplicits {
 
   implicit def skinnyValidatorSafe[S, T](f: S => T): TypeConverter[S, T] = new TypeConverter[S, T] {
     def apply(s: S): Option[T] = allCatch opt f(s)

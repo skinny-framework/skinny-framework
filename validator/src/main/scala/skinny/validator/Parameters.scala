@@ -1,24 +1,24 @@
 package skinny.validator
 
 import java.util.Date
-import skinny.validator.implicits.ParamsGetAsImplicits
+import skinny.validator.implicits.ParametersGetAsImplicits
 
 /**
  * Params
  */
-sealed trait Params { self: ParamsGetAsImplicits =>
+sealed trait Parameters { self: ParametersGetAsImplicits =>
 
-  protected val paramsMap: Map[String, Any]
+  protected val parametersMap: Map[String, Any]
 
   def keys(): Seq[String] = toSeq().map(_.key)
 
   def values(): Seq[Any] = toSeq().map(_.value)
 
-  def toMap(): Map[String, Any] = paramsMap
+  def toMap(): Map[String, Any] = parametersMap
 
-  def toSeq(): Seq[ParamDefinition] = paramsMap.toSeq.map { case (k, v) => KeyValueParamDefinition(k, v) }
+  def toSeq(): Seq[ParamDefinition] = parametersMap.toSeq.map { case (k, v) => KeyValueParamDefinition(k, v) }
 
-  def get(key: String): Option[String] = paramsMap.get(key).filterNot(_ == null).map(_.toString)
+  def get(key: String): Option[String] = parametersMap.get(key).filterNot(_ == null).map(_.toString)
 
   def getAs[T <: Any](name: String)(implicit tc: TypeConverter[String, T]): Option[T] = get(name).flatMap(tc(_))
 
@@ -41,9 +41,9 @@ sealed trait Params { self: ParamsGetAsImplicits =>
  *
  * @param validations validations
  */
-case class ParamsFromValidations(validations: Validations) extends Params with ParamsGetAsImplicits {
+case class ParametersFromValidations(validations: Validations) extends Parameters with ParametersGetAsImplicits {
 
-  override protected val paramsMap: Map[String, Any] = validations.statesAsMap()
+  override protected val parametersMap: Map[String, Any] = validations.statesAsMap()
 }
 
 /**
@@ -51,8 +51,8 @@ case class ParamsFromValidations(validations: Validations) extends Params with P
  *
  * @param map Map value
  */
-case class ParamsFromMap(map: Map[String, Any]) extends Params with ParamsGetAsImplicits {
+case class ParametersFromMap(map: Map[String, Any]) extends Parameters with ParametersGetAsImplicits {
 
-  override protected val paramsMap: Map[String, Any] = map
+  override protected val parametersMap: Map[String, Any] = map
 }
 

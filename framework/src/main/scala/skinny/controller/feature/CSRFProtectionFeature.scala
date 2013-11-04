@@ -3,17 +3,22 @@ package skinny.controller.feature
 import org.scalatra._
 import grizzled.slf4j.Logging
 
+object CSRFProtectionFeature {
+
+  // follows Rails default
+  val DEFAULT_KEY: String = "csrf-token"
+
+}
+
 /**
  * Provides Cross-Site Request Forgery (CSRF) protection.
  */
-trait CSRFProtectionFeature extends CsrfTokenSupport {
-
-  self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
+trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
 
   /**
    * Overrides Scalatra's default key name.
    */
-  override def csrfKey: String = "csrfToken"
+  override def csrfKey: String = CSRFProtectionFeature.DEFAULT_KEY
 
   /**
    * Enabled if true.
@@ -82,9 +87,9 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
 
   // Registers csrfKey & csrfToken to request scope.
   before() {
-    if (requestScope("csrfKey").isEmpty) {
-      set("csrfKey", csrfKey)
-      set("csrfToken", csrfToken)
+    if (requestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
+      set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
+      set(RequestScopeFeature.ATTR_CSRF_TOKEN, csrfToken)
     }
   }
 

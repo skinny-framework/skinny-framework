@@ -5,37 +5,64 @@ import org.scalatra.ScalatraBase
 import skinny.controller.Params
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
+import org.joda.time._
 import skinny.I18n
+
+object RequestScopeFeature {
+
+  /**
+   * Key for request scope.
+   */
+  val REQUEST_SCOPE_KEY = "__SKINNY_FRAMEWORK_REQUEST_SCOPE__"
+
+  // skinny has this request scope as a member
+  val ATTR_SKINNY = "s"
+
+  val ATTR_CONTEXT_PATH = "contextPath"
+  val ATTR_REQUEST_PATH = "requestPath"
+  val ATTR_REQUEST_PATH_WITH_QUERY_STRING = "requestPathWithQueryString"
+  val ATTR_PARAMS = "params"
+  val ATTR_MULTI_PARAMS = "multiParams"
+  val ATTR_FLASH = "flash"
+  val ATTR_ERROR_MESSAGES = "errorMessages"
+  val ATTR_KEY_AND_ERROR_MESSAGES = "keyAndErrorMessages"
+  val ATTR_I18N = "i18n"
+
+  val ATTR_CSRF_KEY = "csrfKey"
+  val ATTR_CSRF_TOKEN = "csrfToken"
+
+  val ATTR_RESOURCE_NAME = "resourceName"
+  val ATTR_RESOURCES_NAME = "resourcesName"
+}
 
 /**
  * Request scope support.
  */
 trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
 
+  import RequestScopeFeature._
+
   /**
    * Registers default attributes in the request scope.
    */
   before() {
     if (requestScope().isEmpty) {
+      set(ATTR_SKINNY, skinny.Skinny(requestScope()))
       // requestPath/contextPath
       val requestPathWithContext = contextPath + requestPath
       val queryStringPart = Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")
-      set("contextPath", contextPath)
-      set("requestPath", requestPathWithContext)
-      set("requestPathWithQueryString", s"${requestPathWithContext}${queryStringPart}")
+      set(ATTR_CONTEXT_PATH -> contextPath)
+      set(ATTR_REQUEST_PATH -> requestPathWithContext)
+      set(ATTR_REQUEST_PATH_WITH_QUERY_STRING -> s"${requestPathWithContext}${queryStringPart}")
       // for forms/validator
-      set("params", skinny.controller.Params(params))
-      set("errorMessages" -> Seq())
-      set("keyAndErrorMessages" -> Map[String, Seq[String]]())
+      set(ATTR_PARAMS -> skinny.controller.Params(params))
+      set(ATTR_MULTI_PARAMS -> skinny.controller.MultiParams(multiParams))
+      set(ATTR_ERROR_MESSAGES -> Seq())
+      set(ATTR_KEY_AND_ERROR_MESSAGES -> Map[String, Seq[String]]())
       // i18n in view templates
       setI18n()
     }
   }
-
-  /**
-   * Key for request scope.
-   */
-  private[this] val SKINNY_REQUEST_SCOPE_KEY = "__SKINNY_FRAMEWORK_REQUEST_SCOPE__"
 
   /**
    * Returns whole request scope attributes.
@@ -43,14 +70,14 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    * @return whole attributes
    */
   def requestScope(): scala.collection.mutable.Map[String, Any] = {
-    request.getAttribute(SKINNY_REQUEST_SCOPE_KEY) match {
+    request.getAttribute(REQUEST_SCOPE_KEY) match {
       case null =>
         val values = collection.mutable.Map[String, Any]()
-        request.setAttribute(SKINNY_REQUEST_SCOPE_KEY, values)
+        request.setAttribute(REQUEST_SCOPE_KEY, values)
         values
       case values: collection.mutable.Map[_, _] => values.asInstanceOf[collection.mutable.Map[String, Any]]
       case _ => throw new RequestScopeConflictException(
-        s"Don't use '${SKINNY_REQUEST_SCOPE_KEY}' for request attribute key name.")
+        s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
     }
   }
 
@@ -117,6 +144,42 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
     getterNames(model).foreach { getterName =>
       val value = model.getClass.getDeclaredMethod(getterName).invoke(model)
       addParam(getterName, value)
+      value match {
+        case opt: Option[_] => opt foreach {
+          case dt: DateTime =>
+            addParam(s"${getterName}Year", dt.getYearOfEra)
+            addParam(s"${getterName}Month", dt.getMonthOfYear)
+            addParam(s"${getterName}Day", dt.getDayOfMonth)
+            addParam(s"${getterName}Hour", dt.getHourOfDay)
+            addParam(s"${getterName}Minute", dt.getMinuteOfHour)
+            addParam(s"${getterName}Second", dt.getSecondOfMinute)
+          case ld: LocalDate =>
+            addParam(s"${getterName}Year", ld.getYearOfEra)
+            addParam(s"${getterName}Month", ld.getMonthOfYear)
+            addParam(s"${getterName}Day", ld.getDayOfMonth)
+          case lt: LocalTime =>
+            addParam(s"${getterName}Hour", lt.getHourOfDay)
+            addParam(s"${getterName}Minute", lt.getMinuteOfHour)
+            addParam(s"${getterName}Second", lt.getSecondOfMinute)
+          case value =>
+        }
+        case dt: DateTime =>
+          addParam(s"${getterName}Year", dt.getYearOfEra)
+          addParam(s"${getterName}Month", dt.getMonthOfYear)
+          addParam(s"${getterName}Day", dt.getDayOfMonth)
+          addParam(s"${getterName}Hour", dt.getHourOfDay)
+          addParam(s"${getterName}Minute", dt.getMinuteOfHour)
+          addParam(s"${getterName}Second", dt.getSecondOfMinute)
+        case ld: LocalDate =>
+          addParam(s"${getterName}Year", ld.getYearOfEra)
+          addParam(s"${getterName}Month", ld.getMonthOfYear)
+          addParam(s"${getterName}Day", ld.getDayOfMonth)
+        case lt: LocalTime =>
+          addParam(s"${getterName}Hour", lt.getHourOfDay)
+          addParam(s"${getterName}Minute", lt.getMinuteOfHour)
+          addParam(s"${getterName}Second", lt.getSecondOfMinute)
+        case value =>
+      }
     }
   }
 
@@ -149,7 +212,7 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
   /**
    * Set params to request scope.
    */
-  def setParamsToRequestScope(): Unit = set("params" -> Params(params))
+  def setParamsToRequestScope(): Unit = set(ATTR_PARAMS -> Params(params))
 
   /**
    * Set {{skinny.I18n}} object for the current request to request scope.
@@ -158,7 +221,7 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    * @return self
    */
   def setI18n()(implicit locale: Locale = currentLocale.orNull[Locale]) = {
-    set("i18n", I18n(locale))
+    set(RequestScopeFeature.ATTR_I18N, I18n(locale))
   }
 
   /**
@@ -170,7 +233,8 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
   def addParam(name: String, value: Any): Unit = {
 
     // ensure "params" in the request scope is valid
-    val isParamsInRequestScopeValid = requestScope[Any]("params").map(_.isInstanceOf[Params]).getOrElse(false)
+    // don't delete requestScope[Any] 's `Any` (because cannot cast Nothing to Params)
+    val isParamsInRequestScopeValid = requestScope[Any](ATTR_PARAMS).map(_.isInstanceOf[Params]).getOrElse(false)
 
     if (isParamsInRequestScopeValid) {
       val updatedParams: Params = {
@@ -179,10 +243,10 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
           .getOrElse(params)
           .updated(name, value))
       }
-      set("params" -> updatedParams)
+      set(RequestScopeFeature.ATTR_PARAMS -> updatedParams)
 
     } else {
-      val actual = requestScope("params")
+      val actual = requestScope(ATTR_PARAMS)
       throw new RequestScopeConflictException(
         s"""Skinny Framework expects that $${params} is a SkinnyParams value. (actual: "${actual}", class: ${actual.getClass.getName})""")
     }

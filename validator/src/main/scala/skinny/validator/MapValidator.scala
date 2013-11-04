@@ -10,7 +10,7 @@ case class MapValidator(
     paramMap: Map[String, Any] = Map(),
     override val validations: Validations = Validations(Map(), Nil)) extends ValidatorLike {
 
-  override lazy val params: Params = ParamsFromMap(paramMap)
+  override lazy val params: Parameters = ParametersFromMap(paramMap)
 
   /**
    * Applies new validations to inputs.

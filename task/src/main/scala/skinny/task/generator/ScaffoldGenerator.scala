@@ -3,6 +3,7 @@ package skinny.task.generator
 import java.io.File
 import scala.io.Source
 import org.joda.time._
+import org.apache.commons.io.FileUtils
 
 /**
  * Scaffold generator.
@@ -105,6 +106,7 @@ trait ScaffoldGenerator extends CodeGenerator {
           ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
           ModelGenerator.generateSpec(resource, attributePairs)
           // Views
+          generateFormView(resources, resource, attributePairs)
           generateNewView(resources, resource, attributePairs)
           generateEditView(resources, resource, attributePairs)
           generateIndexView(resources, resource, attributePairs)
@@ -126,10 +128,34 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
     val validations = attributePairs
-      .filterNot { case (_, t) => isOptionClassName(t) }
-      .filterNot { case (_, t) => toParamType(t) == "Boolean" }
-      .map { case (k, t) => "    paramKey(\"" + k + "\") is required" }
+      .filterNot { case (_, t) => toParamType(t) == "Boolean" } // boolean param doesn't need required valdiation.
+      .flatMap {
+        case (k, t) =>
+          val validationRules = (if (isOptionClassName(t)) Nil else Seq("required")) ++ (toParamType(t) match {
+            case "Long" => Seq("numeric", "longValue")
+            case "Int" => Seq("numeric", "intValue")
+            case "Short" => Seq("numeric", "intValue")
+            case "Double" => Seq("numeric")
+            case "Float" => Seq("numeric")
+            case "String" => Seq("maxLength(512)")
+            case "DateTime" => Seq("dateTimeFormat")
+            case "LocalDate" => Seq("dateFormat")
+            case "LocalTime" => Seq("timeFormat")
+            case _ => Nil
+          })
+          if (validationRules.isEmpty) None
+          else Some("    paramKey(\"" + k + "\") is " + validationRules.mkString(" & "))
+      }
       .mkString(",\n")
+    val params = attributePairs.flatMap {
+      case (name, t) =>
+        toParamType(t) match {
+          case "DateTime" => Some(s""".withDateTime("${name}")""")
+          case "LocalDate" => Some(s""".withDate("${name}")""")
+          case "LocalTime" => Some(s""".withTime("${name}")""")
+          case _ => None
+        }
+    }.mkString("\n    ", "\n    ", "")
 
     s"""package controller
         |
@@ -144,16 +170,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def resourcesName = "${resources}"
         |  override def resourceName = "${resource}"
         |
-        |  override def createForm = validation(
+        |  override def createForm = validation(createParams,
         |${validations}
         |  )
+        |  override def createParams = Params(params)${params}
         |  override def createFormStrongParameters = Seq(
         |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
         |  )
         |
-        |  override def updateForm = validation(
+        |  override def updateForm = validation(updateParams,
         |${validations}
         |  )
+        |  override def updateParams = Params(params)${params}
         |  override def updateFormStrongParameters = Seq(
         |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
         |  )
@@ -231,8 +259,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |      status should equal(403)
         |    }
         |
-        |    withSession("csrfToken" -> "12345") {
-        |      post(s"/${resources}", ${params}, "csrfToken" -> "12345") {
+        |    withSession("csrf-token" -> "12345") {
+        |      post(s"/${resources}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -251,8 +279,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |      status should equal(403)
         |    }
         |
-        |    withSession("csrfToken" -> "12345") {
-        |      put(s"/${resources}/$${${resource}.id}", ${params}, "csrfToken" -> "12345") {
+        |    withSession("csrf-token" -> "12345") {
+        |      put(s"/${resources}/$${${resource}.id}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(200)
         |      }
         |    }
@@ -263,8 +291,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |    delete(s"/${resources}/$${${resource}.id}") {
         |      status should equal(403)
         |    }
-        |    withSession("csrfToken" -> "aaaaaa") {
-        |      delete(s"/${resources}/$${${resource}.id}?csrfToken=aaaaaa") {
+        |    withSession("csrf-token" -> "aaaaaa") {
+        |      delete(s"/${resources}/$${${resource}.id}?csrf-token=aaaaaa") {
         |        status should equal(200)
         |      }
         |    }
@@ -288,8 +316,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val newCode =
       s"""override def initSkinnyApp(ctx: ServletContext) {
-        |    ${controllerClassName}.mount(ctx)
-        |""".stripMargin
+        |    ${controllerClassName}.mount(ctx)""".stripMargin
     val file = new File("src/main/scala/ScalatraBootstrap.scala")
     if (file.exists()) {
       val code = Source.fromFile(file).mkString.replaceFirst(
@@ -393,10 +420,70 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Views
   // --------------------------
 
-  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
-  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]): Unit = ???
+  def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
 
+  def generateFormView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/_form.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, formHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/new.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, newHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/edit.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, editHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/index.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, indexHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
+
+  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+    FileUtils.forceMkdir(new File(viewDir))
+    val file = new File(s"${viewDir}/show.html.${template}")
+    if (file.exists()) {
+      println("\"" + file.getPath + "\" skipped.")
+    } else {
+      FileUtils.write(file, showHtmlCode(resources, resource, attributePairs))
+      println("\"" + file.getPath + "\" created.")
+    }
+  }
 }
 

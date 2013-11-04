@@ -22,6 +22,16 @@
   </div>
 </div>
 <div class="form-group">
+  <label class="control-label" for="favoriteNumber">
+    ${i18n.get("programmer.favoriteNumber")}
+  </label>
+  <div class="controls">
+    <div class="row col-md-12">
+    <input type="text" name="favoriteNumber" class="input-lg col-lg-6" value="${params.favoriteNumber}" />
+    </div>
+  </div>
+</div>
+<div class="form-group">
   <label class="control-label" for="companyId">
     ${i18n.get("programmer.companyId")}
   </label>

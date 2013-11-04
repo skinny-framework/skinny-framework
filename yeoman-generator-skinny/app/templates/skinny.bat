@@ -58,18 +58,19 @@ IF "%is_generator%"=="true" (
 )
 
 IF "%command%"=="db:migrate" (
-  rmdir task\src\main\resources /s /q
-  mkdir task\src\main\resources
-  xcopy src\main\resources task\src\main\resources /E /D /q
+  RMDIR task\src\main\resources /s /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  ECHO <configuration><appender name="console" class="ch.qos.logback.core.ConsoleAppender"><encoder><pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern></encoder></appender><root level="warn"><appender-ref ref="console"/></root></configuration> >task/src/main/resources/logback.xml
   sbt "task/run db:migrate %2"
   GOTO script_eof
 )
 
 IF %command%==package (
-  rmdir build /s /q
-  mkdir build
-  xcopy src\* build\src\* /E /D /q
-  xcopy build.sbt build\build.sbt /E /D /q
+  RMDIR build /s /q
+  MKDIR build
+  XCOPY src\* build\src\* /E /D /q
+  XCOPY build.sbt build\build.sbt /E /D /q
   sbt "task/run assets:precompile" "build/package"
   GOTO script_eof
 )

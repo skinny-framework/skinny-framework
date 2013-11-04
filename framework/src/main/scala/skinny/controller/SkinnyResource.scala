@@ -5,6 +5,7 @@ import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
+import skinny.controller.feature.RequestScopeFeature
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
@@ -35,12 +36,13 @@ trait SkinnyResource extends SkinnyController {
   /**
    * Creates validator with prefix(resourceName).
    *
-   * @param validations validations validations
+   * @param params params
+   * @param validations validations
    * @param locale current locale
    * @return validator
    */
-  override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(resourceName, validations: _*)
+  override def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, resourceName, validations: _*)
   }
 
   /**
@@ -138,6 +140,11 @@ trait SkinnyResource extends SkinnyController {
   protected def createForm: MapValidator
 
   /**
+   * Params for creation.
+   */
+  protected def createParams: Params = Params(params)
+
+  /**
    * Strong parameter definitions for creation form
    */
   protected def createFormStrongParameters: Seq[(String, ParamType)]
@@ -172,7 +179,7 @@ trait SkinnyResource extends SkinnyController {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
       val id: Long = if (!createFormStrongParameters.isEmpty) {
-        val parameters = params.permit(createFormStrongParameters: _*)
+        val parameters = createParams.permit(createFormStrongParameters: _*)
         doCreateAndReturnId(parameters)
       } else {
         throw new StrongParametersException(
@@ -187,6 +194,7 @@ trait SkinnyResource extends SkinnyController {
           response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       }
     } else {
+      status = 400
       render(s"/${resourcesName}/new")
     }
   }
@@ -217,6 +225,11 @@ trait SkinnyResource extends SkinnyController {
    * Input form for modification
    */
   protected def updateForm: MapValidator
+
+  /**
+   * Params for modification.
+   */
+  protected def updateParams: Params = Params(params)
 
   /**
    * Strong parameter definitions for mofidication form
@@ -257,7 +270,7 @@ trait SkinnyResource extends SkinnyController {
     model.findModel(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
-          val parameters = params.permit(updateFormStrongParameters: _*)
+          val parameters = updateParams.permit(updateFormStrongParameters: _*)
           doUpdate(id, parameters)
         } else {
           throw new StrongParametersException(
@@ -272,6 +285,7 @@ trait SkinnyResource extends SkinnyController {
           case _ =>
         }
       } else {
+        status = 400
         render(s"/${resourcesName}/edit")
       }
     } getOrElse haltWithBody(404)
@@ -321,10 +335,10 @@ trait SkinnyResource extends SkinnyController {
    */
   private[this] implicit val skinnyController: SkinnyController = this
 
-  // set resoureceName/resourcesName to the request scope
+  // set resourceName/resourcesName to the request scope
   before() {
-    set("resourceName", resourceName)
-    set("resourcesName", resourcesName)
+    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
+    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
   }
 
   // --------------

@@ -13,6 +13,7 @@
   <tr>
     <th>${i18n.get("programmer.id")}</th>
     <th>${i18n.get("programmer.name")}</th>
+    <th>${i18n.get("programmer.favoriteNumber")}</th>
     <th>${i18n.get("programmer.company")}</th>
     <th>${i18n.get("programmer.skills")}</th>
     <th></th>
@@ -23,6 +24,7 @@
   <tr>
     <td>${programmer.id}</td>
     <td>${programmer.name}</td>
+    <td>${programmer.favoriteNumber}</td>
     <td>${programmer.company.map(_.name).getOrElse("")}</td>
     <td>
     #for (skill <- programmer.skills)

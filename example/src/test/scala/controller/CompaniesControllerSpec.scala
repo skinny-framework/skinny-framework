@@ -54,8 +54,11 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       status should equal(403)
     }
 
-    withSession("csrfToken" -> "12345") {
-      post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/", "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      post(s"/companies", "csrf-token" -> "12345") {
+        status should equal(400)
+      }
+      post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/", "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
         Company.findById(id).isDefined should equal(true)
@@ -76,8 +79,11 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     }
     Company.findById(company.id).get.name should not equal (newName)
 
-    withSession("csrfToken" -> "12345") {
-      put(s"/companies/${company.id}", "name" -> newName, "csrfToken" -> "12345") {
+    withSession("csrf-token" -> "12345") {
+      put(s"/companies/${company.id}", "csrf-token" -> "12345") {
+        status should equal(400)
+      }
+      put(s"/companies/${company.id}", "name" -> newName, "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
         status should equal(200)
       }
     }
@@ -89,8 +95,8 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     delete(s"/companies/${company.id}") {
       status should equal(403)
     }
-    withSession("csrfToken" -> "aaaaaa") {
-      delete(s"/companies/${company.id}?csrfToken=aaaaaa") {
+    withSession("csrf-token" -> "aaaaaa") {
+      delete(s"/companies/${company.id}?csrf-token=aaaaaa") {
         status should equal(200)
       }
     }

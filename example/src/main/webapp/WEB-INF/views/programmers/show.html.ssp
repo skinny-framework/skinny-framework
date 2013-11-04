@@ -18,6 +18,10 @@
     <td>${programmer.name}</td>
   </tr>
   <tr>
+    <th>${i18n.get("programmer.favoriteNumber")}</th>
+    <td>${programmer.favoriteNumber}</td>
+  </tr>
+  <tr>
     <th>${i18n.get("programmer.company")}</th>
     <td>${programmer.company.map(_.name).getOrElse("")}</td>
   </tr>

@@ -5,12 +5,12 @@ package skinny.validator
  */
 object ResultsProjection {
 
-  val defaultOnSuccess: (Params) => Nothing = {
-    (params: Params) => throw new IllegalStateException("onSuccess handler is not specified.")
+  val defaultOnSuccess: (Parameters) => Nothing = {
+    (params: Parameters) => throw new IllegalStateException("onSuccess handler is not specified.")
   }
 
-  val defaultOnFailures: (Params, Errors) => Nothing = {
-    (params: Params, errors: Errors) => throw new IllegalStateException("onFailures handler is not specified.")
+  val defaultOnFailures: (Parameters, Errors) => Nothing = {
+    (params: Parameters, errors: Errors) => throw new IllegalStateException("onFailures handler is not specified.")
   }
 
 }
@@ -24,15 +24,15 @@ sealed trait ResultsProjection[+A] {
 
   val results: Validations
 
-  val onSuccess: (Params) => A
+  val onSuccess: (Parameters) => A
 
-  val onFailures: (Params, Errors) => A
+  val onFailures: (Parameters, Errors) => A
 
-  def success[B >: A](f: (Params) => B): SuccessesProjection[B] = {
+  def success[B >: A](f: (Parameters) => B): SuccessesProjection[B] = {
     SuccessesProjection(results, onSuccess, onFailures).map(f)
   }
 
-  def failure[B >: A](f: (Params, Errors) => B): FailuresProjection[B] = {
+  def failure[B >: A](f: (Parameters, Errors) => B): FailuresProjection[B] = {
     FailuresProjection(results, onSuccess, onFailures).map(f)
   }
 
@@ -52,11 +52,11 @@ sealed trait ResultsProjection[+A] {
  * @tparam A result type
  */
 case class SuccessesProjection[+A](override val results: Validations,
-    override val onSuccess: (Params) => A,
-    override val onFailures: (Params, Errors) => A) extends ResultsProjection[A] {
+    override val onSuccess: (Parameters) => A,
+    override val onFailures: (Parameters, Errors) => A) extends ResultsProjection[A] {
 
-  def map[B >: A](f: (Params) => B): SuccessesProjection[B] = {
-    SuccessesProjection[B](results, f, onFailures.asInstanceOf[(Params, Errors) => B])
+  def map[B >: A](f: (Parameters) => B): SuccessesProjection[B] = {
+    SuccessesProjection[B](results, f, onFailures.asInstanceOf[(Parameters, Errors) => B])
   }
 
 }
@@ -70,11 +70,11 @@ case class SuccessesProjection[+A](override val results: Validations,
  * @tparam A result type
  */
 case class FailuresProjection[+A](override val results: Validations,
-    override val onSuccess: (Params) => A,
-    override val onFailures: (Params, Errors) => A) extends ResultsProjection[A] {
+    override val onSuccess: (Parameters) => A,
+    override val onFailures: (Parameters, Errors) => A) extends ResultsProjection[A] {
 
-  def map[B >: A](f: (Params, Errors) => B): FailuresProjection[B] = {
-    FailuresProjection[B](results, onSuccess.asInstanceOf[(Params) => B], f)
+  def map[B >: A](f: (Parameters, Errors) => B): FailuresProjection[B] = {
+    FailuresProjection[B](results, onSuccess.asInstanceOf[(Parameters) => B], f)
   }
 
 }

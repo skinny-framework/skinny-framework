@@ -8,10 +8,11 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.10"
+  val Version = "0.9.11"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.6.10"
+  val ScalateVeresion = "1.6.1"
 
   lazy val common = Project (id = "common", base = file("common"),
    settings = Defaults.defaultSettings ++ Seq(
@@ -20,7 +21,9 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+        "com.typesafe" %  "config"       % "1.0.2" % "compile",
+        "joda-time"    %  "joda-time"    % "2.3"   % "compile",
+        "org.joda"     %  "joda-convert" % "1.4"   % "compile"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -85,7 +88,8 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-io"    %  "commons-io" % "2.4"
+        "commons-io"             %  "commons-io" % "2.4",
+        "org.fusesource.scalamd" %% "scalamd"    % "1.6"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -198,7 +202,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     )
-  )
+  ) dependsOn(common)
 
   lazy val test = Project (id = "test", base = file("test"),
    settings = Defaults.defaultSettings ++ Seq(

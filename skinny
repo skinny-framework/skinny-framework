@@ -25,7 +25,6 @@ elif [ $command == "test" ];then
 elif [ $command == "test-only" ];then
   sbt "test-only $2"
 elif [ $command == "db:migrate" ];then
-  shift
   sbt "example/run db:migrate $2"
 elif [ $command == "package" ];then
   sbt package

@@ -59,7 +59,7 @@ trait Validations {
    *
    * @return params
    */
-  def params: Params = ParamsFromMap(paramsMap)
+  def params: Parameters = ParametersFromMap(paramsMap)
 
   /**
    * Returns true if all validations succeeded.
@@ -105,7 +105,7 @@ trait Validations {
    * @tparam A result type
    * @return projection
    */
-  def success[A](f: (Params) => A): SuccessesProjection[A] = {
+  def success[A](f: (Parameters) => A): SuccessesProjection[A] = {
     SuccessesProjection[A](this, ResultsProjection.defaultOnSuccess, ResultsProjection.defaultOnFailures).map(f)
   }
 
@@ -116,7 +116,7 @@ trait Validations {
    * @tparam A result type
    * @return projection
    */
-  def failure[A](f: (Params, Errors) => A): FailuresProjection[A] = {
+  def failure[A](f: (Parameters, Errors) => A): FailuresProjection[A] = {
     FailuresProjection[A](this, ResultsProjection.defaultOnSuccess, ResultsProjection.defaultOnFailures).map(f)
   }
 

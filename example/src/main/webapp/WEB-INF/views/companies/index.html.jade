@@ -1,0 +1,36 @@
+-@val s :skinny.Skinny
+-@val companies: Seq[model.Company]
+
+h3 #{s.i18n.get("company.list")}
+hr
+-for (notice <- s.flash.notice)
+ p(class="alert alert-info") #{notice}
+
+table(class="table table-bordered")
+ thead
+  tr
+   th #{s.i18n.get("company.id")}
+   th #{s.i18n.get("company.name")}
+   th #{s.i18n.get("company.url")}
+   th
+ tbody
+  -for (company <- companies)
+   tr
+    td #{company.id}
+    td #{company.name}
+    td #{company.url}
+    td
+     a(href={uri("/companies/" + company.id)} class="btn btn-default") #{s.i18n.get("detail")}
+     a(href={uri("/companies/" + company.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+     a(data-method="delete" data-confirm={s.i18n.get("company.delete.confirm")} href={uri("/companies/" + company.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+
+a(href={uri("/companies/new")} class="btn btn-primary") #{s.i18n.get("new")}
+
+hr
+:markdown
+ ### Markdown!
+ You can write markdown text here.
+
+:coffeescript
+ console.log("CoffeeScript embedding works!")
+

@@ -1,8 +1,5 @@
 package skinny.task.generator
 
-import org.apache.commons.io.FileUtils
-import java.io.File
-
 /**
  * Scaffold generator with jade template.
  */
@@ -15,153 +12,152 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
 
   protected override def template: String = "jade"
 
-  private[this] def formInputsPart(resource: String, attributePairs: Seq[(String, String)]) = {
-    attributePairs.toList.map { case (k, t) => k -> toParamType(t) }.map {
-      case (name, "Boolean") =>
-        s""" div(class="form-group")
-        |  label(class="control-label" for="${name}") #{i18n.get("${resource}.${name}")}
-        |  div(class="controls")
-        |   div(class="row col-md-12")
-        |    input(type="checkbox" name="${name}" value="true" checked={params.${name}==Some(true)})
+  override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    "-@val s: skinny.Skinny\n\n" +
+      attributePairs.toList.map { case (k, t) => k -> toParamType(t) }.map {
+        case (name, "Boolean") =>
+          s"""div(class="form-group")
+          | label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+          | div(class="controls row")
+          |  div(class="col-xs-12")
+          |   input(type="checkbox" name="${name}" class="form-control" value="true" checked={s.params.${name}==Some(true)})
+          |""".stripMargin
+        case (name, "DateTime") =>
+          s"""div(class="form-group")
+          | label(class="control-label") #{s.i18n.get("${resource}.${name}")}
+          | div(class="controls row")
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Year"   class="form-control" value={s.params.${name}Year}   placeholder={s.i18n.get("year")}   maxlength=4)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Month"  class="form-control" value={s.params.${name}Month}  placeholder={s.i18n.get("month")}  maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Day"    class="form-control" value={s.params.${name}Day}    placeholder={s.i18n.get("day")}    maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |""".stripMargin
+        case (name, "LocalDate") =>
+          s"""div(class="form-group")
+          | label(class="control-label") #{s.i18n.get("${resource}.${name}")}
+          | div(class="controls row")
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Year"  class="form-control" value={s.params.${name}Year}  placeholder={s.i18n.get("year")}  maxlength=4)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Month" class="form-control" value={s.params.${name}Month} placeholder={s.i18n.get("month")} maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Day"   class="form-control" value={s.params.${name}Day}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |""".stripMargin
+        case (name, "LocalTime") =>
+          s"""div(class="form-group")
+          | label(class="control-label") #{s.i18n.get("${resource}.${name}")}
+          | div(class="controls row")
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |  div(class="col-xs-2")
+          |   input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |""".stripMargin
+        case (name, _) =>
+          s"""div(class="form-group")
+           | label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+           | div(class="controls row")
+           |  div(class="col-xs-12")
+           |   input(type="text" name="${name}" class="form-control" value={s.params.${name}})
+           |""".stripMargin
+      }.mkString +
+      s"""div(class="form-actions")
+        | =unescape(s.csrfHiddenInputTag)
+        | input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
+        |  a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
         |""".stripMargin
-      case (name, _) =>
-        s""" div(class="form-group")
-        |  label(class="control-label" for="${name}") #{i18n.get("${resource}.${name}")}
-        |  div(class="controls")
-        |   div(class="row col-md-12")
-        |    input(type="text" name="${name}" class="input-lg col-lg-6" value={params.${name}})
-        |""".stripMargin
-    }.mkString
   }
 
-  override def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
-    val newJade =
-      s"""-@val params: skinny.Params
-        |-@val errorMessages: Seq[String]
-        |-@val i18n: skinny.I18n
-        |-@val csrfKey: String
-        |-@val csrfToken: String
+  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
-        |h3 #{i18n.get("${resource}.new")}
+        |h3 #{s.i18n.get("${resource}.new")}
         |hr
         |
-        |-for (e <- errorMessages)
+        |-for (e <- s.errorMessages)
         | p(class="alert alert-danger") #{e}
         |
         |form(method="post" action={uri("/${resources}")} class="form")
-        |${formInputsPart(resource, attributePairs)}
-        | input(type="hidden" name={csrfKey} value={csrfToken})
-        | div(class="form-actions")
-        |  input(type="submit" class="btn btn-primary" value={i18n.get("submit")})
-        |  a(class="btn btn-default" href={uri("/${resources}")}) #{i18n.get("cancel")}
+        | =include("_form.html.jade")
         |""".stripMargin
-    val file = new File(s"${viewDir}/new.html.jade")
-    FileUtils.write(file, newJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val editJade =
-      s"""-@val params: skinny.Params
-        |-@val errorMessages: Seq[String]
-        |-@val i18n: skinny.I18n
-        |-@val csrfKey: String
-        |-@val csrfToken: String
+  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    s"""-@val s: skinny.Skinny
         |
-        |h3 #{i18n.get("${resource}.edit")}
+        |h3 #{s.i18n.get("${resource}.edit")}
         |hr
         |
-        |-for (e <- errorMessages)
+        |-for (e <- s.errorMessages)
         | p(class="alert alert-danger") #{e}
         |
-        |form(method="post" action={uri("/${resources}/"+params.id.get)} class="form")
-        |${formInputsPart(resource, attributePairs)}
-        | input(type="hidden" name={csrfKey} value={csrfToken})
-        | div(class="form-actions")
-        |  input(type="submit" class="btn btn-primary" value={i18n.get("submit")})
-        |  a(class="btn btn-default" href={uri("/${resources}")}) #{i18n.get("cancel")}
-        | """.stripMargin
-    val file = new File(s"${viewDir}/edit.html.jade")
-    FileUtils.write(file, editJade)
-    println("\"" + file.getPath + "\" created.")
+        |form(method="post" action={uri("/${resources}/" + s.params.id.get)} class="form")
+        | =include("_form.html.jade")
+        |""".stripMargin
   }
 
-  override def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-    val indexJade =
-      s"""-@val params: skinny.Params
-        |-@val flash: skinny.Flash
+    s"""-@val s: skinny.Skinny
         |-@val ${resources}: Seq[model.${modelClassName}]
-        |-@val i18n: skinny.I18n
         |
-        |h3 #{i18n.get("${resource}.list")}
+        |h3 #{s.i18n.get("${resource}.list")}
         |hr
-        |-for (notice <- flash.notice)
+        |-for (notice <- s.flash.notice)
         | p(class="alert alert-info") #{notice}
         |
         |table(class="table table-bordered")
         | thead
         |  tr
-        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "   th #{i18n.get(\"" + resource + "." + k + "\")}" }.mkString("\n")}
+        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "   th #{s.i18n.get(\"" + resource + "." + k + "\")}" }.mkString("\n")}
         |   th
         | tbody
         | -for (${resource} <- ${resources})
         |  tr
         |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "   td #{" + resource + "." + k + "}" }.mkString("\n")}
         |   td
-        |    a(href={uri("/${resources}/"+${resource}.id)} class="btn btn-default") #{i18n.get("detail")}
-        |    a(href={uri("/${resources}/"+${resource}.id+"/edit")} class="btn btn-info") #{i18n.get("edit")}
-        |    a(data-method="delete" data-confirm={i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/"+${resource}.id)} rel="nofollow" class="btn btn-danger") #{i18n.get("delete")}
+        |    a(href={uri("/${resources}/" + ${resource}.id)} class="btn btn-default") #{s.i18n.get("detail")}
+        |    a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+        |    a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |
-        |a(href={uri("/${resources}/new")} class="btn btn-primary") #{i18n.get("new")}
+        |a(href={uri("/${resources}/new")} class="btn btn-primary") #{s.i18n.get("new")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/index.html.jade")
-    FileUtils.write(file, indexJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
-  override def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(resource)
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
-    FileUtils.forceMkdir(new File(viewDir))
-
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  tr
-        |   th #{i18n.get("${resource}.${name}")}
+        |   th #{s.i18n.get("${resource}.${name}")}
         |   td #{${resource}.${name}}
         |""".stripMargin
     }.mkString
 
-    val showJade =
-      s"""-@val ${resource}: model.${modelClassName}
-        |-@val i18n: skinny.I18n
-        |-@val flash: skinny.Flash
+    s"""-@val ${resource}: model.${modelClassName}
+        |-@val s: skinny.Skinny
         |
-        |h3 #{i18n.get("${resource}.detail")}
+        |h3 #{s.i18n.get("${resource}.detail")}
         |hr
-        |-for (notice <- flash.notice)
+        |-for (notice <- s.flash.notice)
         | p(class="alert alert-info") #{notice}
         |table(class="table table-bordered")
         | thead
         |${attributesPart}
-        |
         |hr
         |div(class="form-actions")
-        | a(class="btn btn-default" href={uri("/${resources}")}) #{i18n.get("backToList")}
-        | a(href={uri("/${resources}/"+${resource}.id+"/edit")} class="btn btn-info") #{i18n.get("edit")}
-        | a(data-method="delete" data-confirm={i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/"+${resource}.id)} rel="nofollow" class="btn btn-danger") #{i18n.get("delete")}
+        | a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("backToList")}
+        | a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+        | a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |""".stripMargin
-    val file = new File(s"${viewDir}/show.html.jade")
-    FileUtils.write(file, showJade)
-    println("\"" + file.getPath + "\" created.")
   }
 
 }
