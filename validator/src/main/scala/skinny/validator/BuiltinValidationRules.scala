@@ -1,6 +1,7 @@
 package skinny.validator
 
 import scala.language.reflectiveCalls
+import skinny.util.DateTimeUtil
 
 /**
  * Built-in validation rules.
@@ -248,6 +249,36 @@ object future extends ValidationRule {
         case _ => false
       }
     } else false
+  }
+}
+
+// ----
+// param("createdAt" -> "2013-01-02 03:04:05") is dateTimeFormat
+object dateTimeFormat extends ValidationRule {
+  def name = "dateTimeFormat"
+  def isValid(v: Any): Boolean = isEmpty(v) || {
+    try DateTimeUtil.parseDateTime(v.toString) != null
+    catch { case e: Exception => false }
+  }
+}
+
+// ----
+// param("birthday" -> "2011-06-22") is dateFormat
+object dateFormat extends ValidationRule {
+  def name = "dateFormat"
+  def isValid(v: Any): Boolean = isEmpty(v) || {
+    try DateTimeUtil.parseLocalDate(v.toString) != null
+    catch { case e: Exception => false }
+  }
+}
+
+// ----
+// param("timeToWakeUp" -> "12:34:56") is timeFormat
+object timeFormat extends ValidationRule {
+  def name = "timeFormat"
+  def isValid(v: Any): Boolean = isEmpty(v) || {
+    try DateTimeUtil.parseLocalTime(v.toString) != null
+    catch { case e: Exception => false }
   }
 }
 

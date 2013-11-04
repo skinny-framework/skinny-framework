@@ -7,7 +7,7 @@ class ParamsSpec extends ScalatraFlatSpec {
 
   behavior of "Params"
 
-  object ParamsController extends SkinnyController with Routes {
+  object ParasController extends SkinnyController with Routes {
     def date = {
       Params(params).withDateValue(
         ("year", "month", "day"), "date").getAs[String]("date").orNull
@@ -26,7 +26,7 @@ class ParamsSpec extends ScalatraFlatSpec {
     post("/time")(time).as('time)
   }
 
-  addFilter(ParamsController, "/*")
+  addFilter(ParasController, "/*")
 
   "params" should "should be converted easily" in {
     post("/date", "year" -> "2011", "month" -> "6", "day" -> "22") {

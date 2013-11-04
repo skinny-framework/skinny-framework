@@ -13,16 +13,19 @@ object CompaniesController extends SkinnyResource with ApplicationController {
   override def resourcesName = "companies"
   override def resourceName = "company"
 
-  override def createForm = validation(
+  override def createForm = validation(createParams,
     paramKey("name") is required & maxLength(64),
     paramKey("url") is maxLength(128)
   )
   override def createFormStrongParameters = Seq("name" -> ParamType.String, "url" -> ParamType.String)
 
-  override def updateForm = validation(
+  override def updateParams = Params(params).withDateTime("updatedAt")
+  override def updateForm = validation(updateParams,
     paramKey("id") is required,
     paramKey("name") is required & maxLength(64),
-    paramKey("url") is maxLength(128)
+    paramKey("url") is maxLength(128),
+    paramKey("updatedAt") is required & dateTimeFormat
   )
-  override def updateFormStrongParameters = Seq("name" -> ParamType.String, "url" -> ParamType.String)
+  override def updateFormStrongParameters = Seq("name" -> ParamType.String, "url" -> ParamType.String, "updatedAt" -> ParamType.DateTime)
+
 }

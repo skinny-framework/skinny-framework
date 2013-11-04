@@ -1,7 +1,7 @@
 package model
 
 import scalikejdbc._, SQLInterpolation._
-import org.joda.time.DateTime
+import org.joda.time._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }
 
@@ -12,6 +12,7 @@ case class Programmer(
     companyId: Option[Long] = None,
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
+    birthday: Option[LocalDate] = None,
     createdAt: DateTime,
     updatedAt: Option[DateTime] = None,
     deletedAt: Option[DateTime] = None) {
@@ -43,6 +44,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
     name = rs.string(p.name),
     favoriteNumber = rs.long(p.favoriteNumber),
     companyId = rs.longOpt(p.companyId),
+    birthday = rs.localDateOpt(p.birthday),
     createdAt = rs.dateTime(p.createdAt),
     updatedAt = rs.dateTimeOpt(p.updatedAt)
   )

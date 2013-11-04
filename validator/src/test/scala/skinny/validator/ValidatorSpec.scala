@@ -2,9 +2,9 @@ package skinny.validator
 
 import org.scalatest._
 import org.scalatest.matchers._
-import skinny.validator.implicits.ParamsGetAsImplicits
+import skinny.validator.implicits.ParametersGetAsImplicits
 
-class ValidatorSpec extends FlatSpec with ShouldMatchers with ParamsGetAsImplicits {
+class ValidatorSpec extends FlatSpec with ShouldMatchers with ParametersGetAsImplicits {
 
   behavior of "Validator"
 
@@ -23,8 +23,8 @@ class ValidatorSpec extends FlatSpec with ShouldMatchers with ParamsGetAsImplici
     res1 should equal(12345)
 
     val res2: Int = validator.fold(
-      (inputs: Params, errors: Errors) => -1,
-      (inputs: Params) => inputs.getAs[Int]("id").getOrElse(-1)
+      (inputs: Parameters, errors: Errors) => -1,
+      (inputs: Parameters) => inputs.getAs[Int]("id").getOrElse(-1)
     )
     res2 should equal(12345)
 

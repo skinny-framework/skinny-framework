@@ -47,8 +47,8 @@ trait StrongParametersFeature {
             case ParamType.String => v
             case ParamType.ByteArray => v.getBytes
             case ParamType.DateTime => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.DateTime))
-            case ParamType.LocalDate => LocalDate.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalDate))
-            case ParamType.LocalTime => LocalTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalTime))
+            case ParamType.LocalDate => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalDate)).toLocalDate
+            case ParamType.LocalTime => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalTime)).toLocalTime
             case v => v
           }
         case v => throw new IllegalArgumentException(s"Cannot convert '${v}' to ${paramType} value.")

@@ -13,7 +13,7 @@ trait ValidatorLike {
   /**
    * Params
    */
-  lazy val params: Params = ParamsFromValidations(validations)
+  lazy val params: Parameters = ParametersFromValidations(validations)
 
   /**
    * Errors
@@ -38,7 +38,7 @@ trait ValidatorLike {
    * @tparam A form response type
    * @return form
    */
-  def map[A](extractor: Params => A): Form[A] = {
+  def map[A](extractor: Parameters => A): Form[A] = {
     if (hasErrors) {
       Form(validations, None)
     } else {
@@ -54,7 +54,7 @@ trait ValidatorLike {
    * @tparam A return type
    * @return result
    */
-  def fold[A](failureHandler: (Params, Errors) => A, successHandler: (Params) => A): A = {
+  def fold[A](failureHandler: (Parameters, Errors) => A, successHandler: (Parameters) => A): A = {
     if (hasErrors) failureHandler.apply(params, errors)
     else successHandler.apply(params)
   }
@@ -66,7 +66,7 @@ trait ValidatorLike {
    * @tparam B extracted value type
    * @return projection
    */
-  def success[B](f: (Params) => B) = validations.success[B](f)
+  def success[B](f: (Parameters) => B) = validations.success[B](f)
 
   /**
    * Failure event handler.
@@ -75,7 +75,7 @@ trait ValidatorLike {
    * @tparam B extracted value type
    * @return projection
    */
-  def failure[B](f: (Params, Errors) => B) = validations.failure[B](f)
+  def failure[B](f: (Parameters, Errors) => B) = validations.failure[B](f)
 
   /**
    * Errors exist if true.

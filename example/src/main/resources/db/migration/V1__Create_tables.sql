@@ -5,6 +5,7 @@ create table programmer (
   name varchar(64) not null,
   favorite_number bigint not null,
   company_id bigint,
+  birthday date,
   created_timestamp timestamp not null,
   updated_timestamp timestamp,
   deleted_timestamp timestamp

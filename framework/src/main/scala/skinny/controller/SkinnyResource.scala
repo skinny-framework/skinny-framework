@@ -36,12 +36,13 @@ trait SkinnyResource extends SkinnyController {
   /**
    * Creates validator with prefix(resourceName).
    *
-   * @param validations validations validations
+   * @param params params
+   * @param validations validations
    * @param locale current locale
    * @return validator
    */
-  override def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(resourceName, validations: _*)
+  override def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, resourceName, validations: _*)
   }
 
   /**
@@ -193,6 +194,7 @@ trait SkinnyResource extends SkinnyController {
           response.setHeader("Location", s"${contextPath}/${resourcesName}/${id}")
       }
     } else {
+      status = 400
       render(s"/${resourcesName}/new")
     }
   }
@@ -283,6 +285,7 @@ trait SkinnyResource extends SkinnyController {
           case _ =>
         }
       } else {
+        status = 400
         render(s"/${resourcesName}/edit")
       }
     } getOrElse haltWithBody(404)

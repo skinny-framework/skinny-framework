@@ -5,6 +5,7 @@ import org.scalatra.ScalatraBase
 import skinny.controller.Params
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
+import org.joda.time._
 import skinny.I18n
 
 object RequestScopeFeature {
@@ -143,6 +144,42 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
     getterNames(model).foreach { getterName =>
       val value = model.getClass.getDeclaredMethod(getterName).invoke(model)
       addParam(getterName, value)
+      value match {
+        case opt: Option[_] => opt foreach {
+          case dt: DateTime =>
+            addParam(s"${getterName}Year", dt.getYearOfEra)
+            addParam(s"${getterName}Month", dt.getMonthOfYear)
+            addParam(s"${getterName}Day", dt.getDayOfMonth)
+            addParam(s"${getterName}Hour", dt.getHourOfDay)
+            addParam(s"${getterName}Minute", dt.getMinuteOfHour)
+            addParam(s"${getterName}Second", dt.getSecondOfMinute)
+          case ld: LocalDate =>
+            addParam(s"${getterName}Year", ld.getYearOfEra)
+            addParam(s"${getterName}Month", ld.getMonthOfYear)
+            addParam(s"${getterName}Day", ld.getDayOfMonth)
+          case lt: LocalTime =>
+            addParam(s"${getterName}Hour", lt.getHourOfDay)
+            addParam(s"${getterName}Minute", lt.getMinuteOfHour)
+            addParam(s"${getterName}Second", lt.getSecondOfMinute)
+          case value =>
+        }
+        case dt: DateTime =>
+          addParam(s"${getterName}Year", dt.getYearOfEra)
+          addParam(s"${getterName}Month", dt.getMonthOfYear)
+          addParam(s"${getterName}Day", dt.getDayOfMonth)
+          addParam(s"${getterName}Hour", dt.getHourOfDay)
+          addParam(s"${getterName}Minute", dt.getMinuteOfHour)
+          addParam(s"${getterName}Second", dt.getSecondOfMinute)
+        case ld: LocalDate =>
+          addParam(s"${getterName}Year", ld.getYearOfEra)
+          addParam(s"${getterName}Month", ld.getMonthOfYear)
+          addParam(s"${getterName}Day", ld.getDayOfMonth)
+        case lt: LocalTime =>
+          addParam(s"${getterName}Hour", lt.getHourOfDay)
+          addParam(s"${getterName}Minute", lt.getMinuteOfHour)
+          addParam(s"${getterName}Second", lt.getSecondOfMinute)
+        case value =>
+      }
     }
   }
 

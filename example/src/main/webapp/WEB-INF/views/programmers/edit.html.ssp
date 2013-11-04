@@ -15,9 +15,9 @@
   <label class="control-label" for="name">
     ${i18n.get("programmer.name")}
   </label>
-  <div class="controls">
-    <div class="row col-md-12">
-    <input type="text" name="name" class="input-lg col-lg-6" value="${params.name}" />
+  <div class="controls row">
+    <div class="col-xs-12">
+    <input type="text" name="name" class="form-control" value="${params.name}" />
     </div>
   </div>
 </div>
@@ -25,9 +25,9 @@
   <label class="control-label" for="favoriteNumber">
     ${i18n.get("programmer.favoriteNumber")}
   </label>
-  <div class="controls">
-    <div class="row col-md-12">
-    <input type="text" name="favoriteNumber" class="input-lg col-lg-6" value="${params.favoriteNumber}" />
+  <div class="controls row">
+    <div class="col-xs-12">
+    <input type="text" name="favoriteNumber" class="form-control" value="${params.favoriteNumber}" />
     </div>
   </div>
 </div>
@@ -35,13 +35,27 @@
   <label class="control-label" for="companyId">
     ${i18n.get("programmer.company")}
   </label>
-  <div class="controls">
-    <div class="row col-md-12">
+  <div class="controls row">
+    <div class="col-xs-12">
       <select name="companyId" class="form-control">
         #for (company <- companies)
         <option value="${company.id}" #if(Some(company.id) == params.companyId) selected #end >${company.name}</option>
         #end
       </select>
+    </div>
+  </div>
+</div>
+<div class="form-group">
+<label class="control-label">Birthday</label>
+  <div class="controls row row">
+    <div class="col-xs-2">
+      <input class="form-control" type="text" name="birthdayYear" value="" placeholder="Year" maxlength="4"/>
+    </div>
+    <div class="col-xs-2">
+      <input class="form-control" type="text" name="birthdayMonth" value="" placeholder="Month" maxlength="2"/>
+    </div>
+    <div class="col-xs-2">
+      <input class="form-control" type="text" name="birthdayDay" value="" placeholder="Day" maxlength="2"/>
     </div>
   </div>
 </div>

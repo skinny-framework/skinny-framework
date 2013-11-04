@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny.controller.feature._
-import skinny.validator.implicits.ParamsGetAsImplicits
+import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
 import org.scalatra.HttpMethod
@@ -22,7 +22,7 @@ trait SkinnyControllerBase
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature
     with RoutesAsImplicits
-    with ParamsGetAsImplicits
+    with ParametersGetAsImplicits
     with ParamsPermitImplicits
     with grizzled.slf4j.Logging {
 

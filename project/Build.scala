@@ -202,7 +202,7 @@ object SkinnyFrameworkBuild extends Build {
       pomIncludeRepository := { x => false },
       pomExtra := _pomExtra
     )
-  )
+  ) dependsOn(common)
 
   lazy val test = Project (id = "test", base = file("test"),
    settings = Defaults.defaultSettings ++ Seq(

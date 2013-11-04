@@ -13,7 +13,7 @@ object SkillsController extends SkinnyResource with ApplicationController {
   override def resourcesName = "skills"
   override def resourceName = "skill"
 
-  override def createForm = validation(paramKey("name") is required & maxLength(64))
+  override def createForm = validation(createParams, paramKey("name") is required & maxLength(64))
   override def createFormStrongParameters = Seq("name" -> ParamType.String)
 
   override def updateForm = createForm

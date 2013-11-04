@@ -2,15 +2,15 @@ package skinny.validator
 
 import org.scalatest._
 import org.scalatest.matchers._
-import skinny.validator.implicits.ParamsGetAsImplicits
+import skinny.validator.implicits.ParametersGetAsImplicits
 
-class ParamsSpec extends FlatSpec with ShouldMatchers with ParamsGetAsImplicits {
+class ParametersSpec extends FlatSpec with ShouldMatchers with ParametersGetAsImplicits {
 
   behavior of "Params"
 
   it should "be available" in {
     val validations: Validations = Validations(Map(), Nil)
-    val instance = ParamsFromValidations(validations)
+    val instance = ParametersFromValidations(validations)
     instance should not be null
   }
 
@@ -21,7 +21,7 @@ class ParamsSpec extends FlatSpec with ShouldMatchers with ParamsGetAsImplicits 
       "active" -> true,
       "average_point" -> 0.12D
     )
-    val params = ParamsFromMap(map)
+    val params = ParametersFromMap(map)
     params.get("name") should equal(Some("Alice"))
     params.getAs[Int]("age") should equal(Some(19))
     params.getAs[Short]("age") should equal(Some(19))

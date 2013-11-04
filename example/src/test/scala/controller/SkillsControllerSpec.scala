@@ -79,6 +79,9 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       put(s"/skills/${skill.id}", "name" -> newName, "csrf-token" -> "12345") {
         status should equal(200)
       }
+      put(s"/skills/${skill.id}", "csrf-token" -> "12345") {
+        status should equal(400)
+      }
     }
     Skill.findById(skill.id).get.name should equal(newName)
   }

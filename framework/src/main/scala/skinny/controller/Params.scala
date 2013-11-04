@@ -28,9 +28,21 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateValue(ymd: (String, String, String), key: String): Params = {
-    Params(underlying + (key -> DateTimeUtil.toDateString(underlying, ymd._1, ymd._2, ymd._3)))
+  def withDate(ymd: (String, String, String), key: String): Params = ymd match {
+    case (year, month, day) =>
+      DateTimeUtil.toUnsafeDateString(underlying, year, month, day).map { value =>
+        Params(underlying + (key -> value))
+      } getOrElse this
+    case _ => this
   }
+
+  /**
+   * Appends a new Date param to params.
+   *
+   * @param key new param key
+   * @return params
+   */
+  def withDate(key: String): Params = withDate((key + "Year", key + "Month", key + "Day"), key)
 
   /**
    * Appends a new Date param to params.
@@ -39,9 +51,20 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withTimeValue(hms: (String, String, String), key: String): Params = {
-    Params(underlying + (key -> DateTimeUtil.toTimeString(underlying, hms._1, hms._2, hms._3)))
+  def withTime(hms: (String, String, String), key: String): Params = hms match {
+    case (hour, minute, second) => DateTimeUtil.toUnsafeTimeString(underlying, hour, minute, second).map { value =>
+      Params(underlying + (key -> value))
+    } getOrElse this
+    case _ => this
   }
+
+  /**
+   * Appends a new Date param to params.
+   *
+   * @param key new param key
+   * @return params
+   */
+  def withTime(key: String): Params = withDate((key + "Hour", key + "Minute", key + "Second"), key)
 
   /**
    * Appends a new DateTime param to params.
@@ -50,10 +73,21 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateTimeValue(ymdhms: (String, String, String, String, String, String), key: String): Params = {
-    Params(underlying + (key -> DateTimeUtil.toDateTimeString(underlying,
-      ymdhms._1, ymdhms._2, ymdhms._3, ymdhms._4, ymdhms._5, ymdhms._6)))
+  def withDateTime(ymdhms: (String, String, String, String, String, String), key: String): Params = ymdhms match {
+    case (year, month, day, hour, minute, second) =>
+      DateTimeUtil.toUnsafeDateTimeString(underlying, year, month, day, hour, minute, second).map { value =>
+        Params(underlying + (key -> value))
+      } getOrElse this
+    case _ => this
   }
+
+  /**
+   * Appends a new DateTime param to params.
+   *
+   * @param key new param key
+   * @return params
+   */
+  def withDateTime(key: String): Params = withDateTime((key + "Year", key + "Month", key + "Day", key + "Hour", key + "Minute", key + "Second"), key)
 
   /**
    * Returns value for the key if exists.
@@ -76,7 +110,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @return value if exists
    */
   def selectDynamic(key: String): Option[Any] = underlying.get(key).map { v =>
-    // #toString is work around for issue #11 
+    // #toString is work around for issue #11
     // 'v' should not be an `Any` value because 1234: Any will be converted to '1,234'.
     v match {
       case Some(v) => v.toString

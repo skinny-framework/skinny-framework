@@ -6,6 +6,7 @@ import skinny.validator.MapValidator
 import org.scalatra.ScalatraBase
 import skinny.I18n
 import java.util.Locale
+import skinny.controller.Params
 
 /**
  * Validation support for Skinny app.
@@ -21,26 +22,53 @@ trait ValidationFeature {
    * @param locale current locale
    * @return validator
    */
-  def validation(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(null, validations: _*)
+  def validationWithParams(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(Params(params), null, validations: _*)
+  }
+
+  /**
+   * Creates new validation form.
+   *
+   * @param params params
+   * @param validations validations
+   * @param locale current locale
+   * @return validator
+   */
+  def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, null, validations: _*)
   }
 
   /**
    * Creates new validation form.
    *
    * @param prefix key prefix for error message
+   * @param params params
    * @param validations validations
    * @param locale current locale
    * @return validator
    */
-  def validationWithPrefix(prefix: String, validations: NewValidation*)(
+  def validationWithParamsAndPrefix(prefix: String, params: Params, validations: NewValidation*)(
+    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, prefix, validations: _*)
+  }
+
+  /**
+   * Creates new validation form.
+   *
+   * @param params params
+   * @param prefix key prefix for error message
+   * @param validations validations
+   * @param locale current locale
+   * @return validator
+   */
+  def validationWithPrefix(params: Params, prefix: String, validations: NewValidation*)(
     implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
 
     if (params == null) {
       throw new IllegalStateException("You cannot call #validation when Scalatra's #params is absent.")
     }
 
-    val validator = new MapValidator(params, Validations(params, validations)) {
+    val validator = new MapValidator(params.underlying, Validations(params.underlying, validations)) {
       override def validate(): Boolean = {
         if (hasErrors) {
           status = 400
@@ -55,18 +83,20 @@ trait ValidationFeature {
       .failure { (inputs, errors) =>
         val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
         val i18n = I18n(locale)
-        def withPrefix(key: String) = if (prefix != null) s"${prefix}.${key}" else key
+        def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
 
-        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, inputs.keys.flatMap { key =>
+        // errorMessages
+        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, validations.map(_.paramDef.key).flatMap { key =>
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
               params = i18n.get(withPrefix(key)).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
-        }.reverse)
+        })
 
-        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, inputs.keys.map { key =>
+        // keyAndErrorMessages
+        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, validations.map(_.paramDef.key).map { key =>
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
@@ -74,7 +104,8 @@ trait ValidationFeature {
             ).getOrElse(error.name)
           }
         }.toMap)
-      }.apply()
+      }.apply
+    ()
 
     validator
   }

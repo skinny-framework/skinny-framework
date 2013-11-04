@@ -16,7 +16,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
     set("skills", Skill.findAll())
   }
 
-  override def createForm = validation(
+  override def createForm = validation(createParams,
     paramKey("name") is required & maxLength(64),
     paramKey("favoriteNumber") is required & numeric,
     paramKey("companyId") is numeric
@@ -26,7 +26,8 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
     "favoriteNumber" -> ParamType.Long,
     "companyId" -> ParamType.Long)
 
-  override def updateForm = validation(
+  override def updateParams = Params(params).withDate("birthday")
+  override def updateForm = validation(updateParams,
     paramKey("id") is required,
     paramKey("name") is required & maxLength(64),
     paramKey("favoriteNumber") is required & numeric,
@@ -35,7 +36,8 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
   override def updateFormStrongParameters = Seq(
     "name" -> ParamType.String,
     "favoriteNumber" -> ParamType.Long,
-    "companyId" -> ParamType.Long)
+    "companyId" -> ParamType.Long,
+    "birthday" -> ParamType.LocalDate)
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 

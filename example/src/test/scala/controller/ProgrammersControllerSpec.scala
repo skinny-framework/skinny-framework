@@ -81,6 +81,9 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
       put(s"/programmers/${programmer.id}", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "csrf-token" -> "12345") {
         status should equal(200)
       }
+      put(s"/programmers/${programmer.id}", "csrf-token" -> "12345") {
+        status should equal(400)
+      }
     }
     Programmer.findById(programmer.id).get.name should equal(newName)
   }

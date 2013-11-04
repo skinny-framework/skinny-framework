@@ -7,6 +7,86 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   val generator = ScaffoldSspGenerator
 
+  describe("/_form.html.scaml") {
+    it("should be created as expected") {
+      val code = generator.formHtmlCode("members", "member", Seq(
+        "name" -> "String",
+        "favoriteNumber" -> "Long",
+        "magicNumber" -> "Option[Int]",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+
+      val expected =
+        """<%@val s: skinny.Skinny %>
+          |
+          |<div class="form-group">
+          |  <label class="control-label" for="name">
+          |    ${s.i18n.get("member.name")}
+          |  </label>
+          |  <div class="controls row">
+          |    <div class="col-xs-12">
+          |      <input type="text" name="name" class="form-control" value="${s.params.name}" />
+          |    </div>
+          |  </div>
+          |</div>
+          |<div class="form-group">
+          |  <label class="control-label" for="favoriteNumber">
+          |    ${s.i18n.get("member.favoriteNumber")}
+          |  </label>
+          |  <div class="controls row">
+          |    <div class="col-xs-12">
+          |      <input type="text" name="favoriteNumber" class="form-control" value="${s.params.favoriteNumber}" />
+          |    </div>
+          |  </div>
+          |</div>
+          |<div class="form-group">
+          |  <label class="control-label" for="magicNumber">
+          |    ${s.i18n.get("member.magicNumber")}
+          |  </label>
+          |  <div class="controls row">
+          |    <div class="col-xs-12">
+          |      <input type="text" name="magicNumber" class="form-control" value="${s.params.magicNumber}" />
+          |    </div>
+          |  </div>
+          |</div>
+          |<div class="form-group">
+          |  <label class="control-label" for="isActivated">
+          |    ${s.i18n.get("member.isActivated")}
+          |  </label>
+          |  <div class="controls row">
+          |    <div class="col-xs-12">
+          |      <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated == Some(true)) checked #end />
+          |    </div>
+          |  </div>
+          |</div>
+          |<div class="form-group">
+          |  <label class="control-label">
+          |    ${s.i18n.get("member.birthday")}
+          |  </label>
+          |  <div class="controls row">
+          |    <div class="col-xs-2">
+          |      <input type="text" name="birthdayYear"  class="form-control" value="${s.params.birthdayYear}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+          |    </div>
+          |    <div class="col-xs-2">
+          |      <input type="text" name="birthdayMonth" class="form-control" value="${s.params.birthdayMonth}" placeholder="${s.i18n.get("month")}" maxlength=2 />
+          |    </div>
+          |    <div class="col-xs-2">
+          |      <input type="text" name="birthdayDay"   class="form-control" value="${s.params.birthdayDay}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
+          |    </div>
+          |  </div>
+          |</div>
+          |<div class="form-actions">
+          |  ${unescape(s.csrfHiddenInputTag)}
+          |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
+          |  <a class="btn btn-default" href="${uri("/members")}">${s.i18n.get("cancel")}</a>
+          |</div>
+          |</form>
+          |""".stripMargin
+      code should equal(expected)
+    }
+  }
+
   describe("/new.html.jade") {
     it("should be created as expected") {
       val code = generator.newHtmlCode("members", "member", Seq(
@@ -27,63 +107,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |#end
           |
           |<form method="post" action="${uri("/members")}" class="form">
-          |<div class="form-group">
-          |  <label class="control-label" for="name">
-          |    ${s.i18n.get("member.name")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="name" class="input-lg col-lg-6" value="${s.params.name}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="favoriteNumber">
-          |    ${s.i18n.get("member.favoriteNumber")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="favoriteNumber" class="input-lg col-lg-6" value="${s.params.favoriteNumber}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="magicNumber">
-          |    ${s.i18n.get("member.magicNumber")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="magicNumber" class="input-lg col-lg-6" value="${s.params.magicNumber}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="isActivated">
-          |    ${s.i18n.get("member.isActivated")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated == Some(true)) checked #end />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="birthday">
-          |    ${s.i18n.get("member.birthday")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="birthday" class="input-lg col-lg-6" value="${s.params.birthday}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |
-          |${unescape(s.csrfHiddenInputTag)}
-          |<div class="form-actions">
-          |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}" />
-          |  <a class="btn btn-default" href="${uri("/members")}">${s.i18n.get("cancel")}</a>
-          |</div>
-          |</form>
+          | ${include("_form.html.ssp")}
           |""".stripMargin
       code should equal(expected)
     }
@@ -109,63 +133,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |#end
           |
           |<form method="post" action="${uri("/members/" + s.params.id.get)}" class="form">
-          |<div class="form-group">
-          |  <label class="control-label" for="name">
-          |    ${s.i18n.get("member.name")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="name" class="input-lg col-lg-6" value="${s.params.name}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="favoriteNumber">
-          |    ${s.i18n.get("member.favoriteNumber")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="favoriteNumber" class="input-lg col-lg-6" value="${s.params.favoriteNumber}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="magicNumber">
-          |    ${s.i18n.get("member.magicNumber")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="magicNumber" class="input-lg col-lg-6" value="${s.params.magicNumber}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="isActivated">
-          |    ${s.i18n.get("member.isActivated")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated == Some(true)) checked #end />
-          |    </div>
-          |  </div>
-          |</div>
-          |<div class="form-group">
-          |  <label class="control-label" for="birthday">
-          |    ${s.i18n.get("member.birthday")}
-          |  </label>
-          |  <div class="controls">
-          |    <div class="row col-md-12">
-          |    <input type="text" name="birthday" class="input-lg col-lg-6" value="${s.params.birthday}" />
-          |    </div>
-          |  </div>
-          |</div>
-          |
-          |${unescape(s.csrfHiddenInputTag)}
-          |<div class="form-actions">
-          |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}"/>
-          |  <a class="btn btn-default" href="${uri("/members")}">${s.i18n.get("cancel")}</a>
-          |</div>
-          |</form>
+          | ${include("_form.html.ssp")}
           |""".stripMargin
       code should equal(expected)
     }
