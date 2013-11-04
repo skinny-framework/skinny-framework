@@ -48,7 +48,9 @@ libraryDependencies ++= Seq(
 
 ## Try Skinny now
 
-Get `skinny-blank-app.zip` now. Unzip and just `./skinny run`. If you're a Windows user, don't worry. Run `./skinny.bat run` on cmd.exe.
+Download `skinny-blank-app.zip` and unzip it, then just run ./skinny command on your terminal. That's all!
+
+If you're a Windows user, don't worry. Use skinny.bat on cmd.exe instead.
 
 [![Download](https://github.com/seratch/skinny-framework/raw/develop/img/blank-app-download.png)](https://github.com/seratch/skinny-framework/releases/download/0.9.11/skinny-blank-app.zip)
 
