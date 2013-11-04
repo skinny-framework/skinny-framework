@@ -42,9 +42,9 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    paramKey("createdAt") is required & dateTimeFormat
           |  )
           |  override def createParams = Params(params)
-          |    .withDate(("birthdayYear", "birthdayMonth", "birthdayDay"), "birthday")
-          |    .withTime(("timeToWakeUpHour", "timeToWakeUpMinute", "timeToWakeUpSecond"), "timeToWakeUp")
-          |    .withDateTime(("createdAtYear", "createdAtMonth", "createdAtDay", "createdAtHour", "createdAtMinute", "createdAtSecond"), "createdAt")
+          |    .withDate("birthday")
+          |    .withTime("timeToWakeUp")
+          |    .withDateTime("createdAt")
           |  override def createFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
           |    "favoriteNumber" -> ParamType.Long,
@@ -64,9 +64,9 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    paramKey("createdAt") is required & dateTimeFormat
           |  )
           |  override def updateParams = Params(params)
-          |    .withDate(("birthdayYear", "birthdayMonth", "birthdayDay"), "birthday")
-          |    .withTime(("timeToWakeUpHour", "timeToWakeUpMinute", "timeToWakeUpSecond"), "timeToWakeUp")
-          |    .withDateTime(("createdAtYear", "createdAtMonth", "createdAtDay", "createdAtHour", "createdAtMinute", "createdAtSecond"), "createdAt")
+          |    .withDate("birthday")
+          |    .withTime("timeToWakeUp")
+          |    .withDateTime("createdAt")
           |  override def updateFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
           |    "favoriteNumber" -> ParamType.Long,

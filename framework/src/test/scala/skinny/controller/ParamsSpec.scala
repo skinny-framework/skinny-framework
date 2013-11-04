@@ -9,15 +9,15 @@ class ParamsSpec extends ScalatraFlatSpec {
 
   object ParasController extends SkinnyController with Routes {
     def date = {
-      Params(params).withDateValue(
+      Params(params).withDate(
         ("year", "month", "day"), "date").getAs[String]("date").orNull
     }
     def datetime = {
-      Params(params).withDateTimeValue(
+      Params(params).withDateTime(
         ("year", "month", "day", "hour", "minute", "second"), "datetime").getAs[String]("datetime").orNull
     }
     def time = {
-      Params(params).withTimeValue(
+      Params(params).withTime(
         ("hour", "minute", "second"), "time").getAs[String]("time").orNull
     }
 

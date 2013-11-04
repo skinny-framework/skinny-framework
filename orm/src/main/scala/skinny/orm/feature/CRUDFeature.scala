@@ -287,7 +287,7 @@ trait CRUDFeature[Entity]
     /**
      * Attributes to be updated.
      */
-    private[this] val attributesToBeUpdated = new mutable.LinkedHashSet[(SQLSyntax, Any)]()
+    private[this] val attributesToBeUpdated = new mutable.HashMap[SQLSyntax, Any]()
 
     /**
      * Additional query parts after `set` keyword.
@@ -301,7 +301,7 @@ trait CRUDFeature[Entity]
      * @return self
      */
     protected def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
-      attributesToBeUpdated.add(namedValue)
+      attributesToBeUpdated.update(namedValue._1, namedValue._2)
       this
     }
 
@@ -339,10 +339,8 @@ trait CRUDFeature[Entity]
       namedValues.foldLeft(attributesToBeUpdated) {
         case (xs, (column, newValue)) =>
           if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
-          else xs + (column -> newValue)
-      }
-      val toBeUpdated = attributesToBeUpdated.++(namedValues).toSeq
-      toBeUpdated
+          else xs.+=(column -> newValue)
+      }.toSeq
     }
 
     /**

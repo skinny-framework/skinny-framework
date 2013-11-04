@@ -83,7 +83,7 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       put(s"/companies/${company.id}", "csrf-token" -> "12345") {
         status should equal(400)
       }
-      put(s"/companies/${company.id}", "name" -> newName, "csrf-token" -> "12345") {
+      put(s"/companies/${company.id}", "name" -> newName, "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
         status should equal(200)
       }
     }
