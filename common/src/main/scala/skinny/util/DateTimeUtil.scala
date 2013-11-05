@@ -1,5 +1,6 @@
 package skinny.util
 
+import scala.language.implicitConversions
 import skinny.ParamType
 import org.joda.time._
 
@@ -11,7 +12,8 @@ object DateTimeUtil {
   /**
    * The ISO8601 standard date format.
    */
-  val ISO_DATE_TIME_FORMAT = "%04d-%02d-%02dT%02d:%02d:%02d%s"
+  //val ISO_DATE_TIME_FORMAT = "%04d-%02d-%02dT%02d:%02d:%02d%s"
+  val ISO_DATE_TIME_FORMAT = "%s-%s-%sT%s:%s:%s%s"
 
   /**
    * Returns current timezone value (e.g. +09:00).
@@ -21,6 +23,18 @@ object DateTimeUtil {
     (if (minutes >= 0) "+" else "-") + "%02d:%02d".format((math.abs(minutes) / 60), (math.abs(minutes) % 60))
   }
 
+  private case class ZeroPaddingString(s:String) {
+    def to04d: String = {
+      try "%04d".format(s.toInt)
+      catch { case e: NumberFormatException => s }
+    }
+    def to02d: String = {
+      try "%02d".format(s.toInt)
+      catch { case e: NumberFormatException => s }
+    }
+  }
+  private implicit def fromStringToZeroPadding(s: String): ZeroPaddingString = ZeroPaddingString(s)
+
   /**
    * Converts string value to ISO8601 date format if possible.
    * @param s string value
@@ -28,21 +42,31 @@ object DateTimeUtil {
    * @return ISO8601 data format string value
    */
   def toISODateTimeFormat(s: String, paramType: ParamType): String = {
-    "(\\d+)".r.findAllIn(s).toList match {
-      case year :: month :: day :: hour :: minute :: second :: zoneHour :: zoneMinute :: _ =>
-        val timeZone = "([+-]\\d{2}:\\d{2})".r.findFirstIn(s).getOrElse(currentTimeZone)
-        ISO_DATE_TIME_FORMAT.format(year.toInt, month.toInt, day.toInt, hour.toInt, minute.toInt, second.toInt, timeZone)
-      case year :: month :: day :: hour :: minute :: second :: _ =>
-        ISO_DATE_TIME_FORMAT.format(year.toInt, month.toInt, day.toInt, hour.toInt, minute.toInt, second.toInt, currentTimeZone)
-      case year :: month :: day :: hour :: minute :: _ =>
-        ISO_DATE_TIME_FORMAT.format(year.toInt, month.toInt, day.toInt, hour.toInt, minute.toInt, 0, currentTimeZone)
-      case year :: month :: day :: _ if paramType == ParamType.LocalDate =>
-        ISO_DATE_TIME_FORMAT.format(year.toInt, month.toInt, day.toInt, 0, 0, 0, currentTimeZone)
-      case hour :: minute :: second :: _ if paramType == ParamType.LocalTime =>
-        ISO_DATE_TIME_FORMAT.format(1970, 1, 1, hour.toInt, minute.toInt, second.toInt, currentTimeZone)
-      case hour :: minute :: _ if paramType == ParamType.LocalTime =>
-        ISO_DATE_TIME_FORMAT.format(1970, 1, 1, hour.toInt, minute.toInt, 0, currentTimeZone)
-      case _ => s
+    val str = s.replaceAll("/", "-")
+    if (str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
+      val timeZone = "([+-]\\d{2}:\\d{2})".r.findFirstIn(s).getOrElse(currentTimeZone)
+      str + timeZone
+    } else if (str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
+      str
+    } else if (str.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
+      str.replaceFirst("\\s+", "T")
+    } else {
+      str.split("[-:\\s/]").toList match {
+        case year :: month :: day :: hour :: minute :: second :: zoneHour :: zoneMinute :: _ =>
+          val timeZone = "([+-]\\d{2}:\\d{2})".r.findFirstIn(str).getOrElse(currentTimeZone)
+          ISO_DATE_TIME_FORMAT.format(year.to04d, month.to02d, day.to02d, hour.to02d, minute.to02d, second.to02d, timeZone)
+        case year :: month :: day :: hour :: minute :: second :: _ =>
+          ISO_DATE_TIME_FORMAT.format(year.to04d, month.to02d, day.to02d, hour.to02d, minute.to02d, second.to02d, currentTimeZone)
+        case year :: month :: day :: hour :: minute :: _ =>
+          ISO_DATE_TIME_FORMAT.format(year.to04d, month.to02d, day.to02d, hour.to02d, minute.to02d, "00", currentTimeZone)
+        case year :: month :: day :: _ if paramType == ParamType.LocalDate =>
+          ISO_DATE_TIME_FORMAT.format(year.to04d, month.to02d, day.to02d, "00", "00", "00", currentTimeZone)
+        case hour :: minute :: second :: _ if paramType == ParamType.LocalTime =>
+          ISO_DATE_TIME_FORMAT.format("1970", "01", "01", hour.to02d, minute.to02d, second.to02d, currentTimeZone)
+        case hour :: minute :: _ if paramType == ParamType.LocalTime =>
+          ISO_DATE_TIME_FORMAT.format("1970", "01", "01", hour.to02d, minute.to02d, "00", currentTimeZone)
+        case _ => str
+      }
     }
   }
 
@@ -68,7 +92,7 @@ object DateTimeUtil {
           params.get(day).map(_.toString.toInt).orNull
         )
       }
-    } catch { case e: Exception => None }
+    } catch { case e: NumberFormatException => None }
   }
 
   def toUnsafeDateString(
@@ -77,26 +101,15 @@ object DateTimeUtil {
     month: String = "month",
     day: String = "day"): Option[String] = {
 
-    try {
-      (params.get(year).filterNot(_.toString.isEmpty) orElse
-        params.get(month).filterNot(_.toString.isEmpty) orElse
-        params.get(day).filterNot(_.toString.isEmpty)).map { t =>
-        "%s-%s-%s".format(
-          params.get(year).map { v =>
-            try "%04d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(month).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(day).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull
-        )
-      }
-    } catch { case e: Exception => None }
+    (params.get(year).filterNot(_.toString.isEmpty) orElse
+      params.get(month).filterNot(_.toString.isEmpty) orElse
+      params.get(day).filterNot(_.toString.isEmpty)).map { t =>
+      "%s-%s-%s".format(
+        params.get(year).map(_.toString.to04d).orNull,
+        params.get(month).map(_.toString.to02d).orNull,
+        params.get(day).map(_.toString.to02d).orNull
+      )
+    }
   }
 
   def toTimeString(
@@ -115,7 +128,7 @@ object DateTimeUtil {
           params.get(second).map(_.toString.toInt).orNull
         )
       }
-    } catch { case e: Exception => None }
+    } catch { case e: NumberFormatException => None }
   }
 
   def toUnsafeTimeString(
@@ -124,26 +137,15 @@ object DateTimeUtil {
     minute: String = "minute",
     second: String = "second"): Option[String] = {
 
-    try {
-      (params.get(hour).filterNot(_.toString.isEmpty) orElse
-        params.get(minute).filterNot(_.toString.isEmpty) orElse
-        params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-        "1970-01-01 %s:%s:%s".format(
-          params.get(hour).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(minute).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(second).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull
-        )
-      }
-    } catch { case e: Exception => None }
+    (params.get(hour).filterNot(_.toString.isEmpty) orElse
+      params.get(minute).filterNot(_.toString.isEmpty) orElse
+      params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
+      "1970-01-01 %s:%s:%s".format(
+        params.get(hour).map(_.toString.to02d).orNull,
+        params.get(minute).map(_.toString.to02d).orNull,
+        params.get(second).map(_.toString.to02d).orNull
+      )
+    }
   }
 
   def toDateTimeString(
@@ -171,7 +173,7 @@ object DateTimeUtil {
           params.get(second).map(_.toString.toInt).orNull
         )
       }
-    } catch { case e: Exception => None }
+    } catch { case e: NumberFormatException => None }
   }
 
   def toUnsafeDateTimeString(
@@ -183,41 +185,21 @@ object DateTimeUtil {
     minute: String = "minute",
     second: String = "second"): Option[String] = {
 
-    try {
-      (params.get(year).filterNot(_.toString.isEmpty) orElse
-        params.get(month).filterNot(_.toString.isEmpty) orElse
-        params.get(day).filterNot(_.toString.isEmpty) orElse
-        params.get(hour).filterNot(_.toString.isEmpty) orElse
-        params.get(minute).filterNot(_.toString.isEmpty) orElse
-        params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-        "%s-%s-%s %s:%s:%s".format(
-          params.get(year).map { v =>
-            try "%04d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(month).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(day).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(hour).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(minute).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull,
-          params.get(second).map { v =>
-            try "%02d".format(v.toString.toInt)
-            catch { case e: Exception => v.toString }
-          }.orNull
-        )
-      }
-    } catch { case e: Exception => None }
+    (params.get(year).filterNot(_.toString.isEmpty) orElse
+      params.get(month).filterNot(_.toString.isEmpty) orElse
+      params.get(day).filterNot(_.toString.isEmpty) orElse
+      params.get(hour).filterNot(_.toString.isEmpty) orElse
+      params.get(minute).filterNot(_.toString.isEmpty) orElse
+      params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
+      "%s-%s-%s %s:%s:%s".format(
+        params.get(year).map(_.toString.to04d).orNull,
+        params.get(month).map(_.toString.to02d).orNull,
+        params.get(day).map(_.toString.to02d).orNull,
+        params.get(hour).map(_.toString.to02d).orNull,
+        params.get(minute).map(_.toString.to02d).orNull,
+        params.get(second).map(_.toString.to02d).orNull
+      )
+    }
   }
 
 }

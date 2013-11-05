@@ -181,9 +181,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         s"2013-01-02T01:04:05${minus2hoursTimeZone}",
         s"2013/01/02T03:04:05${timeZone}",
         s"2013-01-02 03:04:05${timeZone}",
-        s"2013/1/2 3:4:5${timeZone}",
-        s"2013-1-2 03:4:05${timeZone}",
-        s"2013-01-02 03-04-05${timeZone}",
+        s"2013-01-02T03:04:05",
         s"2013-01-02 03:04:05",
         s"2013/1/2 3:4:5",
         s"2013-1-2 03:4:05",
@@ -193,6 +191,18 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
           val id = Skill.createWithPermittedAttributes(params.permit("name" -> ParamType.String, "createdAt" -> ParamType.DateTime))
           val created = Skill.findById(id)
           created.get.createdAt should equal(new DateTime(2013, 1, 2, 3, 4, 5))
+        }
+    }
+
+    it("should thorw exception for invalid datetime format") { implicit session =>
+      Seq(
+        "2013-a-b 03-04-05",
+        "2013-01-02 0c:04:05"
+      ) foreach { createdAt =>
+          intercept[Exception] {
+            Skill.createWithPermittedAttributes(
+              StrongParameters(Map("name" -> "Java Programming", "createdAt" -> createdAt)).permit("name" -> ParamType.String, "createdAt" -> ParamType.DateTime))
+          }
         }
     }
   }
