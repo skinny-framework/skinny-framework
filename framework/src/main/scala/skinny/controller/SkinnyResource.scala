@@ -12,7 +12,7 @@ import skinny.controller.feature.RequestScopeFeature
  *
  * SkinnyResource is surely inspired by Rails ActiveSupport.
  */
-trait SkinnyResource extends SkinnyResourceActions with SkinnyResourceRouting
+trait SkinnyResource extends SkinnyResourceActions with SkinnyResourceRoutes
 
 /**
  * Actions for Skinny resource.
@@ -335,7 +335,7 @@ trait SkinnyResourceActions extends SkinnyController {
 /**
  * Routings for Skinny resource.
  */
-trait SkinnyResourceRouting extends Routes { self: SkinnyResourceActions =>
+trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
 
   // ------------------
   // Routing
