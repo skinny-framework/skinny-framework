@@ -1,0 +1,30 @@
+-@val s: skinny.Skinny
+div(class="form-group")
+ label(class="control-label" for="name") #{s.i18n.get("company.name")}
+ div(class="controls row")
+  div(class="col-xs-6")
+   input(type="text" name="name" class="form-control" value={s.params.name})
+div(class="form-group")
+ label(class="control-label" for="url") #{s.i18n.get("company.url")}
+ div(class="controls row")
+  div(class="col-xs-8")
+   input(type="text" name="url" class="form-control" value={s.params.url})
+div(class="form-group")
+ label(class="control-label") #{s.i18n.get("company.updatedAt")}
+ div(class="controls row")
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtYear"   class="form-control" value={s.params.updatedAtYear}   placeholder={s.i18n.get("year")}   maxlength=4)
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtMonth"  class="form-control" value={s.params.updatedAtMonth}  placeholder={s.i18n.get("month")}  maxlength=2)
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtDay"    class="form-control" value={s.params.updatedAtDay}    placeholder={s.i18n.get("day")}    maxlength=2)
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtHour"   class="form-control" value={s.params.updatedAtHour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtMinute" class="form-control" value={s.params.updatedAtMinute} placeholder={s.i18n.get("minute")} maxlength=2)
+  div(class="col-xs-2")
+   input(type="text" name="updatedAtSecond" class="form-control" value={s.params.updatedAtSecond} placeholder={s.i18n.get("second")} maxlength=2)
+=unescape(s.csrfHiddenInputTag)
+div(class="form-actions")
+ input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
+ a(class="btn btn-default" href={uri("/companies")}) #{s.i18n.get("cancel")}
