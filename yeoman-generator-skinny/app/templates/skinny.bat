@@ -61,7 +61,7 @@ IF "%command%"=="db:migrate" (
   RMDIR task\src\main\resources /s /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
-  ECHO <configuration><appender name="console" class="ch.qos.logback.core.ConsoleAppender"><encoder><pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern></encoder></appender><root level="warn"><appender-ref ref="console"/></root></configuration> >task/src/main/resources/logback.xml
+  ECHO ^<configuration^>^<appender name="console" class="ch.qos.logback.core.ConsoleAppender"^>^<encoder^>^<pattern^>%date %level [%thread] %logger{10} [%file:%line] %msg%n^</pattern^>^</encoder^>^</appender^>^<root level="warn"^>^<appender-ref ref="console"/^>^</root^>^</configuration^> > task/src/main/resources/logback.xml
   sbt "task/run db:migrate %2"
   GOTO script_eof
 )
