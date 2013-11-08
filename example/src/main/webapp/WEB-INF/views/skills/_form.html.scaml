@@ -1,0 +1,11 @@
+-@val s: skinny.Skinny
+%div(class="form-group")
+ %label(class="control-label" for="name") #{s.i18n.get("skill.name")}
+ %div(class="controls row")
+  %div(class="col-xs-12")
+   %input(type="text" name="name" class="form-control" value={s.params.name})
+!= s.csrfHiddenInputTag
+
+%div(class="form-actions")
+ %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
+ %a(class="btn btn-default" href={uri("/skills")}) #{s.i18n.get("cancel")}

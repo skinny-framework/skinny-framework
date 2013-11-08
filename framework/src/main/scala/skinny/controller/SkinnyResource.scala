@@ -12,7 +12,12 @@ import skinny.controller.feature.RequestScopeFeature
  *
  * SkinnyResource is surely inspired by Rails ActiveSupport.
  */
-trait SkinnyResource extends SkinnyController {
+trait SkinnyResource extends SkinnyResourceActions with SkinnyResourceRoutes
+
+/**
+ * Actions for Skinny resource.
+ */
+trait SkinnyResourceActions extends SkinnyController {
 
   /**
    * SkinnyModel for this resource.
@@ -324,6 +329,13 @@ trait SkinnyResource extends SkinnyController {
       status = 200
     } getOrElse haltWithBody(404)
   }
+
+}
+
+/**
+ * Routings for Skinny resource.
+ */
+trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
 
   // ------------------
   // Routing
