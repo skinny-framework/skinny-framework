@@ -96,7 +96,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
           | | This is an auto-generated file by
           | a(href="http://git.io/skinny") Skinny framework
           | |!
-        """.stripMargin
+          |""".stripMargin
       case "scaml" =>
         """%h3 Welcome
           |%hr
@@ -105,7 +105,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
           | This is an auto-generated file by
           | %a(href="http://git.io/skinny") Skinny framework
           | !
-        """.stripMargin
+          |""".stripMargin
       case _ =>
         """<h3>Welcome</h3>
           |<hr/>
