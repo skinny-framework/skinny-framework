@@ -11,7 +11,7 @@ object SkinnyFrameworkBuild extends Build {
   val Version = "0.9.12-SNAPSHOT"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
-  val ScalikeJDBCVersion = "1.6.10"
+  val ScalikeJDBCVersion = "1.6.11"
   val ScalateVeresion = "1.6.1"
 
   lazy val common = Project (id = "common", base = file("common"),
