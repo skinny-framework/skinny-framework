@@ -52,22 +52,22 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |""".stripMargin
         case (name, "LocalTime") =>
           s"""div(class="form-group")
-          | label(class="control-label") #{s.i18n.get("${resource}.${name}")}
-          | div(class="controls row")
-          |  div(class="col-xs-2")
-          |   input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
-          |  div(class="col-xs-2")
-          |   input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
-          |  div(class="col-xs-2")
-          |   input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |  label(class="control-label") #{s.i18n.get("${resource}.${name}")}
+          |  div(class="controls row")
+          |    div(class="col-xs-2")
+          |      input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |    div(class="col-xs-2")
+          |      input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |    div(class="col-xs-2")
+          |      input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
           |""".stripMargin
         case (name, _) =>
           s"""div(class="form-group")
-           |  label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
-           |  div(class="controls row")
-           |    div(class="col-xs-12")
-           |      input(type="text" name="${name}" class="form-control" value={s.params.${name}})
-           |""".stripMargin
+          |  label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+          |  div(class="controls row")
+          |    div(class="col-xs-12")
+          |      input(type="text" name="${name}" class="form-control" value={s.params.${name}})
+          |""".stripMargin
       }.mkString +
       s"""div(class="form-actions")
         |  =unescape(s.csrfHiddenInputTag)
