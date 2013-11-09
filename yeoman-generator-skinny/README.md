@@ -2,6 +2,12 @@
 
 A [Yeoman](http://yeoman.io) generator for [Skinny framework](https://github.com/seratch/skinny-framework).
 
+Skinny is a full-stack web app framework, which is built on [Scalatra](http://scalatra.org) and additional components are integrated.
+
+To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is highly inspired by [Ruby on Rails](http://rubyonrails.org/) and it is optimized for sustainable productivity for ordinary Servlet-based app development.
+
+![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/logo.png)
+
 ## Getting Started
 
 ### What is Yeoman?
@@ -44,3 +50,7 @@ If you'd like to get to know Yeoman better and meet some of his friends, [Grunt]
 ## License
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
+
+Copyright (c) 2013 Kazuhiro Sera @seratch
+
+
