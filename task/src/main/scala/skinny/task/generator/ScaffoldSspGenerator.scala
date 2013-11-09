@@ -12,7 +12,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     "<%@val s: skinny.Skinny %>\n\n" +
-      attributePairs.toList.map { case (k, t) => k -> toParamType(t) }.map {
+      attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
         |  <label class="control-label" for="${name}">
@@ -20,7 +20,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  </label>
         |  <div class="controls row">
         |    <div class="col-xs-12">
-        |      <input type="checkbox" name="${name}" value="true" #if(s.params.${name} == Some(true)) checked #end />
+        |      <input type="checkbox" name="${name}" value="true" #if(s.params.${name}==Some(true)) checked #end />
         |    </div>
         |  </div>
         |</div>

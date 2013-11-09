@@ -1,0 +1,17 @@
+-@val body: String
+-@val s: skinny.Skinny
+!!! 5
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    =unescape(s.csrfMetaTags)
+    script(type="text/javascript" src={uri("/assets/js/jquery-2.0.3.min.js")})
+    link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css")
+  body
+    div.container.span12
+      =unescape(body)
+      hr
+      a(href={uri("/")} class="btn btn-default") #{s.i18n.get("top")}
+    script(type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js")
+    script(type="text/javascript" src={uri("/assets/js/skinny.js")})
+

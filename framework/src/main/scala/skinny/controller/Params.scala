@@ -113,8 +113,12 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
     // #toString is work around for issue #11
     // 'v' should not be an `Any` value because 1234: Any will be converted to '1,234'.
     v match {
+      case Some(true) => true
+      case Some(false) => false
       case Some(v) => v.toString
       case None => null
+      case true => true
+      case false => false
       case v => v.toString
     }
   }

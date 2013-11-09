@@ -92,19 +92,19 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
         """h3 Welcome
           |hr
           |p(class="alert alert-success")
-          | b TODO:
-          | | This is an auto-generated file by
-          | a(href="http://git.io/skinny") Skinny framework
-          | |!
+          |  b TODO:
+          |  | This is an auto-generated file by
+          |  a(href="http://git.io/skinny") Skinny framework
+          |  |!
           |""".stripMargin
       case "scaml" =>
         """%h3 Welcome
           |%hr
           |p(class="alert alert-success")
-          | %b TODO:
-          | This is an auto-generated file by
-          | %a(href="http://git.io/skinny") Skinny framework
-          | !
+          |  %b TODO:
+          |  This is an auto-generated file by
+          |  %a(href="http://git.io/skinny") Skinny framework
+          |  !
           |""".stripMargin
       case _ =>
         """<h3>Welcome</h3>

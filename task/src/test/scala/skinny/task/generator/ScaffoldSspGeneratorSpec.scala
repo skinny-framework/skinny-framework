@@ -56,7 +56,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  </label>
           |  <div class="controls row">
           |    <div class="col-xs-12">
-          |      <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated == Some(true)) checked #end />
+          |      <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated==Some(true)) checked #end />
           |    </div>
           |  </div>
           |</div>
