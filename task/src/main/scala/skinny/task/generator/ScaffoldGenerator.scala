@@ -194,7 +194,6 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
     writeIfAbsent(file, controllerCode(resources, resource, template, attributePairs))
-    println("\"" + file.getPath + "\" created.")
   }
 
   def controllerSpecCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
