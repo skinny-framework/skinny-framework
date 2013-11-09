@@ -1,7 +1,6 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
-import skinny.controller._
 
 class SessionInjectorControllerSpec extends ScalatraFlatSpec {
 
