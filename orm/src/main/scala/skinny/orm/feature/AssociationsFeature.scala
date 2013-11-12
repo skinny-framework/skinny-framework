@@ -29,6 +29,12 @@ trait AssociationsFeature[Entity]
    */
   val defaultJoinDefinitions = new mutable.LinkedHashSet[JoinDefinition[_]]()
 
+  private def unshiftJoinDefinition(newOne: JoinDefinition[_], definitions: mutable.LinkedHashSet[JoinDefinition[_]]) = {
+    val newDefinitions = new mutable.LinkedHashSet[JoinDefinition[_]]()
+    newDefinitions.add(newOne)
+    newDefinitions ++= definitions
+  }
+
   // ----------------------
   // Join Definition
   // ----------------------
@@ -141,7 +147,7 @@ trait AssociationsFeature[Entity]
   def belongsToWithJoinCondition[A](right: AssociationsFeature[A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = leftJoinWithDefaults(right, on)
     val extractor = extractBelongsTo[A](right, toDefaultForeignKeyName[A](right), right.defaultAlias, merge)
-    new BelongsToAssociation[Entity](this, (right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated) + joinDef), extractor)
+    new BelongsToAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
   def belongsToWithFk[A](right: AssociationsFeature[A], fk: String, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
@@ -151,7 +157,7 @@ trait AssociationsFeature[Entity]
   def belongsToWithFkAndJoinCondition[A](right: AssociationsFeature[A], fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = leftJoinWithDefaults(right, on)
     val extractor = extractBelongsTo[A](right, fk, right.defaultAlias, merge)
-    new BelongsToAssociation[Entity](this, (right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated) + joinDef), extractor)
+    new BelongsToAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
   def belongsToWithAlias[A](right: (AssociationsFeature[A], Alias[A]), merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
@@ -170,7 +176,7 @@ trait AssociationsFeature[Entity]
   def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = createJoinDefinition(LeftOuterJoin, this -> this.defaultAlias, right, on)
     val extractor = extractBelongsTo[A](right._1, fk, right._2, merge)
-    new BelongsToAssociation[Entity](this, (right._1.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated) + joinDef), extractor)
+    new BelongsToAssociation[Entity](this, unshiftJoinDefinition(joinDef, right._1.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
   // has-one
@@ -195,7 +201,7 @@ trait AssociationsFeature[Entity]
   def hasOneWithFkAndJoinCondition[A](right: AssociationsFeature[A], fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     val joinDef = leftJoinWithDefaults(right, on)
     val extractor = extractHasOne[A](right, fk, right.defaultAlias, merge)
-    new HasOneAssociation[Entity](this, (right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated) + joinDef), extractor)
+    new HasOneAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
   def hasOneWithAlias[A](right: (AssociationsFeature[A], Alias[A]), merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
@@ -213,7 +219,7 @@ trait AssociationsFeature[Entity]
   def hasOneWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     val joinDef = createJoinDefinition(LeftOuterJoin, this -> this.defaultAlias, right, on)
     val extractor = extractHasOne[A](right._1, fk, right._2, merge)
-    new HasOneAssociation[Entity](this, (right._1.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated) + joinDef), extractor)
+    new HasOneAssociation[Entity](this, unshiftJoinDefinition(joinDef, right._1.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
   // ----------------------
