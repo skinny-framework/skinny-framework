@@ -87,16 +87,21 @@ object Name extends SkinnyCRUDMapper[Name]
   )
 }
 
-case class Company(id: Option[Long] = None, name: String) extends MutableSkinnyRecord[Company] {
+case class Company(id: Option[Long] = None, name: String,
+    countryId: Option[Long] = None, country: Option[Country] = None) extends MutableSkinnyRecord[Company] {
   def skinnyCRUDMapper = Company
 }
 
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
   override val defaultAlias = createAlias("cmp")
+
+  val countryOpt = belongsTo[Country](Country, (c, cnt) => c.copy(country = cnt)).byDefault
+
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),
-    name = rs.string(s.name)
+    name = rs.string(s.name),
+    countryId = rs.longOpt(s.countryId)
   )
 }
 
