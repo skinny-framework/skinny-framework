@@ -24,7 +24,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     val groupId1 = GroupMapper.createWithAttributes('name -> "Scala Users Group")
     val groupId2 = GroupMapper.createWithAttributes('name -> "Java Group")
 
-    val companyId = Company.createWithAttributes('name -> "Typesafe")
+    val companyId = Company.createWithAttributes('name -> "Typesafe", 'countryId -> countryId1)
 
     Member.withColumns { m =>
       // Member doesn't use TimestampsFeature
@@ -126,6 +126,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val none = Member.findById(nonExistingId)
       none.isDefined should be(false)
     }
+
+    // TODO still failes, this issue should be fixed until 1.0
+    /*
+    it("returns nested relations") { implicit session =>
+      val m = Member.defaultAlias
+      val member = Member.findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
+      member.company.get.country.isDefined should be(true)
+    }
+    */
 
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)
