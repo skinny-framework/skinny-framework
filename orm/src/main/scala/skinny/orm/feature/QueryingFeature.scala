@@ -2,6 +2,7 @@ package skinny.orm.feature
 
 import skinny.orm.SkinnyMapperBase
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Querying APIs feature.
@@ -10,7 +11,8 @@ trait QueryingFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
-    with AssociationsFeature[Entity] {
+    with AssociationsFeature[Entity]
+    with IncludesFeature[Entity] {
 
   /**
    * Appends where conditions.
@@ -132,7 +134,8 @@ trait QueryingFeature[Entity]
      * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
-      withExtractor(withSQL {
+      implicit val repository = IncludesQueryRepository[Entity]()
+      withIncludedAttributes(withExtractor(withSQL {
         val query: SQLBuilder[Entity] = {
           conditions match {
             case Nil => defaultSelectQuery.where(defaultScopeWithDefaultAlias)
@@ -143,7 +146,7 @@ trait QueryingFeature[Entity]
         }
         val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
         paging.foldLeft(query) { case (query, part) => query.append(part) }
-      }).list.apply()
+      }).list.apply())
     }
 
   }

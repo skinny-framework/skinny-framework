@@ -30,8 +30,15 @@ object Member extends SkinnyCRUDMapper[Member] {
   innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated
 
   // one-to-one
-  val company =
-    belongsTo[Company](Company, (m, c) => m.copy(company = c)).byDefault
+  val company = belongsTo[Company](
+    right = Company,
+    merge = (m, c) => m.copy(company = c),
+    includesMerge = (ms, cs) => ms.map { m =>
+      cs.find(c => m.company.exists(_.id == c.id))
+        .map(v => m.copy(company = Some(v))).getOrElse(m)
+    }
+  ).byDefault
+
   val mentor =
     belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
   val name =

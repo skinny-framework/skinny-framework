@@ -3,6 +3,7 @@ package skinny.orm.feature
 import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.associations.{ HasManyAssociation, HasOneAssociation, BelongsToAssociation, Association }
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides #joins APIs.
@@ -56,7 +57,8 @@ trait JoinsFeature[Entity]
       hasManyAssociations.toSet)
   }
 
-  override def withExtractor(sql: SQL[Entity, NoExtractor]): SQL[Entity, HasExtractor] = {
+  override def withExtractor(sql: SQL[Entity, NoExtractor])(
+    implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
     super.withExtractor(
       sql,
       belongsToAssociations.toSet,
