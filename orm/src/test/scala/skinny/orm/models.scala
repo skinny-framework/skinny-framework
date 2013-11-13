@@ -27,17 +27,14 @@ object Member extends SkinnyCRUDMapper[Member] {
   val mentoreeAlias = createAlias("mentoree")
 
   // if you use hasOne, joined entity should be Option[Entity]
+  // this code should be here
   innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated
 
   // one-to-one
-  val company = belongsTo[Company](
-    right = Company,
-    merge = (m, c) => m.copy(company = c),
-    includesMerge = (ms, cs) => ms.map { m =>
-      cs.find(c => m.company.exists(_.id == c.id))
-        .map(v => m.copy(company = Some(v))).getOrElse(m)
-    }
-  ).byDefault
+  val company = belongsTo[Company](Company, (m, c) => m.copy(company = c))
+    .includes[Company]((ms, cs) => ms.map { m =>
+      cs.find(c => m.company.exists(_.id == c.id)).map(v => m.copy(company = Some(v))).getOrElse(m)
+    }).byDefault
 
   val mentor =
     belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
@@ -52,8 +49,7 @@ object Member extends SkinnyCRUDMapper[Member] {
   //hasManyThrough[Group](GroupMember, Group, (member, groups) => member.copy(groups = groups)).byDefault
 
   // skills
-  val skills = hasManyThrough[Skill](
-    MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
+  val skills = hasManyThrough[Skill](MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
 
   // mentorees
   hasMany[Member](
@@ -98,7 +94,8 @@ object Name extends SkinnyCRUDMapper[Name]
 }
 
 case class Company(id: Option[Long] = None, name: String,
-    countryId: Option[Long] = None, country: Option[Country] = None) extends MutableSkinnyRecord[Company] {
+    countryId: Option[Long] = None, country: Option[Country] = None,
+    members: Seq[Member] = Nil) extends MutableSkinnyRecord[Company] {
   def skinnyCRUDMapper = Company
 }
 
@@ -107,6 +104,12 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
   override val defaultAlias = createAlias("cmp")
 
   val countryOpt = belongsTo[Country](Country, (c, cnt) => c.copy(country = cnt)).byDefault
+
+  val members = hasMany[Member](
+    many = Member -> Member.defaultAlias,
+    on = (c, m) => sqls.eq(c.id, m.companyId),
+    merge = (c, ms) => c.copy(members = ms)
+  ).includes[Member]((cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
 
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),

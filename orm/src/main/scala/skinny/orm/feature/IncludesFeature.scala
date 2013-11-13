@@ -17,14 +17,11 @@ trait IncludesFeature[Entity]
   private[skinny] val includedHasOneAssociations: Seq[HasOneAssociation[Entity]] = Nil
   private[skinny] val includedHasManyAssociations: Seq[HasManyAssociation[Entity]] = Nil
 
-  /*
-   * TODO includes feature design document
+  /**
+   * Adds includes conditions.
    *
-   * - should support only single nested attributes (A -> B -> C -> D)'s D won't be supported
-   * - should work with JoinsFeature perfectly
-   * - should execute in-clause query with all primary keys for each associations
-   * - should extract included attributes for each record map each record using extractor?
-   * - should have more debug logging for mixin behavior (for also other features)
+   * @param associations associations
+   * @return extended self
    */
   def includes(associations: Association[_]*): IncludesFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] = {
     val _self = this
@@ -53,7 +50,14 @@ trait IncludesFeature[Entity]
     }
   }
 
-  private[this] def primaryKeys(entities: Seq[Any], primaryKeyName: String): Seq[Long] = {
+  /**
+   * Returns ids from entities.
+   *
+   * @param entities entities
+   * @param primaryKeyName primary key name
+   * @return ids
+   */
+  private[this] def toIds(entities: Seq[Any], primaryKeyName: String): Seq[Long] = {
     entities.flatMap { e =>
       JavaReflectAPI.getter(e, primaryKeyName) match {
         case Some(v: Long) => Some(v)
@@ -65,24 +69,32 @@ trait IncludesFeature[Entity]
     }
   }
 
+  /**
+   * Applies includes operations to query results.
+   *
+   * @param entities entities
+   * @param s session
+   * @param repository repository
+   * @return entities with included attributes
+   */
   def withIncludedAttributes(entities: List[Entity])(
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): List[Entity] = {
     try {
       val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) {
         case (entities, assoc) =>
-          val ids = primaryKeys(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
           assoc.extractor.includesMerge(entities,
             assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
       val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) {
         case (entities, assoc) =>
-          val ids = primaryKeys(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
           assoc.extractor.includesMerge(entities,
             assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
       includedHasManyAssociations.foldLeft(withHasOne) {
         case (entities, assoc) =>
-          val ids = primaryKeys(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
           assoc.extractor.includesMerge(entities,
             assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
@@ -93,6 +105,14 @@ trait IncludesFeature[Entity]
     }
   }
 
+  /**
+   * Applies includes operations to query result.
+   *
+   * @param entity entity
+   * @param s session
+   * @param repository repository
+   * @return entity with included attributes
+   */
   def withIncludedAttributes(entity: Option[Entity])(
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): Option[Entity] = {
     withIncludedAttributes(entity.toList).headOption
