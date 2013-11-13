@@ -128,13 +128,11 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     // TODO still failes, this issue should be fixed until 1.0
-    /*
-    it("returns nested relations") { implicit session =>
-      val m = Member.defaultAlias
-      val member = Member.findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
-      member.company.get.country.isDefined should be(true)
-    }
-    */
+    //    it("returns nested relations") { implicit session =>
+    //      val m = Member.defaultAlias
+    //      val member = Member.includes(Member.company).findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
+    //      member.company.get.country.isDefined should be(true)
+    //    }
 
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)

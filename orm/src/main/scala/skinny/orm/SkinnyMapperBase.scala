@@ -27,6 +27,20 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   protected def singleSelectQuery: SelectSQLBuilder[Entity] = select.from(as(defaultAlias))
 
   /**
+   * Returns select query builder.
+   *
+   * @return query builder
+   */
+  def defaultSelectQuery: SelectSQLBuilder[Entity] = singleSelectQuery
+
+  /**
+   * Returns default scope for select queries.
+   *
+   * @return default scope
+   */
+  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
+
+  /**
    * Returns primary key name. (default: "id")
    *
    * Notice: Not a column name but field name. For example, not "first_name" but "firstName"
