@@ -13,20 +13,6 @@ trait QueryingFeature[Entity]
     with AssociationsFeature[Entity] {
 
   /**
-   * Returns default scope for select queries.
-   *
-   * @return default scope
-   */
-  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
-
-  /**
-   * Returns select query builder.
-   *
-   * @return query builder
-   */
-  def selectQuery: SelectSQLBuilder[Entity] = defaultSelectQuery
-
-  /**
    * Appends where conditions.
    *
    * @param conditions
@@ -149,8 +135,8 @@ trait QueryingFeature[Entity]
       withExtractor(withSQL {
         val query: SQLBuilder[Entity] = {
           conditions match {
-            case Nil => selectQuery.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(selectQuery.where(conditions.head)) {
+            case Nil => defaultSelectQuery.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(defaultSelectQuery.where(conditions.head)) {
               case (query, condition) => query.and.append(condition)
             }.and(defaultScopeWithDefaultAlias)
           }

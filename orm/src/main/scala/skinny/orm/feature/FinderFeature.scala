@@ -11,8 +11,7 @@ trait FinderFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
-    with JoinsFeature[Entity]
-    with QueryingFeature[Entity] {
+    with JoinsFeature[Entity] {
 
   /**
    * Finds a single entity by primary key.
@@ -23,7 +22,7 @@ trait FinderFeature[Entity]
    */
   def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
+      defaultSelectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
     }).single.apply()
   }
 
@@ -36,7 +35,7 @@ trait FinderFeature[Entity]
    */
   def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
+      defaultSelectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
     }).list.apply()
   }
 
@@ -48,7 +47,7 @@ trait FinderFeature[Entity]
    */
   def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+      defaultSelectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
     }).list.apply()
   }
 
@@ -62,7 +61,7 @@ trait FinderFeature[Entity]
    */
   def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
+      defaultSelectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 
@@ -87,7 +86,7 @@ trait FinderFeature[Entity]
    */
   def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+      defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
     }).single.apply()
   }
 
@@ -100,7 +99,7 @@ trait FinderFeature[Entity]
    */
   def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
+      defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
     }).list.apply()
   }
 
@@ -115,7 +114,7 @@ trait FinderFeature[Entity]
    */
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     withExtractor(withSQL {
-      selectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
+      defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
     }).list.apply()
   }
 

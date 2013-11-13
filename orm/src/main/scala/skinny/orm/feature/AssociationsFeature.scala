@@ -5,7 +5,6 @@ import scala.language.existentials
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scalikejdbc._, SQLInterpolation._
-import org.slf4j.LoggerFactory
 import scala.collection.mutable
 import skinny.util.JavaReflectAPI
 
@@ -309,8 +308,8 @@ trait AssociationsFeature[Entity]
    *
    * @return select query builder
    */
-  def defaultSelectQuery: SelectSQLBuilder[Entity] = {
-    defaultJoinDefinitions.foldLeft(singleSelectQuery) { (query, join) =>
+  override def defaultSelectQuery: SelectSQLBuilder[Entity] = {
+    defaultJoinDefinitions.foldLeft(super.defaultSelectQuery) { (query, join) =>
       join.joinType match {
         case InnerJoin if join.enabledByDefault => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
         case LeftOuterJoin if join.enabledByDefault => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
@@ -323,7 +322,12 @@ trait AssociationsFeature[Entity]
   // ResultSet Extractor
   // ----------------------
 
-  def withExtractor(sql: SQL[Entity, NoExtractor]): SQL[Entity, HasExtractor] = withExtractor(sql, Set(), Set(), Set())
+  def withExtractor(sql: SQL[Entity, NoExtractor]): SQL[Entity, HasExtractor] = {
+    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
+    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
+    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
+    withExtractor(sql, _belongsTo.toSet, _hasOne.toSet, _hasMany.toSet)
+  }
 
   /**
    * Creates an extractor for this query.
