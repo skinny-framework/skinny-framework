@@ -56,6 +56,10 @@ case class BelongsToAssociation[Entity](
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
 
+  def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): BelongsToAssociation[Entity] = {
+    this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
+  }
+
   mapper.associations.add(this)
 }
 
@@ -74,6 +78,10 @@ case class HasOneAssociation[Entity](
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
 
+  def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): HasOneAssociation[Entity] = {
+    this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
+  }
+
   mapper.associations.add(this)
 }
 
@@ -91,6 +99,10 @@ case class HasManyAssociation[Entity](
     extractor: HasManyExtractor[Entity]) extends Association[Entity] {
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
+
+  def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): HasManyAssociation[Entity] = {
+    this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
+  }
 
   mapper.associations.add(this)
 }
