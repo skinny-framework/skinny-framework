@@ -2,6 +2,7 @@ package skinny.orm.feature
 
 import skinny.orm.SkinnyMapperBase
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides #find something APIs.
@@ -11,7 +12,8 @@ trait FinderFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
-    with JoinsFeature[Entity] {
+    with JoinsFeature[Entity]
+    with IncludesFeature[Entity] {
 
   /**
    * Finds a single entity by primary key.
@@ -21,9 +23,10 @@ trait FinderFeature[Entity]
    * @return single entity if exists
    */
   def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
-    }).single.apply()
+    }).single.apply())
   }
 
   /**
@@ -34,9 +37,10 @@ trait FinderFeature[Entity]
    * @return entities
    */
   def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
-    }).list.apply()
+    }).list.apply())
   }
 
   /**
@@ -46,9 +50,10 @@ trait FinderFeature[Entity]
    * @return entities
    */
   def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
-    }).list.apply()
+    }).list.apply())
   }
 
   /**
@@ -60,9 +65,10 @@ trait FinderFeature[Entity]
    * @return entities
    */
   def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
-    }).list.apply()
+    }).list.apply())
   }
 
   /**
@@ -85,9 +91,10 @@ trait FinderFeature[Entity]
    * @return single entity
    */
   def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
-    }).single.apply()
+    }).single.apply())
   }
 
   /**
@@ -98,9 +105,10 @@ trait FinderFeature[Entity]
    * @return entities
    */
   def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
       defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName))
-    }).list.apply()
+    }).list.apply())
   }
 
   /**
@@ -113,9 +121,12 @@ trait FinderFeature[Entity]
    * @return entities
    */
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias).orderBy(defaultAlias.field(primaryKeyName)).limit(limit).offset(offset)
-    }).list.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    withIncludedAttributes(withExtractor(withSQL {
+      defaultSelectQuery.where(where).and(defaultScopeWithDefaultAlias)
+        .orderBy(defaultAlias.field(primaryKeyName))
+        .limit(limit).offset(offset)
+    }).list.apply())
   }
 
   /**
