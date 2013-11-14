@@ -25,6 +25,7 @@ object Member extends SkinnyCRUDMapper[Member] {
   override val defaultAlias = createAlias("m")
   val mentorAlias = createAlias("mentor")
   val mentoreeAlias = createAlias("mentoree")
+  val companyMembersAlias = createAlias("companyMembers")
 
   // if you use hasOne, joined entity should be Option[Entity]
   // this code should be here
@@ -107,9 +108,11 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
 
   val members = hasMany[Member](
     many = Member -> Member.defaultAlias,
-    on = (c, m) => sqls.eq(c.id, m.companyId),
+    on = (c, ms) => sqls.eq(c.id, ms.companyId),
     merge = (c, ms) => c.copy(members = ms)
-  ).includes[Member]((cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
+  ).includes[Member]((cs, ms) => cs.map { c =>
+      c.copy(members = ms.filter(_.companyId == c.id))
+    })
 
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),

@@ -50,7 +50,7 @@ trait JoinsFeature[Entity]
   }
 
   override def defaultSelectQuery: SelectSQLBuilder[Entity] = {
-    selectQueryWithAssociations(
+    selectQueryWithAdditionalAssociations(
       super.defaultSelectQuery,
       belongsToAssociations.toSet,
       hasOneAssociations.toSet,

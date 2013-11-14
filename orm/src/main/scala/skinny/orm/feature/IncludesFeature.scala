@@ -5,13 +5,15 @@ import skinny.orm.feature.associations._
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.util.JavaReflectAPI
+import skinny.orm.exception.AssociationSettingsException
 
 /**
  * Provides #includes APIs.
  */
 trait IncludesFeature[Entity]
     extends SkinnyMapperBase[Entity]
-    with AssociationsFeature[Entity] {
+    with AssociationsFeature[Entity]
+    with JoinsFeature[Entity] {
 
   private[skinny] val includedBelongsToAssociations: Seq[BelongsToAssociation[Entity]] = Nil
   private[skinny] val includedHasOneAssociations: Seq[HasOneAssociation[Entity]] = Nil
@@ -32,6 +34,11 @@ trait IncludesFeature[Entity]
 
     new IncludesFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] {
       override protected val underlying = _self
+
+      override private[skinny] val belongsToAssociations = _self.belongsToAssociations
+      override private[skinny] val hasOneAssociations = _self.hasOneAssociations
+      override private[skinny] val hasManyAssociations = _self.hasManyAssociations
+
       override private[skinny] val includedBelongsToAssociations = _self.includedBelongsToAssociations ++ _belongsTo
       override private[skinny] val includedHasOneAssociations = _self.includedHasOneAssociations ++ _hasOne
       override private[skinny] val includedHasManyAssociations = _self.includedHasManyAssociations ++ _hasMany
@@ -80,28 +87,25 @@ trait IncludesFeature[Entity]
   def withIncludedAttributes(entities: List[Entity])(
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): List[Entity] = {
     try {
-      val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) {
-        case (entities, assoc) =>
-          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
-          assoc.extractor.includesMerge(entities,
-            assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
+      val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) { (entities, assoc) =>
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        assoc.extractor.includesMerge(entities,
+          assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
-      val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) {
-        case (entities, assoc) =>
-          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
-          assoc.extractor.includesMerge(entities,
-            assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
+      val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) { (entities, assoc) =>
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        assoc.extractor.includesMerge(entities,
+          assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
-      includedHasManyAssociations.foldLeft(withHasOne) {
-        case (entities, assoc) =>
-          val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
-          assoc.extractor.includesMerge(entities,
-            assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
+      includedHasManyAssociations.foldLeft(withHasOne) { (entities, assoc) =>
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        assoc.extractor.includesMerge(entities,
+          assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
 
     } catch {
       case e: ClassCastException =>
-        throw new IllegalStateException(s"Failed to execute includes query because ${e.getMessage}!")
+        throw new AssociationSettingsException(s"Failed to execute includes query because ${e.getMessage}!")
     }
   }
 
