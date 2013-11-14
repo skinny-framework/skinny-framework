@@ -320,11 +320,19 @@ trait AssociationsFeature[Entity]
     val mergedJoinDefinitions = (belongsToAssociations.flatMap(_.joinDefinitions)
       ++ hasOneAssociations.flatMap(_.joinDefinitions)
       ++ hasManyAssociations.flatMap(_.joinDefinitions)
-    ).foldLeft(mutable.LinkedHashSet[JoinDefinition[_]]()) { (dfs, df) =>
-        val duplicated = dfs.exists(d => d.leftAlias.tableAliasName == df.rightAlias.tableAliasName
-          || d.rightAlias.tableAliasName == df.rightAlias.tableAliasName)
+    ).filterNot { df =>
+        val currentName = df.rightAlias.tableAliasName
+        val sameAsThis = this.defaultAlias.tableAliasName == currentName
+        val foundInDefaults = defaultJoinDefinitions.exists(d =>
+          d.leftAlias.tableAliasName == currentName || d.rightAlias.tableAliasName == currentName)
+        foundInDefaults || sameAsThis
+      }.foldLeft(mutable.LinkedHashSet[JoinDefinition[_]]()) { (dfs, df) =>
+        val currentName = df.rightAlias.tableAliasName
+        val duplicated = dfs.exists(d =>
+          d.leftAlias.tableAliasName == currentName || d.rightAlias.tableAliasName == currentName)
         if (duplicated) dfs else dfs + df
       }
+
     mergedJoinDefinitions.foldLeft(sql) { (query, join) =>
       join.joinType match {
         case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
@@ -340,13 +348,14 @@ trait AssociationsFeature[Entity]
    * @return select query builder
    */
   override def defaultSelectQuery: SelectSQLBuilder[Entity] = {
-    // TODO validates duplicated join definition?
-    val definitions = defaultJoinDefinitions.foldLeft(Set[JoinDefinition[_]]()) { (dfs, df) =>
-      val duplicated = dfs.exists(d => d.leftAlias.tableAliasName == df.rightAlias.tableAliasName
-        || d.rightAlias.tableAliasName == df.rightAlias.tableAliasName)
+    // Notice: LinkedHashSet because elements in the order they were inserted
+    val definitions = defaultJoinDefinitions.foldLeft(mutable.LinkedHashSet[JoinDefinition[_]]()) { (dfs, df) =>
+      val currentName = df.rightAlias.tableAliasName
+      val duplicated = dfs.exists(d =>
+        d.leftAlias.tableAliasName == currentName || d.rightAlias.tableAliasName == currentName)
       if (duplicated) dfs else dfs + df
     }
-    defaultJoinDefinitions.foldLeft(super.defaultSelectQuery) { (query, join) =>
+    definitions.foldLeft(super.defaultSelectQuery) { (query, join) =>
       join.joinType match {
         case InnerJoin if join.enabledByDefault => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
         case LeftOuterJoin if join.enabledByDefault => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
@@ -359,13 +368,13 @@ trait AssociationsFeature[Entity]
   // ResultSet Extractor
   // ----------------------
 
-  def withExtractor(sql: SQL[Entity, NoExtractor])(
-    implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
+  def extract(sql: SQL[Entity, NoExtractor])(
+    implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
 
     val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
     val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
     val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
-    withExtractor(sql, _belongsTo.toSet, _hasOne.toSet, _hasMany.toSet)
+    extractWithAssociations(sql, _belongsTo.toSet, _hasOne.toSet, _hasMany.toSet)
   }
 
   /**
@@ -377,12 +386,12 @@ trait AssociationsFeature[Entity]
    * @param oneToManyAssociations hasMany associations
    * @return sql object
    */
-  def withExtractor(
+  def extractWithAssociations(
     sql: SQL[Entity, NoExtractor],
     belongsToAssociations: Set[BelongsToAssociation[Entity]],
     hasOneAssociations: Set[HasOneAssociation[Entity]],
     oneToManyAssociations: Set[HasManyAssociation[Entity]])(
-      implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
+      implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
 
     val enabledJoinDefinitions = defaultJoinDefinitions
     val enabledOneToManyExtractors = defaultOneToManyExtractors ++ oneToManyAssociations.map(_.extractor)

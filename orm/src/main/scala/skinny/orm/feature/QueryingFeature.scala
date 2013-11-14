@@ -135,11 +135,11 @@ trait QueryingFeature[Entity]
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
       implicit val repository = IncludesQueryRepository[Entity]()
-      withIncludedAttributes(withExtractor(withSQL {
+      appendIncludedAttributes(extract(withSQL {
         val query: SQLBuilder[Entity] = {
           conditions match {
-            case Nil => defaultSelectQuery.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(defaultSelectQuery.where(conditions.head)) {
+            case Nil => selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(selectQueryWithAssociations.where(conditions.head)) {
               case (query, condition) => query.and.append(condition)
             }.and(defaultScopeWithDefaultAlias)
           }

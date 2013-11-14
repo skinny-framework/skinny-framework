@@ -11,8 +11,8 @@ import skinny.{ ParamType, StrongParameters }
 
 class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
-    with Formatter
     with CreateTables
+    with Formatter
     with AutoRollback {
 
   override def fixture(implicit session: DBSession) {
@@ -56,7 +56,6 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Skill.updateById(skillId).withAttributes('name -> "Web development")
       MemberSkill.createWithAttributes('memberId -> alice, 'skillId -> skillId)
     }
-
   }
 
   describe("MutableSkinnyRecord") {
@@ -79,27 +78,27 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     /* TODO
-[info]   java.lang.IllegalStateException: No builder register for None
-[info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
-[info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
-[info]   at scala.Option.getOrElse(Option.scala:120)
-[info]   at ar.com.gonto.factorypal.FactoryPal$.create(FactoryPal.scala:42)
+  [info]   java.lang.IllegalStateException: No builder register for None
+  [info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
+  [info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
+  [info]   at scala.Option.getOrElse(Option.scala:120)
+  [info]   at ar.com.gonto.factorypal.FactoryPal$.create(FactoryPal.scala:42)
 
-    it("should work with FactoryPal") { implicit session =>
-      import ar.com.gonto.factorypal.FactoryPal
-      val companyByFactoryPal = FactoryPal.create[Company]() { company =>
-        company.name.mapsTo("Sun")
+      it("should work with FactoryPal") { implicit session =>
+        import ar.com.gonto.factorypal.FactoryPal
+        val companyByFactoryPal = FactoryPal.create[Company]() { company =>
+          company.name.mapsTo("Sun")
+        }
+        val companyId = companyByFactoryPal.create()
+        val company = Company.findById(companyId).get
+
+        company.copy(name = "Oracle").save()
+        Company.findById(companyId).get.name should equal("Oracle")
+
+        company.destroy()
+        Company.findById(companyId) should equal(None)
       }
-      val companyId = companyByFactoryPal.create()
-      val company = Company.findById(companyId).get
-
-      company.copy(name = "Oracle").save()
-      Company.findById(companyId).get.name should equal("Oracle")
-
-      company.destroy()
-      Company.findById(companyId) should equal(None)
-    }
-    */
+      */
   }
 
   describe("SkinnyRecord") {
@@ -133,9 +132,18 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val member = Member.findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
       member.company.get.country.isDefined should be(false)
 
-      val memberWithCountry = Member.includes(Member.company).findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
+      val memberWithCountry = Member.includes(Member.companyOpt).findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
       memberWithCountry.company.get.country.isDefined should be(true)
     }
+
+    // TODO
+    //    it("returns nested hasMany relations") { implicit session =>
+    //      val company = Company.joins(Company.members).findAll().find(_.members.size > 0).head
+    //      company.members.head.name.isDefined should be(false)
+    //
+    //      val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
+    //      includedCompany.members.head.name.isDefined should be(true)
+    //    }
 
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)
@@ -338,8 +346,8 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
   }
 
   describe("FactoryGirl") {
-
     it("should work") { implicit session =>
+
       val company1 = FactoryGirl(Company).create()
       company1.name should equal("FactoryGirl")
 
@@ -358,6 +366,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
       val skill = FactoryGirl(Skill).create()
       skill.name should equal("Scala Programming")
+
     }
   }
 
