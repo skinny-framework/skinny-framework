@@ -49,7 +49,7 @@ trait JoinsFeature[Entity]
     }
   }
 
-  override def defaultSelectQuery: SelectSQLBuilder[Entity] = {
+  def selectQueryWithAssociations: SelectSQLBuilder[Entity] = {
     selectQueryWithAdditionalAssociations(
       super.defaultSelectQuery,
       belongsToAssociations.toSet,
@@ -57,9 +57,9 @@ trait JoinsFeature[Entity]
       hasManyAssociations.toSet)
   }
 
-  override def withExtractor(sql: SQL[Entity, NoExtractor])(
+  override def extract(sql: SQL[Entity, NoExtractor])(
     implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
-    super.withExtractor(
+    super.extractWithAssociations(
       sql,
       belongsToAssociations.toSet,
       hasOneAssociations.toSet,

@@ -18,15 +18,15 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
 
   def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
-    withIncludedAttributes(withExtractor(withSQL {
-      defaultSelectQuery.orderBy(syntax.id)
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.orderBy(syntax.id)
     }).list.apply())
   }
 
   def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
-    withIncludedAttributes(withExtractor(withSQL {
-      defaultSelectQuery.orderBy(syntax.id).limit(limit).offset(offset)
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.orderBy(syntax.id).limit(limit).offset(offset)
     }).list.apply())
   }
 
@@ -38,22 +38,22 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
 
   def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
-    withIncludedAttributes(withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id)
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
     }).single.apply())
   }
 
   def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
-    withIncludedAttributes(withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id)
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
     }).list.apply())
   }
 
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
-    withIncludedAttributes(withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
     }).list.apply())
   }
 

@@ -25,14 +25,13 @@ object Member extends SkinnyCRUDMapper[Member] {
   override val defaultAlias = createAlias("m")
   val mentorAlias = createAlias("mentor")
   val mentoreeAlias = createAlias("mentoree")
-  val companyMembersAlias = createAlias("companyMembers")
 
   // if you use hasOne, joined entity should be Option[Entity]
   // this code should be here
   innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated
 
   // one-to-one
-  val company = belongsTo[Company](Company, (m, c) => m.copy(company = c))
+  val companyOpt = belongsTo[Company](Company, (m, c) => m.copy(company = c))
     .includes[Company]((ms, cs) => ms.map { m =>
       cs.find(c => m.company.exists(_.id == c.id)).map(v => m.copy(company = Some(v))).getOrElse(m)
     }).byDefault
@@ -53,11 +52,13 @@ object Member extends SkinnyCRUDMapper[Member] {
   val skills = hasManyThrough[Skill](MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
 
   // mentorees
-  hasMany[Member](
+  val mentorees = hasMany[Member](
     many = Member -> Member.mentoreeAlias,
     on = (m, mentorees) => sqls.eq(m.id, mentorees.mentorId),
     merge = (member, mentorees) => member.copy(mentorees = mentorees)
-  ).byDefault
+  ).includes[Member]((ms, mts) => ms.map { m =>
+      m.copy(mentorees = mts.filter(_.mentorId.exists(_ == m.id)))
+    }).byDefault
 
   override def extract(rs: WrappedResultSet, n: ResultName[Member]): Member = new Member(
     id = rs.long(n.id),
@@ -110,9 +111,7 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
     many = Member -> Member.defaultAlias,
     on = (c, ms) => sqls.eq(c.id, ms.companyId),
     merge = (c, ms) => c.copy(members = ms)
-  ).includes[Member]((cs, ms) => cs.map { c =>
-      c.copy(members = ms.filter(_.companyId == c.id))
-    })
+  ).includes[Member]((cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
 
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),

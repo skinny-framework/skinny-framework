@@ -84,7 +84,7 @@ trait IncludesFeature[Entity]
    * @param repository repository
    * @return entities with included attributes
    */
-  def withIncludedAttributes(entities: List[Entity])(
+  def appendIncludedAttributes(entities: List[Entity])(
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): List[Entity] = {
     try {
       val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) { (entities, assoc) =>
@@ -109,6 +109,14 @@ trait IncludesFeature[Entity]
     }
   }
 
+  override def selectQueryWithAssociations: SelectSQLBuilder[Entity] = {
+    selectQueryWithAdditionalAssociations(
+      super.defaultSelectQuery,
+      (belongsToAssociations ++ includedBelongsToAssociations).toSet,
+      (hasOneAssociations ++ includedHasOneAssociations).toSet,
+      (hasManyAssociations ++ includedHasManyAssociations).toSet)
+  }
+
   /**
    * Applies includes operations to query result.
    *
@@ -117,9 +125,9 @@ trait IncludesFeature[Entity]
    * @param repository repository
    * @return entity with included attributes
    */
-  def withIncludedAttributes(entity: Option[Entity])(
+  def appendIncludedAttributes(entity: Option[Entity])(
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): Option[Entity] = {
-    withIncludedAttributes(entity.toList).headOption
+    appendIncludedAttributes(entity.toList).headOption
   }
 
 }

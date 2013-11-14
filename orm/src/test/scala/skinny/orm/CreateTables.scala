@@ -70,5 +70,4 @@ create table members_skills (
   )
 
   runIfFailed(sql"select * from members")
-
 }

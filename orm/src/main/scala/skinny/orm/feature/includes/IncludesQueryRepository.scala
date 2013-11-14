@@ -10,9 +10,9 @@ import scala.collection.mutable
  */
 trait IncludesQueryRepository[Entity] {
 
-  private[this] val belongsTo: mutable.Map[BelongsToExtractor[Entity], Seq[_]] = new mutable.HashMap()
-  private[this] val hasOne: mutable.Map[HasOneExtractor[Entity], Seq[_]] = new mutable.HashMap()
-  private[this] val hasMany: mutable.Map[HasManyExtractor[Entity], Seq[_]] = new mutable.HashMap()
+  private[this] val belongsTo: mutable.Map[BelongsToExtractor[Entity], Seq[_]] = new scala.collection.concurrent.TrieMap()
+  private[this] val hasOne: mutable.Map[HasOneExtractor[Entity], Seq[_]] = new scala.collection.concurrent.TrieMap()
+  private[this] val hasMany: mutable.Map[HasManyExtractor[Entity], Seq[_]] = new scala.collection.concurrent.TrieMap()
 
   /**
    * Returns entities for belongsTo relation.
