@@ -136,14 +136,14 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       memberWithCountry.company.get.country.isDefined should be(true)
     }
 
-    // TODO
-    //    it("returns nested hasMany relations") { implicit session =>
-    //      val company = Company.joins(Company.members).findAll().find(_.members.size > 0).head
-    //      company.members.head.name.isDefined should be(false)
-    //
-    //      val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
-    //      includedCompany.members.head.name.isDefined should be(true)
-    //    }
+    it("returns nested hasMany relations") { implicit session =>
+      val company = Company.joins(Company.members).findAll().find(_.members.size > 0).head
+      company.members.head.name.isDefined should be(false)
+
+      //val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
+      val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
+      includedCompany.members.head.name.isDefined should be(true)
+    }
 
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)
