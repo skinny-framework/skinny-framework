@@ -140,7 +140,6 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val company = Company.joins(Company.members).findAll().find(_.members.size > 0).head
       company.members.head.name.isDefined should be(false)
 
-      //val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
       val includedCompany = Company.includes(Company.members).findAll().find(_.members.size > 0).head
       includedCompany.members.head.name.isDefined should be(true)
     }
