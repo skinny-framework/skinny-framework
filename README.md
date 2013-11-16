@@ -534,3 +534,7 @@ Your feedback or pull requests are always welcome.
 Copyright (c) 2013 Kazuhiro Sera @seratch
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/seratch/skinny-framework/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
