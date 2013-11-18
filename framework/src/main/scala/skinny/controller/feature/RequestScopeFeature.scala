@@ -69,13 +69,14 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    *
    * @return whole attributes
    */
-  def requestScope(): scala.collection.mutable.Map[String, Any] = {
+  def requestScope(): scala.collection.concurrent.Map[String, Any] = {
     request.getAttribute(REQUEST_SCOPE_KEY) match {
       case null =>
-        val values = collection.mutable.Map[String, Any]()
+        val values = scala.collection.concurrent.TrieMap[String, Any]()
         request.setAttribute(REQUEST_SCOPE_KEY, values)
         values
-      case values: collection.mutable.Map[_, _] => values.asInstanceOf[collection.mutable.Map[String, Any]]
+      case values: scala.collection.concurrent.Map[_, _] =>
+        values.asInstanceOf[scala.collection.concurrent.Map[String, Any]]
       case _ => throw new RequestScopeConflictException(
         s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
     }

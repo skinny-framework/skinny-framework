@@ -3,14 +3,14 @@ package skinny.orm.feature
 import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.associations.{ HasManyAssociation, HasOneAssociation, BelongsToAssociation, Association }
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides #joins APIs.
  */
 trait JoinsFeature[Entity]
     extends SkinnyMapperBase[Entity]
-    with AssociationsFeature[Entity]
-    with QueryingFeature[Entity] {
+    with AssociationsFeature[Entity] {
 
   private[skinny] val belongsToAssociations: Seq[BelongsToAssociation[Entity]] = Nil
   private[skinny] val hasOneAssociations: Seq[HasOneAssociation[Entity]] = Nil
@@ -22,14 +22,14 @@ trait JoinsFeature[Entity]
    * @param associations associations
    * @return self
    */
-  def joins(associations: Association[_]*): JoinsFeature[Entity] = {
+  def joins(associations: Association[_]*): JoinsFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] = {
     val _self = this
     val _associations = associations
     val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
     val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
     val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
-    new JoinsFeature[Entity] {
+    new JoinsFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] {
       override protected val underlying = _self
       override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
       override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
@@ -49,16 +49,17 @@ trait JoinsFeature[Entity]
     }
   }
 
-  override def selectQuery: SelectSQLBuilder[Entity] = {
-    selectQueryWithAssociations(
-      defaultSelectQuery,
+  def selectQueryWithAssociations: SelectSQLBuilder[Entity] = {
+    selectQueryWithAdditionalAssociations(
+      super.defaultSelectQuery,
       belongsToAssociations.toSet,
       hasOneAssociations.toSet,
       hasManyAssociations.toSet)
   }
 
-  override def withExtractor(sql: SQL[Entity, NoExtractor]): SQL[Entity, HasExtractor] = {
-    withExtractor(
+  override def extract(sql: SQL[Entity, NoExtractor])(
+    implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
+    super.extractWithAssociations(
       sql,
       belongsToAssociations.toSet,
       hasOneAssociations.toSet,

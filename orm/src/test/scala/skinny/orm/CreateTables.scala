@@ -34,6 +34,7 @@ create table countries (
 create table companies (
   id bigint auto_increment primary key not null,
   name varchar(255) not null,
+  country_id bigint,
   is_deleted boolean default false not null
 )
 """,
@@ -69,5 +70,4 @@ create table members_skills (
   )
 
   runIfFailed(sql"select * from members")
-
 }

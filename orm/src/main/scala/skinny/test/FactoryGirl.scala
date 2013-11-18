@@ -5,6 +5,8 @@ import skinny.orm.SkinnyCRUDMapper
 import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConverters._
 import skinny.util.JavaReflectAPI
+import org.slf4j.LoggerFactory
+import skinny.exception.FactoryGirlException
 
 /**
  * Test data generator highly inspired by thoughtbot/factory_girl
@@ -13,7 +15,7 @@ import skinny.util.JavaReflectAPI
  */
 case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: Symbol = null) {
 
-  // TODO initialize error handling
+  private[this] val logger = LoggerFactory.getLogger(classOf[FactoryGirl[Entity]])
 
   private[this] val c = mapper.column
 
@@ -76,7 +78,15 @@ case class FactoryGirl[Entity](mapper: SkinnyCRUDMapper[Entity], name: Symbol = 
 
     // TODO data type
     val id = mapper.createWithNamedValues(mergedAttributes: _*)
-    mapper.findById(id).get
+
+    try {
+      mapper.findById(id)(s).get
+    } catch {
+      case e: Exception =>
+        val message = s"Failed to find created entity because ${e.getMessage}"
+        logger.error(message, e)
+        throw new FactoryGirlException(message, e)
+    }
   }
 
 }

@@ -8,11 +8,12 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "com.github.seratch"
-  val Version = "0.9.11"
+  val Version = "0.9.15"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
-  val ScalikeJDBCVersion = "1.6.10"
+  val ScalikeJDBCVersion = "1.6.11"
   val ScalateVeresion = "1.6.1"
+  val h2Version = "1.3.174"
 
   lazy val common = Project (id = "common", base = file("common"),
    settings = Defaults.defaultSettings ++ Seq(
@@ -21,10 +22,8 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile",
-        "joda-time"    %  "joda-time"    % "2.3"   % "compile",
-        "org.joda"     %  "joda-convert" % "1.4"   % "compile"
-      ) ++ testDependencies,
+        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+      ) ++ jodaDependencies ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       sbtPlugin := false,
@@ -117,7 +116,7 @@ object SkinnyFrameworkBuild extends Build {
         "com.googlecode.flyway" %  "flyway-core"       % "2.2.1"        % "compile",
         "javax.servlet"         %  "javax.servlet-api" % "3.0.1"        % "provided",
         "org.hibernate"         %  "hibernate-core"    % "4.1.12.Final" % "test",
-        "com.h2database"        %  "h2"                % "1.3.173"      % "test",
+        "com.h2database"        %  "h2"                % h2Version      % "test",
         "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
         "ar.com.gonto"          %% "factory_pal"       % "0.2.1"        % "test"
       ) ++ testDependencies,
@@ -168,8 +167,8 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"             %  "thymeleaf" % "2.0.18" % "compile",
-        "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.18" % "compile"
+        "org.thymeleaf"             %  "thymeleaf" % "2.1.1.RELEASE" % "compile",
+        "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.19"        % "compile"
       ) ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -189,10 +188,8 @@ object SkinnyFrameworkBuild extends Build {
       version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile",
-        "joda-time"    %  "joda-time"    % "2.3"   % "test",
-        "org.joda"     %  "joda-convert" % "1.4"   % "test"
-      ) ++ testDependencies,
+        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+      ) ++ jodaDependencies ++ testDependencies,
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
       sbtPlugin := false,
@@ -243,7 +240,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
-        "com.h2database"     %  "h2"                 % "1.3.173",
+        "com.h2database"     %  "h2"                 % h2Version,
         "ch.qos.logback"     % "logback-classic"     % "1.0.13",
         "org.eclipse.jetty"  % "jetty-webapp"        % "8.1.13.v20130916" % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % "8.1.13.v20130916" % "container",
@@ -273,8 +270,13 @@ object SkinnyFrameworkBuild extends Build {
     "com.github.seratch" %% "scalikejdbc-test"          % ScalikeJDBCVersion % "test"
   )
 
+  val jodaDependencies = Seq(
+    "joda-time" %  "joda-time"    % "2.3"   % "compile",
+    "org.joda"  %  "joda-convert" % "1.5"   % "compile"
+  )
+
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test",
+    "org.scalatest" %% "scalatest"   % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
     "org.mockito"   %  "mockito-all" % "1.9.5" % "test"
   )
 

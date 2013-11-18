@@ -3,6 +3,7 @@ package skinny.orm
 import scalikejdbc._, SQLInterpolation._
 import skinny._
 import skinny.orm.feature.QueryingFeature
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * SkinnyMapper which represents join table which is used for associations.
@@ -16,15 +17,17 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 
   def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.orderBy(syntax.id)
-    }).list.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.orderBy(syntax.id)
+    }).list.apply())
   }
 
   def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.orderBy(syntax.id).limit(limit).offset(offset)
-    }).list.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.orderBy(syntax.id).limit(limit).offset(offset)
+    }).list.apply())
   }
 
   def countAll()(implicit s: DBSession = autoSession): Long = {
@@ -34,21 +37,24 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
   }
 
   def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id)
-    }).single.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
+    }).single.apply())
   }
 
   def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id)
-    }).list.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
+    }).list.apply())
   }
 
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
-    withExtractor(withSQL {
-      defaultSelectQuery.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
-    }).list.apply()
+    implicit val repository = IncludesQueryRepository[Entity]()
+    appendIncludedAttributes(extract(withSQL {
+      selectQueryWithAssociations.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
+    }).list.apply())
   }
 
   def countAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {

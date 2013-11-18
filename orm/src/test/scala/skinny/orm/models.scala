@@ -27,12 +27,19 @@ object Member extends SkinnyCRUDMapper[Member] {
   val mentoreeAlias = createAlias("mentoree")
 
   // if you use hasOne, joined entity should be Option[Entity]
+  // this code should be here
   innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated
 
   // one-to-one
-  belongsTo[Company](Company, (m, c) => m.copy(company = c)).byDefault
-  belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
-  hasOne[Name](Name, (m, name) => m.copy(name = name)).byDefault
+  val companyOpt = belongsTo[Company](Company, (m, c) => m.copy(company = c))
+    .includes[Company]((ms, cs) => ms.map { m =>
+      cs.find(c => m.company.exists(_.id == c.id)).map(v => m.copy(company = Some(v))).getOrElse(m)
+    }).byDefault
+
+  val mentor =
+    belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
+  val name =
+    hasOne[Name](Name, (m, name) => m.copy(name = name)).byDefault
 
   // groups
   hasManyThroughWithFk[Group](
@@ -42,15 +49,16 @@ object Member extends SkinnyCRUDMapper[Member] {
   //hasManyThrough[Group](GroupMember, Group, (member, groups) => member.copy(groups = groups)).byDefault
 
   // skills
-  val skills = hasManyThrough[Skill](
-    MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
+  val skills = hasManyThrough[Skill](MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
 
   // mentorees
-  hasMany[Member](
+  val mentorees = hasMany[Member](
     many = Member -> Member.mentoreeAlias,
     on = (m, mentorees) => sqls.eq(m.id, mentorees.mentorId),
     merge = (member, mentorees) => member.copy(mentorees = mentorees)
-  ).byDefault
+  ).includes[Member]((ms, mts) => ms.map { m =>
+      m.copy(mentorees = mts.filter(_.mentorId.exists(_ == m.id)))
+    }).byDefault
 
   override def extract(rs: WrappedResultSet, n: ResultName[Member]): Member = new Member(
     id = rs.long(n.id),
@@ -87,16 +95,28 @@ object Name extends SkinnyCRUDMapper[Name]
   )
 }
 
-case class Company(id: Option[Long] = None, name: String) extends MutableSkinnyRecord[Company] {
+case class Company(id: Option[Long] = None, name: String,
+    countryId: Option[Long] = None, country: Option[Country] = None,
+    members: Seq[Member] = Nil) extends MutableSkinnyRecord[Company] {
   def skinnyCRUDMapper = Company
 }
 
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
   override val defaultAlias = createAlias("cmp")
+
+  val countryOpt = belongsTo[Country](Country, (c, cnt) => c.copy(country = cnt)).byDefault
+
+  val members = hasMany[Member](
+    many = Member -> Member.defaultAlias,
+    on = (c, ms) => sqls.eq(c.id, ms.companyId),
+    merge = (c, ms) => c.copy(members = ms)
+  ).includes[Member]((cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
+
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),
-    name = rs.string(s.name)
+    name = rs.string(s.name),
+    countryId = rs.longOpt(s.countryId)
   )
 }
 

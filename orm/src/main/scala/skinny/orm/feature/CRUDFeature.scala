@@ -20,8 +20,9 @@ trait CRUDFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
-    with QueryingFeature[Entity]
     with JoinsFeature[Entity]
+    with IncludesFeature[Entity]
+    with QueryingFeature[Entity]
     with FinderFeature[Entity]
     with StrongParametersFeature {
 
@@ -37,14 +38,14 @@ trait CRUDFeature[Entity]
    */
   def defaultScopeForUpdateOperations: Option[SQLSyntax] = None
 
-  override def joins(associations: Association[_]*): CRUDFeatureWithAssociations[Entity] = {
+  override def joins(associations: Association[_]*): CRUDFeature[Entity] = {
     val _self = this
     val _associations = associations
     val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
     val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
     val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
-    new CRUDFeatureWithAssociations[Entity] {
+    new CRUDFeature[Entity] {
       override protected val underlying = _self
       override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
       override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne

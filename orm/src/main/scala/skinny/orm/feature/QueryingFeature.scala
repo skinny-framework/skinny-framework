@@ -2,6 +2,7 @@ package skinny.orm.feature
 
 import skinny.orm.SkinnyMapperBase
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Querying APIs feature.
@@ -10,21 +11,8 @@ trait QueryingFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
-    with AssociationsFeature[Entity] {
-
-  /**
-   * Returns default scope for select queries.
-   *
-   * @return default scope
-   */
-  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
-
-  /**
-   * Returns select query builder.
-   *
-   * @return query builder
-   */
-  def selectQuery: SelectSQLBuilder[Entity] = defaultSelectQuery
+    with AssociationsFeature[Entity]
+    with IncludesFeature[Entity] {
 
   /**
    * Appends where conditions.
@@ -146,18 +134,19 @@ trait QueryingFeature[Entity]
      * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
-      withExtractor(withSQL {
+      implicit val repository = IncludesQueryRepository[Entity]()
+      appendIncludedAttributes(extract(withSQL {
         val query: SQLBuilder[Entity] = {
           conditions match {
-            case Nil => selectQuery.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(selectQuery.where(conditions.head)) {
+            case Nil => selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(selectQueryWithAssociations.where(conditions.head)) {
               case (query, condition) => query.and.append(condition)
             }.and(defaultScopeWithDefaultAlias)
           }
         }
         val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
         paging.foldLeft(query) { case (query, part) => query.append(part) }
-      }).list.apply()
+      }).list.apply())
     }
 
   }

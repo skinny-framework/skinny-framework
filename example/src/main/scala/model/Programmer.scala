@@ -57,7 +57,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
 
   private val (p, ps) = (Programmer.defaultAlias, ProgrammerSkill.defaultAlias)
 
-  def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = withExtractor {
+  def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = extract {
     withSQL {
       defaultSelectQuery.where.notIn(p.id,
         select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeForUpdateOperations)

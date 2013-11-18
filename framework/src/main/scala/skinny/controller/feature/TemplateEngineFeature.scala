@@ -104,13 +104,7 @@ trait TemplateEngineFeature
       format match {
         case Format.XML =>
           val entityXml = toXml(Extraction.decompose(entity)).toString
-          try {
-            scala.xml.XML.loadString(entityXml)
-            s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?>${entityXml}"""
-          } catch {
-            case e: Exception =>
-              s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
-          }
+          s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
         case Format.JSON =>
           val jsonString = compact(render(Extraction.decompose(entity)))
           compact(render(parse(jsonString).underscoreKeys))
