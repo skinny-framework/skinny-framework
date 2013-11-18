@@ -1,8 +1,14 @@
 #!/bin/sh 
 
+current_dir=`dirname $0`
 sbt_path=`which sbt`
-if [ "`which sbt`" == "" ]; then
-  brew install sbt
+if [ "`which brew`" != "" ];then 
+  if [ "`which sbt`" == "" ]; then
+    brew install sbt
+  fi
+else
+  sbt_path=${current_dir}/sbt
+  chmod +x ${sbt_path}
 fi
 
 function run_app() {
