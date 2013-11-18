@@ -24,6 +24,7 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('README.md', 'README.md');
   this.copy('skinny', 'skinny');
   this.copy('skinny.bat', 'skinny.bat');
+  this.copy('sbt', 'sbt');
   this.copy('sbt.bat', 'sbt.bat');
 };
 
