@@ -1,9 +1,9 @@
-#!/bin/sh 
+#!/bin/sh  
 
 current_dir=`dirname $0`
 sbt_path=`which sbt`
-if [ "`which brew`" != "" ];then 
-  if [ "`which sbt`" == "" ]; then
+if [ "`which sbt`" == "" ]; then
+  if [ "`which brew`" != "" ];then
     brew install sbt
   fi
 else
@@ -12,30 +12,30 @@ else
 fi
 
 function run_app() {
-  sbt "project dev" "~;container:stop;container:start"
+  ${sbt_path} "project dev" "~;container:stop;container:start"
 }
 function clean_build() {
   rm -rf build
   mkdir build
   cp -pr src build/src
-  cp -pr build.sbt build/build.sbt
+  cp -pr build.${sbt_path} build/build.sbt
 }
 
 command="$1"
 if [ "$command" == "run" ];then
   run_app
 elif [ "$command" == "clean" ];then
-  sbt dev/clean
+  ${sbt_path} dev/clean
 elif [ "$command" == "update" ];then
-  sbt update
+  ${sbt_path} update
 elif [ "$command" == "console" ];then
-  sbt dev/console
+  ${sbt_path} dev/console
 elif [ "$command" == "compile" ];then
-  sbt dev/compile
+  ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
-  sbt dev/test
+  ${sbt_path} dev/test
 elif [ "$command" == "test-only" ];then
-  sbt "dev/test-only $2"
+  ${sbt_path} "dev/test-only $2"
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
   shift
@@ -44,7 +44,7 @@ elif [ "$command" == "g" -o "$command" == "generate" ];then
     echo "Usage: ./skinny g/generate [type] [options...]"
   else
     command="task/run generate:$generator_type $@"
-    sbt "${command}"
+    ${sbt_path} "${command}"
   fi
 elif [ "$command" == "db:migrate" ];then
   rm -rf task/src/main/resources
@@ -52,13 +52,13 @@ elif [ "$command" == "db:migrate" ];then
   cp -pr src/main/resources/* task/src/main/resources/.
   echo '<configuration><appender name="console" class="ch.qos.logback.core.ConsoleAppender"><encoder><pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern></encoder></appender><root level="warn"><appender-ref ref="console"/></root></configuration>' > task/src/main/resources/logback.xml
   shift
-  sbt "task/run db:migrate $@"
+  ${sbt_path} "task/run db:migrate $@"
 elif [ "$command" == "package" ];then
   clean_build
-  sbt "task/run assets:precompile" build/package
+  ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "publish" ];then
   clean_build
-  sbt "task/run assets:precompile" build/publish
+  ${sbt_path} "task/run assets:precompile" build/publish
 else
   echo ""
   echo "Usage: ./skinny [COMMAND] [OPTIONS]..."
@@ -66,7 +66,7 @@ else
   echo "  run        : will run Skinny app for local development"
   echo "  clean      : will clear target directory"
   echo "  update     : will update dependencies"
-  echo "  console    : will run sbt console"
+  echo "  console    : will run ${sbt_path} console"
   echo "  compile    : will compile all the classes"
   echo "  db:migrate : will execute database migration"
   echo "  test       : will run all the tests"
@@ -83,5 +83,4 @@ else
   echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
   echo ""
 fi
-
 
