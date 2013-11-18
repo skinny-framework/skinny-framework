@@ -1,6 +1,5 @@
 package skinny.assets
 
-
 import org.mozilla.javascript._
 import java.io.InputStreamReader
 import skinny.util.LoanPattern._
