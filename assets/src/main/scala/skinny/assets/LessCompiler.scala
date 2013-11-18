@@ -25,14 +25,14 @@ class LessCompiler {
       "META-INF/skinny-assets/less/less.js",
       "META-INF/skinny-assets/less/engine.js"
     ).foreach { jsName =>
-      ClassPathResourceLoader.getClassPathResource(jsName).map { js =>
-        using(js.stream) { stream =>
-          using(new InputStreamReader(stream)) { input =>
-            context.evaluateReader(scope, input, jsName, 0, null)
+        ClassPathResourceLoader.getClassPathResource(jsName).map { js =>
+          using(js.stream) { stream =>
+            using(new InputStreamReader(stream)) { input =>
+              context.evaluateReader(scope, input, jsName, 0, null)
+            }
           }
         }
       }
-    }
 
     scope
   }

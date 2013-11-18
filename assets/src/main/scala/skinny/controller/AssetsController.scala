@@ -79,16 +79,17 @@ class AssetsController extends SkinnyController {
         jsResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
-            if (isNotModified(resource.lastModified)) halt(304)
-            else using(Source.fromInputStream(resource.stream))(_.mkString)
+            if (isModified(resource.lastModified)) using(Source.fromInputStream(resource.stream))(_.mkString)
+            else halt(304)
           }
         } getOrElse (halt(404))
       } else if (coffeeResource.isDefined) {
         coffeeResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
-            if (isNotModified(resource.lastModified)) halt(304)
-            else coffeeScriptCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            if (isModified(resource.lastModified)) {
+              coffeeScriptCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
           }
         }.getOrElse(halt(404))
 
@@ -98,12 +99,13 @@ class AssetsController extends SkinnyController {
         val coffeeFile = new File(servletContext.getRealPath(s"${basePath}/coffee/${path}.coffee"))
         if (jsFile.exists()) {
           setLastModified(jsFile.lastModified)
-          if (isNotModified(jsFile.lastModified)) halt(304)
-          else using(Source.fromFile(jsFile))(js => js.mkString)
+          if (isModified(jsFile.lastModified)) using(Source.fromFile(jsFile))(js => js.mkString)
+          else halt(304)
         } else if (coffeeFile.exists()) {
           setLastModified(coffeeFile.lastModified)
-          if (isNotModified(coffeeFile.lastModified)) halt(304)
-          else using(Source.fromFile(coffeeFile))(coffee => coffeeScriptCompiler.compile(coffee.mkString))
+          if (isModified(coffeeFile.lastModified)) using(Source.fromFile(coffeeFile))(coffee =>
+            coffeeScriptCompiler.compile(coffee.mkString))
+          else halt(304)
         } else {
           pass()
         }
@@ -134,16 +136,18 @@ class AssetsController extends SkinnyController {
         cssResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
-            if (isNotModified(resource.lastModified)) halt(304)
-            else using(Source.fromInputStream(resource.stream))(_.mkString)
+            if (isModified(resource.lastModified)) {
+              using(Source.fromInputStream(resource.stream))(_.mkString)
+            } else halt(304)
           }
         } getOrElse (halt(404))
       } else if (lessResource.isDefined) {
         lessResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
-            if (isNotModified(resource.lastModified)) halt(304)
-            else lessCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            if (isModified(resource.lastModified)) {
+              lessCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
           }
         }.getOrElse(halt(404))
 
@@ -153,12 +157,13 @@ class AssetsController extends SkinnyController {
         val lessFile = new File(servletContext.getRealPath(s"${basePath}/less/${path}.less"))
         if (cssFile.exists()) {
           setLastModified(cssFile.lastModified)
-          if (isNotModified(cssFile.lastModified)) halt(304)
-          else using(Source.fromFile(cssFile))(js => js.mkString)
+          if (isModified(cssFile.lastModified)) using(Source.fromFile(cssFile))(js => js.mkString)
+          else halt(304)
         } else if (lessFile.exists()) {
           setLastModified(lessFile.lastModified)
-          if (isNotModified(lessFile.lastModified)) halt(304)
-          else using(Source.fromFile(lessFile))(less => lessCompiler.compile(less.mkString))
+          if (isModified(lessFile.lastModified)) {
+            using(Source.fromFile(lessFile))(less => lessCompiler.compile(less.mkString))
+          } else halt(304)
         } else {
           pass()
         }
@@ -182,17 +187,17 @@ class AssetsController extends SkinnyController {
   )
 
   protected def setLastModified(lastModified: Long): Unit = {
-    val format =modifiedHeaderFormats.head
+    val format = modifiedHeaderFormats.head
     response.setHeader("Last-Modified", format.print(lastModified).replaceFirst("UTC$", "GMT"))
   }
 
-  protected def isNotModified(lastModified: Long): Boolean = {
+  protected def isModified(resourceLastModified: Long): Boolean = {
     request.header("If-Modified-Since").map(_.replaceFirst("^\"", "").replaceFirst("\"$", "")).map { ifModifiedSince =>
       modifiedHeaderFormats.flatMap { formatter =>
         try Option(formatter.parseDateTime(ifModifiedSince))
         catch { case e: Exception => None }
-      }.headOption.map(_.getMillis <= lastModified) getOrElse false
-    } getOrElse false
+      }.headOption.map(_.getMillis < resourceLastModified) getOrElse true
+    } getOrElse true
   }
 }
 
