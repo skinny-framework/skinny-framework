@@ -1,5 +1,5 @@
 <%@val i18n: skinny.I18n %>
-<%@val echo: String = "" %>
+<%@val echo: Option[String] %>
 
 <h3>Skinny Framework Demo</h3>
 <hr/>
