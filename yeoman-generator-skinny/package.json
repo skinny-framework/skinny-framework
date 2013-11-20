@@ -8,8 +8,8 @@
     "scalikejdbc",
     "scala"
   ],
-  "homepage": "https://github.com/seratch/skinny-framework",
-  "bugs": "https://github.com/seratch/skinny-framework/issues",
+  "homepage": "https://github.com/skinny-framework/skinny-framework",
+  "bugs": "https://github.com/skinny-framework/skinny-framework/issues",
   "author": {
     "name": "Kazuhiro Sera",
     "email": "seratch@gmail.com",
@@ -18,7 +18,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/seratch/skinny-framework.git"
+    "url": "git://github.com/skinny-framework/skinny-framework.git"
   },
   "scripts": {
     "test": "mocha"

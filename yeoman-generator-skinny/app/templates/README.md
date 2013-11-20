@@ -6,6 +6,7 @@ Run Skinny app now!
 
 ### Skinny framework
 
-https://github.com/seratch/skinny-framework
+http://skinny-framework.org/
+
 
 

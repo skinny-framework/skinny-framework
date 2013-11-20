@@ -7,11 +7,11 @@ import ScalateKeys._
 
 object SkinnyFrameworkBuild extends Build {
 
-  val Organization = "com.github.seratch"
+  val Organization = "org.skinny-framework"
   val Version = "0.9.16-SNAPSHOT"
   val ScalatraVersion = "2.2.1"
   val Json4SVersion = "3.2.5"
-  val ScalikeJDBCVersion = "1.6.11"
+  val ScalikeJDBCVersion = "1.7.0"
   val ScalateVeresion = "1.6.1"
   val h2Version = "1.3.174"
 
@@ -212,9 +212,9 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
       ),
       libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
-        "com.github.seratch" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
-        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion    % "compile",
-        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion    % "compile"
+        "org.scalikejdbc" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
+        "org.scalatra"    %% "scalatra-specs2"    % ScalatraVersion    % "compile",
+        "org.scalatra"    %% "scalatra-scalatest" % ScalatraVersion    % "compile"
       ),
       publishTo <<= version { (v: String) => _publishTo(v) },
       publishMavenStyle := true,
@@ -264,10 +264,10 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   val scalikejdbcDependencies = Seq(
-    "com.github.seratch" %% "scalikejdbc"               % ScalikeJDBCVersion % "compile",
-    "com.github.seratch" %% "scalikejdbc-interpolation" % ScalikeJDBCVersion % "compile",
-    "com.github.seratch" %% "scalikejdbc-config"        % ScalikeJDBCVersion % "compile",
-    "com.github.seratch" %% "scalikejdbc-test"          % ScalikeJDBCVersion % "test"
+    "org.scalikejdbc" %% "scalikejdbc"               % ScalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-interpolation" % ScalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-config"        % ScalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-test"          % ScalikeJDBCVersion % "test"
   )
 
   val jodaDependencies = Seq(
@@ -289,7 +289,7 @@ object SkinnyFrameworkBuild extends Build {
   val _scalacOptions = Seq("-deprecation", "-unchecked", "-feature")
 
   val _pomExtra = {
-    <url>https://github.com/seratch/skinny-framework</url>
+    <url>http://skinny-framework.org/</url>
       <licenses>
         <license>
           <name>MIT License</name>
@@ -298,8 +298,8 @@ object SkinnyFrameworkBuild extends Build {
         </license>
       </licenses>
       <scm>
-        <url>git@github.com:seratch/skinny-framework.git</url>
-        <connection>scm:git:git@github.com:seratch/skinny-framework.git</connection>
+        <url>git@github.com:skinny-framework/skinny-framework.git</url>
+        <connection>scm:git:git@github.com:skinny-framework/skinny-framework.git</connection>
       </scm>
       <developers>
         <developer>
