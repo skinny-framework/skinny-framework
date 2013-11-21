@@ -18,7 +18,7 @@ function clean_build() {
   rm -rf build
   mkdir build
   cp -pr src build/src
-  cp -pr build.${sbt_path} build/build.sbt
+  cp -pr build.sbt build/build.sbt
 }
 
 command="$1"

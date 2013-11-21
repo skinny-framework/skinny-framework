@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.16"
+  val skinnyVersion = "0.9.16-SNAPSHOT"
   val scalatraVersion = "2.2.1"
   val _scalaVersion = "2.10.3"
 
@@ -60,6 +60,9 @@ object SkinnyAppBuild extends Build {
         val base = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
         else Some("releases" at base + "service/local/staging/deploy/maven2")
+      },
+      scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
+        Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",  Nil,  Nil,  Some("templates")))
       }
     )
   )
