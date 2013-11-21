@@ -3,7 +3,6 @@ package templates
 import org.fusesource.scalate.support.TemplatePackage
 import org.fusesource.scalate.{Binding, TemplateSource}
 
-
 /**
  * Defines some common imports, attributes and methods across templates in package foo and below
  */
