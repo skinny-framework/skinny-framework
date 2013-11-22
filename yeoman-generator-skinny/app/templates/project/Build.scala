@@ -10,6 +10,7 @@ object SkinnyAppBuild extends Build {
   val skinnyVersion = "0.9.16-SNAPSHOT"
   val scalatraVersion = "2.2.1"
   val _scalaVersion = "2.10.3"
+  val jettyVersion = "8.1.13.v20130916"
 
   val _resolovers = Seq(
     "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
@@ -24,9 +25,9 @@ object SkinnyAppBuild extends Build {
     "org.skinny-framework" %% "skinny-test"        % skinnyVersion         % "test",
     "org.scalatra"         %% "scalatra-scalatest" % scalatraVersion       % "test"
   )
-  val _jettyDependencies = Seq(
-    "org.eclipse.jetty"  %  "jetty-webapp"       % "8.1.13.v20130916"    % "container",
-    "org.eclipse.jetty"  %  "jetty-plus"         % "8.1.13.v20130916"    % "container",
+  val containerDependencies = Seq(
+    "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion          % "container",
+    "org.eclipse.jetty"  %  "jetty-plus"         % jettyVersion          % "container",
     "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
   )
 
@@ -34,7 +35,7 @@ object SkinnyAppBuild extends Build {
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ Seq(
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
-      libraryDependencies ++= _dependencies ++ _jettyDependencies,
+      libraryDependencies ++= _dependencies ++ containerDependencies,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
     )
   )
@@ -55,7 +56,7 @@ object SkinnyAppBuild extends Build {
       version := "0.0.1-SNAPSHOT",
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
-      libraryDependencies ++= _dependencies ++ _jettyDependencies,
+      libraryDependencies ++= _dependencies ++ containerDependencies,
       publishTo <<= version { (v: String) =>
         val base = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
