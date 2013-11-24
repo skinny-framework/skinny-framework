@@ -3,7 +3,7 @@
  * Skinny framework JS library which just provides the default way. 
  * If you don't need them, it's not necessary to use this.
  * ------
- * (The MIT License)  Copyright (c) 2013 Kazuhiro Sera @seratch
+ * (The MIT License)  Copyright (c) 2013 skinny-framework.org
  */
 (function($, undefined) {
   $(document).delegate('a[data-method], a[data-confirm]', 'click', function(event) {

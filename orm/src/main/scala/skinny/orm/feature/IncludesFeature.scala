@@ -6,6 +6,7 @@ import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException
+import scala.collection.mutable
 
 /**
  * Provides #includes APIs.
@@ -35,9 +36,9 @@ trait IncludesFeature[Entity]
     new IncludesFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] {
       override protected val underlying = _self
 
-      override private[skinny] val belongsToAssociations = _self.belongsToAssociations
-      override private[skinny] val hasOneAssociations = _self.hasOneAssociations
-      override private[skinny] val hasManyAssociations = _self.hasManyAssociations
+      override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
+      override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
+      override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
 
       override private[skinny] val includedBelongsToAssociations = _self.includedBelongsToAssociations ++ _belongsTo
       override private[skinny] val includedHasOneAssociations = _self.includedHasOneAssociations ++ _hasOne
@@ -111,10 +112,10 @@ trait IncludesFeature[Entity]
 
   override def selectQueryWithAssociations: SelectSQLBuilder[Entity] = {
     selectQueryWithAdditionalAssociations(
-      super.defaultSelectQuery,
-      (belongsToAssociations ++ includedBelongsToAssociations).toSet,
-      (hasOneAssociations ++ includedHasOneAssociations).toSet,
-      (hasManyAssociations ++ includedHasManyAssociations).toSet)
+      defaultSelectQuery,
+      belongsToAssociations ++ includedBelongsToAssociations,
+      hasOneAssociations ++ includedHasOneAssociations,
+      hasManyAssociations ++ includedHasManyAssociations.toSet)
   }
 
   /**

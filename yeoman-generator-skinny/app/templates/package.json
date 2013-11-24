@@ -4,7 +4,7 @@
   "description": "Scala on Rails app",
   "repository": {
     "type": "git",
-    "url": "git://github.com/seratch/skinny-framework.git"
+    "url": "git://github.com/skinny-framework/skinny-framework.git"
   }
 }
 

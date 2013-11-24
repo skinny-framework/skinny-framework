@@ -14,7 +14,7 @@ fi
 function run_app() {
   ${sbt_path} "project dev" "~;container:stop;container:start"
 }
-function clean_build() {
+function setup_build() {
   rm -rf build
   mkdir build
   cp -pr src build/src
@@ -54,10 +54,10 @@ elif [ "$command" == "db:migrate" ];then
   shift
   ${sbt_path} "task/run db:migrate $@"
 elif [ "$command" == "package" ];then
-  clean_build
+  setup_build
   ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "publish" ];then
-  clean_build
+  setup_build
   ${sbt_path} "task/run assets:precompile" build/publish
 else
   echo ""

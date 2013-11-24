@@ -59,7 +59,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
    * @return actual path
    */
   override protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
-    s"${path}.${format.name}.${scalateExtension}".replaceAll("//", "/")
+    s"${path}.${format.name}.${scalateExtension}".replaceAll("//", "/").replaceFirst("^/", "")
   }
 
   /**

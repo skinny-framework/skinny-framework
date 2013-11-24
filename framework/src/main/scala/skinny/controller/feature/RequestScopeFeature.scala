@@ -97,14 +97,7 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    * @return self
    */
   def requestScope(keyAndValues: Seq[(String, Any)]): RequestScopeFeature = {
-    keyAndValues.foreach {
-      case (key, value) =>
-        value match {
-          case Some(v) => requestScope += (key -> v)
-          case None =>
-          case v => requestScope += (key -> v)
-        }
-    }
+    requestScope ++= keyAndValues
     this
   }
 

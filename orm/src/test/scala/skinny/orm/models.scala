@@ -39,7 +39,9 @@ object Member extends SkinnyCRUDMapper[Member] {
   val mentor =
     belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
   val name =
-    hasOne[Name](Name, (m, name) => m.copy(name = name)).byDefault
+    hasOne[Name](Name, (m, name) => m.copy(name = name)).includes[Name]((ms, ns) => ms.map { m =>
+      ns.find(n => m.name.exists(_.memberId == m.id)).map(v => m.copy(name = Some(v))).getOrElse(m)
+    }).byDefault
 
   // groups
   hasManyThroughWithFk[Group](
