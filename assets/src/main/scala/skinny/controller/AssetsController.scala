@@ -57,6 +57,11 @@ class AssetsController extends SkinnyController {
   protected val lessCompiler = LessCompiler
 
   /**
+   * Sass compiler.
+   */
+  protected val sassCompiler = SassCompiler
+
+  /**
    * Base path for assets files.
    */
   protected val basePath = "/WEB-INF/assets"
@@ -132,7 +137,12 @@ class AssetsController extends SkinnyController {
       // try to load from class path resources
       val cssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css")
       val lessResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/less/${path}.less")
+      val scssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.scss").orElse(
+        ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.scss"))
+      val sassResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.sass")
+
       if (cssResource.isDefined) {
+        // CSS
         cssResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
@@ -141,7 +151,9 @@ class AssetsController extends SkinnyController {
             } else halt(304)
           }
         } getOrElse (halt(404))
+
       } else if (lessResource.isDefined) {
+        // LESS
         lessResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
@@ -151,10 +163,39 @@ class AssetsController extends SkinnyController {
           }
         }.getOrElse(halt(404))
 
+      } else if (scssResource.isDefined) {
+        // Sass - scss
+        scssResource.map { resource =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              sassCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+        }.getOrElse(halt(404))
+
+      } else if (sassResource.isDefined) {
+        // Sass - sass
+        sassResource.map { resource =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              sassCompiler.compileIndented(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+        }.getOrElse(halt(404))
+
       } else {
-        // load content from real files
+        // load content from real files for development
+
         val cssFile = new File(servletContext.getRealPath(s"${basePath}/css/${path}.css"))
         val lessFile = new File(servletContext.getRealPath(s"${basePath}/less/${path}.less"))
+        val scssFile = {
+          val inScssDir = new File(servletContext.getRealPath(s"${basePath}/scss/${path}.scss"))
+          if (inScssDir.exists) inScssDir
+          else new File(servletContext.getRealPath(s"${basePath}/sass/${path}.scss"))
+        }
+        val sassFile = new File(servletContext.getRealPath(s"${basePath}/sass/${path}.sass"))
         if (cssFile.exists()) {
           setLastModified(cssFile.lastModified)
           if (isModified(cssFile.lastModified)) using(Source.fromFile(cssFile))(js => js.mkString)
@@ -163,6 +204,16 @@ class AssetsController extends SkinnyController {
           setLastModified(lessFile.lastModified)
           if (isModified(lessFile.lastModified)) {
             using(Source.fromFile(lessFile))(less => lessCompiler.compile(less.mkString))
+          } else halt(304)
+        } else if (scssFile.exists()) {
+          setLastModified(scssFile.lastModified)
+          if (isModified(scssFile.lastModified)) {
+            using(Source.fromFile(scssFile))(scss => sassCompiler.compile(scss.mkString))
+          } else halt(304)
+        } else if (sassFile.exists()) {
+          setLastModified(sassFile.lastModified)
+          if (isModified(sassFile.lastModified)) {
+            using(Source.fromFile(sassFile))(sass => sassCompiler.compileIndented(sass.mkString))
           } else halt(304)
         } else {
           pass()

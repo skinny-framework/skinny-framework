@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.16"
+  val skinnyVersion = "0.9.17"
   val scalatraVersion = "2.2.1"
   val _scalaVersion = "2.10.3"
   val jettyVersion = "8.1.13.v20130916"
