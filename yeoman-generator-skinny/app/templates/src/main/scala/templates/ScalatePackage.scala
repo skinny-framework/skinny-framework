@@ -10,7 +10,7 @@ class ScalatePackage extends TemplatePackage {
 
   /** Returns the Scala code to add to the top of the generated template method */
    def header(source: TemplateSource, bindings: List[Binding]) = """
-// import model._
+import model._
   """
 }
 
