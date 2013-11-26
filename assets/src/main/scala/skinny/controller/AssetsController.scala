@@ -57,6 +57,11 @@ class AssetsController extends SkinnyController {
   protected val lessCompiler = LessCompiler
 
   /**
+   * Sass compiler.
+   */
+  protected val sassCompiler = SassCompiler
+
+  /**
    * Base path for assets files.
    */
   protected val basePath = "/WEB-INF/assets"
@@ -132,7 +137,11 @@ class AssetsController extends SkinnyController {
       // try to load from class path resources
       val cssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css")
       val lessResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/less/${path}.less")
+      val scssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.scss")
+      val sassResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.sass")
+
       if (cssResource.isDefined) {
+        // CSS
         cssResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
@@ -141,12 +150,36 @@ class AssetsController extends SkinnyController {
             } else halt(304)
           }
         } getOrElse (halt(404))
+
       } else if (lessResource.isDefined) {
+        // LESS
         lessResource.map { resource =>
           using(resource.stream) { stream =>
             setLastModified(resource.lastModified)
             if (isModified(resource.lastModified)) {
               lessCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+        }.getOrElse(halt(404))
+
+      } else if (scssResource.isDefined) {
+        // Sass - scss
+        scssResource.map { resource =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              sassCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+        }.getOrElse(halt(404))
+
+      } else if (sassResource.isDefined) {
+        // Sass - sass
+        sassResource.map { resource =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              sassCompiler.compileIndented(using(Source.fromInputStream(resource.stream))(_.mkString))
             } else halt(304)
           }
         }.getOrElse(halt(404))

@@ -37,4 +37,22 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
     }
   }
 
+  it should "show scss resources" in {
+    get("/assets/css/variables-in-scss.css") {
+      status should equal(200)
+      body should equal("""body {
+      |  font: 100% Helvetica, sans-serif;
+      |  color: #333333; }""".stripMargin)
+    }
+  }
+
+  it should "show sass resources" in {
+    get("/assets/css/indented-sass.css") {
+      status should equal(200)
+      body should equal("""#main {
+       |  color: blue;
+       |  font-size: 0.3em; }""".stripMargin)
+    }
+  }
+
 }
