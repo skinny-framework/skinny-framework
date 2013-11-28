@@ -47,11 +47,6 @@ class AssetsController extends SkinnyController {
   }
 
   /**
-   * CoffeeScript compiler.
-   */
-  protected val coffeeScriptCompiler = CoffeeScriptCompiler()
-
-  /**
    * LESS compiler.
    */
   protected val lessCompiler = LessCompiler
@@ -67,66 +62,85 @@ class AssetsController extends SkinnyController {
   protected val basePath = "/WEB-INF/assets"
 
   /**
+   * Registered JS Compilers
+   */
+  private[this] val jsCompilers = new collection.mutable.ListBuffer[AssetCompiler]
+
+  /**
+   * Registers JS compiler to this controller.
+   * @param compiler compiler
+   */
+  def registerJsCompiler(compiler: AssetCompiler) = jsCompilers.append(compiler)
+
+  // registered compilers by default
+  registerJsCompiler(CoffeeScriptAssetCompiler)
+
+  /**
    * Returns js or coffee assets.
    */
-  def js() = if (isEnabled) {
+  def js(): Any = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
       _.split("\\.") match {
         case Array(path, "js") => Some(path)
         case _ => None
       }
     }.map { path =>
-
-      // try to load from class path resources
-      val jsResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/js/${path}.js")
-      val coffeeResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/coffee/${path}.coffee")
-      if (jsResource.isDefined) {
-        jsResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) using(Source.fromInputStream(resource.stream))(_.mkString)
-            else halt(304)
-          }
-        } getOrElse (halt(404))
-      } else if (coffeeResource.isDefined) {
-        coffeeResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) {
-              coffeeScriptCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
-            } else halt(304)
-          }
-        }.getOrElse(halt(404))
-
-      } else {
-        // load content from real files
-        val jsFile = new File(servletContext.getRealPath(s"${basePath}/js/${path}.js"))
-        val coffeeFile = new File(servletContext.getRealPath(s"${basePath}/coffee/${path}.coffee"))
-        if (jsFile.exists()) {
-          setLastModified(jsFile.lastModified)
-          if (isModified(jsFile.lastModified)) using(Source.fromFile(jsFile))(js => js.mkString)
-          else halt(304)
-        } else if (coffeeFile.exists()) {
-          setLastModified(coffeeFile.lastModified)
-          if (isModified(coffeeFile.lastModified)) using(Source.fromFile(coffeeFile))(coffee =>
-            coffeeScriptCompiler.compile(coffee.mkString))
-          else halt(304)
-        } else {
-          pass()
-        }
-
-      }
-    } getOrElse {
-      pass()
-    }
+      jsFromClassPath(path) orElse compiledJsFromClassPath(path) orElse compiledJsFromFile(path) getOrElse pass()
+    }.getOrElse { pass() }
   } else {
     pass()
   }
 
+  private def jsFromClassPath(path: String): Option[String] = {
+    ClassPathResourceLoader.getClassPathResource(s"${basePath}/js/${path}.js").map { resource =>
+      using(resource.stream) { stream =>
+        setLastModified(resource.lastModified)
+        if (isModified(resource.lastModified))
+          using(Source.fromInputStream(resource.stream))(_.mkString)
+        else halt(304)
+      }
+    }
+  }
+
+  private def compiledJsFromClassPath(path: String): Option[String] = {
+    // try to load from class path resources
+    jsCompilers.flatMap(c => c.findClassPathResource(basePath, path).map(r => (c, r))).headOption.map {
+      case (compiler, resource) =>
+        using(resource.stream) { stream =>
+          setLastModified(resource.lastModified)
+          if (isModified(resource.lastModified)) {
+            compiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+          } else halt(304)
+        }
+    }
+  }
+
+  private def compiledJsFromFile(path: String): Option[String] = {
+    // load content from real files
+    val jsFile = new File(servletContext.getRealPath(s"${basePath}/js/${path}.js"))
+    if (jsFile.exists()) {
+      setLastModified(jsFile.lastModified)
+      if (isModified(jsFile.lastModified)) Some(using(Source.fromFile(jsFile))(js => js.mkString))
+      else halt(304)
+    } else if (jsCompilers.exists(_.findRealFile(servletContext, basePath, path).exists)) {
+      jsCompilers.find(_.findRealFile(servletContext, basePath, path).exists).map { compiler =>
+        val file = compiler.findRealFile(servletContext, basePath, path)
+        setLastModified(file.lastModified)
+        if (isModified(file.lastModified)) {
+          using(Source.fromFile(file))(code => compiler.compile(code.mkString))
+        } else halt(304)
+      }
+    } else {
+      pass()
+    }
+  }
+
+  // TODO refactoring
+
   /**
    * Returns css or less assets.
    */
-  def css() = if (isEnabled) {
+  def css(): Any = if (isEnabled) {
     multiParams("splat").headOption.flatMap {
       _.split("\\.") match {
         case Array(path, "css") => Some(path)
