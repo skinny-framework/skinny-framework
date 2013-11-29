@@ -344,6 +344,20 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
   }
 
+  describe("dynamic table name") {
+    it("should accept table name") { implicit session =>
+      val createdId = Member.withColumns { m =>
+        Member.withTableName("members2").createWithNamedValues(
+          m.countryId -> Country.limit(1).apply().head.id,
+          m.companyId -> Company.limit(1).apply().head.id,
+          m.createdAt -> DateTime.now
+        )
+      }
+      Member.withTableName("members2").findAll().exists(_.id == createdId) should be(true)
+      Member.findAll().exists(_.id == createdId) should be(false)
+    }
+  }
+
   describe("FactoryGirl") {
     it("should work") { implicit session =>
 

@@ -16,6 +16,15 @@ create table members (
 )
 """,
     sql"""
+create table members2 (
+  id bigint auto_increment primary key not null,
+  country_id bigint not null,
+  company_id bigint,
+  mentor_id bigint,
+  created_at timestamp not null
+)
+""",
+    sql"""
 create table names (
   member_id bigint primary key not null,
   first varchar(64) not null,

@@ -20,6 +20,7 @@ trait CRUDFeature[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
+    with DynamicTableNameFeature[Entity]
     with JoinsFeature[Entity]
     with IncludesFeature[Entity]
     with QueryingFeature[Entity]
@@ -45,6 +46,7 @@ trait CRUDFeature[Entity]
     val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
     val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
+    // creates new instance but ideally this should be more DRY & safe implementation
     new CRUDFeature[Entity] {
       override protected val underlying = _self
       override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
@@ -57,6 +59,38 @@ trait CRUDFeature[Entity]
       override val defaultHasOneExtractors = _self.defaultHasOneExtractors
       override val defaultOneToManyExtractors = _self.defaultOneToManyExtractors
 
+      override def autoSession = underlying.autoSession
+      override def connectionPoolName = underlying.connectionPoolName
+      override def connectionPool = underlying.connectionPool
+
+      def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
+    }
+  }
+
+  /**
+   * Replaces table name on runtime.
+   *
+   * @param tableName table name
+   * @return self
+   */
+  override def withTableName(tableName: String): CRUDFeature[Entity] = {
+    val _self = this
+    val dynamicTableName = tableName
+
+    // creates new instance but ideally this should be more DRY & safe implementation
+    new CRUDFeature[Entity] {
+      // overwritten table name
+      override val tableName = dynamicTableName
+
+      override protected val underlying = _self
+      override private[skinny] val belongsToAssociations = _self.belongsToAssociations
+      override private[skinny] val hasOneAssociations = _self.hasOneAssociations
+      override private[skinny] val hasManyAssociations = _self.hasManyAssociations
+      override val associations = _self.associations
+      override val defaultJoinDefinitions = _self.defaultJoinDefinitions
+      override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
+      override val defaultHasOneExtractors = _self.defaultHasOneExtractors
+      override val defaultOneToManyExtractors = _self.defaultOneToManyExtractors
       override def autoSession = underlying.autoSession
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
