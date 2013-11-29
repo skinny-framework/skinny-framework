@@ -11,12 +11,19 @@ object ModelGenerator extends ModelGenerator
 trait ModelGenerator extends CodeGenerator {
 
   private[this] def showUsage = {
-    println("Usage: sbt \"task/run generate-model member name:String birthday:Option[LocalDate]\"")
+    println("""
+ *** Skinny Generator Task ***
+
+  Usage: sbt "task/run generate:model member name:String birthday:Option[LocalDate]"
+""")
   }
 
   def run(args: List[String]) {
     args.toList match {
       case name :: attributes =>
+        println("""
+ *** Skinny Generator Task ***
+""")
         val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
             case Array(k, v) => Some(k -> v)
@@ -24,6 +31,8 @@ trait ModelGenerator extends CodeGenerator {
           }
         }
         generate(name, None, attributePairs)
+        println("")
+
       case _ => showUsage
     }
   }

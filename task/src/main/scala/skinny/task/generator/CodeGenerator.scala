@@ -30,20 +30,20 @@ trait CodeGenerator {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       FileUtils.write(file, code)
-      println("\"" + file.getPath + "\" modified.")
+      println("  \"" + file.getPath + "\" modified.")
     } else {
       FileUtils.write(file, code)
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
   protected def writeIfAbsent(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, code)
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
@@ -51,10 +51,10 @@ trait CodeGenerator {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       FileUtils.write(file, code, true)
-      println("\"" + file.getPath + "\" modified.")
+      println("  \"" + file.getPath + "\" modified.")
     } else {
       FileUtils.write(file, code)
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
