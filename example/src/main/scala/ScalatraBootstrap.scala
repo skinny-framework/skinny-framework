@@ -5,7 +5,6 @@ import skinny.controller.AssetsController
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
-    lib.DBInitializer.initialize()
     // Notice: Enables open-session-in-view pattern
     //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
     Controllers.root.mount(ctx)

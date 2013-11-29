@@ -61,3 +61,5 @@ logs
 sandbox/db
 release
 
+.sass-cache
+
