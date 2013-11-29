@@ -6,14 +6,23 @@ import org.joda.time._
 import org.apache.commons.io.FileUtils
 
 /**
- * Scaffold generator.
+ * Skinny Generator Task.
  */
 trait ScaffoldGenerator extends CodeGenerator {
 
   protected def template: String = "ssp"
 
   private def showUsage = {
-    println("Usage: sbt \"task/run generate-scaffold members member name:String birthday:Option[DateTime]\"")
+    showSkinnyGenerator()
+    println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
+    println("")
+  }
+
+  private def showErrors(messages: Seq[String]) = {
+    showSkinnyGenerator()
+    println("""  Command failed!""")
+    println("")
+    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
   private[this] def paramTypes = Seq(
@@ -80,16 +89,18 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     args match {
       case resources :: resource :: attributes =>
-        val hasInvalidAttribute = attributes.exists { attr =>
-          if (!attr.contains(":")) true
-          else attr.split(":") match {
-            case Array(_, paramType) => !paramTypes.contains(paramType)
-            case _ => true
+        val errorMessages = attributes.flatMap {
+          case attr if !attr.contains(":") => Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
+          case attr => attr.split(":") match {
+            case Array(_, paramType) if !paramTypes.contains(paramType) => Some(s"Invalid type (${paramType}) found. ")
+            case _ => None
           }
-        }
-        if (hasInvalidAttribute) {
-          showUsage
+        }.map(_.toString)
+
+        if (!errorMessages.isEmpty) {
+          showErrors(errorMessages)
         } else {
+          showSkinnyGenerator()
 
           val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
             attribute.toString.split(":") match {
@@ -115,6 +126,9 @@ trait ScaffoldGenerator extends CodeGenerator {
           generateMessages(resources, resource, attributePairs)
           // migration SQL
           generateMigrationSQL(resources, resource, attributePairs)
+
+          println("")
+
         }
       case _ => showUsage
     }
@@ -430,10 +444,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/_form.html.${template}")
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, formHtmlCode(resources, resource, attributePairs))
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
@@ -442,10 +456,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/new.html.${template}")
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, newHtmlCode(resources, resource, attributePairs))
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
@@ -454,10 +468,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/edit.html.${template}")
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, editHtmlCode(resources, resource, attributePairs))
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
@@ -466,10 +480,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/index.html.${template}")
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, indexHtmlCode(resources, resource, attributePairs))
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 
@@ -478,10 +492,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/show.html.${template}")
     if (file.exists()) {
-      println("\"" + file.getPath + "\" skipped.")
+      println("  \"" + file.getPath + "\" skipped.")
     } else {
       FileUtils.write(file, showHtmlCode(resources, resource, attributePairs))
-      println("\"" + file.getPath + "\" created.")
+      println("  \"" + file.getPath + "\" created.")
     }
   }
 }
