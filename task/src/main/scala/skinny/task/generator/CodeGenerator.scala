@@ -58,4 +58,10 @@ trait CodeGenerator {
     }
   }
 
+  protected def showSkinnyGenerator(): Unit = {
+    println("""
+ *** Skinny Generator Task ***
+""")
+  }
+
 }

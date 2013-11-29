@@ -11,26 +11,20 @@ object ControllerGenerator extends ControllerGenerator
 trait ControllerGenerator extends CodeGenerator {
 
   private[this] def showUsage = {
-    println("""
- *** Skinny Generator Task ***
-
-  Usage: sbt "task/run generate:controller help"
-""")
+    showSkinnyGenerator()
+    println("""  Usage: sbt "task/run generate:controller help" """)
+    println("")
   }
 
   def run(args: List[String]) {
     args.toList match {
       case name :: _ =>
-
-        println("""
- *** Skinny Generator Task ***
-""")
+        showSkinnyGenerator()
         generate(name)
         appendToControllers(name)
         appendToScalatraBootstrap(name)
         generateSpec(name)
         println("")
-
       case _ => showUsage
     }
   }

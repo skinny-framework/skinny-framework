@@ -13,20 +13,16 @@ trait ScaffoldGenerator extends CodeGenerator {
   protected def template: String = "ssp"
 
   private def showUsage = {
-    println("""
- *** Skinny Generator Task ***
-
-  Usage: sbt "task/run generate-scaffold members member name:String birthday:Option[LocalDate]"
-""")
+    showSkinnyGenerator()
+    println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
+    println("")
   }
 
   private def showErrors(messages: Seq[String]) = {
-    println("""
- *** Skinny Generator Task ***
-
-  Command failed!
-
-""" + messages.mkString("  Error: ", "\n", "\n"))
+    showSkinnyGenerator()
+    println("""  Command failed!""")
+    println("")
+    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
   private[this] def paramTypes = Seq(
@@ -104,10 +100,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         if (!errorMessages.isEmpty) {
           showErrors(errorMessages)
         } else {
-
-          println("""
- *** Skinny Generator Task ***
-""")
+          showSkinnyGenerator()
 
           val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
             attribute.toString.split(":") match {
