@@ -47,16 +47,6 @@ class AssetsController extends SkinnyController {
   }
 
   /**
-   * LESS compiler.
-   */
-  protected val lessCompiler = LessCompiler
-
-  /**
-   * Sass compiler.
-   */
-  protected val sassCompiler = SassCompiler
-
-  /**
    * Base path for assets files.
    */
   protected val basePath = "/WEB-INF/assets"
@@ -67,13 +57,27 @@ class AssetsController extends SkinnyController {
   private[this] val jsCompilers = new collection.mutable.ListBuffer[AssetCompiler]
 
   /**
+   * Registered CSS Compilers
+   */
+  private[this] val cssCompilers = new collection.mutable.ListBuffer[AssetCompiler]
+
+  // registered compilers by default
+  registerJsCompiler(CoffeeScriptAssetCompiler)
+  registerCssCompiler(LessAssetCompiler)
+  registerCssCompiler(ScssAssetCompiler)
+  registerCssCompiler(SassAssetCompiler)
+
+  /**
    * Registers JS compiler to this controller.
    * @param compiler compiler
    */
   def registerJsCompiler(compiler: AssetCompiler) = jsCompilers.append(compiler)
 
-  // registered compilers by default
-  registerJsCompiler(CoffeeScriptAssetCompiler)
+  /**
+   * Registers CSS compiler to this controller.
+   * @param compiler compiler
+   */
+  def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
 
   /**
    * Returns js or coffee assets.
@@ -85,7 +89,10 @@ class AssetsController extends SkinnyController {
         case _ => None
       }
     }.map { path =>
-      jsFromClassPath(path) orElse compiledJsFromClassPath(path) orElse compiledJsFromFile(path) getOrElse pass()
+      jsFromClassPath(path) orElse
+        compiledJsFromClassPath(path) orElse
+        jsFromFile(path) orElse
+        compiledJsFromFile(path) getOrElse pass()
     }.getOrElse { pass() }
   } else {
     pass()
@@ -101,41 +108,18 @@ class AssetsController extends SkinnyController {
       }
     }
   }
-
-  private def compiledJsFromClassPath(path: String): Option[String] = {
-    // try to load from class path resources
-    jsCompilers.flatMap(c => c.findClassPathResource(basePath, path).map(r => (c, r))).headOption.map {
-      case (compiler, resource) =>
-        using(resource.stream) { stream =>
-          setLastModified(resource.lastModified)
-          if (isModified(resource.lastModified)) {
-            compiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
-          } else halt(304)
-        }
-    }
-  }
-
-  private def compiledJsFromFile(path: String): Option[String] = {
-    // load content from real files
+  private def jsFromFile(path: String): Option[String] = {
     val jsFile = new File(servletContext.getRealPath(s"${basePath}/js/${path}.js"))
     if (jsFile.exists()) {
       setLastModified(jsFile.lastModified)
       if (isModified(jsFile.lastModified)) Some(using(Source.fromFile(jsFile))(js => js.mkString))
       else halt(304)
-    } else if (jsCompilers.exists(_.findRealFile(servletContext, basePath, path).exists)) {
-      jsCompilers.find(_.findRealFile(servletContext, basePath, path).exists).map { compiler =>
-        val file = compiler.findRealFile(servletContext, basePath, path)
-        setLastModified(file.lastModified)
-        if (isModified(file.lastModified)) {
-          using(Source.fromFile(file))(code => compiler.compile(code.mkString))
-        } else halt(304)
-      }
     } else {
-      pass()
+      None
     }
   }
-
-  // TODO refactoring
+  private def compiledJsFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, jsCompilers)
+  private def compiledJsFromFile(path: String): Option[String] = compiledCodeFromFile(path, jsCompilers)
 
   /**
    * Returns css or less assets.
@@ -147,99 +131,37 @@ class AssetsController extends SkinnyController {
         case _ => None
       }
     }.map { path =>
-
-      // try to load from class path resources
-      val cssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css")
-      val lessResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/less/${path}.less")
-      val scssResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.scss").orElse(
-        ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.scss"))
-      val sassResource = ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.sass")
-
-      if (cssResource.isDefined) {
-        // CSS
-        cssResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) {
-              using(Source.fromInputStream(resource.stream))(_.mkString)
-            } else halt(304)
-          }
-        } getOrElse (halt(404))
-
-      } else if (lessResource.isDefined) {
-        // LESS
-        lessResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) {
-              lessCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
-            } else halt(304)
-          }
-        }.getOrElse(halt(404))
-
-      } else if (scssResource.isDefined) {
-        // Sass - scss
-        scssResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) {
-              sassCompiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
-            } else halt(304)
-          }
-        }.getOrElse(halt(404))
-
-      } else if (sassResource.isDefined) {
-        // Sass - sass
-        sassResource.map { resource =>
-          using(resource.stream) { stream =>
-            setLastModified(resource.lastModified)
-            if (isModified(resource.lastModified)) {
-              sassCompiler.compileIndented(using(Source.fromInputStream(resource.stream))(_.mkString))
-            } else halt(304)
-          }
-        }.getOrElse(halt(404))
-
-      } else {
-        // load content from real files for development
-
-        val cssFile = new File(servletContext.getRealPath(s"${basePath}/css/${path}.css"))
-        val lessFile = new File(servletContext.getRealPath(s"${basePath}/less/${path}.less"))
-        val scssFile = {
-          val inScssDir = new File(servletContext.getRealPath(s"${basePath}/scss/${path}.scss"))
-          if (inScssDir.exists) inScssDir
-          else new File(servletContext.getRealPath(s"${basePath}/sass/${path}.scss"))
-        }
-        val sassFile = new File(servletContext.getRealPath(s"${basePath}/sass/${path}.sass"))
-        if (cssFile.exists()) {
-          setLastModified(cssFile.lastModified)
-          if (isModified(cssFile.lastModified)) using(Source.fromFile(cssFile))(js => js.mkString)
-          else halt(304)
-        } else if (lessFile.exists()) {
-          setLastModified(lessFile.lastModified)
-          if (isModified(lessFile.lastModified)) {
-            using(Source.fromFile(lessFile))(less => lessCompiler.compile(less.mkString))
-          } else halt(304)
-        } else if (scssFile.exists()) {
-          setLastModified(scssFile.lastModified)
-          if (isModified(scssFile.lastModified)) {
-            using(Source.fromFile(scssFile))(scss => sassCompiler.compile(scss.mkString))
-          } else halt(304)
-        } else if (sassFile.exists()) {
-          setLastModified(sassFile.lastModified)
-          if (isModified(sassFile.lastModified)) {
-            using(Source.fromFile(sassFile))(sass => sassCompiler.compileIndented(sass.mkString))
-          } else halt(304)
-        } else {
-          pass()
-        }
-
-      }
-    } getOrElse {
-      pass()
-    }
+      cssFromClassPath(path) orElse
+        compiledCssFromClassPath(path) orElse
+        cssFromFile(path) orElse
+        compiledCssFromFile(path) getOrElse pass()
+    }.getOrElse { pass() }
   } else {
     pass()
   }
+
+  def cssFromClassPath(path: String): Option[String] = {
+    ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css").map { resource =>
+      using(resource.stream) { stream =>
+        setLastModified(resource.lastModified)
+        if (isModified(resource.lastModified)) {
+          using(Source.fromInputStream(resource.stream))(_.mkString)
+        } else halt(304)
+      }
+    }
+  }
+  private def cssFromFile(path: String): Option[String] = {
+    val cssFile = new File(servletContext.getRealPath(s"${basePath}/css/${path}.css"))
+    if (cssFile.exists()) {
+      setLastModified(cssFile.lastModified)
+      if (isModified(cssFile.lastModified)) Some(using(Source.fromFile(cssFile))(css => css.mkString))
+      else halt(304)
+    } else {
+      None
+    }
+  }
+  private def compiledCssFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, cssCompilers)
+  private def compiledCssFromFile(path: String): Option[String] = compiledCodeFromFile(path, cssCompilers)
 
   protected val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
   protected val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
@@ -264,6 +186,34 @@ class AssetsController extends SkinnyController {
       }.headOption.map(_.getMillis < resourceLastModified) getOrElse true
     } getOrElse true
   }
+
+  private def compiledCodeFromClassPath(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
+    // try to load from class path resources
+    compilers.flatMap(c => c.findClassPathResource(basePath, path).map(r => (c, r))).headOption.map {
+      case (compiler, resource) =>
+        using(resource.stream) { stream =>
+          setLastModified(resource.lastModified)
+          if (isModified(resource.lastModified)) {
+            compiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
+          } else halt(304)
+        }
+    }
+  }
+
+  private def compiledCodeFromFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
+    // load content from real files
+    compilers.flatMap { c =>
+      val file = c.findRealFile(servletContext, basePath, path)
+      if (file.exists) Some((c, file)) else None
+    }.headOption.map {
+      case (compiler, file) =>
+        setLastModified(file.lastModified)
+        if (isModified(file.lastModified)) {
+          using(Source.fromFile(file))(code => compiler.compile(code.mkString))
+        } else halt(304)
+    }
+  }
+
 }
 
 /**
