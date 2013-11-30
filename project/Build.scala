@@ -9,12 +9,12 @@ object SkinnyFrameworkBuild extends Build {
 
   val Organization = "org.skinny-framework"
   val Version = "0.9.18-SNAPSHOT"
-  val ScalatraVersion = "2.2.1"
+  val ScalatraVersion = "2.2.2"
   val Json4SVersion = "3.2.5"
   val ScalikeJDBCVersion = "1.7.0"
   val ScalateVeresion = "1.6.1"
   val H2Version = "1.3.174"
-  val JettyVersion = "8.1.13.v20130916"
+  val JettyVersion = "8.1.14.v20131031"
 
   lazy val common = Project (id = "common", base = file("common"),
    settings = Defaults.defaultSettings ++ Seq(
