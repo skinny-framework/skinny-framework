@@ -1,9 +1,12 @@
-package skinny.controller
+package skinny.controller.assets
 
 import skinny._, assets._
 import javax.servlet.ServletContext
 import java.io.File
 
+/**
+ * Scss
+ */
 object ScssAssetCompiler extends AssetCompiler {
   private[this] val compiler = SassCompiler
 
