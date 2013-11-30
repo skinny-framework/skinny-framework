@@ -66,6 +66,19 @@ IF "%command%"=="db:migrate" (
   GOTO script_eof
 )
 
+IF %command%==eclipse (
+  sbt eclipse
+  GOTO script_eof
+)
+
+SET is_gen_idea=false
+IF "%command%"=="idea"     SET is_gen_idea=true
+IF "%command%"=="gen-idea" SET is_gen_idea=true
+IF "%is_gen_idea%"=="true" (
+  sbt gen-idea
+  GOTO script_eof
+)
+
 IF %command%==package (
   RMDIR build /s /q
   MKDIR build
@@ -89,9 +102,9 @@ REM Didn't select command.
 ECHO.
 ECHO Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run        : will run Skinny app for local development
+ECHO   run        : will run application for local development
 ECHO   clean      : will clear target directory
-ECHO   update     : will update depscript_exitencies
+ECHO   update     : will run sbt update
 ECHO   console    : will run sbt console
 ECHO   compile    : will compile all the classes
 ECHO   db:migrate : will run all the tests
@@ -99,6 +112,9 @@ ECHO   test       : will run all the tests
 ECHO   test-only  : will run the specified test
 ECHO   package    : will create *.war file to deploy
 ECHO   publish    : will publish *.war file to repository
+ECHO.
+ECHO   eclipse       : will setup Scala IDE settings
+ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
 ECHO.
 ECHO   g/generate controller : will generate controller
 ECHO   g/generate model      : will generate model

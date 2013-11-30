@@ -53,6 +53,10 @@ elif [ "$command" == "db:migrate" ];then
   echo '<configuration><appender name="console" class="ch.qos.logback.core.ConsoleAppender"><encoder><pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern></encoder></appender><root level="warn"><appender-ref ref="console"/></root></configuration>' > task/src/main/resources/logback.xml
   shift
   ${sbt_path} "task/run db:migrate $@"
+elif [ "$command" == "eclipse" ];then
+  ${sbt_path} eclipse
+elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
+  ${sbt_path} gen-idea
 elif [ "$command" == "package" ];then
   setup_build
   ${sbt_path} "task/run assets:precompile" build/package
@@ -63,16 +67,19 @@ else
   echo ""
   echo "Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  run        : will run Skinny app for local development"
+  echo "  run        : will run application for local development"
   echo "  clean      : will clear target directory"
-  echo "  update     : will update dependencies"
-  echo "  console    : will run ${sbt_path} console"
+  echo "  update     : will run sbt update"
+  echo "  console    : will run sbt console"
   echo "  compile    : will compile all the classes"
   echo "  db:migrate : will execute database migration"
   echo "  test       : will run all the tests"
   echo "  test-only  : will run the specified test"
   echo "  package    : will create *.war file to deploy"
   echo "  publish    : will publish *.war file to repository"
+  echo ""
+  echo "  eclipse       : will setup Scala IDE settings"
+  echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
   echo ""
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"

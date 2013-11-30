@@ -1,16 +1,16 @@
 package skinny.orm.feature
 
-import scalikejdbc._
+import scalikejdbc._, SQLInterpolation._
 
 /**
  * Provides AutoSession for this mapper.
  */
-trait AutoSessionFeature { self: ConnectionPoolFeature =>
+trait AutoSessionFeature { self: SQLSyntaxSupport[_] with ConnectionPoolFeature =>
 
   /**
    * AutoSession definition.
    */
-  def autoSession: DBSession = {
+  override def autoSession: DBSession = {
     connectionPoolName match {
       case ConnectionPool.DEFAULT_NAME =>
         Option(ThreadLocalDB.load()).map { threadLocalDB =>

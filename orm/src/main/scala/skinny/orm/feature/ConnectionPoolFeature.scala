@@ -1,18 +1,11 @@
 package skinny.orm.feature
 
-import scalikejdbc._
+import scalikejdbc._, SQLInterpolation._
 
 /**
  * Provides ConnectionPool.
  */
-trait ConnectionPoolFeature {
-
-  /**
-   * Returns connection pool name.
-   *
-   * @return name
-   */
-  def connectionPoolName: Any = ConnectionPool.DEFAULT_NAME
+trait ConnectionPoolFeature { self: SQLSyntaxSupport[_] =>
 
   /**
    * Returns connection pool.

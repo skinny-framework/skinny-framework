@@ -6,7 +6,6 @@ import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException
-import scala.collection.mutable
 
 /**
  * Provides #includes APIs.
@@ -33,6 +32,7 @@ trait IncludesFeature[Entity]
     val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
     val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
+    // creates new instance but ideally this should be more DRY & safe implementation
     new IncludesFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] {
       override protected val underlying = _self
 

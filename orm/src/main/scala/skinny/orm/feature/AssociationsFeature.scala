@@ -39,7 +39,7 @@ object AssociationsFeature {
 trait AssociationsFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
-    with AutoSessionFeature {
+    with AutoSessionFeature { self: SQLSyntaxSupport[Entity] =>
 
   import AssociationsFeature._
 
