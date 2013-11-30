@@ -23,7 +23,10 @@ trait TaskLauncher {
   register("generate:scaffold:scaml", (params) => ScaffoldScamlGenerator.run(params))
   register("generate:scaffold:jade", (params) => ScaffoldJadeGenerator.run(params))
 
-  register("db:migrate", (params) => DBMigration.migrate(params.headOption.getOrElse(SkinnyEnv.Development)))
+  register("db:migrate", {
+    case env :: dbName :: rest => DBMigration.migrate(env, dbName)
+    case params => DBMigration.migrate(params.headOption.getOrElse(SkinnyEnv.Development))
+  })
 
   def register(name: String, runner: (List[String]) => Unit) = tasks.update(name, runner)
 
