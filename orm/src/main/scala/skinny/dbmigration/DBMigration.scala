@@ -20,7 +20,11 @@ trait DBMigration {
       System.setProperty(SkinnyEnv.Key, env)
       DBSettings.initialize()
 
-      Option(ConnectionPool.get(Symbol(poolName))) match {
+      val cp = try {
+        Option(ConnectionPool.get(Symbol(poolName)))
+      } catch { case e: IllegalStateException => None }
+
+      cp match {
         case Some(pool) => {
           val flyway = new Flyway
           flyway.setDataSource(pool.dataSource)
