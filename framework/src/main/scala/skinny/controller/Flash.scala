@@ -28,13 +28,7 @@ case class Flash(underlying: org.scalatra.FlashMap) extends Dynamic {
    * @param key key
    * @return value if exists
    */
-  def selectDynamic(key: String): Option[Any] = underlying.get(key).map { v =>
-    v match {
-      case Some(v) => v
-      case None => null
-      case v => v
-    }
-  }
+  def selectDynamic(key: String): Option[Any] = get(key)
 
 }
 
