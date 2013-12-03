@@ -1,4 +1,5 @@
-scalariformSettings
+// Disabled by default because this is confusing for beginners
+//scalariformSettings
 
 initialCommands := """
 import _root_.controller._, model._
