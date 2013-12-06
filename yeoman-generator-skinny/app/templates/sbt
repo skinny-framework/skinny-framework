@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 SBT_OPTS="-XX:MaxPermSize=256M"
 if [ ! -f $HOME/.sbtconfig ]; then
   echo "export SBT_OPTS=\"-XX:MaxPermSize=256M\"" > ${HOME}/.sbtconfig

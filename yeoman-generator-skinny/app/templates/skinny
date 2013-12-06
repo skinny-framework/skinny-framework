@@ -1,4 +1,4 @@
-#!/bin/sh  
+#!/bin/bash
 
 current_dir=`dirname $0`
 sbt_path=`which sbt`
