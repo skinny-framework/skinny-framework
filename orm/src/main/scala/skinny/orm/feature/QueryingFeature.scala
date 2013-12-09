@@ -33,6 +33,15 @@ trait QueryingFeature[Entity]
   )
 
   /**
+   * Appends a raw where condition.
+   *
+   * @param condition
+   * @return query builder
+   */
+  def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+    mapper = this, conditions = Seq(condition))
+
+  /**
    * Appends limit part.
    *
    * @param n value
@@ -85,9 +94,23 @@ trait QueryingFeature[Entity]
             case value => sqls.eq(defaultAlias.field(key.name), value)
           }
       },
-      limit = None,
-      offset = None
+      limit = limit,
+      offset = offset
     )
+
+    /**
+     * Appends a raw where condition.
+     *
+     * @param condition
+     * @return query builder
+     */
+    def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+      mapper = this.mapper,
+      conditions = conditions ++ Seq(condition),
+      limit = limit,
+      offset = offset
+    )
+
   }
 
   /**

@@ -16,17 +16,19 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
 
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 
-  def findAll()(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAll(ordering: SQLSyntax = syntax.id)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.orderBy(syntax.id)
+      selectQueryWithAssociations.orderBy(ordering)
     }).list.apply())
   }
 
-  def findAllPaging(limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = syntax.id)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.orderBy(syntax.id).limit(limit).offset(offset)
+      selectQueryWithAssociations.orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
   }
 
@@ -39,21 +41,23 @@ trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[
   def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
+      selectQueryWithAssociations.where.append(where)
     }).single.apply())
   }
 
-  def findAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllBy(where: SQLSyntax, ordering: SQLSyntax = syntax.id)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.append(where).orderBy(syntax.id)
+      selectQueryWithAssociations.where.append(where).orderBy(ordering)
     }).list.apply())
   }
 
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = syntax.id)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.append(where).orderBy(syntax.id).limit(limit).offset(offset)
+      selectQueryWithAssociations.where.append(where).orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
   }
 

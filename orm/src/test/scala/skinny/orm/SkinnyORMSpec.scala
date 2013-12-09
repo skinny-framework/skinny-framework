@@ -146,6 +146,8 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)
+      val m = Member.defaultAlias
+      Member.findAll(ordering = sqls"${m.id}, ${m.createdAt} desc").size should be > (0)
     }
 
     it("should have #countAll()") { implicit session =>
@@ -157,6 +159,10 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Member.withAlias { m =>
         Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
         Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
+
+        val ordering = sqls"${m.id}, ${m.createdAt} desc"
+        Member.findAllBy(sqls.eq(m.countryId, countryId), ordering).size should be > (0)
+        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, ordering).size should equal(1)
       }
     }
 
@@ -222,6 +228,18 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
           }
         }
     }
+
+    it("should have querying APIs") { implicit session =>
+      val allMembers = Member.findAll()
+
+      val japan = Country.where('name -> "Japan").limit(1000).offset(0).apply().head
+      val expected = allMembers.filter(_.countryId == japan.id)
+
+      val m = Member.defaultAlias
+      val actual = Member.where(sqls.eq(m.countryId, japan.id)).limit(1000).offset(0).apply()
+      actual should equal(expected)
+    }
+
   }
 
   describe("Relationship") {
