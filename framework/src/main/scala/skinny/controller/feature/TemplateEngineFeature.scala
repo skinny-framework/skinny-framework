@@ -99,8 +99,7 @@ trait TemplateEngineFeature
         case Format.XML =>
           val entityXml = toXml(toJSON(entity)).toString
           s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
-        case Format.JSON =>
-          compact(parse(toJSONString(entity)).underscoreKeys)
+        case Format.JSON => toJSONString(entity)
         case _ => null
       }
     }

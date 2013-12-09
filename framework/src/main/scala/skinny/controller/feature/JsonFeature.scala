@@ -28,7 +28,10 @@ trait JSONFeature extends JacksonJsonSupport {
    * @param v value
    * @return json string
    */
-  def toJSONString(v: Any): String = compact(toJSON(v))
+  def toJSONString(v: Any, underscoreKeys: Boolean = true): String = {
+    if (underscoreKeys) compact(parse(compact(toJSON(v))).underscoreKeys)
+    else compact(toJSON(v))
+  }
 
   /**
    * Converts a value to prettified JSON string.
@@ -36,7 +39,10 @@ trait JSONFeature extends JacksonJsonSupport {
    * @param v value
    * @return json string
    */
-  def toPrettyJSONString(v: Any): String = pretty(toJSON(v))
+  def toPrettyJSONString(v: Any, underscoreKeys: Boolean = true): String = {
+    if (underscoreKeys) pretty(parse(compact(toJSON(v))).underscoreKeys)
+    else pretty(toJSON(v))
+  }
 
   /**
    * Extracts a value from JSON string.
@@ -45,7 +51,9 @@ trait JSONFeature extends JacksonJsonSupport {
    * @tparam A type
    * @return value
    */
-  def fromJSON[A](json: String)(implicit mf: Manifest[A]): Option[A] = parseOpt(StringInput(json)).map[A](_.extract[A])
+  def fromJSON[A](json: String)(implicit mf: Manifest[A]): Option[A] = {
+    parseOpt(StringInput(json)).map(v => v.camelizeKeys).map[A](_.extract[A])
+  }
 
   /**
    * Returns JSON response.
