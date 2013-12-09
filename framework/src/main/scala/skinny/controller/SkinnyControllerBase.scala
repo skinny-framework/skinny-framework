@@ -18,6 +18,7 @@ trait SkinnyControllerBase
     with SessionLocaleFeature
     with FlashFeature
     with ValidationFeature
+    with JSONFeature
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature
