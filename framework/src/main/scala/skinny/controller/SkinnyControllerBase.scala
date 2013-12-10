@@ -12,6 +12,7 @@ trait SkinnyControllerBase
     extends org.scalatra.ScalatraBase
     with EnvFeature
     with RichRouteFeature
+    with ExplicitRedirectFeature
     with RequestScopeFeature
     with ActionDefinitionFeature
     with BeforeAfterActionFeature
