@@ -53,8 +53,8 @@ trait ControllerGenerator extends CodeGenerator {
     val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
     val newCode =
       s"""object Controllers {
-        |  val ${toVariable(name)} = new ${controllerClassName} with Routes {
-        |    get("/${toVariable(name)}/?")(index).as('index)
+        |  object ${toVariable(name)} extends ${controllerClassName} with Routes {
+        |    val indexUrl = get("/${toVariable(name)}/?")(index).as('index)
         |  }
         |""".stripMargin
     val file = new File("src/main/scala/controller/Controllers.scala")

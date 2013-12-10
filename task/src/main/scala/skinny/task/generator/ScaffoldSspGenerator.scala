@@ -11,6 +11,7 @@ object ScaffoldSspGenerator extends ScaffoldSspGenerator
 trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     "<%@val s: skinny.Skinny %>\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
@@ -104,13 +105,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       s"""<div class="form-actions">
         |  $${unescape(s.csrfHiddenInputTag)}
         |  <input type="submit" class="btn btn-primary" value="$${s.i18n.get("submit")}">
-        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("cancel")}</a>
+        |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("cancel")}</a>
         |</div>
         |</form>
         |""".stripMargin
   }
 
   override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     s"""<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
@@ -120,12 +122,13 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<p class="alert alert-danger">$${e}</p>
         |#end
         |
-        |<form method="post" action="$${uri("/${resources}")}" class="form">
+        |<form method="post" action="$${url(${controllerClassName}.createUrl)}" class="form">
         | $${include("_form.html.ssp")}
         |""".stripMargin
   }
 
   override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     s"""<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
@@ -135,12 +138,13 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<p class="alert alert-danger">$${e}</p>
         |#end
         |
-        |<form method="post" action="$${uri("/${resources}/" + s.params.id.get)}" class="form">
+        |<form method="post" action="$${url(${controllerClassName}.updateUrl, "id" -> s.params.id.get.toString)}" class="form">
         | $${include("_form.html.ssp")}
         |""".stripMargin
   }
 
   override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
         |<%@val ${resources}: Seq[model.${modelClassName}] %>
@@ -162,21 +166,22 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <tr>
         |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString("\n")}
         |    <td>
-        |      <a href="$${uri("/${resources}/" + ${resource}.id)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
-        |      <a href="$${uri("/${resources}/" + ${resource}.id + "/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |      <a href="$${url(${controllerClassName}.showUrl, "id" -> ${resource}.id.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
+        |      <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |        href="$${uri("/${resources}/" + ${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |        href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
         |</tbody>
         |</table>
         |
-        |<a href="$${uri("/${resources}/new")}" class="btn btn-primary">$${s.i18n.get("new")}</a>
+        |<a href="$${url(${controllerClassName}.newUrl)}" class="btn btn-primary">$${s.i18n.get("new")}</a>
         |""".stripMargin
   }
 
   override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
@@ -203,10 +208,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<hr/>
         |<div class="form-actions">
-        |  <a class="btn btn-default" href="$${uri("/${resources}")}">$${s.i18n.get("backToList")}</a>
-        |  <a href="$${uri("/${resources}/" + ${resource}.id + "/edit")}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
+        |  <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${uri("/${resources}/" + ${resource}.id)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
   }

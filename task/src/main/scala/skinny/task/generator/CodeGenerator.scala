@@ -12,6 +12,8 @@ trait CodeGenerator {
 
   protected def toClassName(name: String) = name.head.toUpper + name.tail
 
+  protected def toControllerClassName(name: String) = toClassName(name) + "Controller"
+
   protected def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
 
   protected def toParamType(t: String): String = t.replaceFirst("Option\\[", "").replaceFirst("\\]", "").trim()

@@ -13,6 +13,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
   protected override def template: String = "scaml"
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     "-@val s: skinny.Skinny\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
@@ -72,11 +73,12 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
       s"""%div(class="form-actions")
         |  =unescape(s.csrfHiddenInputTag)
         |  %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
-        |    %a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("cancel")}
+        |    %a(class="btn btn-default" href={url(${controllerClassName}.indexUrl)}) #{s.i18n.get("cancel")}
         |""".stripMargin
   }
 
   override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
         |
         |%h3 #{s.i18n.get("${resource}.new")}
@@ -85,12 +87,13 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |-for (e <- s.errorMessages)
         |  %p(class="alert alert-danger") #{e}
         |
-        |%form(method="post" action={uri("/${resources}")} class="form")
+        |%form(method="post" action={url(${controllerClassName}.createUrl)} class="form")
         |  =include("_form.html.scaml")
         |""".stripMargin
   }
 
   override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
         |
         |%h3 #{s.i18n.get("${resource}.edit")}
@@ -99,12 +102,13 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |-for (e <- s.errorMessages)
         |  %p(class="alert alert-danger") #{e}
         |
-        |%form(method="post" action={uri("/${resources}/" + s.params.id.get)} class="form")
+        |%form(method="post" action={url(${controllerClassName}.updateUrl, "id" -> s.params.id.get.toString)} class="form")
         |  =include("_form.html.scaml")
         |""".stripMargin
   }
 
   override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     s"""-@val s: skinny.Skinny
         |-@val ${resources}: Seq[model.${modelClassName}]
@@ -124,15 +128,16 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |    %tr
         |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "      %td #{" + resource + "." + k + "}" }.mkString("\n")}
         |      %td
-        |        %a(href={uri("/${resources}/" + ${resource}.id)} class="btn btn-default") #{s.i18n.get("detail")}
-        |        %a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
-        |        %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        |        %a(href={url(${controllerClassName}.showUrl, "id" -> ${resource}.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
+        |        %a(href={url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+        |        %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |
-        |%a(href={uri("/${resources}/new")} class="btn btn-primary") #{s.i18n.get("new")}
+        |%a(href={url(${controllerClassName}.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
         |""".stripMargin
   }
 
   override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
 
     val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
@@ -155,9 +160,9 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |${attributesPart}
         |%hr
         |%div(class="form-actions")
-        |  %a(class="btn btn-default" href={uri("/${resources}")}) #{s.i18n.get("backToList")}
-        |  %a(href={uri("/${resources}/" + ${resource}.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
-        |  %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={uri("/${resources}/" + ${resource}.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        |  %a(class="btn btn-default" href={url(${controllerClassName}.indexUrl)}) #{s.i18n.get("backToList")}
+        |  %a(href={url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+        |  %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |""".stripMargin
   }
 
