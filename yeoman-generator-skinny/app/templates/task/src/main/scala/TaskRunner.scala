@@ -1,4 +1,4 @@
-object TaskLancher extends skinny.task.TaskLauncher {
+object TaskRunner extends skinny.task.TaskLauncher {
 
   register("assets:precompile", (params) => {
     val buildDir = params.headOption.getOrElse("build")

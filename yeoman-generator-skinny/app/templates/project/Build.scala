@@ -7,8 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.19"
-  val scalatraVersion = "2.2.2"
+  val skinnyVersion = "0.9.20-SNAPSHOT"
   val _scalaVersion = "2.10.3"
   val jettyVersion = "8.1.14.v20131031"
 
@@ -22,8 +21,7 @@ object SkinnyAppBuild extends Build {
     "org.skinny-framework" %% "skinny-task"        % skinnyVersion,
     "com.h2database"       %  "h2"                 % "1.3.174", // your JDBC driver
     "ch.qos.logback"       %  "logback-classic"    % "1.0.13",
-    "org.skinny-framework" %% "skinny-test"        % skinnyVersion         % "test",
-    "org.scalatra"         %% "scalatra-scalatest" % scalatraVersion       % "test"
+    "org.skinny-framework" %% "skinny-test"        % skinnyVersion         % "test"
   )
   val containerDependencies = Seq(
     "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion          % "container",
@@ -45,7 +43,7 @@ object SkinnyAppBuild extends Build {
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
       libraryDependencies ++= _dependencies,
-      mainClass := Some("TaskLauncher")
+      mainClass := Some("TaskRunner")
     )
   )
 
