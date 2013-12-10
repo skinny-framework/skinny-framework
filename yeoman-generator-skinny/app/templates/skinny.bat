@@ -100,7 +100,7 @@ IF %command%==publish (
 REM Didn't select command.
 :show_help
 ECHO.
-ECHO Usage: skinny [COMMAND] [OPTIONS]...
+ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
 ECHO   run        : will run application for local development
 ECHO   clean      : will clear target directory

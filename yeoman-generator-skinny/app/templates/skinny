@@ -18,7 +18,7 @@ function setup_build() {
   rm -rf build
   mkdir build
   cp -pr src build/src
-  cp -pr build.${sbt_path} build/build.sbt
+  cp -pr build.sbt build/build.sbt
 }
 
 command="$1"
@@ -65,7 +65,7 @@ elif [ "$command" == "publish" ];then
   ${sbt_path} "task/run assets:precompile" build/publish
 else
   echo ""
-  echo "Usage: ./skinny [COMMAND] [OPTIONS]..."
+  echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
   echo "  run        : will run application for local development"
   echo "  clean      : will clear target directory"

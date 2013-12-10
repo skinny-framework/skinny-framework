@@ -24,7 +24,9 @@ import skinny._
  *
  * And then, Skinny expects "src/main/webapp/WEB-INF/views/members/index.html.scaml"
  */
-trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSupport {
+trait ScalateTemplateEngineFeature extends TemplateEngineFeature
+    with ScalateSupport
+    with ScalateUrlGeneratorSupport {
 
   /**
    * Overrides to make the template path simpler.

@@ -357,16 +357,16 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
   // create
 
   // should be defined in front of 'show
-  get(s"${basePath}/new")(newResource).as('new)
+  val newUrl = get(s"${basePath}/new")(newResource).as('new)
 
-  post(s"${basePath}/?")(createResource).as('create)
+  val createUrl = post(s"${basePath}/?")(createResource).as('create)
 
   // --------------
   // show
 
-  get(s"${basePath}/?")(showResources()).as('index)
+  val indexUrl = get(s"${basePath}/?")(showResources()).as('index)
 
-  get(s"${basePath}.:ext") {
+  val indexExtUrl = get(s"${basePath}.:ext") {
     (for {
       ext <- params.get("ext")
     } yield {
@@ -378,7 +378,7 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
     }) getOrElse haltWithBody(404)
   }.as('index)
 
-  get(s"${basePath}/:id") {
+  val showUrl = get(s"${basePath}/:id") {
     if (params.getAs[String]("id").exists(_ == "new")) {
       newResource()
     } else {
@@ -386,7 +386,7 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
     }
   }.as('show)
 
-  get(s"${basePath}/:id.:ext") {
+  val showExtUrl = get(s"${basePath}/:id.:ext") {
     (for {
       id <- params.getAs[Long]("id")
       ext <- params.get("ext")
@@ -402,26 +402,26 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
   // --------------
   // update
 
-  get(s"${basePath}/:id/edit") {
+  val editUrl = get(s"${basePath}/:id/edit") {
     params.getAs[Long]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
   }.as('edit)
 
-  post(s"${basePath}/:id") {
+  val updatePostUrl = post(s"${basePath}/:id") {
     params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
-  put(s"${basePath}/:id") {
+  val updateUrl = put(s"${basePath}/:id") {
     params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
-  patch(s"${basePath}/:id") {
+  val updatePatchUrl = patch(s"${basePath}/:id") {
     params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
   // --------------
   // delete
 
-  delete(s"${basePath}/:id") {
+  val deleteUrl = delete(s"${basePath}/:id") {
     params.getAs[Long]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
   }.as('destroy)
 

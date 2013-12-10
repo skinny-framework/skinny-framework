@@ -9,7 +9,7 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
 
   object First extends SkinnyController with Routes {
     beforeAction() { set("x", "foo") }
-    before("/first/*") { set("y", "Y!") }
+    before() { set("y", "Y!") } // Scalatra's filter
     beforeAction() { set("z", "zzz") }
 
     def index = requestScope("x").orNull[String]
@@ -20,76 +20,61 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
   }
 
   object Second extends SkinnyController with Routes {
-    beforeAction(only = Seq('bar)) { set("x", "bar") }
+    beforeAction(only = Seq('filtered)) { set("x", "bar") }
 
     def index = requestScope("x").orNull[String]
-    def bar = requestScope("x").orNull[String]
+    def updatedByBeforeAction = requestScope("x").orNull[String]
 
     get("/second")(index).as('index)
-    get("/second/bar")(bar).as('bar)
     get("/second/y")(requestScope("y").orNull[String])
+    get("/second/filtered")(updatedByBeforeAction).as('filtered)
   }
 
   object Third extends SkinnyController with Routes {
-    beforeAction(only = Seq('buzz)) { set("x", "BUZZ") }
 
     def bar = requestScope("x").orNull[String]
     def buzz = requestScope("x").orNull[String]
 
     get("/third")(bar).as('bar)
-    get("/third/buzz")(buzz).as('buzz)
     get("/third/y")(requestScope("y").orNull[String])
   }
 
   addFilter(First, "/*")
-  addFilter(Second, "/*")
+  addFilter(Second, "/*") // filters in First shouldn't effect this controller
   addFilter(Third, "/*")
 
-  "GET /first" should "return 'foo'" in {
+  "beforeAction" should "work" in {
     get("/first") {
       body should equal("foo")
     }
-  }
-  "GET /first/y" should "return 'Y!'" in {
     get("/first/y") {
       body should equal("Y!")
     }
-  }
-  "GET /first/z" should "return 'zzz'" in {
     get("/first/z") {
       body should equal("zzz")
     }
   }
 
-  "GET /second" should "return empty" in {
+  "beforeAction with only" should "work" in {
+    // beforeAction in First should not effect this controller
     get("/second") {
       body should equal("")
     }
-  }
-  "GET /second/bar" should "return 'bar'" in {
-    get("/second/bar") {
+    get("/second/filtered") {
       body should equal("bar")
     }
-  }
-  "GET /second/y" should "return empty" in {
     get("/second/y") {
-      body should equal("")
+      body should equal("Y!")
     }
   }
 
-  "GET /third" should "return empty" in {
+  "beforeAction" should "be controller-local" in {
+    // beforeAction in First should not effect this controller
     get("/third") {
       body should equal("")
     }
-  }
-  "GET /third/buzz" should "return 'BUZZ'" in {
-    get("/third/buzz") {
-      body should equal("BUZZ")
-    }
-  }
-  "GET /third/y" should "return empty" in {
     get("/third/y") {
-      body should equal("")
+      body should equal("Y!")
     }
   }
 

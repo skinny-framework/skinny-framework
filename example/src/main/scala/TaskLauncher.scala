@@ -1,2 +1,2 @@
-object TaskLancher extends skinny.task.TaskLauncher
+object TaskLauncher extends skinny.task.TaskLauncher
 

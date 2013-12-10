@@ -4,7 +4,7 @@ import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
-import org.scalatra.HttpMethod
+import org.scalatra.{ UrlGeneratorSupport, HttpMethod }
 import skinny.{ I18n, Format }
 import java.util.Locale
 
@@ -12,12 +12,15 @@ trait SkinnyControllerBase
     extends org.scalatra.ScalatraBase
     with EnvFeature
     with RichRouteFeature
+    with UrlGeneratorSupport
+    with ExplicitRedirectFeature
     with RequestScopeFeature
     with ActionDefinitionFeature
     with BeforeAfterActionFeature
     with SessionLocaleFeature
     with FlashFeature
     with ValidationFeature
+    with JSONFeature
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature

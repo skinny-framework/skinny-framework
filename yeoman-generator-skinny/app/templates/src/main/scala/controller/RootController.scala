@@ -1,6 +1,8 @@
 package controller
 
-class RootController extends ApplicationController {
+import skinny._
+
+class RootController extends SkinnyController {
 
   def index = render("/root/index")
 

@@ -1,7 +1,6 @@
 package skinny.controller.feature
 
 import org.scalatra._
-import org.scalatra.json._
 import org.json4s._
 
 import skinny.Format
@@ -16,13 +15,8 @@ import grizzled.slf4j.Logging
 trait TemplateEngineFeature
     extends ScalatraBase
     with RequestScopeFeature
-    with JacksonJsonSupport
+    with JSONFeature
     with Logging {
-
-  /**
-   * JSON format support implicitly.
-   */
-  protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
 
   /**
    * Default charset.
@@ -103,11 +97,9 @@ trait TemplateEngineFeature
     Option {
       format match {
         case Format.XML =>
-          val entityXml = toXml(Extraction.decompose(entity)).toString
+          val entityXml = toXml(toJSON(entity)).toString
           s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
-        case Format.JSON =>
-          val jsonString = compact(render(Extraction.decompose(entity)))
-          compact(render(parse(jsonString).underscoreKeys))
+        case Format.JSON => toJSONString(entity)
         case _ => null
       }
     }
