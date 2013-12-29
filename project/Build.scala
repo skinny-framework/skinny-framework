@@ -10,103 +10,74 @@ object SkinnyFrameworkBuild extends Build {
   val Organization = "org.skinny-framework"
   val Version = "0.9.20"
   val ScalatraVersion = "2.2.2"
-  val Json4SVersion = "3.2.5"
-  val ScalikeJDBCVersion = "1.7.1"
+  val Json4SVersion = "3.2.6"
+  val ScalikeJDBCVersion = "1.7.2"
   val ScalateVeresion = "1.6.1"
   val H2Version = "1.3.174"
   val JettyVersion = "8.1.14.v20131031"
 
+  lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+    organization := Organization,
+    version := Version,
+    resolvers ++= Seq(
+      "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
+      "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+    ),
+    publishTo <<= version { (v: String) => _publishTo(v) },
+    publishMavenStyle := true,
+    sbtPlugin := false,
+    scalacOptions ++= _scalacOptions,
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { x => false },
+    pomExtra := _pomExtra
+  )
+
   lazy val common = Project (id = "common", base = file("common"),
-   settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+   settings = baseSettings ++ Seq(
       name := "skinny-common",
-      version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
         "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ jodaDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
   lazy val framework = Project (id = "framework", base = file("framework"),
-   settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+   settings = baseSettings ++ Seq(
       name := "skinny-framework",
-      version := Version,
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-io"    %  "commons-io" % "2.4"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(common, validator, orm)
 
   lazy val assets = Project (id = "assets", base = file("assets"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-assets",
-      version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "ro.isdc.wro4j" %  "rhino"      % "1.7R5-20130223-1",
         "commons-io"    %  "commons-io" % "2.4"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     )
   ) dependsOn(framework)
 
   lazy val task = Project (id = "task", base = file("task"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-task",
-      version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-io"             %  "commons-io" % "2.4",
         "org.fusesource.scalamd" %% "scalamd"    % "1.6"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     )
   ) dependsOn(assets, orm)
 
   lazy val orm = Project (id = "orm", base = file("orm"), 
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-orm",
-      version := Version,
       scalaVersion := "2.10.0",
       resolvers ++= Seq(
         "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
@@ -114,130 +85,64 @@ object SkinnyFrameworkBuild extends Build {
         Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.googlecode.flyway" %  "flyway-core"       % "2.2.1"        % "compile",
+        "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
         "javax.servlet"         %  "javax.servlet-api" % "3.0.1"        % "provided",
-        "org.hibernate"         %  "hibernate-core"    % "4.1.12.Final" % "test",
+        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
         "com.h2database"        %  "h2"                % H2Version      % "test",
         "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
         "ar.com.gonto"          %% "factory_pal"       % "0.2.1"        % "test"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     )
   ) dependsOn(common)
 
   lazy val freemarker = Project (id = "freemarker", base = file("freemarker"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-freemarker",
-      version := Version,
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-beanutils" %  "commons-beanutils"  % "1.8.3"   % "compile",
+        "commons-beanutils" %  "commons-beanutils"  % "1.9.0"   % "compile",
         "org.freemarker"    %  "freemarker"         % "2.3.20"  % "compile"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
   lazy val thymeleaf = Project (id = "thymeleaf", base = file("thymeleaf"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
-      version := Version,
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"             %  "thymeleaf" % "2.1.1.RELEASE" % "compile",
         "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.19"        % "compile"
-      ) ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
   lazy val validator = Project (id = "validator", base = file("validator"),
-    settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ Seq(
       name := "skinny-validator",
-      version := Version,
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
         "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ jodaDependencies ++ testDependencies
     )
   ) dependsOn(common)
 
   lazy val test = Project (id = "test", base = file("test"),
-   settings = Defaults.defaultSettings ++ Seq(
-      organization := Organization,
+   settings = baseSettings ++ Seq(
       name := "skinny-test",
-      version := Version,
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
       libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
         "org.scalikejdbc" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % ScalatraVersion    % "compile",
         "org.scalatra"    %% "scalatra-scalatest" % ScalatraVersion    % "compile"
-      ),
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      )
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
   lazy val example = Project (id = "example", base = file("example"),
-    settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
-      organization := Organization,
+    settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
-      version := "0.0.0",
       scalaVersion := "2.10.3",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-      ),
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
