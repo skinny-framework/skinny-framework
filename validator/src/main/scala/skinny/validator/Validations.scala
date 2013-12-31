@@ -12,25 +12,16 @@ object Validations {
    * @param states validation states
    * @return validations
    */
-  def apply(params: Map[String, Any], states: Seq[ValidationState]): Validations = {
-    val mutableMap = collection.mutable.Map(params.toSeq: _*)
-    val processedStates = states.map {
+  def apply(params: Map[String, Any], states: Seq[ValidationState]): Validations = new ValidationsImpl(
+    paramsMap = params,
+    states = states.map {
       case NewValidation(k: OnlyKeyParamDefinition, validations) =>
-        if (!mutableMap.contains(k.key)) {
-          mutableMap.update(k.key, extractValue(params.get(k.key)))
-        }
         validations.apply(KeyValueParamDefinition(k.key, extractValue(params.get(k.key))))
-
       case NewValidation(kv: KeyValueParamDefinition, validations) =>
-        if (!mutableMap.contains(kv.key)) {
-          mutableMap.update(kv.key, kv.value)
-        }
         validations.apply(KeyValueParamDefinition(kv.key, extractValue(kv.value)))
-
       case done => done
     }
-    new ValidationsImpl(params, processedStates)
-  }
+  )
 
   private[this] def extractValue(value: Any): Any = value match {
     case Some(v) => v
@@ -80,14 +71,18 @@ trait Validations {
    *
    * @return successes
    */
-  def filterSuccessesOnly(): Seq[ValidationSuccess] = states.filter(r => r.isInstanceOf[ValidationSuccess]).map(r => r.asInstanceOf[ValidationSuccess])
+  def filterSuccessesOnly(): Seq[ValidationSuccess] = {
+    states.filter(_.isInstanceOf[ValidationSuccess]).map(_.asInstanceOf[ValidationSuccess])
+  }
 
   /**
    * Filters failures only.
    *
    * @return failures
    */
-  def filterFailuresOnly(): Seq[ValidationFailure] = states.filter(r => r.isInstanceOf[ValidationFailure]).map(r => r.asInstanceOf[ValidationFailure])
+  def filterFailuresOnly(): Seq[ValidationFailure] = {
+    states.filter(_.isInstanceOf[ValidationFailure]).map(_.asInstanceOf[ValidationFailure])
+  }
 
   /**
    * Filters errors only.

@@ -61,8 +61,8 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
   protected def isEmpty(v: Any): Boolean = v == null || v == ""
 
   protected def toHasSize(v: Any): Option[{ def size(): Int }] = {
+    val x = v.asInstanceOf[{ def size(): Int }]
     try {
-      val x = v.asInstanceOf[{ def size(): Int }]
       x.size
       Option(x)
     } catch { case e: NoSuchMethodException => None }
@@ -73,8 +73,8 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
       Option(v.asInstanceOf[{ def toDate(): java.util.Date }].toDate)
     } catch {
       case e: NoSuchMethodException =>
+        val x = v.asInstanceOf[{ def getTime(): Long }]
         try {
-          val x = v.asInstanceOf[{ def getTime(): Long }]
           x.getTime
           Option(x)
         } catch { case e: NoSuchMethodException => None }
