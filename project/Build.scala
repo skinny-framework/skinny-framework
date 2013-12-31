@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "org.skinny-framework"
-  val Version = "0.9.20"
+  val Version = "0.9.21-SNAPSHOT"
   val ScalatraVersion = "2.2.2"
   val Json4SVersion = "3.2.6"
   val ScalikeJDBCVersion = "1.7.2"
@@ -111,7 +111,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"             %  "thymeleaf" % "2.1.1.RELEASE" % "compile",
+        "org.thymeleaf"             %  "thymeleaf" % "2.1.2.RELEASE" % "compile",
         "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.19"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -147,7 +147,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
         "com.h2database"     %  "h2"                 % H2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.0.13",
+        "ch.qos.logback"     % "logback-classic"     % "1.0.13"              % "runtime",
         "org.eclipse.jetty"  % "jetty-webapp"        % JettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % JettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
@@ -221,6 +221,5 @@ object SkinnyFrameworkBuild extends Build {
       <exclude org="org.eclipse.jetty.orbit" />
     </dependencies>
   )
-
 
 }
