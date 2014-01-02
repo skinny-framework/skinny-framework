@@ -93,7 +93,10 @@ class AssetsController extends SkinnyController {
       jsFromClassPath(path) orElse
         compiledJsFromClassPath(path) orElse
         jsFromFile(path) orElse
-        compiledJsFromFile(path) getOrElse pass()
+        compiledJsFromFile(path) map { js =>
+          contentType = "application/javascript"
+          js
+        } getOrElse pass()
     }.getOrElse { pass() }
   } else {
     pass()
@@ -135,7 +138,10 @@ class AssetsController extends SkinnyController {
       cssFromClassPath(path) orElse
         compiledCssFromClassPath(path) orElse
         cssFromFile(path) orElse
-        compiledCssFromFile(path) getOrElse pass()
+        compiledCssFromFile(path) map { css =>
+          contentType = "text/stylesheet"
+          css
+        } getOrElse pass()
     }.getOrElse { pass() }
   } else {
     pass()
