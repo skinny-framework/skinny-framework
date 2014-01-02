@@ -11,7 +11,8 @@ import scala.collection.JavaConverters._
  */
 object Messages {
 
-  // TODO cache
+  private[this] val loadedFromConfig = new scala.collection.concurrent.TrieMap[(String, Option[Locale]), Messages]()
+  private[this] val loadedFromProperties = new scala.collection.concurrent.TrieMap[(String, Option[Locale]), Messages]()
 
   /**
    * Loads from *.conf file.
@@ -21,11 +22,13 @@ object Messages {
    * @return messages
    */
   def loadFromConfig(prefix: String = "messages", locale: Option[Locale] = None): Messages = {
-    val ext = ".conf"
-    val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
-    val config = ConfigFactory.load(this.getClass.getClassLoader, file)
-    val map: Map[String, String] = config.getConfig("error").root().unwrapped().asScala.map { case (k, v) => k -> v.toString }.toMap
-    new Messages(map)
+    loadedFromConfig.getOrElseUpdate((prefix, locale), {
+      val ext = ".conf"
+      val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
+      val config = ConfigFactory.load(this.getClass.getClassLoader, file)
+      val map: Map[String, String] = config.getConfig("error").root().unwrapped().asScala.map { case (k, v) => k -> v.toString }.toMap
+      new Messages(map)
+    })
   }
 
   /**
@@ -36,17 +39,19 @@ object Messages {
    * @return messages
    */
   def loadFromProperties(prefix: String = "messages", locale: Option[Locale] = None) = {
-    val ext = ".properties"
-    val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
-    val properties = new Properties
-    properties.load(this.getClass.getClassLoader.getResourceAsStream(file))
-    val map: Map[String, String] = new java.util.HashMap[Any, Any](properties).asScala.filter {
-      case (k: String, _) => k.startsWith("error.")
-      case _ => false
-    }.map {
-      case (k, v) => (k.toString.replaceFirst("^error.", "") -> v.toString)
-    }.toMap
-    new Messages(map)
+    loadedFromProperties.getOrElseUpdate((prefix, locale), {
+      val ext = ".properties"
+      val file = locale.map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
+      val properties = new Properties
+      properties.load(this.getClass.getClassLoader.getResourceAsStream(file))
+      val map: Map[String, String] = new java.util.HashMap[Any, Any](properties).asScala.filter {
+        case (k: String, _) => k.startsWith("error.")
+        case _ => false
+      }.map {
+        case (k, v) => (k.toString.replaceFirst("^error.", "") -> v.toString)
+      }.toMap
+      new Messages(map)
+    })
   }
 }
 
