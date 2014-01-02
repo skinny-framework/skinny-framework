@@ -9,7 +9,7 @@ object SkinnyAppBuild extends Build {
 
   val skinnyVersion = "0.9.21-SNAPSHOT"
   val _scalaVersion = "2.10.3"
-  val jettyVersion = "8.1.14.v20131031"
+  val jettyVersion = "9.1.0.v20131115"
 
   val _resolovers = Seq(
     "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",

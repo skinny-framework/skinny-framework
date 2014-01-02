@@ -14,7 +14,7 @@ object SkinnyFrameworkBuild extends Build {
   val ScalikeJDBCVersion = "1.7.2"
   val ScalateVeresion = "1.6.1"
   val H2Version = "1.3.174"
-  val JettyVersion = "8.1.14.v20131031"
+  val JettyVersion = "9.1.0.v20131115"
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
     organization := Organization,
@@ -184,8 +184,7 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "org.mockito"   %  "mockito-all" % "1.9.5" % "test"
+    "org.scalatest" %% "scalatest"   % "1.9.1" % "test" // java.lang.IncompatibleClassChangeError since 1.9.2
   )
 
   def _publishTo(v: String) = {
