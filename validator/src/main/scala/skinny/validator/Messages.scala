@@ -11,6 +11,8 @@ import scala.collection.JavaConverters._
  */
 object Messages {
 
+  // TODO cache
+
   /**
    * Loads from *.conf file.
    *
@@ -71,8 +73,20 @@ class Messages(map: Map[String, String]) {
    * @return message
    */
   def get(key: String, params: Seq[Any]): Option[String] = {
+    /*
+     * params can be a String value
+     *
+     * scala> val s: Seq[Any] = "abc"
+     * s: Seq[Any] = abc
+     * scala> s.isInstanceOf[String]
+     * <console>:9: warning: fruitless type test: a value of type Seq[Any] cannot also be a String
+     *         s.isInstanceOf[String]
+     *                       ^
+     */
+    val _params = if (params.toString == params.mkString) Seq(params) else params
+
     get(key).map(template =>
-      MessageFormat.format(template, params.map(_.asInstanceOf[Object]): _*))
+      MessageFormat.format(template, _params.map(_.asInstanceOf[Object]): _*))
   }
 
 }

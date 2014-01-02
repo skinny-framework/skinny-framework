@@ -94,4 +94,13 @@ class UsageSpec extends FunSpec with ShouldMatchers {
     }
   }
 
+  describe("Messages") {
+    it("is available") {
+      val messages = Messages.loadFromConfig()
+      messages.get("required", Seq("name")) should equal(Some("name is required"))
+      messages.get("required", "name") should equal(Some("name is required")) // String is also a Seq
+      messages.get("minLength", Seq("password", 6)) should equal(Some("password length must be greater than or equal to 6"))
+    }
+  }
+
 }
