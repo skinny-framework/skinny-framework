@@ -34,7 +34,9 @@ object SkinnyAppBuild extends Build {
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
       libraryDependencies ++= _dependencies ++ containerDependencies,
-      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
+      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
+      // Scalatra tests become slower when multiple controller tests are loaded in the same time
+      parallelExecution in Test := false
     )
   )
 

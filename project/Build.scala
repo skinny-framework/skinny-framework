@@ -154,6 +154,8 @@ object SkinnyFrameworkBuild extends Build {
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       ),
       mainClass := Some("TaskLauncher"),
+      // Scalatra tests become slower when multiple controller tests are loaded in the same time
+      parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     )
   ) dependsOn(framework, assets, thymeleaf, test, task)
