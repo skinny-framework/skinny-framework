@@ -1,0 +1,27 @@
+-@val s: skinny.Skinny
+-@val snakeCaseKeyExamples: Seq[model.SnakeCaseKeyExample]
+
+h3 #{s.i18n.get("snakeCaseKeyExample.list")}
+hr
+-for (notice <- s.flash.notice)
+  p(class="alert alert-info") #{notice}
+
+table(class="table table-bordered")
+  thead
+    tr
+      th #{s.i18n.get("snakeCaseKeyExample.id")}
+      th #{s.i18n.get("snakeCaseKeyExample.firstName")}
+      th #{s.i18n.get("snakeCaseKeyExample.luckeyNumber")}
+      th
+  tbody
+  -for (e <- snakeCaseKeyExamples)
+    tr
+      td #{e.id}
+      td #{e.firstName}
+      td #{e.luckeyNumber}
+      td
+        a(href={url(SnakeCaseKeyExamplesController.showUrl, "id" -> e.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
+        a(href={url(SnakeCaseKeyExamplesController.editUrl, "id" -> e.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+        a(data-method="delete" data-confirm={s.i18n.get("snakeCaseKeyExample.delete.confirm")} href={url(SnakeCaseKeyExamplesController.deleteUrl, "id" -> e.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+
+a(href={url(SnakeCaseKeyExamplesController.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}

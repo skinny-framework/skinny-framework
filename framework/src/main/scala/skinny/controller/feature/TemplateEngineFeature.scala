@@ -8,6 +8,7 @@ import skinny.exception.ViewTemplateNotFoundException
 
 import scala.xml._
 import grizzled.slf4j.Logging
+import skinny.controller.SkinnyControllerBase
 
 /**
  * TemplateEngine support for Skinny app.

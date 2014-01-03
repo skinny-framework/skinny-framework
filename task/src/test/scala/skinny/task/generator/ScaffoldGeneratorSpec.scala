@@ -164,7 +164,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |    withSession("csrf-token" -> "12345") {
           |      put(s"/members/${member.id}", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
-          |        status should equal(200)
+          |        status should equal(302)
           |      }
           |    }
           |  }

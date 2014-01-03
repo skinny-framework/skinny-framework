@@ -4,24 +4,24 @@ import skinny._
 
 object Controllers {
 
-  val root = new RootController with Routes {
-    get("/?")(index).as('index)
-    get("/session/renew")(renewSessionAttributes).as('sessionRenew)
+  object root extends RootController with Routes {
+    val indexUrl = get("/?")(index).as('index)
+    val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
   }
 
-  val programmers = new ProgrammersController with Routes {
-    post("/programmers/:programmerId/company/:companyId")(joinCompany).as('joinCompany)
-    delete("/programmers/:programmerId/company")(leaveCompany).as('leaveCompany)
-    post("/programmers/:programmerId/skills/:skillId")(addSkill).as('addSkill)
-    delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as('deleteSkill)
+  object programmers extends ProgrammersController with Routes {
+    val joinCompanyUrl = post("/programmers/:programmerId/company/:companyId")(joinCompany).as('joinCompany)
+    val leaveCompanyUrl = delete("/programmers/:programmerId/company")(leaveCompany).as('leaveCompany)
+    val addSkillUrl = post("/programmers/:programmerId/skills/:skillId")(addSkill).as('addSkill)
+    val deleteSkillUrl = delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as('deleteSkill)
   }
 
-  val mustache = new MustacheController with Routes {
-    get("/mustache/?")(index).as('index)
+  object mustache extends MustacheController with Routes {
+    val indexUrl = get("/mustache/?")(index).as('index)
   }
 
-  val thymeleaf = new ThymeleafController with Routes {
-    get("/thymeleaf/?")(index).as('index)
+  object thymeleaf extends ThymeleafController with Routes {
+    val indexUrl = get("/thymeleaf/?")(index).as('index)
   }
 
 }

@@ -7,6 +7,7 @@ import org.scalatra.ScalatraBase
 import skinny.I18n
 import java.util.Locale
 import skinny.controller.Params
+import skinny.util.StringUtil.toCamelCase
 
 /**
  * Validation support for Skinny app.
@@ -90,7 +91,7 @@ trait ValidationFeature {
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(withPrefix(key)).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
         })
@@ -100,12 +101,11 @@ trait ValidationFeature {
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(withPrefix(key)).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
         }.toMap)
-      }.apply
-    ()
+      }.apply()
 
     validator
   }
