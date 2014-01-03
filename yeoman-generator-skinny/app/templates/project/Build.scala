@@ -7,13 +7,13 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.21-SNAPSHOT"
+  val skinnyVersion = "0.9.21"
   val _scalaVersion = "2.10.3"
   val jettyVersion = "9.1.0.v20131115"
 
   val _resolovers = Seq(
-    "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-    "sonatype snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
+    "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+    //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
   )
   val _dependencies = Seq(
     "org.skinny-framework" %% "skinny-framework"   % skinnyVersion,
