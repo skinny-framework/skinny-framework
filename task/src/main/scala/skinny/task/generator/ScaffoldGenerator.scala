@@ -4,6 +4,7 @@ import java.io.File
 import scala.io.Source
 import org.joda.time._
 import org.apache.commons.io.FileUtils
+import skinny.util.StringUtil
 
 /**
  * Skinny Generator Task.
@@ -52,13 +53,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     "Option[LocalTime]"
   )
 
-  private[this] def toSnakeCase(resources: String): String = {
-    resources.map(c => if (c.isUpper) "_" + c.toLower else c)
-      .mkString
-      .replaceFirst("^_", "")
-      .replaceFirst("_$", "")
-      .replaceFirst("__", "_")
-  }
+  private[this] def toSnakeCase(resources: String): String = StringUtil.toSnakeCase(resources)
 
   private[this] def toDBType(t: String): String = {
     toParamType(t) match {
@@ -294,7 +289,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |    withSession("csrf-token" -> "12345") {
         |      put(s"/${resources}/$${${resource}.id}", ${params}, "csrf-token" -> "12345") {
-        |        status should equal(200)
+        |        status should equal(302)
         |      }
         |    }
         |  }

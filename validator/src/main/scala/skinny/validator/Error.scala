@@ -21,3 +21,11 @@ trait Error {
 
 }
 
+/**
+ * Factory
+ */
+object Error {
+  def apply(name: String, messageParams: Seq[Any]): Error = new SimpleError(
+    name, messageParams
+  )
+}

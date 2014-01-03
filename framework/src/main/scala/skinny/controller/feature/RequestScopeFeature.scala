@@ -2,7 +2,7 @@ package skinny.controller.feature
 
 import java.lang.reflect.Modifier
 import org.scalatra.ScalatraBase
-import skinny.controller.Params
+import skinny.controller.{ SkinnyControllerBase, Params }
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
@@ -38,7 +38,7 @@ object RequestScopeFeature {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
+trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with SessionLocaleFeature {
 
   import RequestScopeFeature._
 
@@ -135,43 +135,98 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    * @param model model instance
    */
   def setAsParams(model: Any): Unit = {
-    getterNames(model).foreach { getterName =>
+    import skinny.util.StringUtil.toSnakeCase
+
+    getterNamesFromEntity(model).foreach { getterName =>
       val value = model.getClass.getDeclaredMethod(getterName).invoke(model)
-      addParam(getterName, value)
+      if (useSnakeCaseKeys) {
+        addParam(toSnakeCase(getterName), value)
+      } else {
+        addParam(getterName, value)
+      }
+
       value match {
         case opt: Option[_] => opt foreach {
           case dt: DateTime =>
+            if (useSnakeCaseKeys) {
+              addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
+              addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
+              addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
+              addParam(toSnakeCase(s"${getterName}Hour"), dt.getHourOfDay)
+              addParam(toSnakeCase(s"${getterName}Minute"), dt.getMinuteOfHour)
+              addParam(toSnakeCase(s"${getterName}Second"), dt.getSecondOfMinute)
+            } else {
+              addParam(s"${getterName}Year", dt.getYearOfEra)
+              addParam(s"${getterName}Month", dt.getMonthOfYear)
+              addParam(s"${getterName}Day", dt.getDayOfMonth)
+              addParam(s"${getterName}Hour", dt.getHourOfDay)
+              addParam(s"${getterName}Minute", dt.getMinuteOfHour)
+              addParam(s"${getterName}Second", dt.getSecondOfMinute)
+            }
+
+          case ld: LocalDate =>
+            if (useSnakeCaseKeys) {
+              addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
+              addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
+              addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
+            } else {
+              addParam(s"${getterName}Year", ld.getYearOfEra)
+              addParam(s"${getterName}Month", ld.getMonthOfYear)
+              addParam(s"${getterName}Day", ld.getDayOfMonth)
+            }
+
+          case lt: LocalTime =>
+            if (useSnakeCaseKeys) {
+              addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
+              addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
+              addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
+            } else {
+              addParam(s"${getterName}Hour", lt.getHourOfDay)
+              addParam(s"${getterName}Minute", lt.getMinuteOfHour)
+              addParam(s"${getterName}Second", lt.getSecondOfMinute)
+            }
+
+          case value =>
+        }
+        case dt: DateTime =>
+          if (useSnakeCaseKeys) {
+            addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
+            addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
+            addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
+            addParam(toSnakeCase(s"${getterName}Hour"), dt.getHourOfDay)
+            addParam(toSnakeCase(s"${getterName}Minute"), dt.getMinuteOfHour)
+            addParam(toSnakeCase(s"${getterName}Second"), dt.getSecondOfMinute)
+          } else {
             addParam(s"${getterName}Year", dt.getYearOfEra)
             addParam(s"${getterName}Month", dt.getMonthOfYear)
             addParam(s"${getterName}Day", dt.getDayOfMonth)
             addParam(s"${getterName}Hour", dt.getHourOfDay)
             addParam(s"${getterName}Minute", dt.getMinuteOfHour)
             addParam(s"${getterName}Second", dt.getSecondOfMinute)
-          case ld: LocalDate =>
+          }
+
+        case ld: LocalDate =>
+          if (useSnakeCaseKeys) {
+            addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
+            addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
+            addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
+          } else {
             addParam(s"${getterName}Year", ld.getYearOfEra)
             addParam(s"${getterName}Month", ld.getMonthOfYear)
             addParam(s"${getterName}Day", ld.getDayOfMonth)
-          case lt: LocalTime =>
+          }
+
+        case lt: LocalTime =>
+          if (useSnakeCaseKeys) {
+            addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
+            addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
+            addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
+          } else {
             addParam(s"${getterName}Hour", lt.getHourOfDay)
             addParam(s"${getterName}Minute", lt.getMinuteOfHour)
             addParam(s"${getterName}Second", lt.getSecondOfMinute)
-          case value =>
-        }
-        case dt: DateTime =>
-          addParam(s"${getterName}Year", dt.getYearOfEra)
-          addParam(s"${getterName}Month", dt.getMonthOfYear)
-          addParam(s"${getterName}Day", dt.getDayOfMonth)
-          addParam(s"${getterName}Hour", dt.getHourOfDay)
-          addParam(s"${getterName}Minute", dt.getMinuteOfHour)
-          addParam(s"${getterName}Second", dt.getSecondOfMinute)
-        case ld: LocalDate =>
-          addParam(s"${getterName}Year", ld.getYearOfEra)
-          addParam(s"${getterName}Month", ld.getMonthOfYear)
-          addParam(s"${getterName}Day", ld.getDayOfMonth)
-        case lt: LocalTime =>
-          addParam(s"${getterName}Hour", lt.getHourOfDay)
-          addParam(s"${getterName}Minute", lt.getMinuteOfHour)
-          addParam(s"${getterName}Second", lt.getSecondOfMinute)
+          }
+
         case value =>
       }
     }
@@ -183,7 +238,7 @@ trait RequestScopeFeature extends ScalatraBase with SessionLocaleFeature {
    * @param obj object
    * @return getter names
    */
-  private[this] def getterNames(obj: Any): Seq[String] = {
+  private def getterNamesFromEntity(obj: Any): Seq[String] = {
     val fieldNames = obj.getClass.getDeclaredFields
       .filter(f => Modifier.isPrivate(f.getModifiers))
       .filterNot(f => Modifier.isStatic(f.getModifiers))

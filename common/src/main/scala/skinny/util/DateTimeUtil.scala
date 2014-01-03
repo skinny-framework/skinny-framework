@@ -23,7 +23,7 @@ object DateTimeUtil {
     (if (minutes >= 0) "+" else "-") + "%02d:%02d".format((math.abs(minutes) / 60), (math.abs(minutes) % 60))
   }
 
-  private case class ZeroPaddingString(s:String) {
+  private case class ZeroPaddingString(s: String) {
     def to04d: String = {
       try "%04d".format(s.toInt)
       catch { case e: NumberFormatException => s }
@@ -86,12 +86,12 @@ object DateTimeUtil {
       (params.get(year).filterNot(_.toString.isEmpty) orElse
         params.get(month).filterNot(_.toString.isEmpty) orElse
         params.get(day).filterNot(_.toString.isEmpty)).map { _ =>
-        "%04d-%02d-%02d".format(
-          params.get(year).map(_.toString.toInt).orNull,
-          params.get(month).map(_.toString.toInt).orNull,
-          params.get(day).map(_.toString.toInt).orNull
-        )
-      }
+          "%04d-%02d-%02d".format(
+            params.get(year).map(_.toString.toInt).orNull,
+            params.get(month).map(_.toString.toInt).orNull,
+            params.get(day).map(_.toString.toInt).orNull
+          )
+        }
     } catch { case e: NumberFormatException => None }
   }
 
@@ -104,12 +104,12 @@ object DateTimeUtil {
     (params.get(year).filterNot(_.toString.isEmpty) orElse
       params.get(month).filterNot(_.toString.isEmpty) orElse
       params.get(day).filterNot(_.toString.isEmpty)).map { t =>
-      "%s-%s-%s".format(
-        params.get(year).map(_.toString.to04d).orNull,
-        params.get(month).map(_.toString.to02d).orNull,
-        params.get(day).map(_.toString.to02d).orNull
-      )
-    }
+        "%s-%s-%s".format(
+          params.get(year).map(_.toString.to04d).orNull,
+          params.get(month).map(_.toString.to02d).orNull,
+          params.get(day).map(_.toString.to02d).orNull
+        )
+      }
   }
 
   def toTimeString(
@@ -122,12 +122,12 @@ object DateTimeUtil {
       (params.get(hour).filterNot(_.toString.isEmpty) orElse
         params.get(minute).filterNot(_.toString.isEmpty) orElse
         params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-        "1970-01-01 %02d:%02d:%02d".format(
-          params.get(hour).map(_.toString.toInt).orNull,
-          params.get(minute).map(_.toString.toInt).orNull,
-          params.get(second).map(_.toString.toInt).orNull
-        )
-      }
+          "1970-01-01 %02d:%02d:%02d".format(
+            params.get(hour).map(_.toString.toInt).orNull,
+            params.get(minute).map(_.toString.toInt).orNull,
+            params.get(second).map(_.toString.toInt).orNull
+          )
+        }
     } catch { case e: NumberFormatException => None }
   }
 
@@ -140,12 +140,12 @@ object DateTimeUtil {
     (params.get(hour).filterNot(_.toString.isEmpty) orElse
       params.get(minute).filterNot(_.toString.isEmpty) orElse
       params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-      "1970-01-01 %s:%s:%s".format(
-        params.get(hour).map(_.toString.to02d).orNull,
-        params.get(minute).map(_.toString.to02d).orNull,
-        params.get(second).map(_.toString.to02d).orNull
-      )
-    }
+        "1970-01-01 %s:%s:%s".format(
+          params.get(hour).map(_.toString.to02d).orNull,
+          params.get(minute).map(_.toString.to02d).orNull,
+          params.get(second).map(_.toString.to02d).orNull
+        )
+      }
   }
 
   def toDateTimeString(
@@ -164,15 +164,15 @@ object DateTimeUtil {
         params.get(hour).filterNot(_.toString.isEmpty) orElse
         params.get(minute).filterNot(_.toString.isEmpty) orElse
         params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-        "%04d-%02d-%02d %02d:%02d:%02d".format(
-          params.get(year).map(_.toString.toInt).orNull,
-          params.get(month).map(_.toString.toInt).orNull,
-          params.get(day).map(_.toString.toInt).orNull,
-          params.get(hour).map(_.toString.toInt).orNull,
-          params.get(minute).map(_.toString.toInt).orNull,
-          params.get(second).map(_.toString.toInt).orNull
-        )
-      }
+          "%04d-%02d-%02d %02d:%02d:%02d".format(
+            params.get(year).map(_.toString.toInt).orNull,
+            params.get(month).map(_.toString.toInt).orNull,
+            params.get(day).map(_.toString.toInt).orNull,
+            params.get(hour).map(_.toString.toInt).orNull,
+            params.get(minute).map(_.toString.toInt).orNull,
+            params.get(second).map(_.toString.toInt).orNull
+          )
+        }
     } catch { case e: NumberFormatException => None }
   }
 
@@ -191,15 +191,15 @@ object DateTimeUtil {
       params.get(hour).filterNot(_.toString.isEmpty) orElse
       params.get(minute).filterNot(_.toString.isEmpty) orElse
       params.get(second).filterNot(_.toString.isEmpty)).map { _ =>
-      "%s-%s-%s %s:%s:%s".format(
-        params.get(year).map(_.toString.to04d).orNull,
-        params.get(month).map(_.toString.to02d).orNull,
-        params.get(day).map(_.toString.to02d).orNull,
-        params.get(hour).map(_.toString.to02d).orNull,
-        params.get(minute).map(_.toString.to02d).orNull,
-        params.get(second).map(_.toString.to02d).orNull
-      )
-    }
+        "%s-%s-%s %s:%s:%s".format(
+          params.get(year).map(_.toString.to04d).orNull,
+          params.get(month).map(_.toString.to02d).orNull,
+          params.get(day).map(_.toString.to02d).orNull,
+          params.get(hour).map(_.toString.to02d).orNull,
+          params.get(minute).map(_.toString.to02d).orNull,
+          params.get(second).map(_.toString.to02d).orNull
+        )
+      }
   }
 
 }

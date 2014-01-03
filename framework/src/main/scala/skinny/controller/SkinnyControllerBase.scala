@@ -24,6 +24,7 @@ trait SkinnyControllerBase
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature
+    with SnakeCasedParamKeysFeature
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits

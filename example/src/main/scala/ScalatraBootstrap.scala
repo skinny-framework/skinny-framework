@@ -9,6 +9,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
     Controllers.root.mount(ctx)
     Controllers.programmers.mount(ctx)
+    SnakeCaseKeyExamplesController.mount(ctx)
     CompaniesController.mount(ctx)
     SkillsController.mount(ctx)
     Controllers.mustache.mount(ctx)

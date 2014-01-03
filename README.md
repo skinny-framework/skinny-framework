@@ -6,7 +6,7 @@ To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is hi
 
 ![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/logo.png)
 
-**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release (2013 4Q).
+**[Notice]** Still in alpha stage. Architecture and API compatibility won't be kept until 1.0 release (2014/03).
 
 See the website in detail.
 

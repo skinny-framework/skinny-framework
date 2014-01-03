@@ -1,0 +1,16 @@
+-@val s: skinny.Skinny
+
+div(class="form-group")
+  label(class="control-label" for="first_name") #{s.i18n.get("snakeCaseKeyExample.firstName")}
+  div(class="controls row")
+    div(class="col-xs-12")
+      input(type="text" name="first_name" class="form-control" value={s.params.first_name})
+div(class="form-group")
+  label(class="control-label" for="luckey_number") #{s.i18n.get("snakeCaseKeyExample.luckeyNumber")}
+  div(class="controls row")
+    div(class="col-xs-12")
+      input(type="text" name="luckey_number" class="form-control" value={s.params.luckey_number})
+div(class="form-actions")
+  =unescape(s.csrfHiddenInputTag)
+  input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
+    a(class="btn btn-default" href={url(SnakeCaseKeyExamplesController.indexUrl)}) #{s.i18n.get("cancel")}

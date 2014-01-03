@@ -7,13 +7,13 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.20"
+  val skinnyVersion = "0.9.21"
   val _scalaVersion = "2.10.3"
-  val jettyVersion = "8.1.14.v20131031"
+  val jettyVersion = "9.1.0.v20131115"
 
   val _resolovers = Seq(
-    "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-    "sonatype snapshots"  at "http://oss.sonatype.org/content/repositories/snapshots"
+    "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+    //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
   )
   val _dependencies = Seq(
     "org.skinny-framework" %% "skinny-framework"   % skinnyVersion,
@@ -34,7 +34,9 @@ object SkinnyAppBuild extends Build {
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
       libraryDependencies ++= _dependencies ++ containerDependencies,
-      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
+      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
+      // Scalatra tests become slower when multiple controller tests are loaded in the same time
+      parallelExecution in Test := false
     )
   )
 

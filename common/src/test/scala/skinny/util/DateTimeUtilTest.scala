@@ -9,7 +9,7 @@ class DateTimeUtilTest extends FlatSpec with ShouldMatchers {
   behavior of "DateTimeUtil"
 
   it should "have #currentTimeZone" in {
-     DateTimeUtil.currentTimeZone should not be(null)
+    DateTimeUtil.currentTimeZone should not be (null)
   }
 
   it should "have #parseDateTime" in {

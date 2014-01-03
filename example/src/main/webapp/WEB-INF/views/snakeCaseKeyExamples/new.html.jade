@@ -1,0 +1,10 @@
+-@val s: skinny.Skinny
+
+h3 #{s.i18n.get("snakeCaseKeyExample.new")}
+hr
+
+-for (e <- s.errorMessages)
+  p(class="alert alert-danger") #{e}
+
+form(method="post" action={url(SnakeCaseKeyExamplesController.createUrl)} class="form")
+  =include("_form.html.jade")

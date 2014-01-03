@@ -18,7 +18,8 @@ object LoanPattern {
     } finally {
       try {
         resource.close()
-      } catch { case ignore: Exception =>
+      } catch {
+        case ignore: Exception =>
       }
     }
   }

@@ -23,8 +23,9 @@ object ClassPathResourceLoader {
       val conn = resource.openConnection
       val lastModified = conn.getLastModified
       Some(ClassPathResource(conn.getInputStream, lastModified))
-    } catch { case e: Exception =>
-      None
+    } catch {
+      case e: Exception =>
+        None
     }
   }
 
