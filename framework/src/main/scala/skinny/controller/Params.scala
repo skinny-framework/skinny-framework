@@ -87,7 +87,9 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateTime(key: String): Params = withDateTime((key + "Year", key + "Month", key + "Day", key + "Hour", key + "Minute", key + "Second"), key)
+  def withDateTime(key: String): Params = withDateTime(
+    (key + "Year", key + "Month", key + "Day", key + "Hour", key + "Minute", key + "Second"),
+    key)
 
   /**
    * Returns value for the key if exists.
