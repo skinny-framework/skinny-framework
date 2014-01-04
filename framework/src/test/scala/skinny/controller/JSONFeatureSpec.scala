@@ -7,6 +7,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
   behavior of "JSONFeature"
 
   case class Sample(id: Long, firstName: String)
+  case class Person(name: Option[String] = None, parent: Person, children: Seq[Person] = Nil)
 
   // SkinnyController has JSONFeature
   object SampleController extends SkinnyController {
@@ -19,11 +20,21 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     def toJSONString5 = toJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")), false)
     def toJSONString6 = toPrettyJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")), false)
 
-    def fromJSON1: Option[Sample] = fromJSON[Sample]("""{"id":1,"first_name":"Alice"}""")
-    def fromJSON2: Option[List[Sample]] = fromJSON[List[Sample]]("""[{"id":1,"first_name":"Alice"},{"id":2,"first_name":"Bob"}]""")
+    val alice = Person(Some("Alice"), null)
+    val bob = Person(Some("Bob"), alice, Nil)
+    val chris = Person(Some("Chris"), alice, Seq(bob))
+    val dennis = Person(Some("Dennis"), alice, Seq(bob, chris))
 
-    def fromJSON3: Option[Sample] = fromJSON[Sample]("""{"id":1,"firstName":"Alice"}""")
-    def fromJSON4: Option[List[Sample]] = fromJSON[List[Sample]]("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
+    def toJSONString7 = toJSONString(dennis)
+
+    def fromJSON1: Option[Sample] = fromJSONString[Sample]("""{"id":1,"first_name":"Alice"}""")
+    def fromJSON2: Option[List[Sample]] = fromJSONString[List[Sample]]("""[{"id":1,"first_name":"Alice"},{"id":2,"first_name":"Bob"}]""")
+
+    def fromJSON3: Option[Sample] = fromJSONString[Sample]("""{"id":1,"firstName":"Alice"}""")
+    def fromJSON4: Option[List[Sample]] = fromJSONString[List[Sample]]("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
+
+    def fromJSON5: Option[Person] = fromJSONString[Person](
+      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
   }
 
   it should "have toJSON" in {
@@ -48,6 +59,9 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
         |  "id" : 2,
         |  "firstName" : "Bob"
         |} ]""".stripMargin)
+
+    SampleController.toJSONString7 should equal(
+      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
   }
 
   it should "have fromJSON" in {
@@ -56,6 +70,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
     SampleController.fromJSON3.get should equal(Sample(1, "Alice"))
     SampleController.fromJSON4.get should equal(List(Sample(1, "Alice"), Sample(2, "Bob")))
+    SampleController.fromJSON5.get should equal(SampleController.dennis)
   }
 
 }

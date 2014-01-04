@@ -1,13 +1,13 @@
-package skinny.controller.feature
+package skinny.util
 
-import org.scalatra.json.JacksonJsonSupport
 import org.json4s._
-import skinny.Format
+
+object JSONStringOps extends JSONStringOps
 
 /**
- * JSON response support.
+ * Easy-to-use JSON String Operation.
  */
-trait JSONFeature extends JacksonJsonSupport {
+trait JSONStringOps extends jackson.JsonMethods {
 
   /**
    * JSON format support implicitly.
@@ -51,24 +51,8 @@ trait JSONFeature extends JacksonJsonSupport {
    * @tparam A type
    * @return value
    */
-  def fromJSON[A](json: String)(implicit mf: Manifest[A]): Option[A] = {
+  def fromJSONString[A](json: String)(implicit mf: Manifest[A]): Option[A] = {
     parseOpt(StringInput(json)).map(v => v.camelizeKeys).map[A](_.extract[A])
-  }
-
-  /**
-   * Returns JSON response.
-   *
-   * @param entity entity
-   * @param charset charset
-   * @param prettify prettify if true
-   * @return body
-   */
-  def responseAsJSON(entity: Any, charset: Option[String] = Some("utf-8"), prettify: Boolean = false): String = {
-    // If Content-Type is already set, never overwrite it.
-    if (contentType == null) {
-      contentType = Format.JSON.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
-    }
-    if (prettify) toPrettyJSONString(entity) else toJSONString(entity)
   }
 
 }
