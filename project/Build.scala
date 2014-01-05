@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "org.skinny-framework"
-  val Version = "0.9.21"
+  val Version = "0.9.22-SNAPSHOT"
   val ScalatraVersion = "2.2.2"
   val Json4SVersion = "3.2.6"
   val ScalikeJDBCVersion = "1.7.3"
@@ -38,8 +38,11 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+        "com.typesafe" %  "config" % "1.0.2" % "compile"
+      ) ++ servletApiDependencies 
+        ++ slf4jApiDependencies 
+        ++ jodaDependencies 
+        ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -84,9 +87,8 @@ object SkinnyFrameworkBuild extends Build {
         "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
         Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
       ),
-      libraryDependencies ++= scalikejdbcDependencies ++ Seq(
+      libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "javax.servlet"         %  "javax.servlet-api" % "3.0.1"        % "provided",
         "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
         "com.h2database"        %  "h2"                % H2Version      % "test",
         "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
@@ -160,16 +162,22 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework, assets, thymeleaf, test, task)
 
+  val servletApiDependencies = Seq(
+    "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
+  )
+
+  val slf4jApiDependencies = Seq(
+    "org.slf4j" % "slf4j-api" % "1.7.5" % "compile"
+  )
+
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % ScalatraVersion  % "compile",
     "org.json4s"    %% "json4s-jackson"     % Json4SVersion    % "compile",
     "org.json4s"    %% "json4s-ext"         % Json4SVersion    % "compile",
-    "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
-    "javax.servlet" %  "javax.servlet-api"  % "3.0.1"          % "provided",
     "org.scalatra"  %% "scalatra-scalatest" % ScalatraVersion  % "test"
-  )
+  ) ++ servletApiDependencies ++ slf4jApiDependencies
 
   val scalikejdbcDependencies = Seq(
     "org.scalikejdbc" %% "scalikejdbc"               % ScalikeJDBCVersion % "compile",
