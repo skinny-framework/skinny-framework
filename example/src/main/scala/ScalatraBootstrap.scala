@@ -6,7 +6,7 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
     // Notice: Enables open-session-in-view pattern
-    //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
+    //ctx.mount(classOf[skinny.orm.servlet.TxPerRequestFilter], "/*")
     Controllers.root.mount(ctx)
     Controllers.programmers.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)

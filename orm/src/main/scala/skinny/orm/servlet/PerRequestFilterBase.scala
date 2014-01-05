@@ -1,4 +1,4 @@
-package skinny.servlet
+package skinny.orm.servlet
 
 import javax.servlet.{ FilterConfig, Filter }
 import scalikejdbc.ConnectionPool
