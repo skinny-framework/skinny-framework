@@ -1,6 +1,5 @@
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.FileAppender">
-        <file>logs/console.log</file>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
           <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
