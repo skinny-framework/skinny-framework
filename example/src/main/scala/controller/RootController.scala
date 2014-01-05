@@ -17,4 +17,6 @@ class RootController extends ApplicationController {
     redirect(params.getAs[String]("returnTo").map(_.replaceFirst(s"^${contextPath}", "")).getOrElse("/"))
   }
 
+  def errorExample = throw new RuntimeException("sample error!")
+
 }

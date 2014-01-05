@@ -40,4 +40,10 @@ class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
     }
   }
 
+  it should "show error" in {
+    get("/error") {
+      status should equal(500)
+    }
+  }
+
 }

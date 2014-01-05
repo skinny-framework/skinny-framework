@@ -7,6 +7,7 @@ object Controllers {
   object root extends RootController with Routes {
     val indexUrl = get("/?")(index).as('index)
     val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
+    val errorUrl = get("/error")(errorExample).as('error)
   }
 
   object programmers extends ProgrammersController with Routes {
