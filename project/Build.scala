@@ -184,7 +184,7 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test" // java.lang.IncompatibleClassChangeError since 1.9.2
+    "org.scalatest" %% "scalatest"   % "1.9.2" % "test"
   )
 
   def _publishTo(v: String) = {
