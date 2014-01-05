@@ -29,6 +29,13 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
     with ScalateUrlGeneratorSupport {
 
   /**
+   * To deal with exceptions.
+   *
+   * http://www.scalatra.org/guides/views/scalate.html#toc_303
+   */
+  override def isScalateErrorPageEnabled = false
+
+  /**
    * Overrides to make the template path simpler.
    *
    * @return paths
