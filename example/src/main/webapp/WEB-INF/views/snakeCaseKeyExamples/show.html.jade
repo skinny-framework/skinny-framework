@@ -1,14 +1,14 @@
 -@val snakeCaseKeyExample: model.SnakeCaseKeyExample
 -@val s: skinny.Skinny
 
-h3 #{s.i18n.get("snake_case_key_example.detail")}
+h3 #{s.i18n.get("snakeCaseKeyExample.detail")}
 hr
 -for (notice <- s.flash.notice)
   p(class="alert alert-info") #{notice}
 table(class="table table-bordered")
   thead
     tr
-      th #{s.i18n.get("snake_case_key_example.id")}
+      th #{s.i18n.get("snakeCaseKeyExample.id")}
       td #{snakeCaseKeyExample.id}
     tr
       th #{s.i18n.get("snakeCaseKeyExample.firstName")}
