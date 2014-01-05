@@ -2,9 +2,12 @@ package skinny.assets
 
 import org.mozilla.javascript._
 import skinny.util.LoanPattern._
-import java.io.InputStreamReader
+import java.io.{ ByteArrayInputStream, IOException, InputStreamReader }
 import org.mozilla.javascript.tools.shell.Global
 import skinny.ClassPathResourceLoader
+import skinny.exception.AssetsPrecompileFailureException
+import org.slf4j.LoggerFactory
+import scala.sys.process._
 
 /**
  * Less Compiler
@@ -12,6 +15,21 @@ import skinny.ClassPathResourceLoader
  * @see https://github.com/Filirom1/concoct
  */
 class LessCompiler {
+
+  private[this] val log = LoggerFactory.getLogger(classOf[LessCompiler])
+
+  private[this] def isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0
+
+  private[this] def lessCommand = if (isWindows) "lessc.bat" else "lessc"
+
+  private[this] def nativeCompilerDescription = Seq(lessCommand, "-v").lines.mkString
+
+  private[this] def nativeCompilerCommand = Seq(lessCommand, "-") // after "-" read stdin
+
+  private[this] def nativeCompilerExists: Boolean = {
+    try Seq(lessCommand, "-v").lines.size > 0
+    catch { case e: IOException => false }
+  }
 
   private[this] lazy val scope: Scriptable = {
     val context = Context.enter
@@ -47,7 +65,34 @@ class LessCompiler {
    * @return css code
    */
   def compile(lessCode: String): String = {
-    Context.call(null, stringCompiler, scope, scope, Array(lessCode)).toString
+    if (nativeCompilerExists) {
+      // Native compiler (npm install -g less)
+      log.debug(s"Native LESS compiler is found. (version: ${nativeCompilerDescription})")
+
+      val (out, err) = (new StringBuilder, new StringBuilder)
+      val processLogger = ProcessLogger(
+        (o: String) => out ++= o ++= "\n",
+        (e: String) => err ++= e ++= "\n"
+      )
+      using(new ByteArrayInputStream(lessCode.getBytes)) { stdin =>
+        val exitCode = (nativeCompilerCommand #< stdin) ! processLogger
+        if (exitCode == 0) out.toString
+        else {
+          val message = s"Failed to compile less code! (exit code: ${exitCode})\n\n${err.toString}"
+          log.error(message)
+          throw new AssetsPrecompileFailureException(message)
+        }
+      }
+    } else {
+      // Compiler on the Rhino JS engine
+      try Context.call(null, stringCompiler, scope, scope, Array(lessCode)).toString
+      catch {
+        case e: EcmaError =>
+          val message = s"Failed to compile less code!"
+          log.error(message)
+          throw new AssetsPrecompileFailureException(message)
+      }
+    }
   }
 
 }
