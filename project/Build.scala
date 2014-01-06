@@ -14,7 +14,10 @@ object SkinnyFrameworkBuild extends Build {
   val ScalikeJDBCVersion = "1.7.3"
   val ScalateVeresion = "1.6.1"
   val H2Version = "1.3.174"
-  val JettyVersion = "9.1.0.v20131115"
+
+  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
+  //val JettyVersion = "9.1.0.v20131115"
+  val JettyVersion = "9.0.7.v20131107"
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
     organization := Organization,
