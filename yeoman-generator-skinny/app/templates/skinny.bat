@@ -115,7 +115,7 @@ ECHO   clean      : will clear target directory
 ECHO   update     : will run sbt update
 ECHO   console    : will run sbt console
 ECHO   compile    : will compile all the classes
-ECHO   db:migrate : will run all the tests
+ECHO   db:migrate : will execute database migration
 ECHO   test       : will run all the tests
 ECHO   test-only  : will run the specified test
 ECHO   package    : will create *.war file to deploy
