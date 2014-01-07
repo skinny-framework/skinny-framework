@@ -14,6 +14,7 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   private[this] val _self: SkinnyMapperBase[Entity] = this
 
   protected def underlying: SkinnyMapperBase[Entity] = new SkinnyMapperBase[Entity] {
+    override def defaultAlias = _self.defaultAlias
     override val tableName = _tableName
     override val columnNames = _columnNames
     def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = _self.extract(rs, n)
@@ -52,9 +53,13 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   /**
    * Returns default table alias.
    *
+   * This method is abstract and should be implemented with unique name.
+   *
+   * override def defaultAlias = createAlias("sm")
+   *
    * @return default table alias
    */
-  def defaultAlias: Alias[Entity] = underlying.defaultAlias
+  def defaultAlias: Alias[Entity]
 
   /**
    * Returns table name.

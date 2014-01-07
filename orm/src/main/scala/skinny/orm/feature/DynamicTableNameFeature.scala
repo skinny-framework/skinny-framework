@@ -19,6 +19,7 @@ trait DynamicTableNameFeature[Entity] { self: SkinnyMapperBase[Entity] =>
     val dynamicTableName = tableName
 
     new SkinnyMapperBase[Entity] with DynamicTableNameFeature[Entity] with FinderFeature[Entity] with QueryingFeature[Entity] {
+      override def defaultAlias = _self.defaultAlias
       override val tableName = dynamicTableName
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = _self.extract(rs, n)
     }

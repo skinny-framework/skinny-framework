@@ -49,6 +49,8 @@ trait CRUDFeature[Entity]
     // creates new instance but ideally this should be more DRY & safe implementation
     new CRUDFeature[Entity] {
       override protected val underlying = _self
+      override def defaultAlias = _self.defaultAlias
+
       override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
       override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
       override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
@@ -81,6 +83,7 @@ trait CRUDFeature[Entity]
     new CRUDFeature[Entity] {
       // overwritten table name
       override val tableName = dynamicTableName
+      override def defaultAlias = _self.defaultAlias
 
       override protected val underlying = _self
       override private[skinny] val belongsToAssociations = _self.belongsToAssociations
