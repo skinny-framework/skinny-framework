@@ -63,12 +63,12 @@ trait IncludesFeature[Entity]
    * Returns ids from entities.
    *
    * @param entities entities
-   * @param primaryKeyName primary key name
+   * @param primaryKeyFieldName primary key name
    * @return ids
    */
-  private[this] def toIds(entities: Seq[Any], primaryKeyName: String): Seq[Long] = {
+  private[this] def toIds(entities: Seq[Any], primaryKeyFieldName: String): Seq[Long] = {
     entities.flatMap { e =>
-      JavaReflectAPI.getter(e, primaryKeyName) match {
+      JavaReflectAPI.getter(e, primaryKeyFieldName) match {
         case Some(v: Long) => Some(v)
         case Some(v) => Some(v.toString.toLong)
         case None => None
@@ -90,17 +90,17 @@ trait IncludesFeature[Entity]
     implicit s: DBSession, repository: IncludesQueryRepository[Entity]): List[Entity] = {
     try {
       val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) { (entities, assoc) =>
-        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         assoc.extractor.includesMerge(entities,
           assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
       val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) { (entities, assoc) =>
-        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         assoc.extractor.includesMerge(entities,
           assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }
       includedHasManyAssociations.foldLeft(withHasOne) { (entities, assoc) =>
-        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyName)
+        val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         assoc.extractor.includesMerge(entities,
           assoc.extractor.mapper.asInstanceOf[FinderFeature[Entity]].findAllByIds(ids: _*)).toList
       }

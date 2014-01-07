@@ -231,7 +231,7 @@ trait CRUDFeature[Entity]
       id
     } else {
       withSQL { insert.into(this).namedValues(allNamedValues: _*) }.update.apply()
-      val idOpt = allNamedValues.find(v => v._1 == column.field(primaryKeyName)).map {
+      val idOpt = allNamedValues.find(v => v._1 == column.field(primaryKeyFieldName)).map {
         case (_, value) =>
           try value.toString.toLong
           catch { case e: Exception => 0L }
@@ -274,7 +274,7 @@ trait CRUDFeature[Entity]
    * @param id primary key
    * @return query part
    */
-  protected def byId(id: Long) = sqls.eq(column.field(primaryKeyName), id)
+  protected def byId(id: Long) = sqls.eq(column.field(primaryKeyFieldName), id)
 
   /**
    * #updateBy pre-execution handler.

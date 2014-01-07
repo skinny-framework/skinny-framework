@@ -27,9 +27,9 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @return query part
    */
   protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = timestamp.map { t =>
-    sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampFieldName), t)
+    sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockTimestampFieldName), t)
   }.getOrElse {
-    sqls.eq(column.field(primaryKeyName), id).and.isNull(column.field(lockTimestampFieldName))
+    sqls.eq(column.field(primaryKeyFieldName), id).and.isNull(column.field(lockTimestampFieldName))
   }
 
   /**

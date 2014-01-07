@@ -82,7 +82,7 @@ object Name extends SkinnyCRUDMapper[Name]
   override val lockTimestampFieldName = "updatedAt"
 
   override val useAutoIncrementPrimaryKey = false
-  override val primaryKeyName = "memberId"
+  override val primaryKeyFieldName = "memberId"
 
   override val defaultAlias = createAlias("nm")
 

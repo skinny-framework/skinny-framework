@@ -29,7 +29,7 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    * @return query part
    */
   def updateByIdAndVersion(id: Long, version: Long) = {
-    updateBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionFieldName), version))
+    updateBy(sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
   private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
@@ -64,7 +64,7 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    * @return deleted count
    */
   def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession) = {
-    deleteBy(sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockVersionFieldName), version))
+    deleteBy(sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
   override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {

@@ -41,7 +41,7 @@ trait SkinnyRecord[Entity] extends SkinnyRecordBase[Entity] {
    * @return sql part
    */
   override def primaryKeyCondition: SQLSyntax = {
-    val pk = skinnyCRUDMapper.column.field(skinnyCRUDMapper.primaryKeyName)
+    val pk = skinnyCRUDMapper.column.field(skinnyCRUDMapper.primaryKeyFieldName)
     sqls"${pk} = ${id}"
   }
 
