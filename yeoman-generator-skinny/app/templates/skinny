@@ -12,7 +12,7 @@ if [ "${sbt_path}" == "" ]; then
 fi
 
 function run_app() {
-  ${sbt_path} "project dev" "~;container:stop;container:start"
+  ${sbt_path} "~;container:stop;container:start"
 }
 function setup_build() {
   rm -rf build

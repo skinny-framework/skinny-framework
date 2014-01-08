@@ -11,7 +11,7 @@ IF NOT DEFINED command (
 )
 
 IF %command%==run (
-  sbt "project dev" "~;container:stop;container:start"
+  sbt "~;container:stop;container:start"
   GOTO script_eof
 )
 
@@ -52,15 +52,7 @@ IF "%is_generator%"=="true" (
   IF "%2"=="" (
     ECHO Usage: skinny g/generate [type] [options...]
   ) ELSE (
-    :generator_loop_begin
-      IF "%2"=="" GOTO generator_loop_end
-        SET generator_params=%generator_params% %2
-      SHIFT
-      GOTO generator_loop_begin
-    :generator_loop_end
-    REM Delete the head whitespace character
-    SET generator_params=%generator_params:~1%
-    sbt "task/run generate:%generator_params%"
+    sbt "task/run generate:%2 %3 %4 %5 %6 %7 %8 %9"
   )
   GOTO script_eof
 )
@@ -133,4 +125,5 @@ ECHO   g/generate scaffold:scaml : will generate scaffold files with scaml templ
 ECHO   g/generate scaffold:jade  : will generate scaffold files with jade templates
 
 :script_eof
+
 
