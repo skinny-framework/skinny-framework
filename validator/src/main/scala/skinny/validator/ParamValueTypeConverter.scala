@@ -7,8 +7,8 @@ import scala.annotation.implicitNotFound
  * @tparam S from
  * @tparam T to
  */
-@implicitNotFound(msg = "Cannot find a TypeConverter type class from ${S} to ${T}")
-trait TypeConverter[S, T] {
+@implicitNotFound(msg = "Cannot find a ParamValueTypeConverter type class from ${S} to ${T}")
+trait ParamValueTypeConverter[S, T] {
 
   def apply(s: S): Option[T]
 
