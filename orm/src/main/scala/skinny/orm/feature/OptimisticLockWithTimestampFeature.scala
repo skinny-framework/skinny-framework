@@ -85,7 +85,7 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession) = {
+  def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession) = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
@@ -97,11 +97,11 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession) = {
+  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession = autoSession) = {
     deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     val count = super.deleteBy(where)(s)
     if (count == 0) {
       throw new OptimisticLockException(
@@ -116,7 +116,7 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     super.updateBy(byId(id))
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession): Int = {
+  override def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = {
     logger.info("#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead.")
     super.deleteBy(byId(id))
   }

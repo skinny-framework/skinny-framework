@@ -63,11 +63,11 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession) = {
+  def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession = autoSession) = {
     deleteBy(sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     val count = super.deleteBy(where)
     if (count == 0) {
       throw new OptimisticLockException(
@@ -82,7 +82,7 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
     super.updateBy(byId(id))
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession): Int = {
+  override def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = {
     logger.info("#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead.")
     super.deleteBy(byId(id))
   }

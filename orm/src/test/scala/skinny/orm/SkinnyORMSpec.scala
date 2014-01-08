@@ -353,9 +353,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val name = FactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
-      Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
       intercept[OptimisticLockException] {
-        Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+        Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
       }
       // without lock
       Name.deleteById(name.memberId)
