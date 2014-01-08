@@ -8,11 +8,14 @@ import skinny.orm.feature.includes.IncludesQueryRepository
  * Querying APIs feature.
  */
 trait QueryingFeature[Entity]
+  extends QueryingFeatureWithId[Long, Entity]
+
+trait QueryingFeatureWithId[Id, Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
-    with IncludesFeature[Entity] {
+    with IncludesFeatureWithId[Id, Entity] {
 
   /**
    * Appends where conditions.
@@ -73,7 +76,7 @@ trait QueryingFeature[Entity]
    * @param offset offset
    */
   abstract class SelectOperationBuilder(
-      mapper: QueryingFeature[Entity],
+      mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None,
@@ -122,7 +125,7 @@ trait QueryingFeature[Entity]
    * @param offset offset
    */
   case class EntitiesSelectOperationBuilder(
-      mapper: QueryingFeature[Entity],
+      mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
@@ -181,7 +184,7 @@ trait QueryingFeature[Entity]
    * @param conditions registered conditions
    */
   case class CountSelectOperationBuilder(
-      mapper: QueryingFeature[Entity],
+      mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
 
     /**

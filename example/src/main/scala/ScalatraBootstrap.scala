@@ -5,8 +5,14 @@ import skinny.controller.AssetsController
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
-    // Notice: Enables open-session-in-view pattern
-    //ctx.mount(classOf[skinny.servlet.TxPerRequestFilter], "/*")
+
+    // enables open-session-in-view pattern
+    //ctx.mount(classOf[skinny.orm.servlet.TxPerRequestFilter], "/*")
+
+    // error notification example
+    // TODO error-page should be handled by web.xml settings
+    ctx.mount(classOf[skinny.notification.ExceptionLoggingNotifier], "/*")
+
     Controllers.root.mount(ctx)
     Controllers.programmers.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)

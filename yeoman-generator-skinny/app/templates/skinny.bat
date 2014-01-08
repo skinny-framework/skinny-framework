@@ -11,7 +11,7 @@ IF NOT DEFINED command (
 )
 
 IF %command%==run (
-  sbt "project dev" "~;container:stop;container:start"
+  sbt "~;container:stop;container:start"
   GOTO script_eof
 )
 
@@ -107,7 +107,7 @@ ECHO   clean      : will clear target directory
 ECHO   update     : will run sbt update
 ECHO   console    : will run sbt console
 ECHO   compile    : will compile all the classes
-ECHO   db:migrate : will run all the tests
+ECHO   db:migrate : will execute database migration
 ECHO   test       : will run all the tests
 ECHO   test-only  : will run the specified test
 ECHO   package    : will create *.war file to deploy
@@ -125,4 +125,5 @@ ECHO   g/generate scaffold:scaml : will generate scaffold files with scaml templ
 ECHO   g/generate scaffold:jade  : will generate scaffold files with jade templates
 
 :script_eof
+
 

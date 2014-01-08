@@ -8,7 +8,10 @@ import org.joda.time.DateTime
  *
  * @tparam Entity entity
  */
-trait SoftDeleteWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
+trait SoftDeleteWithTimestampFeature[Entity]
+  extends SoftDeleteWithTimestampFeatureWithId[Long, Entity]
+
+trait SoftDeleteWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
    * deleted_at timestamp field name.
@@ -25,7 +28,7 @@ trait SoftDeleteWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     updateBy(where).withNamedValues(column.field(deletedAtFieldName) -> DateTime.now)
   }
 }

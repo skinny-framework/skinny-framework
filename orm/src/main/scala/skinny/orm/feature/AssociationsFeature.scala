@@ -165,7 +165,7 @@ trait AssociationsFeature[Entity]
 
   def belongsTo[A](right: AssociationsFeature[A], merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val fk = toDefaultForeignKeyName[A](right)
-    belongsToWithJoinCondition[A](right, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyName)), merge)
+    belongsToWithJoinCondition[A](right, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyFieldName)), merge)
   }
 
   def belongsToWithJoinCondition[A](right: AssociationsFeature[A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
@@ -175,7 +175,7 @@ trait AssociationsFeature[Entity]
   }
 
   def belongsToWithFk[A](right: AssociationsFeature[A], fk: String, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
-    belongsToWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyName)), merge)
+    belongsToWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyFieldName)), merge)
   }
 
   def belongsToWithFkAndJoinCondition[A](right: AssociationsFeature[A], fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
@@ -195,7 +195,7 @@ trait AssociationsFeature[Entity]
 
   def belongsToWithAliasAndFk[A](right: (AssociationsFeature[A], Alias[A]), fk: String,
     merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
-    belongsToWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right._2.field(right._1.primaryKeyName)), merge)
+    belongsToWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right._2.field(right._1.primaryKeyFieldName)), merge)
   }
 
   def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax,
@@ -221,7 +221,7 @@ trait AssociationsFeature[Entity]
   }
 
   def hasOneWithFk[A](right: AssociationsFeature[A], fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
-    hasOneWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyName), right.defaultAlias.field(fk)), merge)
+    hasOneWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyFieldName), right.defaultAlias.field(fk)), merge)
   }
 
   def hasOneWithFkAndJoinCondition[A](right: AssociationsFeature[A], fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
@@ -239,7 +239,7 @@ trait AssociationsFeature[Entity]
   }
 
   def hasOneWithAliasAndFk[A](right: (AssociationsFeature[A], Alias[A]), fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
-    hasOneWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyName), right._2.field(fk)), merge)
+    hasOneWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyFieldName), right._2.field(fk)), merge)
   }
 
   def hasOneWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
@@ -271,18 +271,18 @@ trait AssociationsFeature[Entity]
     val manyFk = toDefaultForeignKeyName[M2](many)
     hasManyThrough(
       through = through.asInstanceOf[AssociationsFeature[Any]] -> through.defaultAlias.asInstanceOf[Alias[Any]],
-      throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyName), m1.field(throughFk)),
+      throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyFieldName), m1.field(throughFk)),
       many = many -> many.defaultAlias,
-      on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyName)),
+      on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyFieldName)),
       merge = merge)
   }
 
   def hasManyThroughWithFk[M2](through: AssociationsFeature[_], many: AssociationsFeature[M2], throughFk: String, manyFk: String, merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
     hasManyThrough(
       through = through.asInstanceOf[AssociationsFeature[Any]] -> through.defaultAlias.asInstanceOf[Alias[Any]],
-      throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyName), m1.field(throughFk)),
+      throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyFieldName), m1.field(throughFk)),
       many = many -> many.defaultAlias,
-      on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyName)),
+      on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyFieldName)),
       merge = merge)
   }
 
@@ -412,7 +412,7 @@ trait AssociationsFeature[Entity]
         val alias = ex.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManySQL[Entity, _, HasExtractor, Entity] = oneExtractedSql
           .toMany { rs =>
-            rs.longOpt(alias.resultName.field(mapper.primaryKeyName)).map[Any] { _ =>
+            rs.anyOpt(alias.resultName.field(mapper.primaryKeyFieldName)).map[Any] { _ =>
               includesRepository.putAndReturn(ex, mapper.extract(rs, alias.resultName))
             }
           }.map { case (one, many) => ex.merge(one, many) }
@@ -427,10 +427,10 @@ trait AssociationsFeature[Entity]
         val alias2 = ex2.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManies2SQL[Entity, _, _, HasExtractor, Entity] = oneExtractedSql
           .toManies(
-            to1 = rs => rs.longOpt(alias1.resultName.field(mapper1.primaryKeyName)).map[Any] { _ =>
+            to1 = rs => rs.anyOpt(alias1.resultName.field(mapper1.primaryKeyFieldName)).map[Any] { _ =>
               includesRepository.putAndReturn(ex1, mapper1.extract(rs, alias1.resultName))
             },
-            to2 = rs => rs.longOpt(alias2.resultName.field(mapper2.primaryKeyName)).map[Any] { _ =>
+            to2 = rs => rs.anyOpt(alias2.resultName.field(mapper2.primaryKeyFieldName)).map[Any] { _ =>
               includesRepository.putAndReturn(ex2, mapper2.extract(rs, alias2.resultName))
             }
           ).map { case (one, m1, m2) => ex2.merge(ex1.merge(one, m1), m2) }
@@ -447,11 +447,11 @@ trait AssociationsFeature[Entity]
         val alias3 = ex3.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManies3SQL[Entity, _, _, _, HasExtractor, Entity] = oneExtractedSql
           .toManies(
-            to1 = rs => rs.longOpt(alias1.resultName.field(mapper1.primaryKeyName))
+            to1 = rs => rs.anyOpt(alias1.resultName.field(mapper1.primaryKeyFieldName))
               .map[Any] { _ => includesRepository.putAndReturn(ex1, mapper1.extract(rs, alias1.resultName)) },
-            to2 = rs => rs.longOpt(alias2.resultName.field(mapper2.primaryKeyName))
+            to2 = rs => rs.anyOpt(alias2.resultName.field(mapper2.primaryKeyFieldName))
               .map[Any] { _ => includesRepository.putAndReturn(ex2, mapper2.extract(rs, alias2.resultName)) },
-            to3 = rs => rs.longOpt(alias3.resultName.field(mapper3.primaryKeyName))
+            to3 = rs => rs.anyOpt(alias3.resultName.field(mapper3.primaryKeyFieldName))
               .map[Any] { _ => includesRepository.putAndReturn(ex3, mapper3.extract(rs, alias3.resultName)) }
 
           ).map { case (one, m1, m2, m3) => ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3) }
@@ -470,13 +470,13 @@ trait AssociationsFeature[Entity]
         val alias4 = ex4.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManies4SQL[Entity, _, _, _, _, HasExtractor, Entity] = oneExtractedSql
           .toManies(
-            to1 = rs => rs.longOpt(alias1.resultName.field(mapper1.primaryKeyName))
+            to1 = rs => rs.anyOpt(alias1.resultName.field(mapper1.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex1, mapper1.extract(rs, alias1.resultName))),
-            to2 = rs => rs.longOpt(alias2.resultName.field(mapper2.primaryKeyName))
+            to2 = rs => rs.anyOpt(alias2.resultName.field(mapper2.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex2, mapper2.extract(rs, alias2.resultName))),
-            to3 = rs => rs.longOpt(alias3.resultName.field(mapper3.primaryKeyName))
+            to3 = rs => rs.anyOpt(alias3.resultName.field(mapper3.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex3, mapper3.extract(rs, alias3.resultName))),
-            to4 = rs => rs.longOpt(alias4.resultName.field(mapper4.primaryKeyName))
+            to4 = rs => rs.anyOpt(alias4.resultName.field(mapper4.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex4, mapper4.extract(rs, alias4.resultName)))
 
           ).map { case (one, m1, m2, m3, m4) => ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4) }
@@ -497,15 +497,15 @@ trait AssociationsFeature[Entity]
         val alias5 = ex5.alias.asInstanceOf[Alias[Any]]
         val sql: OneToManies5SQL[Entity, _, _, _, _, _, HasExtractor, Entity] = oneExtractedSql
           .toManies(
-            to1 = rs => rs.longOpt(alias1.resultName.field(mapper1.primaryKeyName))
+            to1 = rs => rs.anyOpt(alias1.resultName.field(mapper1.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex1, mapper1.extract(rs, alias1.resultName))),
-            to2 = rs => rs.longOpt(alias2.resultName.field(mapper2.primaryKeyName))
+            to2 = rs => rs.anyOpt(alias2.resultName.field(mapper2.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex2, mapper2.extract(rs, alias2.resultName))),
-            to3 = rs => rs.longOpt(alias3.resultName.field(mapper3.primaryKeyName))
+            to3 = rs => rs.anyOpt(alias3.resultName.field(mapper3.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex3, mapper3.extract(rs, alias3.resultName))),
-            to4 = rs => rs.longOpt(alias4.resultName.field(mapper4.primaryKeyName))
+            to4 = rs => rs.anyOpt(alias4.resultName.field(mapper4.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex4, mapper4.extract(rs, alias4.resultName))),
-            to5 = rs => rs.longOpt(alias5.resultName.field(mapper5.primaryKeyName))
+            to5 = rs => rs.anyOpt(alias5.resultName.field(mapper5.primaryKeyFieldName))
               .map[Any](_ => includesRepository.putAndReturn(ex5, mapper5.extract(rs, alias5.resultName)))
 
           ).map { case (one, m1, m2, m3, m4, m5) => ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5) }
@@ -540,7 +540,7 @@ trait AssociationsFeature[Entity]
     val withBelongsTo = allBelongsTo.foldLeft(extract(rs, defaultAlias.resultName)) {
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
-        val toOne: Option[_] = rs.longOpt(this.defaultAlias.resultName.field(extractor.fk))
+        val toOne: Option[_] = rs.anyOpt(this.defaultAlias.resultName.field(extractor.fk))
           .map { _ =>
             val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
             includesRepository.putAndReturn(extractor, entity)
@@ -551,7 +551,7 @@ trait AssociationsFeature[Entity]
     val withAssociations = allHasOne.foldLeft(withBelongsTo) {
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
-        val toOne: Option[_] = rs.longOpt(extractor.alias.resultName.field(extractor.fk))
+        val toOne: Option[_] = rs.anyOpt(extractor.alias.resultName.field(extractor.fk))
           .map { _ =>
             val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
             includesRepository.putAndReturn(extractor, entity)

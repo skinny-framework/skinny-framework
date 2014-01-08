@@ -3,9 +3,10 @@ package skinny
 /**
  * Model interface for SkinnyResource.
  *
+ * @tparam Id id
  * @tparam Entity entity
  */
-trait SkinnyModel[Entity] {
+trait SkinnyModel[Id, Entity] {
 
   /**
    * Creates new entity with parameters.
@@ -13,7 +14,7 @@ trait SkinnyModel[Entity] {
    * @param parameters parameters
    * @return generated id
    */
-  def createNewModel(parameters: PermittedStrongParameters): Long
+  def createNewModel(parameters: PermittedStrongParameters): Id
 
   /**
    * Returns all entities.
@@ -27,7 +28,7 @@ trait SkinnyModel[Entity] {
    * @param id id
    * @return entity if exists
    */
-  def findModel(id: Long): Option[Entity]
+  def findModel(id: Id): Option[Entity]
 
   /**
    * Updates the specified entity with parameters if exists.
@@ -36,13 +37,13 @@ trait SkinnyModel[Entity] {
    * @param parameters parameters
    * @return updated count
    */
-  def updateModelById(id: Long, parameters: PermittedStrongParameters): Int
+  def updateModelById(id: Id, parameters: PermittedStrongParameters): Int
 
   /**
    * Deletes the specified entity if exists.
    * @param id id
    * @return deleted count
    */
-  def deleteModelById(id: Long): Int
+  def deleteModelById(id: Id): Int
 
 }

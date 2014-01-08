@@ -58,49 +58,6 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
   }
 
-  describe("MutableSkinnyRecord") {
-    it("should act like ActiveRecord") { implicit session =>
-      val newCompany = Company(name = "Sun")
-      newCompany.isNewRecord should be(true)
-      newCompany.isPersisted should be(false)
-
-      val companyId = newCompany.create()
-
-      val company = Company.findById(companyId).get
-      company.isNewRecord should be(false)
-      company.isPersisted should be(true)
-
-      company.copy(name = "Oracle").save()
-      Company.findById(companyId).get.name should equal("Oracle")
-
-      company.destroy()
-      Company.findById(companyId) should equal(None)
-    }
-
-    /* TODO
-  [info]   java.lang.IllegalStateException: No builder register for None
-  [info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
-  [info]   at ar.com.gonto.factorypal.FactoryPal$$anonfun$1.apply(FactoryPal.scala:43)
-  [info]   at scala.Option.getOrElse(Option.scala:120)
-  [info]   at ar.com.gonto.factorypal.FactoryPal$.create(FactoryPal.scala:42)
-
-      it("should work with FactoryPal") { implicit session =>
-        import ar.com.gonto.factorypal.FactoryPal
-        val companyByFactoryPal = FactoryPal.create[Company]() { company =>
-          company.name.mapsTo("Sun")
-        }
-        val companyId = companyByFactoryPal.create()
-        val company = Company.findById(companyId).get
-
-        company.copy(name = "Oracle").save()
-        Company.findById(companyId).get.name should equal("Oracle")
-
-        company.destroy()
-        Company.findById(companyId) should equal(None)
-      }
-      */
-  }
-
   describe("SkinnyRecord") {
     it("should act like ActiveRecord") { implicit session =>
       val countryId = Country.createWithAttributes('name -> "Brazil")
@@ -332,8 +289,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should update with lock timestamp") { implicit session =>
-      val member = FactoryGirl(Member)
-        .withValues('countryId -> FactoryGirl(Country, 'countryyy).create().id)
+      val member = FactoryGirl(Member).withVariables('countryId -> FactoryGirl(Country, 'countryyy).create().id)
         .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
       val name = FactoryGirl(Name).create('memberId -> member.id)
 
@@ -348,14 +304,14 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
     it("should delete with lock timestamp") { implicit session =>
       val member = FactoryGirl(Member)
-        .withValues('countryId -> FactoryGirl(Country, 'countryyy).create().id)
+        .withVariables('countryId -> FactoryGirl(Country, 'countryyy).create().id)
         .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
       val name = FactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
-      Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+      Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
       intercept[OptimisticLockException] {
-        Name.deleteByIdAndTimestamp(name.memberId, name.updatedAt)
+        Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
       }
       // without lock
       Name.deleteById(name.memberId)
@@ -387,7 +343,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
       val country = FactoryGirl(Country, 'countryyy).create()
 
-      val memberFactory = FactoryGirl(Member).withValues('countryId -> country.id)
+      val memberFactory = FactoryGirl(Member).withVariables('countryId -> country.id)
       val member = memberFactory.create('companyId -> company1.id, 'createdAt -> DateTime.now)
       val name = FactoryGirl(Name).create('memberId -> member.id)
 
@@ -398,6 +354,40 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val skill = FactoryGirl(Skill).create()
       skill.name should equal("Scala Programming")
 
+    }
+  }
+
+  describe("WithId") {
+    it("should work") { implicit session =>
+      val book = FactoryGirl(Book).create()
+      book.title should equal("Play in Action")
+      book.destroy()
+
+      val book2 = FactoryGirl(Book).withAttributes('isbn -> "11111-2222-33333", 'title -> "Play2 in Action").create()
+      book2.isbn should equal(ISBN("11111-2222-33333"))
+      book2.destroy()
+
+      val book3 = FactoryGirl(Book).create('isbn -> ISBN("aaaa-bbbb-cccc"), 'title -> "Play3 in Action")
+      book3.isbn should equal(ISBN("aaaa-bbbb-cccc"))
+      book3.title should equal("Play3 in Action")
+
+      val isbn: ISBN = Book.createWithAttributes('title -> "ScalikeJDBC Cookbook")
+      ISBNMaster.createWithAttributes('isbn -> isbn, 'publisher -> "O'Reilly")
+      FactoryGirl(ISBNMaster).withVariables('isbn -> java.util.UUID.randomUUID).create()
+
+      val newBook = Book.findById(isbn).get
+      newBook.title should equal("ScalikeJDBC Cookbook")
+      newBook.isbnMaster.map(_.publisher) should equal(Some("O'Reilly"))
+
+      Book.createWithAttributes('title -> "Skinny Framework in Action")
+      Book.findAll().size should equal(3)
+
+      Book.updateById(isbn).withAttributes('title -> "ScalikeJDBC Cookbook 2")
+      Book.findById(isbn).map(_.title) should equal(Some("ScalikeJDBC Cookbook 2"))
+
+      Book.deleteById(isbn)
+      Book.findById(isbn) should equal(None)
+      Book.countAll() should equal(2)
     }
   }
 

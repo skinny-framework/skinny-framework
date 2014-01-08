@@ -8,12 +8,16 @@ import skinny.orm.feature.includes.IncludesQueryRepository
  * Provides #find something APIs.
  */
 trait FinderFeature[Entity]
+  extends FinderFeatureWithId[Long, Entity]
+
+trait FinderFeatureWithId[Id, Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
     with AssociationsFeature[Entity]
     with JoinsFeature[Entity]
-    with IncludesFeature[Entity] {
+    with IdFeature[Id]
+    with IncludesFeatureWithId[Id, Entity] {
 
   /**
    * Finds a single entity by primary key.
@@ -22,10 +26,10 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return single entity if exists
    */
-  def findById(id: Long)(implicit s: DBSession = autoSession): Option[Entity] = {
+  def findById(id: Id)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.eq(defaultAlias.field(primaryKeyName), id).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.eq(defaultAlias.field(primaryKeyFieldName), idToRawValue(id)).and(defaultScopeWithDefaultAlias)
     }).single.apply())
   }
 
@@ -36,10 +40,10 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllByIds(ids: Long*)(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllByIds(ids: Id*)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.in(defaultAlias.field(primaryKeyName), ids).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.in(defaultAlias.field(primaryKeyFieldName), ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
     }).list.apply())
   }
 
@@ -49,7 +53,7 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAll(ordering: SQLSyntax = defaultAlias.field(primaryKeyName))(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAll(ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering)
@@ -64,7 +68,7 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyName))(
+  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -106,7 +110,7 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllBy(where: SQLSyntax, ordering: SQLSyntax = defaultAlias.field(primaryKeyName))(
+  def findAllBy(where: SQLSyntax, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -124,7 +128,7 @@ trait FinderFeature[Entity]
    * @param s db session
    * @return entities
    */
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyName))(
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()

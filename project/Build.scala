@@ -8,13 +8,16 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "org.skinny-framework"
-  val Version = "0.9.21"
+  val Version = "0.9.22"
   val ScalatraVersion = "2.2.2"
   val Json4SVersion = "3.2.6"
   val ScalikeJDBCVersion = "1.7.3"
   val ScalateVeresion = "1.6.1"
   val H2Version = "1.3.174"
-  val JettyVersion = "9.1.0.v20131115"
+
+  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
+  //val JettyVersion = "9.1.0.v20131115"
+  val JettyVersion = "9.0.7.v20131107"
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
     organization := Organization,
@@ -38,8 +41,11 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+        "com.typesafe" %  "config" % "1.0.2" % "compile"
+      ) ++ servletApiDependencies 
+        ++ slf4jApiDependencies 
+        ++ jodaDependencies 
+        ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -79,18 +85,11 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-        Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
-      ),
-      libraryDependencies ++= scalikejdbcDependencies ++ Seq(
+      libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "javax.servlet"         %  "javax.servlet-api" % "3.0.1"        % "provided",
         "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
         "com.h2database"        %  "h2"                % H2Version      % "test",
-        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
-        "ar.com.gonto"          %% "factory_pal"       % "0.2.1"        % "test"
+        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -160,16 +159,22 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework, assets, thymeleaf, test, task)
 
+  val servletApiDependencies = Seq(
+    "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
+  )
+
+  val slf4jApiDependencies = Seq(
+    "org.slf4j" % "slf4j-api" % "1.7.5" % "compile"
+  )
+
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % ScalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % ScalatraVersion  % "compile",
     "org.json4s"    %% "json4s-jackson"     % Json4SVersion    % "compile",
     "org.json4s"    %% "json4s-ext"         % Json4SVersion    % "compile",
-    "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
-    "javax.servlet" %  "javax.servlet-api"  % "3.0.1"          % "provided",
     "org.scalatra"  %% "scalatra-scalatest" % ScalatraVersion  % "test"
-  )
+  ) ++ servletApiDependencies ++ slf4jApiDependencies
 
   val scalikejdbcDependencies = Seq(
     "org.scalikejdbc" %% "scalikejdbc"               % ScalikeJDBCVersion % "compile",
@@ -183,8 +188,10 @@ object SkinnyFrameworkBuild extends Build {
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
 
+  // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
+  // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test" // java.lang.IncompatibleClassChangeError since 1.9.2
+    "org.scalatest" %% "scalatest"   % "1.9.1" % "test"
   )
 
   def _publishTo(v: String) = {

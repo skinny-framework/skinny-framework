@@ -3,8 +3,8 @@
 %h3 #{s.i18n.get("skill.edit")}
 %hr
 
--for (e <- s.errorMessages)
- %p(class="alert alert-danger") #{e}
+//-for (e <- s.errorMessages)
+// %p(class="alert alert-danger") #{e}
 
 %form(method="post" action={uri("/skills/"+s.params.id.get)} class="form")
  =include("_form.html.scaml")

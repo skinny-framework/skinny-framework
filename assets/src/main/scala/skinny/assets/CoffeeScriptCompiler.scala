@@ -1,9 +1,13 @@
 package skinny.assets
 
 import org.mozilla.javascript._
-import java.io.InputStreamReader
+import java.io.{ ByteArrayInputStream, IOException, InputStreamReader }
 import skinny.util.LoanPattern._
 import skinny.ClassPathResourceLoader
+
+import scala.sys.process._
+import org.slf4j.LoggerFactory
+import skinny.exception.AssetsPrecompileFailureException
 
 /**
  * CoffeeScript compiler.
@@ -11,6 +15,8 @@ import skinny.ClassPathResourceLoader
  * @see https://github.com/Filirom1/concoct
  */
 case class CoffeeScriptCompiler(bare: Boolean = false) {
+
+  private[this] val log = LoggerFactory.getLogger(classOf[CoffeeScriptCompiler])
 
   private[this] lazy val globalScope: ScriptableObject = {
     val context = Context.enter
@@ -28,6 +34,19 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
     globalScope
   }
 
+  private[this] def isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0
+
+  private[this] def coffeeCommand = if (isWindows) "coffee.bat" else "coffee"
+
+  private[this] def nativeCompilerDescription = Seq(coffeeCommand, "-v").lines.mkString
+
+  private[this] def nativeCompilerCommand = Seq(coffeeCommand, "--compile", "--stdio") ++ (if (bare) Seq("--bare") else Nil)
+
+  private[this] def nativeCompilerExists: Boolean = {
+    try Seq(coffeeCommand, "-v").lines.size > 0
+    catch { case e: IOException => false }
+  }
+
   /**
    * Compiles CoffeeScript source code to JavaScript source code.
    *
@@ -35,12 +54,40 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
    * @return js code
    */
   def compile(coffeeScriptCode: String): String = {
-    val context = Context.enter
-    val compileScope = context.newObject(globalScope)
-    compileScope.setParentScope(globalScope)
-    compileScope.put("coffeeScriptSource", compileScope, coffeeScriptCode)
-    val compilerScript = s"CoffeeScript.compile(coffeeScriptSource, {bare: ${bare}});"
-    context.evaluateString(compileScope, compilerScript, "skinny.assets.CoffeeScriptCompiler", 0, null).toString
+    if (nativeCompilerExists) {
+      // Native compiler (npm install -g coffee-script)
+      log.debug(s"Native CoffeeScript compiler is found. (version: ${nativeCompilerDescription})")
+
+      val (out, err) = (new StringBuilder, new StringBuilder)
+      val processLogger = ProcessLogger(
+        (o: String) => out ++= o ++= "\n",
+        (e: String) => err ++= e ++= "\n"
+      )
+      using(new ByteArrayInputStream(coffeeScriptCode.getBytes)) { stdin =>
+        val exitCode = (nativeCompilerCommand #< stdin) ! processLogger
+        if (exitCode == 0) out.toString
+        else {
+          val message = s"Failed to compile coffee script code! (exit code: ${exitCode})\n\n${err.toString}"
+          log.error(message)
+          throw new AssetsPrecompileFailureException(message)
+        }
+      }
+    } else {
+      // Compiler on the Rhino JS engine
+      val context = Context.enter
+      val compileScope = context.newObject(globalScope)
+      compileScope.setParentScope(globalScope)
+      compileScope.put("coffeeScriptSource", compileScope, coffeeScriptCode)
+      val compilerScript = s"CoffeeScript.compile(coffeeScriptSource, {bare: ${bare}});"
+
+      try context.evaluateString(compileScope, compilerScript, "skinny.assets.CoffeeScriptCompiler", 0, null).toString
+      catch {
+        case e: JavaScriptException =>
+          val message = s"Failed to compile coffee script code! (${e.getMessage})"
+          log.error(message)
+          throw new AssetsPrecompileFailureException(message)
+      }
+    }
   }
 
 }

@@ -2,7 +2,7 @@ package skinny.orm
 
 import scalikejdbc._, SQLInterpolation._
 import skinny._
-import skinny.orm.feature.QueryingFeature
+import skinny.orm.feature.QueryingFeatureWithId
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
@@ -12,7 +12,14 @@ import skinny.orm.feature.includes.IncludesQueryRepository
  *
  * @tparam Entity entity
  */
-trait SkinnyJoinTable[Entity] extends SkinnyMapper[Entity] with QueryingFeature[Entity] {
+trait SkinnyJoinTable[Entity] extends SkinnyJoinTableWithId[Long, Entity] {
+  override def generateId = ???
+  override def rawValueToId(rawValue: Any) = rawValue.toString.toLong
+  override def idToRawValue(id: Long) = id
+}
+
+trait SkinnyJoinTableWithId[Id, Entity]
+    extends SkinnyMapperWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] {
 
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 

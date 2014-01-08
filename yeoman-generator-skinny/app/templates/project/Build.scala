@@ -7,9 +7,12 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.21"
+  val skinnyVersion = "0.9.22"
   val _scalaVersion = "2.10.3"
-  val jettyVersion = "9.1.0.v20131115"
+
+  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
+  //val jettyVersion = "9.1.0.v20131115"
+  val jettyVersion = "9.0.7.v20131107"
 
   val _resolovers = Seq(
     "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"

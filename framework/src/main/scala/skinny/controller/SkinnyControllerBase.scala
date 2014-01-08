@@ -4,7 +4,7 @@ import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
-import org.scalatra.{ UrlGeneratorSupport, HttpMethod }
+import org.scalatra.UrlGeneratorSupport
 import skinny.{ I18n, Format }
 import java.util.Locale
 

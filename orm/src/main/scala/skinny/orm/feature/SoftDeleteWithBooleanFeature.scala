@@ -7,7 +7,10 @@ import scalikejdbc._, SQLInterpolation._
  *
  * @tparam Entity entity
  */
-trait SoftDeleteWithBooleanFeature[Entity] extends CRUDFeature[Entity] {
+trait SoftDeleteWithBooleanFeature[Entity]
+  extends SoftDeleteWithBooleanFeatureWithId[Long, Entity]
+
+trait SoftDeleteWithBooleanFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
    * is deleted flag field name.
@@ -24,7 +27,7 @@ trait SoftDeleteWithBooleanFeature[Entity] extends CRUDFeature[Entity] {
     super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     updateBy(where).withNamedValues(column.field(isDeletedFieldName) -> true)
   }
 }

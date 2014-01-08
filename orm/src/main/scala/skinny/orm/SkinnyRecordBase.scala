@@ -2,6 +2,7 @@ package skinny.orm
 
 import scalikejdbc._, SQLInterpolation._
 import skinny.util.JavaReflectAPI
+import skinny.orm.feature.CRUDFeatureWithId
 
 /**
  * ActiveRecord::Base-like entity object base.
@@ -24,32 +25,31 @@ import skinny.util.JavaReflectAPI
  *
  * @tparam Entity entity
  */
-trait SkinnyRecordBase[Entity] {
+trait SkinnyRecordBase[Entity]
+  extends SkinnyRecordBaseWithId[Long, Entity]
+
+trait SkinnyRecordBaseWithId[Id, Entity] {
 
   /**
-   * Returns [[skinny.orm.SkinnyCRUDMapper]] for this SkinnyRecord.
+   * Returns [[skinny.orm.SkinnyCRUDMapperWithId]] for this SkinnyRecord.
    *
    * @return mapper
    */
-  def skinnyCRUDMapper: SkinnyCRUDMapper[Entity]
+  def skinnyCRUDMapper: CRUDFeatureWithId[Id, Entity]
 
   /**
-   * Returns primary key search condition.
-   *
-   * @return sql part
+   * Primary key
    */
-  def primaryKeyCondition: SQLSyntax
+  def id: Id
 
   /**
    * Saves this instance in DB. Notice: this methods only can update existing entity.
    *
-   * If you need creation, define the primary key as an Option[Long] value, and use [[skinny.orm.MutableSkinnyRecord]] instead.
-   *
    * @param session db session
    * @return self
    */
-  def save()(implicit session: DBSession = skinnyCRUDMapper.autoSession): SkinnyRecordBase[Entity] = {
-    skinnyCRUDMapper.updateBy(primaryKeyCondition).withNamedValues(attributesToPersist: _*)
+  def save()(implicit session: DBSession = skinnyCRUDMapper.autoSession): SkinnyRecordBaseWithId[Id, Entity] = {
+    skinnyCRUDMapper.updateById(id).withNamedValues(attributesToPersist: _*)
     this
   }
 
@@ -60,7 +60,7 @@ trait SkinnyRecordBase[Entity] {
    * @return deleted count
    */
   def destroy()(implicit session: DBSession = skinnyCRUDMapper.autoSession): Int = {
-    skinnyCRUDMapper.deleteBy(primaryKeyCondition)
+    skinnyCRUDMapper.deleteById(id)
   }
 
   /**

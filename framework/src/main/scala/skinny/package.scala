@@ -11,7 +11,10 @@ package object skinny {
 
   type SkinnyControllerBase = skinny.controller.SkinnyControllerBase
   type SkinnyController = skinny.controller.SkinnyController
+
   type SkinnyResource = skinny.controller.SkinnyResource
+  type SkinnyResourceWithId[Id] = skinny.controller.SkinnyResourceWithId[Id]
+
   type SkinnyServlet = skinny.controller.SkinnyServlet
 
   type Params = skinny.controller.Params
@@ -26,7 +29,12 @@ package object skinny {
   type Routes = skinny.routing.Routes
 
   type SkinnyCRUDMapper[A] = skinny.orm.SkinnyCRUDMapper[A]
+  type SkinnyCRUDMapperWithId[Id, A] = skinny.orm.SkinnyCRUDMapperWithId[Id, A]
+
   type SkinnyMapper[A] = skinny.orm.SkinnyMapper[A]
+  type SkinnyMapperWithId[Id, A] = skinny.orm.SkinnyMapperWithId[Id, A]
+
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
+  type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
 
 }

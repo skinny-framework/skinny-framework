@@ -6,23 +6,33 @@ import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
 import skinny.controller.feature.RequestScopeFeature
+import org.scalatra.util.conversion.{ Conversions, TypeConverter }
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
  *
  * SkinnyResource is surely inspired by Rails ActiveSupport.
  */
-trait SkinnyResource extends SkinnyResourceActions with SkinnyResourceRoutes
+
+trait SkinnyResource extends SkinnyResourceWithId[Long] {
+
+  implicit override val scalatraParamsIdTypeConverter: TypeConverter[String, Long] = Conversions.stringToLong
+}
+
+trait SkinnyResourceWithId[Id]
+  extends SkinnyController
+  with SkinnyResourceActions[Id]
+  with SkinnyResourceRoutes[Id]
 
 /**
  * Actions for Skinny resource.
  */
-trait SkinnyResourceActions extends SkinnyController {
+trait SkinnyResourceActions[Id] { self: SkinnyController =>
 
   /**
    * SkinnyModel for this resource.
    */
-  protected def model: SkinnyModel[_]
+  protected def model: SkinnyModel[Id, _]
 
   /**
    * Resource name in the plural. This name will be used for path and directory name to locale template files.
@@ -80,7 +90,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param form input form
    * @param id id if exists
    */
-  protected def debugLoggingParameters(form: MapValidator, id: Option[Long] = None) = {
+  protected def debugLoggingParameters(form: MapValidator, id: Option[Id] = None) = {
     val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = form.paramMap.map { case (name, value) => s"${name} -> '${value}'" }.mkString("[", ", ", "]")
     logger.debug(s"Parameters${forId}: ${params}")
@@ -92,7 +102,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param parameters permitted strong parameters
    * @param id id if exists
    */
-  protected def debugLoggingPermittedParameters(parameters: PermittedStrongParameters, id: Option[Long] = None) = {
+  protected def debugLoggingPermittedParameters(parameters: PermittedStrongParameters, id: Option[Id] = None) = {
     val forId = id.map { id => s" for [id -> ${id}]" }.getOrElse("")
     val params = parameters.params.map { case (name, (v, t)) => s"${name} -> '${v}' as ${t}" }.mkString("[", ", ", "]")
     logger.debug(s"Permitted parameters${forId}: ${params}")
@@ -129,7 +139,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param format format
    * @return single resource
    */
-  def showResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
     render(s"/${resourcesName}/show")
   }
@@ -167,7 +177,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param parameters permitted parameters
    * @return generated resource id
    */
-  protected def doCreateAndReturnId(parameters: PermittedStrongParameters): Long = {
+  protected def doCreateAndReturnId(parameters: PermittedStrongParameters): Id = {
     debugLoggingPermittedParameters(parameters)
     model.createNewModel(parameters)
   }
@@ -190,7 +200,7 @@ trait SkinnyResourceActions extends SkinnyController {
   def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
-      val id: Long = if (!createFormStrongParameters.isEmpty) {
+      val id = if (!createFormStrongParameters.isEmpty) {
         val parameters = createParams.permit(createFormStrongParameters: _*)
         doCreateAndReturnId(parameters)
       } else {
@@ -220,7 +230,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param format format
    * @return input form
    */
-  def editResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def editResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     model.findModel(id).map {
       m =>
         status = 200
@@ -255,7 +265,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param parameters permitted parameters
    * @return count
    */
-  protected def doUpdate(id: Long, parameters: PermittedStrongParameters): Int = {
+  protected def doUpdate(id: Id, parameters: PermittedStrongParameters): Int = {
     debugLoggingPermittedParameters(parameters, Some(id))
     model.updateModelById(id, parameters)
   }
@@ -276,7 +286,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param format format
    * @return result
    */
-  def updateResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def updateResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
     model.findModel(id).map { m =>
@@ -309,7 +319,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param id id
    * @return count
    */
-  protected def doDestroy(id: Long): Int = {
+  protected def doDestroy(id: Id): Int = {
     model.deleteModelById(id)
   }
 
@@ -329,7 +339,7 @@ trait SkinnyResourceActions extends SkinnyController {
    * @param format format
    * @return result
    */
-  def destroyResource(id: Long)(implicit format: Format = Format.HTML): Any = withFormat(format) {
+  def destroyResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     model.findModel(id).map { m =>
       doDestroy(id)
       setDestroyCompletionFlash()
@@ -342,7 +352,14 @@ trait SkinnyResourceActions extends SkinnyController {
 /**
  * Routings for Skinny resource.
  */
-trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
+trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: SkinnyResourceActions[Id] =>
+
+  /**
+   * to enable params.getAs[Id]("id")
+   */
+  implicit val scalatraParamsIdTypeConverter: TypeConverter[String, Id] = new TypeConverter[String, Id] {
+    def apply(s: String): Option[Id] = Option(s).map(_.asInstanceOf[Id])
+  }
 
   // ------------------
   // Routing
@@ -389,13 +406,13 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
     if (params.getAs[String]("id").exists(_ == "new")) {
       newResource()
     } else {
-      params.getAs[Long]("id").map { id => showResource(id) } getOrElse haltWithBody(404)
+      params.getAs[Id]("id").map { id => showResource(id) } getOrElse haltWithBody(404)
     }
   }.as('show)
 
   val showExtUrl = get(s"${resourcesBasePath}/:id.:ext") {
     (for {
-      id <- params.getAs[Long]("id")
+      id <- params.getAs[Id]("id")
       ext <- params.get("ext")
     } yield {
       ext match {
@@ -410,26 +427,26 @@ trait SkinnyResourceRoutes extends Routes { self: SkinnyResourceActions =>
   // update
 
   val editUrl = get(s"${resourcesBasePath}/:id/edit") {
-    params.getAs[Long]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
+    params.getAs[Id]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
   }.as('edit)
 
   val updatePostUrl = post(s"${resourcesBasePath}/:id") {
-    params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
   val updateUrl = put(s"${resourcesBasePath}/:id") {
-    params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
   val updatePatchUrl = patch(s"${resourcesBasePath}/:id") {
-    params.getAs[Long]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
   // --------------
   // delete
 
   val deleteUrl = delete(s"${resourcesBasePath}/:id") {
-    params.getAs[Long]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
+    params.getAs[Id]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
   }.as('destroy)
 
 }

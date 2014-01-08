@@ -4,6 +4,7 @@ import scala.sys.process._
 import java.io.{ IOException, ByteArrayInputStream }
 import skinny.util.LoanPattern._
 import skinny.exception.AssetsPrecompileFailureException
+import org.slf4j.LoggerFactory
 
 /**
  * Sass Compiler
@@ -12,14 +13,16 @@ import skinny.exception.AssetsPrecompileFailureException
  */
 class SassCompiler {
 
-  private def isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0
+  private[this] val log = LoggerFactory.getLogger(classOf[SassCompiler])
 
-  private def sassCommand = if (isWindows) "sass.bat" else "sass"
+  private[this] def isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0
+
+  private[this] def sassCommand = if (isWindows) "sass.bat" else "sass"
 
   /**
    * Ensures sass command exists.
    */
-  private def ensureSassCommand() = {
+  private[this] def ensureSassCommand() = {
     try {
       Seq(sassCommand, "-v").lines // > /dev/null
     } catch {
@@ -37,8 +40,19 @@ class SassCompiler {
    */
   def compile(scssCode: String): String = {
     ensureSassCommand()
+    val (out, err) = (new StringBuilder, new StringBuilder)
+    val processLogger = ProcessLogger(
+      (o: String) => out ++= o ++= "\n",
+      (e: String) => err ++= e ++= "\n"
+    )
     using(new ByteArrayInputStream(scssCode.getBytes)) { stdin =>
-      (Seq(sassCommand, "--stdin", "--trace", "--scss") #< stdin).lines.mkString("\n")
+      val exitCode = (Seq(sassCommand, "--stdin", "--trace", "--scss") #< stdin) ! processLogger
+      if (exitCode == 0) out.toString
+      else {
+        val message = s"Failed to compile scss code! (exit code: ${exitCode})\n\n${err.toString}"
+        log.error(message)
+        throw new AssetsPrecompileFailureException(message)
+      }
     }
   }
 
@@ -51,8 +65,19 @@ class SassCompiler {
    */
   def compileIndented(sassCode: String): String = {
     ensureSassCommand()
+    val (out, err) = (new StringBuilder, new StringBuilder)
+    val processLogger = ProcessLogger(
+      (o: String) => out ++= o ++= "\n",
+      (e: String) => err ++= e ++= "\n"
+    )
     using(new ByteArrayInputStream(sassCode.getBytes)) { stdin =>
-      (Seq(sassCommand, "--stdin", "--trace") #< stdin).lines.mkString("\n")
+      val exitCode = (Seq(sassCommand, "--stdin", "--trace") #< stdin) ! processLogger
+      if (exitCode == 0) out.toString
+      else {
+        val message = s"Failed to compile sass code! (exit code: ${exitCode})\n\n${err.toString}"
+        log.error(message)
+        throw new AssetsPrecompileFailureException(message)
+      }
     }
   }
 

@@ -3,7 +3,6 @@ package skinny.orm
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import scalikejdbc._, SQLInterpolation._
-import skinny.orm._
 import skinny.orm.feature._
 
 case class Member(
@@ -82,7 +81,7 @@ object Name extends SkinnyCRUDMapper[Name]
   override val lockTimestampFieldName = "updatedAt"
 
   override val useAutoIncrementPrimaryKey = false
-  override val primaryKeyName = "memberId"
+  override val primaryKeyFieldName = "memberId"
 
   override val defaultAlias = createAlias("nm")
 
@@ -98,10 +97,8 @@ object Name extends SkinnyCRUDMapper[Name]
 }
 
 case class Company(id: Option[Long] = None, name: String,
-    countryId: Option[Long] = None, country: Option[Country] = None,
-    members: Seq[Member] = Nil) extends MutableSkinnyRecord[Company] {
-  def skinnyCRUDMapper = Company
-}
+  countryId: Option[Long] = None, country: Option[Country] = None,
+  members: Seq[Member] = Nil)
 
 object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeature[Company] {
   override val tableName = "companies"
@@ -111,9 +108,9 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
 
   val members = hasMany[Member](
     many = Member -> Member.defaultAlias,
-    on = (c, ms) => sqls.eq(c.id, ms.companyId),
+    on = (c, ms) => sqls.eq(c.c("id"), ms.companyId),
     merge = (c, ms) => c.copy(members = ms)
-  ).includes[Member]((cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
+  ).includes[Member](merge = (cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
 
   def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
     id = rs.longOpt(s.id),
@@ -165,7 +162,10 @@ object GroupMember extends SkinnyJoinTable[GroupMember] {
 
 case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, lockVersion: Long)
 
-object Skill extends SkinnyCRUDMapper[Skill] with TimestampsFeature[Skill] with OptimisticLockWithVersionFeature[Skill] {
+object Skill extends SkinnyCRUDMapper[Skill]
+    with TimestampsFeature[Skill]
+    with OptimisticLockWithVersionFeature[Skill] {
+
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
   def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
@@ -183,3 +183,50 @@ object MemberSkill extends SkinnyJoinTable[MemberSkill] {
   override val tableName = "members_skills"
   override val defaultAlias = createAlias("ms")
 }
+
+case class ISBN(value: String)
+case class Book(isbn: ISBN, title: String, description: Option[String], isbnMaster: Option[ISBNMaster] = None)
+    extends SkinnyRecordWithId[ISBN, Book] {
+  def skinnyCRUDMapper = Book
+  def id = isbn
+}
+
+object Book extends SkinnyCRUDMapperWithId[ISBN, Book] {
+  def defaultAlias = createAlias("b")
+  override def primaryKeyFieldName = "isbn"
+  override def tableName = "books"
+
+  override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
+  override def idToRawValue(id: ISBN): String = id.value
+  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
+
+  belongsToWithFk[ISBNMaster](
+    right = ISBNMaster,
+    fk = "isbn",
+    merge = (b, im) => b.copy(isbnMaster = im)
+  ).byDefault
+
+  def extract(rs: WrappedResultSet, b: ResultName[Book]) = new Book(
+    isbn = ISBN(rs.get(b.isbn)),
+    title = rs.get(b.title),
+    description = rs.get(b.description)
+  )
+}
+
+case class ISBNMaster(isbn: ISBN, publisher: String, books: Seq[Book] = Nil)
+
+object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
+  def defaultAlias = createAlias("isbnm")
+  override def primaryKeyFieldName = "isbn"
+  override def tableName = "isbn_master"
+
+  override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
+  override def idToRawValue(id: ISBN): String = id.value
+  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
+
+  def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
+    isbn = ISBN(rs.get(b.isbn)),
+    publisher = rs.get(b.publisher)
+  )
+}
+

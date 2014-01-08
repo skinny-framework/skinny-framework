@@ -10,9 +10,12 @@ import org.slf4j.LoggerFactory
  *
  * @tparam Entity entity
  */
-trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
+trait OptimisticLockWithTimestampFeature[Entity]
+  extends OptimisticLockWithTimestampFeatureWithId[Long, Entity]
 
-  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithTimestampFeature[Entity]])
+trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
+
+  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithTimestampFeatureWithId[Id, Entity]])
 
   /**
    * Lock timestamp field name.
@@ -27,9 +30,9 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @return query part
    */
   protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = timestamp.map { t =>
-    sqls.eq(column.field(primaryKeyName), id).and.eq(column.field(lockTimestampFieldName), t)
+    sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockTimestampFieldName), t)
   }.getOrElse {
-    sqls.eq(column.field(primaryKeyName), id).and.isNull(column.field(lockTimestampFieldName))
+    sqls.eq(column.field(primaryKeyFieldName), id).and.isNull(column.field(lockTimestampFieldName))
   }
 
   /**
@@ -70,7 +73,7 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param mapper mapper
    * @param where condition
    */
-  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax)
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeatureWithId[Id, Entity], where: SQLSyntax)
       extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockTimestampFieldName)
@@ -85,7 +88,7 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession) = {
+  def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession) = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
@@ -97,11 +100,11 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession) = {
+  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession = autoSession) = {
     deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
-  override def deleteBy(where: SQLSyntax)(implicit s: DBSession): Int = {
+  override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     val count = super.deleteBy(where)(s)
     if (count == 0) {
       throw new OptimisticLockException(
@@ -111,12 +114,12 @@ trait OptimisticLockWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
     }
   }
 
-  override def updateById(id: Long): UpdateOperationBuilder = {
+  override def updateById(id: Id): UpdateOperationBuilder = {
     logger.info("#updateById ignore optimistic lock. If you need to lock with version in this case, use #updateBy instead.")
     super.updateBy(byId(id))
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession): Int = {
+  override def deleteById(id: Id)(implicit s: DBSession = autoSession): Int = {
     logger.info("#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead.")
     super.deleteBy(byId(id))
   }

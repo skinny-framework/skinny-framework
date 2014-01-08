@@ -1,4 +1,4 @@
-package skinny.servlet
+package skinny.orm.servlet
 
 import scalikejdbc._
 import javax.servlet._

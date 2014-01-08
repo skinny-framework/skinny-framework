@@ -139,6 +139,7 @@ class AssetsController extends SkinnyController {
         compiledCssFromClassPath(path) orElse
         cssFromFile(path) orElse
         compiledCssFromFile(path) map { css =>
+          // TODO "text/css" after https://github.com/scalatra/scalatra/issues/349 fixed
           contentType = "text/stylesheet"
           css
         } getOrElse pass()
