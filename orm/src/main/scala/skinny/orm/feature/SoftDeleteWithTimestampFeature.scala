@@ -8,7 +8,10 @@ import org.joda.time.DateTime
  *
  * @tparam Entity entity
  */
-trait SoftDeleteWithTimestampFeature[Entity] extends CRUDFeature[Entity] {
+trait SoftDeleteWithTimestampFeature[Entity]
+  extends SoftDeleteWithTimestampFeatureWithId[Long, Entity]
+
+trait SoftDeleteWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
    * deleted_at timestamp field name.

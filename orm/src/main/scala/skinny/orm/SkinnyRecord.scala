@@ -9,7 +9,7 @@ import scalikejdbc._, SQLInterpolation._
  *   case class Company(id: Long, name: String) extends SkinnyResource[Company] {
  *     def skinnyCRUDMapper = Company
  *   }
- *   object Company extends SkinnyCRUDMapper[Company] {
+ *   object Company extends SkinnyCRUDMapper[Long, Company] {
  *     def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
  *       id = rs.longOpt(s.id),
  *       name = rs.string(s.name)
@@ -23,7 +23,11 @@ import scalikejdbc._, SQLInterpolation._
  *
  * @tparam Entity entity
  */
-trait SkinnyRecord[Entity] extends SkinnyRecordBase[Entity] {
+trait SkinnyRecord[Entity]
+  extends SkinnyRecordWithId[Long, Entity]
+
+trait SkinnyRecordWithId[Id, Entity]
+    extends SkinnyRecordBaseWithId[Id, Entity] {
 
   /**
    * Id as the primary key.
@@ -33,16 +37,6 @@ trait SkinnyRecord[Entity] extends SkinnyRecordBase[Entity] {
    *
    * @return id
    */
-  def id: Long
-
-  /**
-   * Returns primary key search condition.
-   *
-   * @return sql part
-   */
-  override def primaryKeyCondition: SQLSyntax = {
-    val pk = skinnyCRUDMapper.column.field(skinnyCRUDMapper.primaryKeyFieldName)
-    sqls"${pk} = ${id}"
-  }
+  def id: Id
 
 }

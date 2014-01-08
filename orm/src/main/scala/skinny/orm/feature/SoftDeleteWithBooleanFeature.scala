@@ -7,7 +7,10 @@ import scalikejdbc._, SQLInterpolation._
  *
  * @tparam Entity entity
  */
-trait SoftDeleteWithBooleanFeature[Entity] extends CRUDFeature[Entity] {
+trait SoftDeleteWithBooleanFeature[Entity]
+  extends SoftDeleteWithBooleanFeatureWithId[Long, Entity]
+
+trait SoftDeleteWithBooleanFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
    * is deleted flag field name.

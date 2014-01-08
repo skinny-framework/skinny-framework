@@ -19,7 +19,7 @@ class SassCompilerSpec extends FlatSpec with ShouldMatchers {
         |}
       """.stripMargin)
 
-    css should equal(
+    css.replaceFirst("\n$", "") should equal(
       """body {
         |  font: 100% Helvetica, sans-serif;
         |  color: #333333; }""".stripMargin)
@@ -33,7 +33,7 @@ class SassCompilerSpec extends FlatSpec with ShouldMatchers {
         |  font-size: 0.3em
       """.stripMargin)
 
-    css should equal(
+    css.replaceFirst("\n$", "") should equal(
       """#main {
         |  color: blue;
         |  font-size: 0.3em; }""".stripMargin)

@@ -85,17 +85,11 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       scalaVersion := "2.10.0",
-      resolvers ++= Seq(
-        "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-        "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
-        Resolver.url("factory_pal repository", url("http://mgonto.github.io/releases/"))(Resolver.ivyStylePatterns)
-      ),
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
         "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
         "com.h2database"        %  "h2"                % H2Version      % "test",
-        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test",
-        "ar.com.gonto"          %% "factory_pal"       % "0.2.1"        % "test"
+        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -194,8 +188,10 @@ object SkinnyFrameworkBuild extends Build {
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
 
+  // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
+  // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.2" % "test"
+    "org.scalatest" %% "scalatest"   % "1.9.1" % "test"
   )
 
   def _publishTo(v: String) = {

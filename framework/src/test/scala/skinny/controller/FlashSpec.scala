@@ -1,7 +1,6 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
-import skinny._, controller._
 import org.scalatra.{ FlashMap => ScalatraFlash }
 
 class FlashSpec extends ScalatraFlatSpec {

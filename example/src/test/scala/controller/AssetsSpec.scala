@@ -53,8 +53,8 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
       status should equal(200)
       header("Content-Type") should equal("text/stylesheet;charset=UTF-8")
       body.replaceFirst("\n$", "") should equal("""body {
-      |  font: 100% Helvetica, sans-serif;
-      |  color: #333333; }""".stripMargin)
+        |  font: 100% Helvetica, sans-serif;
+        |  color: #333333; }""".stripMargin)
     }
   }
   it should "return 304 for scss if If-Modified-Since specified" in {
@@ -68,8 +68,8 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
       status should equal(200)
       header("Content-Type") should equal("text/stylesheet;charset=UTF-8")
       body.replaceFirst("\n$", "") should equal("""#main {
-                          |  color: blue;
-                          |  font-size: 0.3em; }""".stripMargin)
+        |  color: blue;
+        |  font-size: 0.3em; }""".stripMargin)
     }
   }
   it should "return 304 for sass if If-Modified-Since specified" in {

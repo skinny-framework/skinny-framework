@@ -75,6 +75,13 @@ create table members_skills (
   member_id bigint not null,
   skill_id bigint not null
 )
+""",
+    sql"""
+create table books (
+  isbn varchar(64) not null,
+  title varchar(255) not null,
+  description varchar(1024)
+)
 """
   )
 

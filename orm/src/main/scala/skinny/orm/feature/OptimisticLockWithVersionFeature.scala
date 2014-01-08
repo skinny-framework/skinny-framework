@@ -9,9 +9,12 @@ import org.slf4j.LoggerFactory
  *
  * @tparam Entity entity
  */
-trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
+trait OptimisticLockWithVersionFeature[Entity]
+  extends OptimisticLockWithVersionFeatureWithId[Long, Entity]
 
-  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithVersionFeature[Entity]])
+trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
+
+  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithVersionFeatureWithId[Id, Entity]])
 
   /**
    * Lock version field name.
@@ -48,7 +51,7 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
    * @param mapper mapper
    * @param where condition
    */
-  class UpdateOperationBuilderWithVersion(mapper: CRUDFeature[Entity], where: SQLSyntax)
+  class UpdateOperationBuilderWithVersion(mapper: CRUDFeatureWithId[Id, Entity], where: SQLSyntax)
       extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockVersionFieldName)
@@ -77,12 +80,12 @@ trait OptimisticLockWithVersionFeature[Entity] extends CRUDFeature[Entity] {
     }
   }
 
-  override def updateById(id: Long): UpdateOperationBuilder = {
+  override def updateById(id: Id): UpdateOperationBuilder = {
     logger.info("#updateById ignore optimistic lock. If you need to lock with version in this case, use #updateBy instead.")
     super.updateBy(byId(id))
   }
 
-  override def deleteById(id: Long)(implicit s: DBSession = autoSession): Int = {
+  override def deleteById(id: Id)(implicit s: DBSession = autoSession): Int = {
     logger.info("#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead.")
     super.deleteBy(byId(id))
   }
