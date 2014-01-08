@@ -82,6 +82,12 @@ create table books (
   title varchar(255) not null,
   description varchar(1024)
 )
+""",
+    sql"""
+create table isbn_master (
+  isbn varchar(64) not null,
+  publisher varchar(255) not null
+)
 """
   )
 

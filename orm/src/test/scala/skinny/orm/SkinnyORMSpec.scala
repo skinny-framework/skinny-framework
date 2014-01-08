@@ -372,7 +372,12 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       book3.title should equal("Play3 in Action")
 
       val isbn: ISBN = Book.createWithAttributes('title -> "ScalikeJDBC Cookbook")
-      Book.findById(isbn).map(_.title) should equal(Some("ScalikeJDBC Cookbook"))
+      ISBNMaster.createWithAttributes('isbn -> isbn, 'publisher -> "O'Reilly")
+      FactoryGirl(ISBNMaster).withVariables('isbn -> java.util.UUID.randomUUID).create()
+
+      val newBook = Book.findById(isbn).get
+      newBook.title should equal("ScalikeJDBC Cookbook")
+      newBook.isbnMaster.map(_.publisher) should equal(Some("O'Reilly"))
 
       Book.createWithAttributes('title -> "Skinny Framework in Action")
       Book.findAll().size should equal(3)

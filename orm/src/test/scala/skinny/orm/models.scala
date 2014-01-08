@@ -185,7 +185,8 @@ object MemberSkill extends SkinnyJoinTable[MemberSkill] {
 }
 
 case class ISBN(value: String)
-case class Book(isbn: ISBN, title: String, description: Option[String]) extends SkinnyRecordWithId[ISBN, Book] {
+case class Book(isbn: ISBN, title: String, description: Option[String], isbnMaster: Option[ISBNMaster] = None)
+    extends SkinnyRecordWithId[ISBN, Book] {
   def skinnyCRUDMapper = Book
   def id = isbn
 }
@@ -199,10 +200,33 @@ object Book extends SkinnyCRUDMapperWithId[ISBN, Book] {
   override def idToRawValue(id: ISBN): String = id.value
   override def generateId = ISBN(java.util.UUID.randomUUID.toString)
 
+  belongsToWithFk[ISBNMaster](
+    right = ISBNMaster,
+    fk = "isbn",
+    merge = (b, im) => b.copy(isbnMaster = im)
+  ).byDefault
+
   def extract(rs: WrappedResultSet, b: ResultName[Book]) = new Book(
     isbn = ISBN(rs.get(b.isbn)),
     title = rs.get(b.title),
     description = rs.get(b.description)
+  )
+}
+
+case class ISBNMaster(isbn: ISBN, publisher: String, books: Seq[Book] = Nil)
+
+object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
+  def defaultAlias = createAlias("isbnm")
+  override def primaryKeyFieldName = "isbn"
+  override def tableName = "isbn_master"
+
+  override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
+  override def idToRawValue(id: ISBN): String = id.value
+  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
+
+  def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
+    isbn = ISBN(rs.get(b.isbn)),
+    publisher = rs.get(b.publisher)
   )
 }
 

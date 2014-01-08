@@ -84,8 +84,12 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
         } else xs.updated(c.field(key), value)
     }.map {
       case (key, value) => {
-        if (value.toString.startsWith("#")) key -> valuesToReplaceVariablesInConfig.get(Symbol(value.toString.replaceAll("[#{}]", "")))
-        else key -> value
+        // will replace only value which starts with #{ ... } because '#' might be used for test data in some case
+        if (value.toString.startsWith("#")) {
+          val variableKey = value.toString.trim.replaceAll("[#{}]", "")
+          val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).orNull[Any]
+          key -> replacedValue
+        } else key -> value
       }
     }.toSeq
 
