@@ -64,6 +64,7 @@ class AssetsController extends SkinnyController {
 
   // registered compilers by default
   registerJsCompiler(CoffeeScriptAssetCompiler)
+  registerJsCompiler(ReactJSXAssetCompiler)
   registerCssCompiler(LessAssetCompiler)
   registerCssCompiler(ScssAssetCompiler)
   registerCssCompiler(SassAssetCompiler)

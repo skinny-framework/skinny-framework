@@ -8,6 +8,7 @@ object Controllers {
     val indexUrl = get("/?")(index).as('index)
     val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
     val errorUrl = get("/error")(errorExample).as('error)
+    val reactUrl = get("/react")(reactExample).as('react)
   }
 
   object programmers extends ProgrammersController with Routes {

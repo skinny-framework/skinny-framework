@@ -6,6 +6,7 @@
         </encoder>
     </appender>
 
+    <logger name="skinny" level="debug"/>
     <logger name="org.eclipse.jetty" level="warn"/>
     <logger name="org.fusesource.scalate" level="warn"/>
     <logger name="org.scalatra.scalate.ScalateSupport##anon#1.SourceMap" level="warn"/>

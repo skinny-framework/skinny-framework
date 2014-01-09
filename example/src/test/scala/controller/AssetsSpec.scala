@@ -9,6 +9,26 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
 
   addFilter(AssetsController, "/*")
 
+  it should "show react jsx template resources" in {
+    get("/assets/js/hello-react.js") {
+      status should equal(200)
+      header("Content-Type") should equal("application/javascript;charset=UTF-8")
+      body.replaceFirst("\n$", "") should equal(
+        """/** @jsx React.DOM */
+         |React.renderComponent(
+         |  React.DOM.h1(null, "Hello, world!"),
+         |  document.getElementById('example')
+         |);
+         |""".stripMargin)
+    }
+  }
+
+  it should "return 304 for react jsx if If-Modified-Since specified" in {
+    get(uri = "/assets/js/hello-react.js", headers = Map("If-Modified-Since" -> "Thu, 31 Dec 2037 12:34:56 GMT")) {
+      status should equal(304)
+    }
+  }
+
   it should "show coffee script resources" in {
     get("/assets/js/echo.js") {
       status should equal(200)
