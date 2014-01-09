@@ -61,7 +61,7 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/", "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
-        Company.findById(id).isDefined should equal(true)
+        Company.findById(CompanyId(id)).isDefined should equal(true)
       }
     }
   }

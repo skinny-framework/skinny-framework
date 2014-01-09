@@ -9,6 +9,22 @@ package skinny
 trait SkinnyModel[Id, Entity] {
 
   /**
+   * Extracts raw value from Identity.
+   *
+   * @param id  id
+   * @return raw value
+   */
+  def idToRawValue(id: Id): Any
+
+  /**
+   * Converts raw value to Identity.
+   *
+   * @param value raw value
+   * @return id
+   */
+  def rawValueToId(value: Any): Id
+
+  /**
    * Creates new entity with parameters.
    *
    * @param parameters parameters

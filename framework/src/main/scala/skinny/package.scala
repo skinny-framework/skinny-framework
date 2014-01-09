@@ -37,4 +37,6 @@ package object skinny {
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
   type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
 
+  type TypeConverter[A, B] = org.scalatra.util.conversion.TypeConverter[A, B]
+
 }

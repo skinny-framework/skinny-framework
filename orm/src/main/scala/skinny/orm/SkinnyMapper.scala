@@ -7,11 +7,8 @@ import skinny.orm.feature._
  *
  * @tparam Entity entity
  */
-trait SkinnyMapper[Entity]
-    extends SkinnyMapperWithId[Long, Entity] {
-
-  override def generateId = ???
-  override def rawValueToId(rawValue: Any) = rawValue.toString.toLong
+trait SkinnyMapper[Entity] extends SkinnyMapperWithId[Long, Entity] {
+  override def rawValueToId(value: Any) = value.toString.toLong
   override def idToRawValue(id: Long) = id
 }
 

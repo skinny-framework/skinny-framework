@@ -7,8 +7,12 @@ import skinny.orm.feature._
  *
  * @tparam Entity entity
  */
-trait SkinnyCRUDMapper[Entity] extends SkinnyMapper[Entity]
-  with CRUDFeatureWithId[Long, Entity]
+trait SkinnyCRUDMapper[Entity]
+    extends SkinnyMapper[Entity]
+    with CRUDFeatureWithId[Long, Entity] {
+  override def rawValueToId(value: Any) = value.toString.toLong
+  override def idToRawValue(id: Long) = id
+}
 
 /**
  * Out-of-the-box Skinny-ORM CRUD mapper.
@@ -17,9 +21,5 @@ trait SkinnyCRUDMapper[Entity] extends SkinnyMapper[Entity]
  * @tparam Entity entity
  */
 trait SkinnyCRUDMapperWithId[Id, Entity]
-    extends SkinnyMapperWithId[Id, Entity]
-    with CRUDFeatureWithId[Id, Entity] {
-
-  override def useAutoIncrementPrimaryKey = false
-  override def useExternalIdGenerator = true
-}
+  extends SkinnyMapperWithId[Id, Entity]
+  with CRUDFeatureWithId[Id, Entity]

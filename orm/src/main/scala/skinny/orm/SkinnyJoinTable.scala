@@ -13,7 +13,6 @@ import skinny.orm.feature.includes.IncludesQueryRepository
  * @tparam Entity entity
  */
 trait SkinnyJoinTable[Entity] extends SkinnyJoinTableWithId[Long, Entity] {
-  override def generateId = ???
   override def rawValueToId(rawValue: Any) = rawValue.toString.toLong
   override def idToRawValue(id: Long) = id
 }

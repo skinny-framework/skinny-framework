@@ -389,6 +389,21 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Book.findById(isbn) should equal(None)
       Book.countAll() should equal(2)
     }
+
+    it("sould deal with typed auto-increment value") { implicit s =>
+      // using typed auto-increment value
+      val productId: ProductId = Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 2000)
+      Product.findById(productId).map(_.name) should equal(Some("How to learn Scala"))
+
+      Product.deleteById(productId)
+      Product.findById(productId) should equal(None)
+
+      val productId2: ProductId = Product.createWithAttributes('id -> 777, 'name -> "How to learn Ruby", 'priceYen -> 1800)
+      Product.findById(productId2).map(_.name) should equal(Some("How to learn Ruby"))
+
+      Product.updateById(productId2).withAttributes('priceYen -> 1950)
+      Product.findById(productId2).map(_.priceYen) should equal(Some(1950))
+    }
   }
 
 }
