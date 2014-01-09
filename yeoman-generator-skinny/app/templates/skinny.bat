@@ -46,13 +46,22 @@ IF %command%==test-only (
 )
 
 SET is_generator=false
+SET generator_params=
 IF "%command%"=="g"        SET is_generator=true
 IF "%command%"=="generate" SET is_generator=true
 IF "%is_generator%"=="true" (
   IF "%2"=="" (
     ECHO Usage: skinny g/generate [type] [options...]
   ) ELSE (
-    sbt "task/run generate:%2 %3 %4 %5 %6 %7 %8 %9"
+    :generator_loop_begin
+      IF "%2"=="" GOTO generator_loop_end
+        SET generator_params=%generator_params% %2
+      SHIFT
+      GOTO generator_loop_begin
+    :generator_loop_end
+    REM Delete the head whitespace character
+    SET generator_params=%generator_params:~1%
+    sbt "task/run generate:%generator_params%"
   )
   GOTO script_eof
 )
