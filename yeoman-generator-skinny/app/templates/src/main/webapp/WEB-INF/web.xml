@@ -8,5 +8,11 @@
         <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
     </listener>
 
-</web-app>
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+        <cookie-config>
+            <name>skinny_session</name>
+        </cookie-config>
+    </session-config>
 
+</web-app>
