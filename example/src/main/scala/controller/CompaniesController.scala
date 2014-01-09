@@ -2,10 +2,14 @@ package controller
 
 import skinny._
 import skinny.validator._
-import model.Company
+import model._
 
-object CompaniesController extends SkinnyResource with ApplicationController {
+object CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
   protectFromForgery()
+
+  implicit override val scalatraParamsIdTypeConverter = new TypeConverter[String, CompanyId] {
+    def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
+  }
 
   override def scalateExtension = "jade"
 

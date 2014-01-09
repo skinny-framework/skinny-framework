@@ -9,7 +9,7 @@ case class Programmer(
     id: Long,
     name: String,
     favoriteNumber: Long,
-    companyId: Option[Long] = None,
+    companyId: Option[CompanyId] = None,
     company: Option[Company] = None,
     skills: Seq[Skill] = Nil,
     birthday: Option[LocalDate] = None,
@@ -43,7 +43,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
     id = rs.long(p.id),
     name = rs.string(p.name),
     favoriteNumber = rs.long(p.favoriteNumber),
-    companyId = rs.longOpt(p.companyId),
+    companyId = rs.longOpt(p.companyId).map(CompanyId),
     birthday = rs.localDateOpt(p.birthday),
     createdAt = rs.dateTime(p.createdAt),
     updatedAt = rs.dateTimeOpt(p.updatedAt)

@@ -196,9 +196,11 @@ object Book extends SkinnyCRUDMapperWithId[ISBN, Book] {
   override def primaryKeyFieldName = "isbn"
   override def tableName = "books"
 
+  override def useExternalIdGenerator = true
+  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
+
   override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
   override def idToRawValue(id: ISBN): String = id.value
-  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
 
   belongsToWithFk[ISBNMaster](
     right = ISBNMaster,
@@ -220,9 +222,11 @@ object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
   override def primaryKeyFieldName = "isbn"
   override def tableName = "isbn_master"
 
+  override def useExternalIdGenerator = true
+  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
+
   override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
   override def idToRawValue(id: ISBN): String = id.value
-  override def generateId = ISBN(java.util.UUID.randomUUID.toString)
 
   def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
     isbn = ISBN(rs.get(b.isbn)),
@@ -230,3 +234,19 @@ object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
   )
 }
 
+case class ProductId(value: Long)
+case class Product(id: ProductId, name: String, priceYen: Long)
+
+object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
+  override def tableName = "products"
+  override def defaultAlias = createAlias("prd")
+
+  def idToRawValue(id: ProductId) = id.value
+  def rawValueToId(value: Any) = ProductId(value.toString.toLong)
+
+  def extract(rs: WrappedResultSet, p: SQLInterpolation.ResultName[Product]) = new Product(
+    id = ProductId(rs.get(p.id)),
+    name = rs.get(p.name),
+    priceYen = rs.get(p.priceYen)
+  )
+}

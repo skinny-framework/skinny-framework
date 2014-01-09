@@ -88,6 +88,13 @@ create table isbn_master (
   isbn varchar(64) not null,
   publisher varchar(255) not null
 )
+""",
+    sql"""
+create table products (
+  id bigint auto_increment primary key not null,
+  name varchar(255) not null,
+  price_yen bigint not null
+)
 """
   )
 
