@@ -19,4 +19,6 @@ class RootController extends ApplicationController {
 
   def errorExample = throw new RuntimeException("sample error!")
 
+  def reactExample = render("/react/index")
+
 }
