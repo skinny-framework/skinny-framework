@@ -54,7 +54,7 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   it should "show less resources" in {
     get("/assets/css/box.css") {
       status should equal(200)
-      header("Content-Type") should equal("text/stylesheet;charset=UTF-8")
+      header("Content-Type") should equal("text/css;charset=UTF-8")
       body should equal(""".box {
   color: #fe33ac;
   border-color: #fdcdea;
@@ -71,7 +71,7 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   it should "show scss resources" in {
     get("/assets/css/variables-in-scss.css") {
       status should equal(200)
-      header("Content-Type") should equal("text/stylesheet;charset=UTF-8")
+      header("Content-Type") should equal("text/css;charset=UTF-8")
       body.replaceFirst("\n$", "") should equal("""body {
         |  font: 100% Helvetica, sans-serif;
         |  color: #333333; }""".stripMargin)
@@ -86,7 +86,7 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   it should "show sass resources" in {
     get("/assets/css/indented-sass.css") {
       status should equal(200)
-      header("Content-Type") should equal("text/stylesheet;charset=UTF-8")
+      header("Content-Type") should equal("text/css;charset=UTF-8")
       body.replaceFirst("\n$", "") should equal("""#main {
         |  color: blue;
         |  font-size: 0.3em; }""".stripMargin)
