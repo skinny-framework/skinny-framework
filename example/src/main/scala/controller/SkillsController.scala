@@ -5,7 +5,7 @@ import skinny.validator._
 import model._
 import skinny.filter.TxPerRequestFilter
 
-class SkillsController extends SkinnyResource with ApplicationController { //with TxPerRequestFilter {
+object SkillsController extends SkinnyResource with ApplicationController { //with TxPerRequestFilter {
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"
@@ -21,6 +21,8 @@ class SkillsController extends SkinnyResource with ApplicationController { //wit
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
+
+  def urlSample = url(SkillsController.indexUrl, "page" -> "1")
 
   after() {
     println("should work but doesn't...")

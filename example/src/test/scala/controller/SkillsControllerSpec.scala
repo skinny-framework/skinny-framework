@@ -10,6 +10,10 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   def skill = Skill.findAllPaging(1, 0).head
 
+  it should "have correct url" in {
+    SkillsController.urlSample should equal("/skills?page=1")
+  }
+
   it should "show skills" in {
     get("/skills") {
       status should equal(200)
