@@ -1,4 +1,4 @@
-package skinny.notification
+package skinny.servlet.filter
 
 import javax.servlet._
 import javax.servlet.http._

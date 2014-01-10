@@ -1,8 +1,9 @@
 package controller
 
 import service._
+import skinny.filter.ErrorPageFilter
 
-class RootController extends ApplicationController {
+class RootController extends ApplicationController with ErrorPageFilter {
 
   val echoService: EchoService = EchoService()
 

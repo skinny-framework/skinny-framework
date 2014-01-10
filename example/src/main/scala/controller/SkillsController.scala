@@ -3,8 +3,9 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
+import skinny.filter.TxPerRequestFilter
 
-object SkillsController extends SkinnyResource with ApplicationController {
+class SkillsController extends SkinnyResource with ApplicationController { //with TxPerRequestFilter {
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"
@@ -21,4 +22,7 @@ object SkillsController extends SkinnyResource with ApplicationController {
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 
+  after() {
+    println("should work but doesn't...")
+  }
 }

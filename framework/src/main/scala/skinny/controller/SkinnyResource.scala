@@ -254,7 +254,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   protected def updateParams: Params = Params(params)
 
   /**
-   * Strong parameter definitions for mofidication form
+   * Strong parameter definitions for modification form
    */
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
 

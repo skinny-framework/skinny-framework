@@ -1,4 +1,4 @@
-package skinny.notification
+package skinny.servlet.filter
 
 import org.slf4j.LoggerFactory
 import javax.servlet.http._
