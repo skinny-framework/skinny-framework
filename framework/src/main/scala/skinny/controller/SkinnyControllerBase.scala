@@ -1,11 +1,11 @@
 package skinny.controller
 
+import skinny._
 import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
-import org.scalatra.UrlGeneratorSupport
-import skinny.{ I18n, Format }
+import org.scalatra._
 import java.util.Locale
 
 trait SkinnyControllerBase

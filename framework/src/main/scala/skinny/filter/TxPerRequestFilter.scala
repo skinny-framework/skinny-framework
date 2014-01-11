@@ -1,58 +1,83 @@
 package skinny.filter
 
 import scalikejdbc._
-import skinny.controller.SkinnyController
 import javax.servlet.http.HttpServletRequest
+import grizzled.slf4j.Logging
 
-trait TxPerRequestFilter { self: SkinnyController =>
+/**
+ * A filter which enables controller wired with a single transactional DB session.
+ */
+trait TxPerRequestFilter extends SkinnyFilter with Logging { self: SkinnyFilterActivation =>
 
-  def connectionPool: ConnectionPool = ConnectionPool.get()
-  def only: Seq[String] = Nil
-  def except: Seq[String] = Seq("/assets/?.*")
+  def dbConnectionPool: ConnectionPool = ConnectionPool.get()
+
+  def txOnly: Seq[String] = Nil
+
+  def txExcept: Seq[String] = Seq("/assets/?.*")
 
   protected def isDBSessionRequired(req: HttpServletRequest): Boolean = {
-    val contextPath = req.getServletContext.getContextPath
-    val path = req.getRequestURI
-    val shouldBeExcluded = except.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
-    if (!shouldBeExcluded) {
-      val allPathShouldBeIncluded = only.isEmpty
-      val shouldBeIncluded = only.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
-      allPathShouldBeIncluded || shouldBeIncluded
-    } else {
+    if (req == null || req.getServletContext == null) {
       false
+    } else {
+      val contextPath = req.getServletContext.getContextPath
+      val path = req.getRequestURI
+      val shouldBeExcluded = txExcept.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
+      if (!shouldBeExcluded) {
+        val allPathShouldBeIncluded = txOnly.isEmpty
+        val shouldBeIncluded = txOnly.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
+        allPathShouldBeIncluded || shouldBeIncluded
+      } else {
+        false
+      }
     }
   }
 
-  before() {
+  def beginDBConnection = {
     if (isDBSessionRequired(request)) {
-      logger.debug(s"Thread local db session is borrowed from the pool. (connection pool: ${connectionPool.url})")
-      val db = ThreadLocalDB.create(connectionPool.borrow())
+      val db = ThreadLocalDB.create(dbConnectionPool.borrow())
+      logger.debug(s"Thread local db session is borrowed from the pool. (db: ${db})")
       db.begin()
-      logger.debug(s"Thread local db session begun. (connection pool: ${connectionPool.url})")
+      logger.debug(s"Thread local db session begun. (db: ${db})")
     }
   }
 
-  after() {
-    if (isDBSessionRequired(request)) {
+  addErrorFilter {
+    case e: Throwable =>
       val db = ThreadLocalDB.load()
-      logger.debug(s"Thread local db session is loaded. (db: ${db})")
-      if (db != null) {
+      val info = db.toString
+      if (db != null && !db.isTxNotActive) {
+        logger.debug(s"Thread local db session is loaded. (db: ${info})")
         try {
-          db.commit()
-          logger.debug(s"Thread local db session is committed. (connection pool: ${connectionPool.url})")
-        } catch {
-          case t: Throwable =>
-            db.rollbackIfActive()
-            logger.debug(s"Thread local db session is rolled back. (connection pool: ${connectionPool.url})")
-            throw t
+          db.rollbackIfActive()
+          logger.debug(s"Thread local db session is rolled back. (db: ${info})")
         } finally {
           try db.close()
-          catch { case e: Throwable => throw e }
-          logger.debug(s"Thread local db session is returned to the pool. (connection pool: ${connectionPool.url})")
+          catch { case e: Exception => }
+          logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
+        }
+      }
+  }
+
+  def commitDBConnection() = {
+    if (isDBSessionRequired(request)) {
+      val db = ThreadLocalDB.load()
+      val info = db.toString
+      if (db != null && !db.isTxNotActive) {
+        logger.debug(s"Thread local db session is loaded. (db: ${info})")
+        try {
+          db.commit()
+          logger.debug(s"Thread local db session is committed. (db: ${info})")
+        } finally {
+          try db.close()
+          catch { case e: Exception => }
+          logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
         }
       }
     }
-    ()
   }
+
+  beforeAction()(beginDBConnection)
+
+  afterAction()(commitDBConnection)
 
 }

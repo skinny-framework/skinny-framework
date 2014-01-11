@@ -372,7 +372,7 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
   private[this] implicit val skinnyController: SkinnyController = this
 
   // set resourceName/resourcesName to the request scope
-  before() {
+  beforeAction() {
     set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
     set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
   }

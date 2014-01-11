@@ -1,13 +1,11 @@
 package skinny.filter
 
-import skinny.controller.SkinnyController
-import org.scalatra.ErrorHandler
+/**
+ * Shows error page when unexpected exceptions are thrown from controllers.
+ */
+trait ErrorPageFilter extends SkinnyFilter { self: SkinnyFilterActivation =>
 
-trait ErrorPageFilter { self: SkinnyController =>
-
-  def addErrorHandler(handler: ErrorHandler) = error(handler)
-
-  addErrorHandler {
+  addErrorFilter {
     case e: Throwable =>
       logger.error(e.getMessage, e)
       status = 500

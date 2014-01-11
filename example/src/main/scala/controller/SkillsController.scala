@@ -3,9 +3,12 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
-import skinny.filter.TxPerRequestFilter
+import skinny.filter._
 
-object SkillsController extends SkinnyResource with ApplicationController { //with TxPerRequestFilter {
+object SkillsController extends SkinnyResource with ApplicationController {
+  // TODO SkinnyResource doesn't execute Scalatra after filters
+  //with TxPerRequestFilter {
+
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"
@@ -24,7 +27,4 @@ object SkillsController extends SkinnyResource with ApplicationController { //wi
 
   def urlSample = url(SkillsController.indexUrl, "page" -> "1")
 
-  after() {
-    println("should work but doesn't...")
-  }
 }

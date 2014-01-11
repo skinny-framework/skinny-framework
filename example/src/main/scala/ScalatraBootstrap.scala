@@ -1,7 +1,7 @@
 import _root_.controller._
 import skinny._
 import skinny.controller.{ AssetsController }
-import skinny.filter.{ ErrorPageFilter }
+import skinny.filter.{ TxPerRequestFilter, SkinnyFilterActivation, ErrorPageFilter }
 import skinny.servlet.filter.ExceptionLoggingNotifier
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
@@ -12,9 +12,11 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     //ctx.mount(classOf[skinny.orm.servlet.TxPerRequestFilter], "/*")
 
     // error filter example
-    ctx.mount(classOf[ExceptionLoggingNotifier], "/*")
+    //ctx.mount(classOf[ExceptionLoggingNotifier], "/*")
 
     Controllers.root.mount(ctx)
+    ErrorController.mount(ctx)
+
     Controllers.programmers.mount(ctx)
     CompaniesController.mount(ctx)
     CommentsController.mount(ctx)
