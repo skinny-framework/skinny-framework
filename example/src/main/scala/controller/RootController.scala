@@ -3,7 +3,7 @@ package controller
 import service._
 import skinny.filter._
 
-class RootController extends ApplicationController {
+class RootController extends ApplicationController with TxPerRequestFilter with SkinnySessionFilter {
 
   val echoService: EchoService = EchoService()
 
@@ -21,5 +21,10 @@ class RootController extends ApplicationController {
   def errorExample = throw new RuntimeException("sample error!")
 
   def reactExample = render("/react/index")
+
+  def invalidateExample = {
+    session.invalidate()
+    redirect("/")
+  }
 
 }

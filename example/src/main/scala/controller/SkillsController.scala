@@ -5,9 +5,8 @@ import skinny.validator._
 import model._
 import skinny.filter._
 
-object SkillsController extends SkinnyResource with ApplicationController {
-  // TODO SkinnyResource doesn't execute Scalatra after filters
-  //with TxPerRequestFilter {
+object SkillsController extends SkinnyResource with ApplicationController
+    with TxPerRequestFilter with SkinnySessionFilter {
 
   protectFromForgery()
 
