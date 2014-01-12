@@ -14,7 +14,8 @@ trait AutoSessionFeature { self: SQLSyntaxSupport[_] with ConnectionPoolFeature 
     connectionPoolName match {
       case ConnectionPool.DEFAULT_NAME =>
         Option(ThreadLocalDB.load()).map { threadLocalDB =>
-          if (threadLocalDB.isTxAlreadyStarted) threadLocalDB.withinTxSession()
+          if (threadLocalDB.isTxNotActive) AutoSession
+          else if (threadLocalDB.isTxAlreadyStarted) threadLocalDB.withinTxSession()
           else threadLocalDB.autoCommitSession()
         } getOrElse AutoSession
       case _ => NamedAutoSession(connectionPoolName)
