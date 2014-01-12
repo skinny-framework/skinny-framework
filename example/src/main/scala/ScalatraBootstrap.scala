@@ -6,11 +6,9 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
 
   override def initSkinnyApp(ctx: ServletContext) {
 
-    // enables open-session-in-view pattern
-    //ctx.mount(classOf[skinny.orm.servlet.TxPerRequestFilter], "/*")
-
-    // error filter example
-    //ctx.mount(classOf[ExceptionLoggingNotifier], "/*")
+    scalikejdbc.GlobalSettings.loggingSQLAndTime = scalikejdbc.LoggingSQLAndTimeSettings(
+      singleLineMode = true
+    )
 
     Controllers.root.mount(ctx)
     ErrorController.mount(ctx)

@@ -89,7 +89,7 @@ trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with R
   before() {
     if (requestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
       set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
-      set(RequestScopeFeature.ATTR_CSRF_TOKEN, csrfToken)
+      set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken)
     }
   }
 

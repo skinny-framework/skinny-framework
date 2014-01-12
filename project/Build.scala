@@ -149,14 +149,14 @@ object SkinnyFrameworkBuild extends Build {
         "ch.qos.logback"     % "logback-classic"     % "1.0.13"              % "runtime",
         "org.eclipse.jetty"  % "jetty-webapp"        % JettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % JettyVersion          % "container",
-        "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
+        "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       ),
       mainClass := Some("TaskLauncher"),
       // Scalatra tests become slower when multiple controller tests are loaded in the same time
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
-    )
+    ) 
   ) dependsOn(framework, assets, thymeleaf, test, task)
 
   val servletApiDependencies = Seq(

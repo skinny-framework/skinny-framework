@@ -45,7 +45,7 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
             catch {
               case e: Exception =>
                 logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
-                last
+                throw e
             }
         }
     }
