@@ -20,11 +20,11 @@ object Controllers {
   }
 
   object mustache extends MustacheController with Routes {
-    val indexUrl = get("/mustache/")(index).as('index)
+    val indexUrl = get("/mustache/?".r)(index).as('index)
   }
 
   object thymeleaf extends ThymeleafController with Routes {
-    val indexUrl = get("/thymeleaf/")(index).as('index)
+    val indexUrl = get("/thymeleaf/?".r)(index).as('index)
   }
 
 }

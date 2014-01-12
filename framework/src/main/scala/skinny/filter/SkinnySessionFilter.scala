@@ -67,13 +67,17 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   // override CsrfTokenSupport
 
-  override protected def isForged: Boolean =
+  override protected def isForged: Boolean = {
+    if (skinnySession.getAttribute(csrfKey).isEmpty) {
+      prepareCsrfToken()
+    }
     !request.requestMethod.isSafe &&
-      skinnySession.getAttribute(csrfKey).map(_.toString) != params.get(csrfKey) &&
-      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey).map(_.toString))
+      skinnySession.getAttribute(csrfKey) != params.get(csrfKey) &&
+      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
+  }
 
   override protected def prepareCsrfToken() = {
-    skinnySession.getAttributeOrElseUpdate(csrfKey, GenerateId()).toString
+    skinnySession.getAttributeOrElseUpdate(csrfKey, GenerateId())
   }
 
   // override SessionLocaleFeature

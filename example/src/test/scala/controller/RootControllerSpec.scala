@@ -3,9 +3,8 @@ package controller
 import service._
 import org.scalatra.test.scalatest._
 import skinny._
-import skinny.test.SkinnyTestSupport
 
-class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class RootControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   class EchoServiceMock extends EchoService {
     override def echo(s: String): String = s.toUpperCase
@@ -15,7 +14,7 @@ class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   addFilter(ErrorController, "/*")
   addFilter(new RootController with Routes {
     override val echoService = new EchoServiceMock
-    get("/mock/?")(index).as('index)
+    get("/mock/?".r)(index).as('index)
   }, "/*")
 
   it should "show top page" in {

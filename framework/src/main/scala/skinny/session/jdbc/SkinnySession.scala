@@ -7,40 +7,60 @@ import java.io._
 import grizzled.slf4j.Logging
 
 case class SkinnySession(
-    id: Long, createdAt: DateTime, expireAt: DateTime,
+    id: Long,
+    createdAt: DateTime,
+    expireAt: DateTime,
     servletSessions: Seq[ServletSession] = Nil,
     attributes: Seq[SkinnySessionAttribute] = Nil) extends Logging {
 
   import SkinnySession._
 
-  private[this] val results = new scala.collection.concurrent.TrieMap[String, (LastOperation, Any)]
+  var consistentMode: Boolean = true
+
+  case class OpsAndValue(ops: LastOperation, value: Any)
+  private[this] val toBeStored = new scala.collection.concurrent.TrieMap[String, OpsAndValue]
+  private[this] val alreadyStored = new scala.collection.concurrent.TrieMap[String, OpsAndValue]
 
   def getAttribute(name: String): Object = {
-    if (results.filter(_._2._1 == Remove).exists(_._1 == name)) {
-      null
-    } else if (results.filter(_._2._1 == Set).exists(_._1 == name)) {
-      results.filter(_._2._1 == Set)
-        .find(_._1 == name)
-        .get._2._2
-        .asInstanceOf[Object]
-    } else {
-      attributes.find(_.name == name)
-        .map { attr => attributeToObject(attr.name, attr.value) }
-        .map(_.asInstanceOf[Object]).orNull[Object]
-    }
+    val foundInToBeStored = toBeStored.find(_._1 == name).map { case (_, ov) => ov }
+    val foundInAlreadyStored = alreadyStored.find(_._1 == name).map { case (_, ov) => ov }
+    val foundInAttributes = attributes.find(_.name == name).map(attr => attributeToObject(attr.name, attr.value))
+    val markedAsDeleted = foundInToBeStored.exists(_.ops == Remove) || foundInAlreadyStored.exists(_.ops == Remove)
+
+    if (markedAsDeleted) null
+    else foundInToBeStored.filter(_.ops == Set).map(_.value)
+      .orElse(foundInAlreadyStored.filter(_.ops == Set).map(_.value))
+      .orElse(foundInAttributes)
+      .map(_.asInstanceOf[Object])
+      .orNull[Object]
   }
 
   def setAttribute(name: String, value: Any) = {
-    results.update(name, (Set, value))
+    logger.debug("setAttribute: " + name + " -> " + value)
+    if (consistentMode) {
+      SkinnySession.setAttributeToDatabase(id, name, value)
+      alreadyStored.update(name, OpsAndValue(Set, value))
+    } else toBeStored.update(name, OpsAndValue(Set, value))
   }
+
   def removeAttribute(name: String) = {
-    results.update(name, (Remove, None))
+    logger.debug("removeAttribute: " + name)
+    if (consistentMode) {
+      SkinnySession.removeAttributeFromDatabase(id, name)
+      alreadyStored.update(name, OpsAndValue(Remove, None))
+    } else toBeStored.update(name, OpsAndValue(Remove, None))
+  }
+
+  def attributeNames: Seq[String] = {
+    attributes.map(_.name) ++
+      alreadyStored.filter(_._2.ops == Set).map(_._1) ++
+      toBeStored.filter(_._2.ops == Set).map(_._1)
   }
 
   def save(): Unit = {
-    results.foreach {
-      case (name, (Set, value)) => SkinnySession.setAttributeToDatabase(id, name, value)
-      case (name, (Remove, value)) => SkinnySession.removeAttributeFromDatabase(id, name)
+    toBeStored.foreach {
+      case (name, OpsAndValue(Set, value)) => SkinnySession.setAttributeToDatabase(id, name, value)
+      case (name, OpsAndValue(Remove, value)) => SkinnySession.removeAttributeFromDatabase(id, name)
     }
   }
 
@@ -63,8 +83,6 @@ case class SkinnySession(
       }
     case v => v
   }
-
-  def attributeNames: Seq[String] = attributes.map(_.name) ++ results.filter(_._2._1 == Set).map(_._1)
 
 }
 
@@ -148,7 +166,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     }
   }
 
-  private def setAttributeToDatabase(id: Long, name: String, value: Any)(implicit s: DBSession = autoSession): Unit = {
+  def setAttributeToDatabase(id: Long, name: String, value: Any)(implicit s: DBSession = autoSession): Unit = {
     if (name != null) {
       val c = SkinnySessionAttribute.column
       val namedValues = Seq(
@@ -177,7 +195,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     }
   }
 
-  private def removeAttributeFromDatabase(id: Long, name: String)(implicit s: DBSession = autoSession): Unit = {
+  def removeAttributeFromDatabase(id: Long, name: String)(implicit s: DBSession = autoSession): Unit = {
     val c = SkinnySessionAttribute.column
     delete.from(SkinnySessionAttribute).where.eq(c.skinnySessionId, id).and.eq(c.name, name)
       .toSQL.update.apply()

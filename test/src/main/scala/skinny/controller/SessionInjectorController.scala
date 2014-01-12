@@ -13,7 +13,7 @@ private[skinny] object SessionInjectorController extends SessionInjectorControll
 /**
  * Session injector for testing & debugging.
  */
-private[skinny] class SessionInjectorController extends SkinnyController {
+trait SessionInjectorController extends SkinnyController {
 
   /**
    * Shows whole session attributes.
