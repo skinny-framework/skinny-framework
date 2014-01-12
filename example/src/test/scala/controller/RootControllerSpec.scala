@@ -12,6 +12,7 @@ class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   }
 
   addFilter(Controllers.root, "/*")
+  addFilter(ErrorController, "/*")
   addFilter(new RootController with Routes {
     override val echoService = new EchoServiceMock
     get("/mock/?")(index).as('index)
@@ -43,6 +44,11 @@ class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
   it should "show error" in {
     get("/error") {
       status should equal(500)
+      body.size should be > 0
+    }
+    get("/error/runtime") {
+      status should equal(500)
+      body.size should be > 0
     }
   }
 

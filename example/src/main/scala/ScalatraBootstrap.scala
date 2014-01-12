@@ -1,8 +1,6 @@
 import _root_.controller._
 import skinny._
-import skinny.controller.{ AssetsController }
-import skinny.filter.{ TxPerRequestFilter, SkinnyFilterActivation, ErrorPageFilter }
-import skinny.servlet.filter.ExceptionLoggingNotifier
+import skinny.controller._
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
 

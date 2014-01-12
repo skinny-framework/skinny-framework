@@ -1,6 +1,6 @@
 package skinny.filter
 
-import skinny.controller.SkinnyController
+import org.scalatra.ErrorHandler
 
 /**
  * Skinny Filter.
@@ -25,9 +25,18 @@ import skinny.controller.SkinnyController
  *   }
  * }}}
  *
- * If you use Scatatra's filter - before/after, be careful. It's pretty tricky.
+ * If you use Scatatra's filter (before/after not beforeAction/afterAction), be careful. It's pretty tricky.
  * Because Scalatra's filters would be applied for all the controllers difined below in ScalatraBootstrap.
- * Just using beforeAction/afterAction is highly recommended.
  */
-trait SkinnyFilter extends SkinnyController with SkinnyFilterActivation
+trait SkinnyRenderingFilter extends SkinnyFilter {
 
+  /**
+   * Adds error handler which renders body to SkinnyController.
+   *
+   * @param handler
+   */
+  def addRenderingErrorFilter(handler: ErrorHandler) = {
+    skinnyErrorFilters.update(WithRendering, handler)
+  }
+
+}

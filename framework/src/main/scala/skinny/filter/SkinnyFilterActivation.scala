@@ -8,22 +8,22 @@ import org.scalatra._
  */
 trait SkinnyFilterActivation { self: SkinnyControllerBase =>
 
+  sealed trait RenderingRequired
+  case object WithRendering extends RenderingRequired
+  case object WithoutRendering extends RenderingRequired
+
   /**
    * Registered error handlers.
    */
-  private[this] lazy val skinnyErrorFilters = new scala.collection.mutable.ListBuffer[ErrorHandler]
+  protected lazy val skinnyErrorFilters = new scala.collection.concurrent.TrieMap[RenderingRequired, ErrorHandler]
 
   /**
-   * Adds error handler to SkinnyController.
+   * Adds error handler which doesn't return result to SkinnyController.
    *
    * @param handler
    */
   def addErrorFilter(handler: ErrorHandler) = {
-    if (skinnyErrorFilters == null) {
-      throw new IllegalStateException("SkinnyFilterActivation should be mixed in after filters?")
-    } else {
-      skinnyErrorFilters.append(handler)
-    }
+    skinnyErrorFilters.update(WithoutRendering, handler)
   }
 
   /**
@@ -34,7 +34,13 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
     val filtersTraverse: PartialFunction[Throwable, Any] = {
       case (t: Throwable) =>
         skinnyErrorFilters.foldLeft(null.asInstanceOf[Any]) {
-          case (last, filter: ErrorHandler) =>
+          case (last, (WithoutRendering, filter)) =>
+            try filter.apply(t)
+            catch {
+              case e: Exception => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
+            }
+            last
+          case (last, (WithRendering, filter)) =>
             try filter.apply(t)
             catch {
               case e: Exception =>

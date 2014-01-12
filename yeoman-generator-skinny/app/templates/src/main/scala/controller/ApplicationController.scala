@@ -1,9 +1,10 @@
 package controller
 
-import skinny.SkinnyController
+import skinny._
 import skinny.filter._
 
 trait ApplicationController extends SkinnyController
-    with ErrorPageFilter {
+  with ErrorPageFilter {
 
 }
+

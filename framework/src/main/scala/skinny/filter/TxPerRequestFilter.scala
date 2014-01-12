@@ -7,7 +7,7 @@ import grizzled.slf4j.Logging
 /**
  * A filter which enables controller wired with a single transactional DB session.
  */
-trait TxPerRequestFilter extends SkinnyFilter with Logging { self: SkinnyFilterActivation =>
+trait TxPerRequestFilter extends SkinnyFilter with Logging {
 
   def dbConnectionPool: ConnectionPool = ConnectionPool.get()
 
@@ -58,7 +58,7 @@ trait TxPerRequestFilter extends SkinnyFilter with Logging { self: SkinnyFilterA
       }
   }
 
-  def commitDBConnection() = {
+  def commitDBConnection = {
     if (isDBSessionRequired(request)) {
       val db = ThreadLocalDB.load()
       val info = db.toString

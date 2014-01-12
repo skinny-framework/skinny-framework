@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.24"
+  val skinnyVersion = "0.9.25-SNAPSHOT"
   val _scalaVersion = "2.10.3"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)

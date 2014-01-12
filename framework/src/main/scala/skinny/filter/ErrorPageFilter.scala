@@ -3,9 +3,9 @@ package skinny.filter
 /**
  * Shows error page when unexpected exceptions are thrown from controllers.
  */
-trait ErrorPageFilter extends SkinnyFilter { self: SkinnyFilterActivation =>
+trait ErrorPageFilter extends SkinnyRenderingFilter {
 
-  addErrorFilter {
+  addRenderingErrorFilter {
     case e: Throwable =>
       logger.error(e.getMessage, e)
       status = 500
