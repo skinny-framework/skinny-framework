@@ -10,6 +10,7 @@
 
     <session-config>
         <tracking-mode>COOKIE</tracking-mode>
+        <session-timeout>1440</session-timeout>
         <cookie-config>
             <name>skinny_session</name>
         </cookie-config>

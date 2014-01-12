@@ -51,9 +51,11 @@ case class SkinnySession(
       attributeToObject(k, some.asInstanceOf[Some[_]].orNull[Any](null))
     case bytes: Array[Byte] =>
       try {
-        val b = new ByteArrayInputStream(bytes)
-        val is = new ObjectInputStream(b)
-        attributeToObject(k, is.readObject)
+        using(new ByteArrayInputStream(bytes)) { b =>
+          using(new ObjectInputStream(b)) { is =>
+            attributeToObject(k, is.readObject)
+          }
+        }
       } catch {
         case e: StreamCorruptedException =>
           logger.info(s"Failed to load attribute for $k because ${e.getMessage}")
@@ -137,10 +139,12 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     case None => null
     case Some(v) => toSerializable(v)
     case v => {
-      val bytes = new ByteArrayOutputStream
-      val out = new ObjectOutputStream(bytes)
-      out.writeObject(v)
-      bytes.toByteArray
+      using(new ByteArrayOutputStream) { bytes =>
+        using(new ObjectOutputStream(bytes)) { out =>
+          out.writeObject(v)
+          bytes.toByteArray
+        }
+      }
     }
   }
 
