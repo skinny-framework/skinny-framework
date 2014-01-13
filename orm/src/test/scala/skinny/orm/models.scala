@@ -250,3 +250,19 @@ object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
     priceYen = rs.get(p.priceYen)
   )
 }
+
+case class Tag(tag: String, description: Option[TagDescription] = None)
+object Tag extends SkinnyTable[Tag] {
+  def defaultAlias = createAlias("tag")
+  def defaultJoinColumnFieldName = "tag"
+  def extract(rs: WrappedResultSet, n: ResultName[Tag]): Tag = new Tag(tag = rs.get(n.tag))
+
+  hasOne[TagDescription](TagDescription, (t, td) => t.copy(description = td)).byDefault
+}
+case class TagDescription(tag: String, description: String)
+object TagDescription extends SkinnyTable[TagDescription] {
+  def defaultAlias = createAlias("td")
+  def defaultJoinColumnFieldName = "tag"
+  def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription =
+    new TagDescription(tag = rs.get(n.tag), description = rs.get(n.description))
+}

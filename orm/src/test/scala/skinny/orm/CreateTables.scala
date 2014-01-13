@@ -95,6 +95,17 @@ create table products (
   name varchar(255) not null,
   price_yen bigint not null
 )
+""",
+    sql"""
+create table tag (
+  tag varchar(255) primary key not null
+)
+""",
+    sql"""
+create table tag_description (
+  tag varchar(255) primary key not null,
+  description varchar(1024) not null
+)
 """
   )
 
