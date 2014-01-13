@@ -5,7 +5,8 @@ import javax.servlet.http._
 import org.joda.time.DateTime
 import grizzled.slf4j.Logging
 import skinny.session.jdbc.SkinnySession
-import skinny.session.servlet.{ SkinnyHttpSessionWrapper, SkinnyHttpRequestWrapper }
+import skinny.session.servlet._
+import skinny.filter.SkinnySessionFilter
 
 /**
  * Servlet filter to attach skinny sessions to Servlet session due to invalidation.
@@ -54,8 +55,10 @@ class SkinnySessionInitializer extends Filter with Logging {
     if (except.exists(e => req.getServletPath.startsWith(e))) {
       chain.doFilter(request, response)
     } else {
+      val skinnySession = getSkinnyHttpSession(req)
+      req.setAttribute(SkinnySessionFilter.ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE, skinnySession)
       chain.doFilter(new SkinnyHttpRequestWrapper(req,
-        SkinnyHttpSessionWrapper(req.getSession, getSkinnyHttpSession(req))), response)
+        SkinnyHttpSessionWrapper(req.getSession, skinnySession)), response)
     }
   }
 

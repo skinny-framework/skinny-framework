@@ -11,6 +11,11 @@ import java.util.Locale
 import org.joda.time.DateTime
 import skinny.session.jdbc.SkinnySession
 
+object SkinnySessionFilter {
+
+  val ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE = classOf[SkinnySessionFilter].getCanonicalName + "_SkinnySessionWrapper"
+
+}
 /**
  * Enables replacing Servlet session with Skinny's session shared among several Servlet apps.
  *
@@ -21,8 +26,7 @@ import skinny.session.jdbc.SkinnySession
  * }}}
  */
 trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with SessionLocaleFeature =>
-
-  val ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE = classOf[SkinnySessionFilter].getCanonicalName + "_SkinnySessionWrapper"
+  import SkinnySessionFilter._
 
   def initializeSkinnySession: SkinnyHttpSession = {
     val jsessionIdCookieName = servletContext.getSessionCookieConfig.getName
