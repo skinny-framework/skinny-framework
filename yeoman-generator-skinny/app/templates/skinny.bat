@@ -128,8 +128,9 @@ ECHO   compile    : will compile all the classes
 ECHO   db:migrate : will execute database migration
 ECHO   test       : will run all the tests
 ECHO   test-only  : will run the specified test
-ECHO   package    : will create *.war file to deploy
-ECHO   publish    : will publish *.war file to repository
+ECHO   package            : will create *.war file to deploy
+ECHO   package:standalone : will create *.jar file to run as stand alone app
+ECHO   publish            : will publish *.war file to repository
 ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
