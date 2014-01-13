@@ -55,7 +55,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-io"    %  "commons-io" % "2.4"
-      ) ++ standaloneDependencies ++ testDependencies
+      ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(common, validator, orm)
 
