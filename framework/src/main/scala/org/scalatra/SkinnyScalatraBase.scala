@@ -8,12 +8,12 @@ import scala.util.Failure
 /**
  * Partially patched ScalatraBase for Skinny Framework.
  *
- * Scalatra doesn't execute after filters only once.
+ * Scalatra runs only the first one of after filters. The others are skipped due to 
+ * the servlet/filter is already marked as "org.scalatra.ScalatraFilter.afterFilters.Run".
  * This means that when several Scalatra filters is already definied below at ScalatraBootstrap.scala,
- * current ScalatraFilter's after callback would be ignored even if before filters are alwasy called.
+ * current ScalatraFilter's after callbacks would be ignored (even though all the before callbacks are called).
  *
- * So We've patched to ignore "org.scalatra.ScalatraFilter.afterFilters.Run" only for Filters.
- *
+ * So We've patched ScalatraBase to ignore "org.scalatra.ScalatraFilter.afterFilters.Run" only for Filters.
  * Hope Scalatra to support ignoring "org.scalatra.ScalatraFilter.afterFilters.Run" option to 3rd party.
  */
 trait SkinnyScalatraBase extends ScalatraBase {
