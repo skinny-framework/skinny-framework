@@ -60,6 +60,9 @@ elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
 elif [ "$command" == "package" ];then
   setup_build
   ${sbt_path} "task/run assets:precompile" build/package
+elif [ "$command" == "package:standalone" ];then
+  setup_build
+  ${sbt_path} "task/run assets:precompile" build/assembly
 elif [ "$command" == "publish" ];then
   setup_build
   ${sbt_path} "task/run assets:precompile" build/publish

@@ -18,7 +18,7 @@ import org.scalatra.ErrorHandler
  *         throw new UnexpectedErrorException
  *         // rollback
  *       } else {
- *         redirect(s"/books/${id}")
+ *         redirect(s"/books/\${id}")
  *         // commit
  *       }
  *     }

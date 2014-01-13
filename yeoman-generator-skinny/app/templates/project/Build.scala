@@ -59,7 +59,10 @@ object SkinnyAppBuild extends Build {
       version := "0.0.1-SNAPSHOT",
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
-      libraryDependencies ++= _dependencies ++ containerDependencies,
+      // if you'd like to run `skinny package:standalone, append skinny-standalone
+      libraryDependencies ++= _dependencies ++
+        //Seq("org.skinny-framework" %% "skinny-standalone" % skinnyVersion) ++
+        containerDependencies,
       publishTo <<= version { (v: String) =>
         val base = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
