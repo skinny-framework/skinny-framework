@@ -20,6 +20,12 @@ function setup_build() {
   cp -pr src build/src
   cp -pr build.sbt build/build.sbt
 }
+function setup_standalone_build() {
+  rm -rf standalone-build
+  mkdir standalone-build
+  cp -pr src standalone-build/src
+  cp -pr build.sbt standalone-build/build.sbt
+}
 
 command="$1"
 if [ "$command" == "run" ];then
@@ -61,8 +67,8 @@ elif [ "$command" == "package" ];then
   setup_build
   ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "package:standalone" ];then
-  setup_build
-  ${sbt_path} "task/run assets:precompile" build/assembly
+  setup_standalone_build
+  ${sbt_path} "task/run assets:precompile" standalone-build/assembly
 elif [ "$command" == "publish" ];then
   setup_build
   ${sbt_path} "task/run assets:precompile" build/publish

@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "0.9.25"
+  val _version = "0.9.25-1"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.6"
   val scalikeJDBCVersion = "1.7.3"
@@ -63,8 +63,11 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-standalone",
       scalaVersion := "2.10.0",
-      libraryDependencies ++= standaloneDependencies ++ Seq(
-        "javax.servlet" % "javax.servlet-api" % "3.0.1"
+      libraryDependencies ++= Seq(
+        "javax.servlet"     %  "javax.servlet-api" % "3.0.1"       % "compile",
+        "org.eclipse.jetty" %  "jetty-webapp"      % jettyVersion  % "compile",
+        "org.eclipse.jetty" %  "jetty-servlet"     % jettyVersion  % "compile",
+        "org.eclipse.jetty" %  "jetty-server"      % jettyVersion  % "compile"
       )
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
@@ -185,12 +188,6 @@ object SkinnyFrameworkBuild extends Build {
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile",
     "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"
   ) ++ servletApiDependencies ++ slf4jApiDependencies
-
-  val standaloneDependencies = Seq(
-    "org.eclipse.jetty" %  "jetty-webapp"    % jettyVersion  % "compile",
-    "org.eclipse.jetty" %  "jetty-servlet"   % jettyVersion  % "compile",
-    "org.eclipse.jetty" %  "jetty-server"    % jettyVersion  % "compile"
-  )
 
   val scalikejdbcDependencies = Seq(
     "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile",

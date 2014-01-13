@@ -62,4 +62,5 @@ sandbox/db
 release
 
 .sass-cache
+standalone-build
 
