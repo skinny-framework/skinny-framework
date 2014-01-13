@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val Organization = "org.skinny-framework"
-  val Version = "0.9.24"
+  val Version = "0.9.25-SNAPSHOT"
   val ScalatraVersion = "2.2.2"
   val Json4SVersion = "3.2.6"
   val ScalikeJDBCVersion = "1.7.3"

@@ -66,7 +66,11 @@ object SkinnyAppBuild extends Build {
         else Some("releases" at base + "service/local/staging/deploy/maven2")
       },
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-        Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",  Nil,  Nil,  Some("templates")))
+        Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
+        // These imports should be same as src/main/scala/templates/ScalatePackage.scala
+        Seq("import controller._", "import model._"),
+        Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
+        Some("templates")))
       }
     )
   )
