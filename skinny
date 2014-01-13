@@ -17,7 +17,7 @@ elif [ "$command" == "clean" ];then
 elif [ "$command" == "update" ];then
   sbt update
 elif [ "$command" == "console" ];then
-  sbt console
+  sbt example/console
 elif [ "$command" == "compile" ];then
   sbt compile
 elif [ "$command" == "test" ];then

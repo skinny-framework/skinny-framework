@@ -13,7 +13,9 @@ object CSRFProtectionFeature {
 /**
  * Provides Cross-Site Request Forgery (CSRF) protection.
  */
-trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
+trait CSRFProtectionFeature extends CsrfTokenSupport {
+
+  self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with BeforeAfterActionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
 
   /**
    * Overrides Scalatra's default key name.
@@ -86,10 +88,10 @@ trait CSRFProtectionFeature extends CsrfTokenSupport { self: ScalatraBase with R
   def handleForgeryIfDetected(): Unit = haltWithBody(403)
 
   // Registers csrfKey & csrfToken to request scope.
-  before() {
+  beforeAction() {
     if (requestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
       set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
-      set(RequestScopeFeature.ATTR_CSRF_TOKEN, csrfToken)
+      set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())
     }
   }
 

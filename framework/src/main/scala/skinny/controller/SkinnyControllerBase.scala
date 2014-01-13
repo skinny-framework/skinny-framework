@@ -1,15 +1,20 @@
 package skinny.controller
 
+import skinny._
 import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
-import org.scalatra.UrlGeneratorSupport
-import skinny.{ I18n, Format }
+import org.scalatra._
 import java.util.Locale
+import org.scalatra.ScalatraBase._
+import skinny.I18n
+import javax.servlet.Filter
+import javax.servlet.http.HttpServlet
+import scala.util.Failure
 
 trait SkinnyControllerBase
-    extends org.scalatra.ScalatraBase
+    extends org.scalatra.SkinnyScalatraBase
     with EnvFeature
     with RichRouteFeature
     with UrlGeneratorSupport

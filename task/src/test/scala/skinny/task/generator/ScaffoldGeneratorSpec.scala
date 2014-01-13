@@ -26,7 +26,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |import skinny.validator._
           |import model.Member
           |
-          |object MembersController extends SkinnyResource {
+          |object MembersController extends SkinnyResource with ApplicationController {
           |  protectFromForgery()
           |
           |  override def model = Member

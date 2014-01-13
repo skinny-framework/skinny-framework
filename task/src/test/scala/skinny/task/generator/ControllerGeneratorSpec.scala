@@ -16,7 +16,7 @@ class ControllerGeneratorSpec extends FunSpec with ShouldMatchers {
           |import skinny._
           |import skinny.validator._
           |
-          |class MembersController extends SkinnyController {
+          |class MembersController extends ApplicationController {
           |  protectFromForgery()
           |
           |  def index = render("/members/index")

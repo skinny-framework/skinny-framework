@@ -10,6 +10,10 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   def skill = Skill.findAllPaging(1, 0).head
 
+  it should "have correct url" in {
+    SkillsController.urlSample should equal("/skills?page=1")
+  }
+
   it should "show skills" in {
     get("/skills") {
       status should equal(200)
@@ -53,7 +57,7 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
       status should equal(403)
     }
 
-    withSession("csrf-token" -> "12345") {
+    withSkinnySession("csrf-token" -> "12345") {
       post(s"/skills", "name" -> newName, "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
@@ -75,7 +79,7 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     }
     Skill.findById(skill.id).get.name should not equal (newName)
 
-    withSession("csrf-token" -> "12345") {
+    withSkinnySession("csrf-token" -> "12345") {
       put(s"/skills/${skill.id}", "name" -> newName, "csrf-token" -> "12345") {
         status should equal(302)
       }
@@ -92,7 +96,7 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     delete(s"/skills/${id}") {
       status should equal(403)
     }
-    withSession("csrf-token" -> "aaaaaa") {
+    withSkinnySession("csrf-token" -> "aaaaaa") {
       delete(s"/skills/${id}?csrf-token=aaaaaa") {
         status should equal(200)
       }

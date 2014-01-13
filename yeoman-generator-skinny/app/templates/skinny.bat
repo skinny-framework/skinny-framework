@@ -97,6 +97,15 @@ IF %command%==package (
   GOTO script_eof
 )
 
+IF "%command%"=="package:standalone" (
+  RMDIR build /s /q
+  MKDIR build
+  XCOPY src\* build\src\* /E /D /q
+  XCOPY build.sbt build\build.sbt /E /D /q
+  sbt "task/run assets:precompile" "build/assembly"
+  GOTO script_eof
+)
+
 IF %command%==publish (
   rmdir build /s /q
   mkdir build

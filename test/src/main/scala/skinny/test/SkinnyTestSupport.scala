@@ -1,7 +1,7 @@
 package skinny.test
 
 import org.scalatra.test._
-import skinny.controller.SessionInjectorController
+import skinny.controller.{ SkinnySessionInjectorController, SessionInjectorController }
 import skinny.SkinnyEnv
 
 /**
@@ -18,7 +18,12 @@ trait SkinnyTestSupport { self: ScalatraTests =>
   object SessionInjector extends SessionInjectorController {
     put("/tmp/SkinnyTestSupport/session")(update)
   }
-  addFilter(SessionInjector, "/*")
+  addFilter(SessionInjector, "/tmp/SkinnyTestSupport/session")
+
+  object SkinnySessionInjector extends SkinnySessionInjectorController {
+    put("/tmp/SkinnyTestSupport/skinnySession")(update)
+  }
+  addFilter(SkinnySessionInjector, "/tmp/SkinnyTestSupport/skinnySession")
 
   /**
    * Provides a code block with injected session.
@@ -30,6 +35,19 @@ trait SkinnyTestSupport { self: ScalatraTests =>
    */
   def withSession[A](attributes: (String, String)*)(action: => A): A = session {
     put("/tmp/SkinnyTestSupport/session", attributes)()
+    action
+  }
+
+  /**
+   * Provides a code block with injected session.
+   *
+   * @param attributes attributes to inject
+   * @param action code block
+   * @tparam A return type
+   * @return result
+   */
+  def withSkinnySession[A](attributes: (String, String)*)(action: => A): A = session {
+    put("/tmp/SkinnyTestSupport/skinnySession", attributes)()
     action
   }
 

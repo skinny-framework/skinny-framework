@@ -254,7 +254,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   protected def updateParams: Params = Params(params)
 
   /**
-   * Strong parameter definitions for mofidication form
+   * Strong parameter definitions for modification form
    */
   protected def updateFormStrongParameters: Seq[(String, ParamType)]
 
@@ -372,7 +372,7 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
   private[this] implicit val skinnyController: SkinnyController = this
 
   // set resourceName/resourcesName to the request scope
-  before() {
+  beforeAction() {
     set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
     set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
   }
@@ -383,12 +383,14 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
   // should be defined in front of 'show
   val newUrl = get(s"${resourcesBasePath}/new")(newResource).as('new)
 
-  val createUrl = post(s"${resourcesBasePath}/?")(createResource).as('create)
+  val createUrl = post(s"${resourcesBasePath}")(createResource).as('create)
+  val createWithSlashUrl = post(s"${resourcesBasePath}/")(createResource).as('createWithSlash)
 
   // --------------
   // show
 
-  val indexUrl = get(s"${resourcesBasePath}/?")(showResources()).as('index)
+  val indexUrl = get(s"${resourcesBasePath}")(showResources()).as('index)
+  val indexWithSlashUrl = get(s"${resourcesBasePath}/")(showResources()).as('indexWithSlash)
 
   val indexExtUrl = get(s"${resourcesBasePath}.:ext") {
     (for {

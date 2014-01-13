@@ -390,7 +390,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Book.countAll() should equal(2)
     }
 
-    it("sould deal with typed auto-increment value") { implicit s =>
+    it("should deal with typed auto-increment value") { implicit s =>
       // using typed auto-increment value
       val productId: ProductId = Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 2000)
       Product.findById(productId).map(_.name) should equal(Some("How to learn Scala"))
@@ -404,6 +404,26 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Product.updateById(productId2).withAttributes('priceYen -> 1950)
       Product.findById(productId2).map(_.priceYen) should equal(Some(1950))
     }
+
+    it("should deal with tables simply by using SkinnyTable") { implicit s =>
+      val (td, c) = (TagDescription.defaultAlias, TagDescription.column)
+      val td1 = insert.into(TagDescription).namedValues(c.tag -> "Scala", c.description -> "Programming Language").toSQL.update.apply()
+      val td2 = insert.into(TagDescription).namedValues(c.tag -> "ScalikeJDBC", c.description -> "Database Access Library").toSQL.update.apply()
+      (td1, td2) should equal((1, 1))
+
+      TagDescription.where(sqls.eq(td.tag, "Scala")).apply().head.description should equal("Programming Language")
+      val tds = TagDescription.limit(10).apply()
+      tds.size should equal(2)
+
+      val (t, tc) = (Tag.defaultAlias, Tag.column)
+      val t1 = insert.into(Tag).namedValues(tc.tag -> "Scala").toSQL.update.apply()
+      t1 should equal(1)
+
+      val scalaTag = Tag.where(sqls.eq(t.tag, "Scala")).apply().head
+      scalaTag.tag should equal("Scala")
+      scalaTag.description should equal(Some(TagDescription("Scala", "Programming Language")))
+    }
+
   }
 
 }

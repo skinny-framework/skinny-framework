@@ -3,8 +3,11 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
+import skinny.filter._
 
-object SkillsController extends SkinnyResource with ApplicationController {
+object SkillsController extends SkinnyResource with ApplicationController
+    with TxPerRequestFilter with SkinnySessionFilter {
+
   protectFromForgery()
 
   override lazy val scalateExtension: String = "scaml"
@@ -20,5 +23,7 @@ object SkillsController extends SkinnyResource with ApplicationController {
   override def updateFormStrongParameters = Seq("name" -> ParamType.String)
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
+
+  def urlSample = url(SkillsController.indexUrl, "page" -> "1")
 
 }

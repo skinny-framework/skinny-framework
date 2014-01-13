@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "0.9.24"
+  val skinnyVersion = "0.9.25"
   val _scalaVersion = "2.10.3"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
@@ -59,14 +59,21 @@ object SkinnyAppBuild extends Build {
       version := "0.0.1-SNAPSHOT",
       scalaVersion := _scalaVersion,
       resolvers ++= _resolovers,
-      libraryDependencies ++= _dependencies ++ containerDependencies,
+      // if you'd like to run `skinny package:standalone, append skinny-standalone
+      libraryDependencies ++= _dependencies ++
+        //Seq("org.skinny-framework" %% "skinny-standalone" % skinnyVersion) ++
+        containerDependencies,
       publishTo <<= version { (v: String) =>
         val base = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
         else Some("releases" at base + "service/local/staging/deploy/maven2")
       },
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-        Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",  Nil,  Nil,  Some("templates")))
+        Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
+        // These imports should be same as src/main/scala/templates/ScalatePackage.scala
+        Seq("import controller._", "import model._"),
+        Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
+        Some("templates")))
       }
     )
   )

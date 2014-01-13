@@ -20,6 +20,7 @@ trait ControllerGenerator extends CodeGenerator {
     args.toList match {
       case name :: _ =>
         showSkinnyGenerator()
+        generateApplicationControllerIfAbsent()
         generate(name)
         appendToControllers(name)
         appendToScalatraBootstrap(name)
@@ -35,13 +36,28 @@ trait ControllerGenerator extends CodeGenerator {
         |import skinny._
         |import skinny.validator._
         |
-        |class ${toClassName(name)}Controller extends SkinnyController {
+        |class ${toClassName(name)}Controller extends ApplicationController {
         |  protectFromForgery()
         |
         |  def index = render("/${toVariable(name)}/index")
         |
         |}
         |""".stripMargin
+  }
+
+  def generateApplicationControllerIfAbsent() {
+    val file = new File(s"src/main/scala/controller/ApplicationController.scala")
+    writeIfAbsent(file,
+      """package controller
+        |
+        |import skinny._
+        |import skinny.filter._
+        |
+        |trait ApplicationController extends SkinnyController
+        |  with ErrorPageFilter {
+        |
+        |}
+      """.stripMargin)
   }
 
   def generate(name: String) {

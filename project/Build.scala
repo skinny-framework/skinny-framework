@@ -7,21 +7,21 @@ import ScalateKeys._
 
 object SkinnyFrameworkBuild extends Build {
 
-  val Organization = "org.skinny-framework"
-  val Version = "0.9.24"
-  val ScalatraVersion = "2.2.2"
-  val Json4SVersion = "3.2.6"
-  val ScalikeJDBCVersion = "1.7.3"
-  val ScalateVeresion = "1.6.1"
-  val H2Version = "1.3.174"
+  val _organization = "org.skinny-framework"
+  val _version = "0.9.25"
+  val scalatraVersion = "2.2.2"
+  val json4SVersion = "3.2.6"
+  val scalikeJDBCVersion = "1.7.3"
+  val scalateVeresion = "1.6.1"
+  val h2Version = "1.3.174"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
-  //val JettyVersion = "9.1.0.v20131115"
-  val JettyVersion = "9.0.7.v20131107"
+  //val jettyVersion = "9.1.0.v20131115"
+  val jettyVersion = "9.0.7.v20131107"
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
-    organization := Organization,
-    version := Version,
+    organization := _organization,
+    version := _version,
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
       "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
@@ -59,6 +59,16 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) dependsOn(common, validator, orm)
 
+  lazy val standalone = Project (id = "standalone", base = file("standalone"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-standalone",
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= standaloneDependencies ++ Seq(
+        "javax.servlet" % "javax.servlet-api" % "3.0.1"
+      )
+    ) ++ _jettyOrbitHack
+  ) dependsOn(framework)
+
   lazy val assets = Project (id = "assets", base = file("assets"),
     settings = baseSettings ++ Seq(
       name := "skinny-assets",
@@ -88,7 +98,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
         "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
-        "com.h2database"        %  "h2"                % H2Version      % "test",
+        "com.h2database"        %  "h2"                % h2Version      % "test",
         "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test"
       ) ++ testDependencies
     )
@@ -131,9 +141,9 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-test",
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
-        "org.scalikejdbc" %% "scalikejdbc-test"   % ScalikeJDBCVersion % "compile",
-        "org.scalatra"    %% "scalatra-specs2"    % ScalatraVersion    % "compile",
-        "org.scalatra"    %% "scalatra-scalatest" % ScalatraVersion    % "compile"
+        "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
+        "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "compile",
+        "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "compile"
       )
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
@@ -143,20 +153,20 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       scalaVersion := "2.10.3",
       libraryDependencies ++= Seq(
-        "org.scalatra"       %% "scalatra-specs2"    % ScalatraVersion % "test",
-        "org.scalatra"       %% "scalatra-scalatest" % ScalatraVersion % "test",
-        "com.h2database"     %  "h2"                 % H2Version,
+        "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
+        "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
+        "com.h2database"     %  "h2"                 % h2Version,
         "ch.qos.logback"     % "logback-classic"     % "1.0.13"              % "runtime",
-        "org.eclipse.jetty"  % "jetty-webapp"        % JettyVersion          % "container",
-        "org.eclipse.jetty"  % "jetty-plus"          % JettyVersion          % "container",
-        "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test" 
+        "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
+        "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
+        "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
            artifacts (Artifact("javax.servlet", "jar", "jar"))
       ),
       mainClass := Some("TaskLauncher"),
       // Scalatra tests become slower when multiple controller tests are loaded in the same time
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
-    )
+    ) 
   ) dependsOn(framework, assets, thymeleaf, test, task)
 
   val servletApiDependencies = Seq(
@@ -168,19 +178,25 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   val scalatraDependencies = Seq(
-    "org.scalatra"  %% "scalatra"           % ScalatraVersion  % "compile",
-    "org.scalatra"  %% "scalatra-scalate"   % ScalatraVersion  % "compile",
-    "org.scalatra"  %% "scalatra-json"      % ScalatraVersion  % "compile",
-    "org.json4s"    %% "json4s-jackson"     % Json4SVersion    % "compile",
-    "org.json4s"    %% "json4s-ext"         % Json4SVersion    % "compile",
-    "org.scalatra"  %% "scalatra-scalatest" % ScalatraVersion  % "test"
+    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
+    "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
+    "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile",
+    "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile",
+    "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile",
+    "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"
   ) ++ servletApiDependencies ++ slf4jApiDependencies
 
+  val standaloneDependencies = Seq(
+    "org.eclipse.jetty" %  "jetty-webapp"    % jettyVersion  % "compile",
+    "org.eclipse.jetty" %  "jetty-servlet"   % jettyVersion  % "compile",
+    "org.eclipse.jetty" %  "jetty-server"    % jettyVersion  % "compile"
+  )
+
   val scalikejdbcDependencies = Seq(
-    "org.scalikejdbc" %% "scalikejdbc"               % ScalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-interpolation" % ScalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-config"        % ScalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-test"          % ScalikeJDBCVersion % "test"
+    "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile",
+    "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"
   )
 
   val jodaDependencies = Seq(

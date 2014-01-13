@@ -104,6 +104,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             }
           }
           // Controller
+          generateApplicationControllerIfAbsent()
           generateResourceController(resources, resource, template, attributePairs)
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
@@ -132,6 +133,21 @@ trait ScaffoldGenerator extends CodeGenerator {
   // --------------------------
   // Controller
   // --------------------------
+
+  def generateApplicationControllerIfAbsent() {
+    val file = new File(s"src/main/scala/controller/ApplicationController.scala")
+    writeIfAbsent(file,
+      """package controller
+        |
+        |import skinny._
+        |import skinny.filter._
+        |
+        |trait ApplicationController extends SkinnyController
+        |  with ErrorPageFilter {
+        |
+        |}
+      """.stripMargin)
+  }
 
   def controllerCode(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
@@ -172,7 +188,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import skinny.validator._
         |import model.${modelClassName}
         |
-        |object ${controllerClassName} extends SkinnyResource {
+        |object ${controllerClassName} extends SkinnyResource with ApplicationController {
         |  protectFromForgery()
         |${if (template != "ssp") "  override def scalateExtension = \"" + template + "\"" else ""}
         |  override def model = ${modelClassName}

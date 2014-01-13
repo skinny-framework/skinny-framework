@@ -8,4 +8,12 @@
         <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
     </listener>
 
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+        <session-timeout>1440</session-timeout>
+        <cookie-config>
+            <name>skinny_session</name>
+        </cookie-config>
+    </session-config>
+
 </web-app>

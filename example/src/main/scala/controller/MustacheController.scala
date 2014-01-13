@@ -1,6 +1,8 @@
 package controller
 
-class MustacheController extends ApplicationController {
+import skinny.filter.TxPerRequestFilter
+
+class MustacheController extends ApplicationController with TxPerRequestFilter {
 
   override def scalateExtension = "mustache"
 

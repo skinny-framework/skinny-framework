@@ -5,10 +5,11 @@ import skinny._
 object Controllers {
 
   object root extends RootController with Routes {
-    val indexUrl = get("/?")(index).as('index)
+    val indexUrl = get("/")(index).as('index)
     val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
     val errorUrl = get("/error")(errorExample).as('error)
     val reactUrl = get("/react")(reactExample).as('react)
+    val invalidateUrl = get("/invalidate")(invalidateExample).as('invalidate)
   }
 
   object programmers extends ProgrammersController with Routes {
@@ -19,11 +20,11 @@ object Controllers {
   }
 
   object mustache extends MustacheController with Routes {
-    val indexUrl = get("/mustache/?")(index).as('index)
+    val indexUrl = get("/mustache/?".r)(index).as('index)
   }
 
   object thymeleaf extends ThymeleafController with Routes {
-    val indexUrl = get("/thymeleaf/?")(index).as('index)
+    val indexUrl = get("/thymeleaf/?".r)(index).as('index)
   }
 
 }

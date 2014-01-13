@@ -13,6 +13,9 @@ import org.joda.time.format.DateTimeFormat
  */
 class AssetsController extends SkinnyController {
 
+  // see https://github.com/scalatra/scalatra/issues/349
+  addMimeMapping("text/css", "css")
+
   /**
    * Returns assets root path.
    */
@@ -140,8 +143,7 @@ class AssetsController extends SkinnyController {
         compiledCssFromClassPath(path) orElse
         cssFromFile(path) orElse
         compiledCssFromFile(path) map { css =>
-          // TODO "text/css" after https://github.com/scalatra/scalatra/issues/349 fixed
-          contentType = "text/stylesheet"
+          contentType = "text/css"
           css
         } getOrElse pass()
     }.getOrElse { pass() }
