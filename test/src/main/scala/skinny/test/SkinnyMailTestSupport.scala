@@ -1,9 +1,9 @@
 package skinny.test
 
 import org.jvnet.mock_javamail.Mailbox
-import skinny.mailer.SkinnyMessageHelper
+import skinny.mailer.implicits.SkinnyMessageImplicits
 
-trait SkinnyMailTestSupport extends SkinnyMessageHelper {
+trait SkinnyMailTestSupport extends SkinnyMessageImplicits {
   val testMailTo = "to@test.skinny.org"
 
   def singleMailbox(recipients: String = testMailTo) = Mailbox.get(recipients)
