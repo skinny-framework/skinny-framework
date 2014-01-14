@@ -6,8 +6,9 @@ import org.jvnet.mock_javamail.Mailbox
 import java.io.{ InputStreamReader, BufferedReader, InputStream }
 
 import skinny.SkinnyEnv
+import skinny.mailer.implicits.SkinnyMessageImplicits
 
-class SkinnyMailerSpec extends FlatSpec with ShouldMatchers with SkinnyMessageHelper {
+class SkinnyMailerSpec extends FlatSpec with ShouldMatchers with SkinnyMessageImplicits {
   behavior of "SkinnyMailer"
 
   val singleMailTo = "to@example.com"

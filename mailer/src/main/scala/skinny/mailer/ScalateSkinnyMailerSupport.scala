@@ -14,8 +14,6 @@ trait ScalateSkinnyMailerSupport {
    */
   lazy val baseDir = System.getProperty("user.dir")
 
-  println(getClass.getProtectionDomain.getCodeSource.getLocation)
-
   /**
    * The default path to search for templates.
    *

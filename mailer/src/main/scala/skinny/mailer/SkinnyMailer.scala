@@ -5,8 +5,9 @@ import javax.mail._
 import javax.mail.internet.InternetAddress
 import com.typesafe.config.ConfigFactory
 import skinny.SkinnyEnv
+import skinny.mailer.implicits.SkinnyMessageImplicits
 
-trait SkinnyMailer extends SkinnyMailerBase with SkinnyMessageHelper { config: SkinnyMailerConfig =>
+trait SkinnyMailer extends SkinnyMailerBase with SkinnyMessageImplicits { config: SkinnyMailerConfig =>
 
   override def properties = {
     val properties = new Properties()
@@ -59,78 +60,6 @@ trait SkinnyMailer extends SkinnyMailerBase with SkinnyMessageHelper { config: S
     msg.text = text
     msg
   }
-}
-
-trait SkinnyMailerConfig {
-  def debug = false
-  def mimeVersion = "1.0"
-  def charset = "UTF-8"
-  def contentType = "text/plain"
-
-  /*
-  smtp configure
-   */
-  def smtpHost = "smtp.skinny.org"
-  def smtpPort = 587
-  def smtpConnectionTimeout = 600
-  def smtpTimeout = 60
-
-  /*
-  smtps configure
-   */
-  def smtpAuth = true
-  def smtpStartTLSEnable = true
-
-  /*
-  transport configure
-   */
-  def transportProtocol = "smtps"
-
-  /*
-  mailer configure
-   */
-  def smtpUser = "skinny"
-  def smtpPassword = "password"
-
-  /*
-  message configure
-   */
-  def defaultFrom = "no-reply@skinny.org"
-
-  /**
-   *
-   * @return
-   */
-  def passwordAuthenticator = new Authenticator {
-    override def getPasswordAuthentication = {
-      new PasswordAuthentication(smtpUser, smtpPassword)
-    }
-  }
-}
-
-trait SkinnyDefaultMailerConfig extends SkinnyMailerConfig {
-  def configName = "default"
-  def skinnyEnv = SkinnyEnv.get().getOrElse(SkinnyEnv.Development)
-  val rootConf = ConfigFactory.load()
-  val mailConfigPath = s"${skinnyEnv}.mailer.${configName}"
-  val conf = rootConf.getConfig(mailConfigPath)
-
-  override def debug = conf.getBoolean("debug")
-  override def mimeVersion = conf.getString("mimeVersion")
-  override def charset = conf.getString("charset")
-  override def contentType = conf.getString("contentType")
-  override def defaultFrom = conf.getString("from")
-  override def smtpHost = conf.getString("smtp.host")
-  override def smtpPort = conf.getInt("smtp.port")
-  override def smtpConnectionTimeout = conf.getInt("smtp.connectionTimeout")
-  override def smtpTimeout = conf.getInt("smtp.timeout")
-  override def smtpAuth = conf.getBoolean("smtp.auth")
-  override def smtpStartTLSEnable = conf.getBoolean("smtp.starttls.enable")
-
-  override def transportProtocol = conf.getString("transportProtocol")
-
-  override def smtpUser = conf.getString("user")
-  override def smtpPassword = conf.getString("password")
 }
 
 trait SkinnyMailerBase extends ScalateSkinnyMailerSupport {

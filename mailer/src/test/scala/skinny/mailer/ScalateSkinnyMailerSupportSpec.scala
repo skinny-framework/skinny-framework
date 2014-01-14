@@ -2,8 +2,9 @@ package skinny.mailer
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import skinny.mailer.implicits.SkinnyMessageImplicits
 
-class ScalateSkinnyMailerSupportSpec extends FlatSpec with ShouldMatchers with SkinnyMessageHelper {
+class ScalateSkinnyMailerSupportSpec extends FlatSpec with ShouldMatchers with SkinnyMessageImplicits {
   behavior of "ScalateSkinnyMailerSupport"
   val target = new ScalateSkinnyMailerSupport {}
   val templatePath = getClass.getResource("/").getPath + "test"
