@@ -28,6 +28,8 @@ object SkinnyEnv {
    */
   def get(): Option[String] = Option(System.getProperty(Key)).orElse(Option(System.getenv(Key)))
 
+  def getOrElse(default: String): String = get().getOrElse(default)
+
   /**
    * Predicates current env is "development" or "dev".
    *

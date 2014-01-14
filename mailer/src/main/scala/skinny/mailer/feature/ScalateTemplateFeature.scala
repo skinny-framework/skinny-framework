@@ -1,13 +1,18 @@
-package skinny.mailer
+package skinny.mailer.feature
 
 import org.fusesource.scalate.support.TemplateFinder
-import org.fusesource.scalate.{ TemplateEngine }
+import org.fusesource.scalate.TemplateEngine
 import skinny.SkinnyEnv
+import skinny.mailer.{ Text, BodyType }
 
 /**
- * ScalateSkinnyMailerSupport creates and configures a template engine for mailer module and provides helper method.
+ * ScalateTemplateFeature creates and configures Scalate template engine
+ * for mailer module and provides helper methods.
  */
-trait ScalateSkinnyMailerSupport {
+trait ScalateTemplateFeature {
+
+  // TODO baseDir
+
   /**
    * The project root path.
    * ServletContext#getRealPath("/") is recommended.
@@ -42,12 +47,12 @@ trait ScalateSkinnyMailerSupport {
    * @param ext an extension like "ssp"
    * @param path path The path of the template, passed to `findTemplate`
    * @param bindings bin
-   * @param typ text or html
+   * @param bodyType text or html
    * @return
    */
-  protected def layoutTemplateAs(ext: String)(path: String, bindings: Map[String, Any], typ: MailExtensionType = TextPlain): String = {
+  protected def layoutTemplateAs(ext: String)(path: String, bindings: Map[String, Any], bodyType: BodyType = Text): String = {
     val templateEngine = createTemplateEngine
-    val uri = findTemplate(templateEngine, path, ext, typ)
+    val uri = findTemplate(templateEngine, path, ext, bodyType)
     val out = templateEngine.layout(uri, bindings)
     templateEngine.shutdown()
     out
@@ -56,8 +61,8 @@ trait ScalateSkinnyMailerSupport {
   /**
    * Finds a template for a path.  Delegates to a TemplateFinder.
    */
-  protected def findTemplate(templateEngine: TemplateEngine, path: String, ext: String = "ssp", typ: MailExtensionType = TextPlain) = {
-    val templatePath = s"${path}.${typ.ext}"
+  protected def findTemplate(templateEngine: TemplateEngine, path: String, ext: String = "ssp", bodyType: BodyType = Text) = {
+    val templatePath = s"${path}.${bodyType.extension}"
     val finder = new TemplateFinder(templateEngine) {
       override lazy val extensions = Set(ext)
     }
@@ -67,35 +72,29 @@ trait ScalateSkinnyMailerSupport {
   /**
    * Convenience method for `layoutTemplateAs("ssp")`.
    */
-  def ssp(path: String, bindings: Map[String, Any], typ: MailExtensionType = TextPlain) = layoutTemplateAs("ssp")(path, bindings, typ)
+  def ssp(path: String, bindings: Map[String, Any], bodyType: BodyType = Text) = {
+    layoutTemplateAs("ssp")(path, bindings, bodyType)
+  }
+
   /**
    * Convenience method for `layoutTemplateAs("scaml")`.
    */
-  def scaml(path: String, bindings: Map[String, Any], typ: MailExtensionType = TextPlain) = layoutTemplateAs("scaml")(path, bindings, typ)
+  def scaml(path: String, bindings: Map[String, Any], bodyType: BodyType = Text) = {
+    layoutTemplateAs("scaml")(path, bindings, bodyType)
+  }
+
   /**
    * Convenience method for `layoutTemplateAs("jade")`.
    */
-  def jade(path: String, bindings: Map[String, Any], typ: MailExtensionType = TextPlain) = layoutTemplateAs("jade")(path, bindings, typ)
+  def jade(path: String, bindings: Map[String, Any], bodyType: BodyType = Text) = {
+    layoutTemplateAs("jade")(path, bindings, bodyType)
+  }
+
   /**
    * Convenience method for `layoutTemplateAs("mustache")`.
    */
-  def mustache(path: String, bindings: Map[String, Any], typ: MailExtensionType = TextPlain) = layoutTemplateAs("mustache")(path, bindings, typ)
-}
+  def mustache(path: String, bindings: Map[String, Any], bodyType: BodyType = Text) = {
+    layoutTemplateAs("mustache")(path, bindings, bodyType)
+  }
 
-abstract sealed class MailExtensionType {
-  val ext: String
-}
-
-/**
- * XXX.text.XXX will be used
- */
-case object TextPlain extends MailExtensionType {
-  override val ext = "text"
-}
-
-/**
- * XXX.html.XXX will be used
- */
-case object TextHtml extends MailExtensionType {
-  override val ext = "html"
 }
