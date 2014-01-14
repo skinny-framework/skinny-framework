@@ -1,50 +1,30 @@
 package skinny.mailer
 
-import javax.mail.{ PasswordAuthentication, Authenticator }
+import skinny.SkinnyEnv
 
-trait SkinnyMailerConfig {
-  def debug = false
-  def mimeVersion = "1.0"
-  def charset = "UTF-8"
-  def contentType = "text/plain"
+object SkinnyMailerConfig {
 
-  /*
-  smtp configure
-   */
-  def smtpHost = "smtp.skinny.org"
-  def smtpPort = 587
-  def smtpConnectionTimeout = 600
-  def smtpTimeout = 60
+  def default: SkinnyMailerConfig = SkinnyMailerConfig()
 
-  /*
-  smtps configure
-   */
-  def smtpAuth = true
-  def smtpStartTLSEnable = true
-
-  /*
-  transport configure
-   */
-  def transportProtocol = "smtps"
-
-  /*
-  mailer configure
-   */
-  def smtpUser = "skinny"
-  def smtpPassword = "password"
-
-  /*
-  message configure
-   */
-  def defaultFrom = "no-reply@skinny.org"
-
-  /**
-   *
-   * @return
-   */
-  def passwordAuthenticator = new Authenticator {
-    override def getPasswordAuthentication = {
-      new PasswordAuthentication(smtpUser, smtpPassword)
-    }
+  def apply(name: String = "default", env: String = SkinnyEnv.getOrElse("development")): SkinnyMailerConfig = {
+    val (n, e) = (name, env)
+    new SkinnyMailerConfigApi {
+      override def name = n
+      override def skinnyEnv = e
+    }.toCaseClass
   }
+
 }
+
+case class SkinnyMailerConfig(
+  override val debug: Boolean,
+  override val mimeVersion: String,
+  override val charset: String,
+  override val contentType: String,
+  override val defaultFrom: Option[String],
+  override val transportProtocol: String,
+  override val smtp: SkinnyMailerSmtpConfigApi)
+    extends SkinnyMailerConfigApi {
+
+}
+

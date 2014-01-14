@@ -1,12 +1,15 @@
-package skinny.mailer
+package skinny.mailer.feature
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import skinny.mailer.implicits.SkinnyMessageImplicits
+import skinny.mailer.implicits.SkinnyMailerImplicits
+import skinny.mailer.Html
 
-class ScalateSkinnyMailerSupportSpec extends FlatSpec with ShouldMatchers with SkinnyMessageImplicits {
-  behavior of "ScalateSkinnyMailerSupport"
-  val target = new ScalateSkinnyMailerSupport {}
+class ScalateTemplateFeatureSpec extends FlatSpec with ShouldMatchers with SkinnyMailerImplicits {
+
+  behavior of "ScalateTemplateFeature"
+
+  val target = new ScalateTemplateFeature {}
   val templatePath = getClass.getResource("/").getPath + "test"
   val bindings = Map("name" -> "Skinny framework")
 
@@ -27,6 +30,7 @@ class ScalateSkinnyMailerSupportSpec extends FlatSpec with ShouldMatchers with S
   }
 
   it should "find XXX.html.XXX" in {
-    target.ssp(templatePath, bindings, TextHtml) should include("<h1>Hello Skinny framework!</h1>")
+    target.ssp(templatePath, bindings, Html) should include("<h1>Hello Skinny framework!</h1>")
   }
+
 }

@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "0.9.25-1"
+  val _version = "0.9.26-SNAPSHOT"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.6"
   val scalikeJDBCVersion = "1.7.3"
@@ -42,15 +42,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
         "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies,
-      publishTo <<= version { (v: String) => _publishTo(v) },
-      publishMavenStyle := true,
-      sbtPlugin := false,
-      scalacOptions ++= _scalacOptions,
-      publishMavenStyle := true,
-      publishArtifact in Test := false,
-      pomIncludeRepository := { x => false },
-      pomExtra := _pomExtra
+      ) ++ jodaDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -158,8 +150,8 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
-        "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "compile",
-        "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "compile"
+        "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
+        "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
       )
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
@@ -188,11 +180,9 @@ object SkinnyFrameworkBuild extends Build {
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
-
   val slf4jApiDependencies = Seq(
     "org.slf4j" % "slf4j-api" % "1.7.5" % "compile"
   )
-
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
@@ -208,23 +198,22 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile",
     "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"
   )
-
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.3"   % "compile",
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
-
   val mailDependencies = Seq(
-    "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
-    "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
-    "org.slf4j"     %  "slf4j-nop"          % "1.7.5"          % "compile",
-    "javax.mail" % "mail" % "1.4.7" % "compile"
+    "org.scalatra"            %% "scalatra-scalate"   % scalatraVersion  % "compile",
+    "org.slf4j"               %  "slf4j-api"          % "1.7.5"          % "compile",
+    "org.slf4j"               %  "slf4j-nop"          % "1.7.5"          % "compile",
+    "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
+    "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "org.jvnet.mock-javamail" % "mock-javamail" % "1.9"
+    "org.scalatest"           %% "scalatest"     % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
+    "org.jvnet.mock-javamail" %  "mock-javamail" % "1.9"   % "test"
   )
 
   def _publishTo(v: String) = {
