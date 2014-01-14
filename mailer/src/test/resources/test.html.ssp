@@ -1,0 +1,2 @@
+<%@ var name: String %>
+<h1>Hello ${name}!</h1>

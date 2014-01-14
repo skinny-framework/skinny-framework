@@ -41,11 +41,16 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config" % "1.0.2" % "compile"
-      ) ++ servletApiDependencies 
-        ++ slf4jApiDependencies 
-        ++ jodaDependencies 
-        ++ testDependencies
+        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+      ) ++ jodaDependencies ++ testDependencies,
+      publishTo <<= version { (v: String) => _publishTo(v) },
+      publishMavenStyle := true,
+      sbtPlugin := false,
+      scalacOptions ++= _scalacOptions,
+      publishMavenStyle := true,
+      publishArtifact in Test := false,
+      pomIncludeRepository := { x => false },
+      pomExtra := _pomExtra
     ) ++ _jettyOrbitHack
   ) 
 
@@ -57,7 +62,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-io"    %  "commons-io" % "2.4"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm)
+  ) dependsOn(common, validator, orm, mailer)
 
   lazy val standalone = Project (id = "standalone", base = file("standalone"),
     settings = baseSettings ++ Seq(
@@ -139,11 +144,19 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(common)
 
+  lazy val mailer = Project ( id = "mailer", base = file("mailer"),
+    settings = Defaults.defaultSettings ++ Seq(
+      name := "skinny-mailer",
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= mailDependencies ++ testDependencies
+    )
+  ) dependsOn(common)
+
   lazy val test = Project (id = "test", base = file("test"),
    settings = baseSettings ++ Seq(
       name := "skinny-test",
       scalaVersion := "2.10.0",
-      libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
+      libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "compile",
         "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "compile"
@@ -201,10 +214,17 @@ object SkinnyFrameworkBuild extends Build {
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
 
+  val mailDependencies = Seq(
+    "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
+    "org.slf4j"     %  "slf4j-api"          % "1.7.5"          % "compile",
+    "org.slf4j"     %  "slf4j-nop"          % "1.7.5"          % "compile",
+    "javax.mail" % "mail" % "1.4.7" % "compile"
+  )
   // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test"
+    "org.scalatest" %% "scalatest"   % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
+    "org.jvnet.mock-javamail" % "mock-javamail" % "1.9"
   )
 
   def _publishTo(v: String) = {
