@@ -107,8 +107,12 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Member.findAll(ordering = sqls"${m.id}, ${m.createdAt} desc").size should be > (0)
     }
 
-    it("should have #countAll()") { implicit session =>
-      Member.countAll() should be > (0L)
+    it("should have #count()") { implicit session =>
+      Member.count() should be > (0L)
+    }
+
+    it("should have #count(Symbol)") { implicit session =>
+      Member.count('countryId) should equal(2L)
     }
 
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
@@ -387,7 +391,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
       Book.deleteById(isbn)
       Book.findById(isbn) should equal(None)
-      Book.countAll() should equal(2)
+      Book.count() should equal(2)
     }
 
     it("should deal with typed auto-increment value") { implicit s =>

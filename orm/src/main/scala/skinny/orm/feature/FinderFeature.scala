@@ -78,14 +78,18 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   /**
-   * Counts all rows.
+   * Counts rows.
    *
    * @param s db session
    * @return count
    */
-  def countAll()(implicit s: DBSession = autoSession): Long = {
+  def count(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = {
+    val count = {
+      if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(defaultAlias.field(fieldName.name))
+      else sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+    }
     withSQL {
-      select(sqls.count).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
+      select(count).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
     }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 

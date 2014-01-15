@@ -258,7 +258,7 @@ trait QueryingFeatureWithId[Id, Entity]
    *
    * @return query builder
    */
-  def count(): CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
+  def countOnly: CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
 
   /**
    * Select query builder.
