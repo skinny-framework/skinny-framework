@@ -12,6 +12,12 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
     with AutoSessionFeature
     with AssociationsFeature[Entity] {
 
+  sealed trait Calculation
+  case object Sum extends Calculation
+  case object Average extends Calculation
+  case object Maximum extends Calculation
+  case object Minimum extends Calculation
+
   /**
    * Appends where conditions.
    *
@@ -149,7 +155,39 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      *
      * @return query builder
      */
-    def sum(fieldName: Symbol): SumSelectOperationBuilder = SumSelectOperationBuilder(mapper, fieldName, conditions)
+    def sum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Sum, fieldName, conditions)
+    }
+
+    /**
+     * Calculates average of a column.
+     *
+     * @return query builder
+     */
+    def average(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Average, fieldName, conditions, decimals)
+    }
+    def avg(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = average(fieldName, decimals)
+
+    /**
+     * Calculates minimum value of a column.
+     *
+     * @return query builder
+     */
+    def minimum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Minimum, fieldName, conditions)
+    }
+    def min(fieldName: Symbol): CalculationSelectOperationBuilder = minimum(fieldName)
+
+    /**
+     * Calculates minimum value of a column.
+     *
+     * @return query builder
+     */
+    def maximum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Maximum, fieldName, conditions)
+    }
+    def max(fieldName: Symbol): CalculationSelectOperationBuilder = maximum(fieldName)
 
     /**
      * Actually applies SQL to the DB.
@@ -221,10 +259,12 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
    * @param mapper mapper
    * @param conditions registered conditions
    */
-  case class SumSelectOperationBuilder(
+  case class CalculationSelectOperationBuilder(
       mapper: QueryingFeature[Entity],
+      calculation: Calculation,
       fieldName: Symbol,
-      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+      conditions: Seq[SQLSyntax] = Nil,
+      decimals: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, None, None) {
 
     /**
      * Actually applies SQL to the DB.
@@ -233,8 +273,32 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): Long = {
+      val calc = calculation match {
+        case Average =>
+          decimals match {
+            case Some(dcml) =>
+              val decimalsValue = dcml match {
+                case 1 => sqls"1"
+                case 2 => sqls"2"
+                case 3 => sqls"3"
+                case 4 => sqls"4"
+                case 5 => sqls"5"
+                case 6 => sqls"6"
+                case 7 => sqls"7"
+                case 8 => sqls"8"
+                case 9 => sqls"9"
+                case _ => sqls"10"
+              }
+              sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+            case _ =>
+              sqls.avg(defaultAlias.field(fieldName.name))
+          }
+        case Minimum => sqls.min(defaultAlias.field(fieldName.name))
+        case Maximum => sqls.max(defaultAlias.field(fieldName.name))
+        case Sum => sqls.sum(defaultAlias.field(fieldName.name))
+      }
       withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias))
+        val q: SelectSQLBuilder[Entity] = select(calc).from(as(defaultAlias))
         conditions match {
           case Nil => q.where(defaultScopeWithDefaultAlias)
           case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
@@ -253,6 +317,12 @@ trait QueryingFeatureWithId[Id, Entity]
     with AutoSessionFeature
     with AssociationsFeature[Entity]
     with IncludesFeatureWithId[Id, Entity] {
+
+  sealed trait Calculation
+  case object Sum extends Calculation
+  case object Average extends Calculation
+  case object Maximum extends Calculation
+  case object Minimum extends Calculation
 
   /**
    * Appends where conditions.
@@ -391,7 +461,39 @@ trait QueryingFeatureWithId[Id, Entity]
      *
      * @return query builder
      */
-    def sum(fieldName: Symbol): SumSelectOperationBuilder = SumSelectOperationBuilder(mapper, fieldName, conditions)
+    def sum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Sum, fieldName, conditions)
+    }
+
+    /**
+     * Calculates average of a column.
+     *
+     * @return query builder
+     */
+    def average(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Average, fieldName, conditions, decimals)
+    }
+    def avg(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = average(fieldName, decimals)
+
+    /**
+     * Calculates minimum value of a column.
+     *
+     * @return query builder
+     */
+    def minimum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Minimum, fieldName, conditions)
+    }
+    def min(fieldName: Symbol): CalculationSelectOperationBuilder = minimum(fieldName)
+
+    /**
+     * Calculates minimum value of a column.
+     *
+     * @return query builder
+     */
+    def maximum(fieldName: Symbol): CalculationSelectOperationBuilder = {
+      CalculationSelectOperationBuilder(mapper, Maximum, fieldName, conditions)
+    }
+    def max(fieldName: Symbol): CalculationSelectOperationBuilder = maximum(fieldName)
 
     /**
      * Actually applies SQL to the DB.
@@ -463,10 +565,12 @@ trait QueryingFeatureWithId[Id, Entity]
    * @param mapper mapper
    * @param conditions registered conditions
    */
-  case class SumSelectOperationBuilder(
+  case class CalculationSelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
+      calculation: Calculation,
       fieldName: Symbol,
-      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+      conditions: Seq[SQLSyntax] = Nil,
+      decimals: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, None, None) {
 
     /**
      * Actually applies SQL to the DB.
@@ -475,8 +579,32 @@ trait QueryingFeatureWithId[Id, Entity]
      * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): BigDecimal = {
+      val calc = calculation match {
+        case Average =>
+          decimals match {
+            case Some(dcml) =>
+              val decimalsValue = dcml match {
+                case 1 => sqls"1"
+                case 2 => sqls"2"
+                case 3 => sqls"3"
+                case 4 => sqls"4"
+                case 5 => sqls"5"
+                case 6 => sqls"6"
+                case 7 => sqls"7"
+                case 8 => sqls"8"
+                case 9 => sqls"9"
+                case _ => sqls"10"
+              }
+              sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+            case _ =>
+              sqls.avg(defaultAlias.field(fieldName.name))
+          }
+        case Minimum => sqls.min(defaultAlias.field(fieldName.name))
+        case Maximum => sqls.max(defaultAlias.field(fieldName.name))
+        case Sum => sqls.sum(defaultAlias.field(fieldName.name))
+      }
       withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias))
+        val q: SelectSQLBuilder[Entity] = select(calc).from(as(defaultAlias))
         conditions match {
           case Nil => q.where(defaultScopeWithDefaultAlias)
           case _ => conditions.tail.foldLeft(q.where(conditions.head)) {

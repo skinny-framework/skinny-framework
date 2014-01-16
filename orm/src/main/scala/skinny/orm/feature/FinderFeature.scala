@@ -100,15 +100,62 @@ trait FinderFeatureWithId[Id, Entity]
 
   /**
    * Calculates sum of a column.
-   *
-   * @param s db session
-   * @return count
    */
   def sum(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = {
     withSQL {
       select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
     }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
   }
+
+  /**
+   * Calculates average of a column.
+   */
+  def average(fieldName: Symbol = Symbol(primaryKeyFieldName), decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+    val avg = decimals match {
+      case Some(dcml) =>
+        val decimalsValue = dcml match {
+          case 1 => sqls"1"
+          case 2 => sqls"2"
+          case 3 => sqls"3"
+          case 4 => sqls"4"
+          case 5 => sqls"5"
+          case 6 => sqls"6"
+          case 7 => sqls"7"
+          case 8 => sqls"8"
+          case 9 => sqls"9"
+          case _ => sqls"10"
+        }
+        sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+      case _ =>
+        sqls.avg(defaultAlias.field(fieldName.name))
+    }
+    withSQL {
+      select(avg).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
+    }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+  }
+  def avg(fieldName: Symbol = Symbol(primaryKeyFieldName), decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+    average(fieldName, decimals)
+  }
+
+  /**
+   * Calculates minimum value of a column.
+   */
+  def minimum(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = {
+    withSQL {
+      select(sqls.min(defaultAlias.field(fieldName.name))).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
+    }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+  }
+  def min(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
+
+  /**
+   * Calculates maximum value of a column.
+   */
+  def maximum(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = {
+    withSQL {
+      select(sqls.max(defaultAlias.field(fieldName.name))).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
+    }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+  }
+  def max(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
   /**
    * Counts distinct rows.

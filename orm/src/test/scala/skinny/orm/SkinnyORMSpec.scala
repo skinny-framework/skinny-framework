@@ -121,6 +121,42 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Member.distinctCount('countryId) should equal(2L)
     }
 
+    // http://api.rubyonrails.org/classes/ActiveRecord/Calculations.html
+    it("should have #count, #sum, #average, #maximum and #minimum") { implicit s =>
+      val id = Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 1230)
+      Product.createWithAttributes('name -> "How to learn Scala 2", 'priceYen -> 1800)
+
+      val p = Product.defaultAlias
+
+      Product.count() should equal(2)
+      Product.where(sqls.eq(p.id, id.value)).count.apply() should equal(1)
+
+      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen).apply() should equal(3030)
+      Product.sum('priceYen) should equal(3030)
+
+      // NOTICE: H2 and others returns value without decimal part.
+      // https://hibernate.atlassian.net/browse/HHH-5173
+      Product.average('priceYen) should equal(1515)
+      Product.average('priceYen, Some(2)) should equal(1515)
+      Product.minimum('priceYen) should equal(1230)
+      Product.maximum('priceYen) should equal(1800)
+
+      Product.avg('priceYen) should equal(1515)
+      Product.avg('priceYen, Some(3)) should equal(1515)
+      Product.min('priceYen) should equal(1230)
+      Product.max('priceYen) should equal(1800)
+
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen).apply() should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen, Some(2)).apply() should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).minimum('priceYen).apply() should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).maximum('priceYen).apply() should equal(1800)
+
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen).apply() should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen, Some(3)).apply() should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).min('priceYen).apply() should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).max('priceYen).apply() should equal(1800)
+    }
+
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
       val countryId = Country.findAll().map(_.id).head
       Member.withAlias { m =>
@@ -205,15 +241,6 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val m = Member.defaultAlias
       val actual = Member.where(sqls.eq(m.countryId, japan.id)).limit(1000).offset(0).apply()
       actual should equal(expected)
-    }
-
-    it("should have #sum") { implicit s =>
-      Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 1230)
-      Product.createWithAttributes('name -> "How to learn Scala 2", 'priceYen -> 1800)
-
-      val p = Product.defaultAlias
-      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen).apply() should equal(3030)
-      Product.sum('priceYen) should equal(3030)
     }
 
   }
