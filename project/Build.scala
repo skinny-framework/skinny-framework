@@ -135,7 +135,7 @@ object SkinnyFrameworkBuild extends Build {
   ) dependsOn(common)
 
   lazy val mailer = Project ( id = "mailer", base = file("mailer"),
-    settings = Defaults.defaultSettings ++ Seq(
+    settings = baseSettings ++ Seq(
       name := "skinny-mailer",
       scalaVersion := "2.10.0",
       libraryDependencies ++= mailDependencies ++ testDependencies
