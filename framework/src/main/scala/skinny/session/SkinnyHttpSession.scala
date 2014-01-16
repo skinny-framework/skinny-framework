@@ -1,5 +1,8 @@
 package skinny.session
 
+/**
+ * SkinnySession works as a shared session for multiple servers.
+ */
 trait SkinnyHttpSession {
 
   def getAttributeOrElseUpdate(name: String, default: Any): Any
