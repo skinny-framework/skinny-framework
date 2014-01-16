@@ -205,7 +205,6 @@ object SkinnyFrameworkBuild extends Build {
   val mailDependencies = Seq(
     "org.scalatra"            %% "scalatra-scalate"   % scalatraVersion  % "compile",
     "org.slf4j"               %  "slf4j-api"          % "1.7.5"          % "compile",
-    "org.slf4j"               %  "slf4j-nop"          % "1.7.5"          % "compile",
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
