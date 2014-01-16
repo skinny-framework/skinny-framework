@@ -97,9 +97,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
-        "com.h2database"        %  "h2"                % h2Version      % "test",
-        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -211,8 +209,10 @@ object SkinnyFrameworkBuild extends Build {
   // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"     % "1.9.1" % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "org.jvnet.mock-javamail" %  "mock-javamail" % "1.9"   % "test"
+    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
+    "ch.qos.logback"          %  "logback-classic" % "1.0.13"  % "test",
+    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
+    "com.h2database"          %  "h2"              % h2Version % "test"
   )
 
   def _publishTo(v: String) = {

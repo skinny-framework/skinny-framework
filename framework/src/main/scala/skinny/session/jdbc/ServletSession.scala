@@ -44,7 +44,7 @@ object ServletSession extends SkinnyTable[ServletSession] {
     delete.from(ServletSession).where.eq(column.skinnySessionId, skinnySessionId)
   }.update.apply()
 
-  def narrowDownAttachedServletSession(session: SkinnySession, aliveCount: Int)(implicit s: DBSession = autoSession): Unit = {
+  def narrowDownAttachedServletSessions(session: SkinnySession, aliveCount: Int)(implicit s: DBSession = autoSession): Unit = {
     val jsessionIds = withSQL {
       select(sv.jsessionId).from(this as sv).where.eq(sv.skinnySessionId, session.id).orderBy(sv.createdAt).desc
     }.map(_.string(1)).list.apply().drop(aliveCount)

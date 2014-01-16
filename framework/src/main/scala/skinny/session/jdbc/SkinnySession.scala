@@ -143,7 +143,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
   def findOrCreate(jsessionId: String, newJsessionId: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
     findActiveByJsessionId(jsessionId).map { session =>
       newJsessionId.foreach(jid => attachJsessionIdToSkinnySession(jid, session))
-      ServletSession.narrowDownAttachedServletSession(session, 10)
+      ServletSession.narrowDownAttachedServletSessions(session, 10)
       postponeSkinnySessionTimeout(session, expireAt)
       session
     }.getOrElse {
