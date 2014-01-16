@@ -112,7 +112,13 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should have #count(Symbol)") { implicit session =>
-      Member.count('countryId) should equal(2L)
+      Member.count('countryId, false) should equal(3L)
+      Member.count('countryId, true) should equal(2L)
+    }
+
+    it("should have #distinctCount(Symbol)") { implicit session =>
+      Member.distinctCount() should equal(3L)
+      Member.distinctCount('countryId) should equal(2L)
     }
 
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
