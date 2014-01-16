@@ -23,7 +23,7 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
     conditions = conditions.map {
       case (key, value) =>
         value match {
-          case None => sqls.isNull(defaultAlias.field(key.name)) // TODO Null/NotNull
+          case None => sqls.isNull(defaultAlias.field(key.name))
           case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
           case value => sqls.eq(defaultAlias.field(key.name), value)
         }
@@ -139,7 +139,17 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      *
      * @return query builder
      */
-    def count: CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false): CountSelectOperationBuilder = {
+      CountSelectOperationBuilder(mapper, fieldName, distinct, conditions)
+    }
+    def count: CountSelectOperationBuilder = count()
+
+    /**
+     * Calculates sum of a column.
+     *
+     * @return query builder
+     */
+    def sum(fieldName: Symbol): SumSelectOperationBuilder = SumSelectOperationBuilder(mapper, fieldName, conditions)
 
     /**
      * Actually applies SQL to the DB.
@@ -173,6 +183,47 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
    */
   case class CountSelectOperationBuilder(
       mapper: QueryingFeature[Entity],
+      fieldName: Symbol,
+      distinct: Boolean,
+      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): BigDecimal = {
+      val count = {
+        if (distinct) {
+          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+          else sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+        } else {
+          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(defaultAlias.field(fieldName.name))
+          else sqls.count(defaultAlias.field(fieldName.name))
+        }
+      }
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(count).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+    }
+  }
+
+  /**
+   * Sum operation builder.
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   */
+  case class SumSelectOperationBuilder(
+      mapper: QueryingFeature[Entity],
+      fieldName: Symbol,
       conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
 
     /**
@@ -183,7 +234,7 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      */
     def apply()(implicit session: DBSession = autoSession): Long = {
       withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
+        val q: SelectSQLBuilder[Entity] = select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias))
         conditions match {
           case Nil => q.where(defaultScopeWithDefaultAlias)
           case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
@@ -214,7 +265,7 @@ trait QueryingFeatureWithId[Id, Entity]
     conditions = conditions.map {
       case (key, value) =>
         value match {
-          case None => sqls.isNull(defaultAlias.field(key.name)) // TODO Null/NotNull
+          case None => sqls.isNull(defaultAlias.field(key.name))
           case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
           case value => sqls.eq(defaultAlias.field(key.name), value)
         }
@@ -330,7 +381,17 @@ trait QueryingFeatureWithId[Id, Entity]
      *
      * @return query builder
      */
-    def count: CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false): CountSelectOperationBuilder = {
+      CountSelectOperationBuilder(mapper, fieldName, distinct, conditions)
+    }
+    def count: CountSelectOperationBuilder = count()
+
+    /**
+     * Calculates sum of a column.
+     *
+     * @return query builder
+     */
+    def sum(fieldName: Symbol): SumSelectOperationBuilder = SumSelectOperationBuilder(mapper, fieldName, conditions)
 
     /**
      * Actually applies SQL to the DB.
@@ -364,6 +425,8 @@ trait QueryingFeatureWithId[Id, Entity]
    */
   case class CountSelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
+      fieldName: Symbol,
+      distinct: Boolean,
       conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
 
     /**
@@ -373,8 +436,17 @@ trait QueryingFeatureWithId[Id, Entity]
      * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): Long = {
+      val count = {
+        if (distinct) {
+          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+          else sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+        } else {
+          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(defaultAlias.field(fieldName.name))
+          else sqls.count(defaultAlias.field(fieldName.name))
+        }
+      }
       withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
+        val q: SelectSQLBuilder[Entity] = select(count).from(as(defaultAlias))
         conditions match {
           case Nil => q.where(defaultScopeWithDefaultAlias)
           case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
@@ -382,6 +454,36 @@ trait QueryingFeatureWithId[Id, Entity]
           }.and(defaultScopeWithDefaultAlias)
         }
       }.map(_.long(1)).single.apply().getOrElse(0L)
+    }
+  }
+
+  /**
+   * Sum operation builder.
+   *
+   * @param mapper mapper
+   * @param conditions registered conditions
+   */
+  case class SumSelectOperationBuilder(
+      mapper: QueryingFeatureWithId[Id, Entity],
+      fieldName: Symbol,
+      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
+
+    /**
+     * Actually applies SQL to the DB.
+     *
+     * @param session db session
+     * @return query results
+     */
+    def apply()(implicit session: DBSession = autoSession): BigDecimal = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
     }
   }
 

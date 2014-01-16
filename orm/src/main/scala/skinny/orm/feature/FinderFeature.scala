@@ -99,6 +99,18 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   /**
+   * Calculates sum of a column.
+   *
+   * @param s db session
+   * @return count
+   */
+  def sum(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): BigDecimal = {
+    withSQL {
+      select(sqls.sum(defaultAlias.field(fieldName.name))).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
+    }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+  }
+
+  /**
    * Counts distinct rows.
    *
    * @param s db session

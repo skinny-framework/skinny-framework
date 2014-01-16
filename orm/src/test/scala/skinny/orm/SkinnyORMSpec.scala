@@ -207,6 +207,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       actual should equal(expected)
     }
 
+    it("should have #sum") { implicit s =>
+      Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 1230)
+      Product.createWithAttributes('name -> "How to learn Scala 2", 'priceYen -> 1800)
+
+      val p = Product.defaultAlias
+      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen).apply() should equal(3030)
+      Product.sum('priceYen) should equal(3030)
+    }
+
   }
 
   describe("Relationship") {
