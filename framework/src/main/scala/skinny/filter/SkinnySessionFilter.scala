@@ -31,12 +31,10 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
   def initializeSkinnySession: SkinnyHttpSession = {
     val jsessionIdCookieName = servletContext.getSessionCookieConfig.getName
     val jsessionIdInCookie = request.getCookies.find(_.getName == jsessionIdCookieName).map(_.getValue)
-    val expireAt = {
-      if (session.getMaxInactiveInterval == 0) DateTime.now.plusMonths(6) // 6 months alive is long enough
-      else DateTime.now.plusSeconds(session.getMaxInactiveInterval)
-    }
     val jsessionIdInSession = request.getSession.getId
     logger.debug(s"[Skinny Session] session id (cookie: ${jsessionIdInCookie}, local session: ${jsessionIdInSession})")
+
+    val expireAt = SkinnySession.getExpireAtFromMaxInactiveInterval(session.getMaxInactiveInterval)
     val skinnySession = if (jsessionIdInCookie.isDefined && jsessionIdInCookie.get != jsessionIdInSession) {
       SkinnySession.findOrCreate(jsessionIdInCookie.get, Option(jsessionIdInSession), expireAt)
     } else {

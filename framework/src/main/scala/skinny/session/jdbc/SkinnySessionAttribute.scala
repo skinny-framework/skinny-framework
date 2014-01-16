@@ -18,4 +18,8 @@ object SkinnySessionAttribute extends SkinnyTable[SkinnySessionAttribute] with L
   override def extract(rs: WrappedResultSet, n: ResultName[SkinnySessionAttribute]) = new SkinnySessionAttribute(
     skinnySessionId = rs.get(n.skinnySessionId), name = rs.get(n.name), value = rs.anyOpt(n.value))
 
+  def deleteBySkinnySessionId(skinnySessionId: Long)(implicit s: DBSession = autoSession): Unit = withSQL {
+    delete.from(SkinnySessionAttribute).where.eq(column.skinnySessionId, skinnySessionId)
+  }.update.apply()
+
 }

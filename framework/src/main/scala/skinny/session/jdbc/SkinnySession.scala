@@ -114,30 +114,43 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     merge = (s, as) => s.copy(attributes = as)
   ).byDefault
 
-  def findOrCreate(jsessionId: String, newJsessionId: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
-    joins(attributesRef, servletSessionsRef).findBy(sqls.eq(servletSessionsAlias.jsessionId, jsessionId)).map { session =>
-      newJsessionId.foreach { newId =>
-        joins(servletSessionsRef).findBy(sqls.eq(servletSessionsAlias.jsessionId, newId)).getOrElse {
-          insert.into(ServletSession).namedValues(
-            ServletSession.column.jsessionId -> newId,
-            ServletSession.column.skinnySessionId -> session.id).toSQL.update.apply()
-          joins(attributesRef).findById(session.id).get
-        }
-      }
-      // postpone session timeout
-      updateById(session.id).withNamedValues(column.expireAt -> expireAt)
-      session
+  def getExpireAtFromMaxInactiveInterval(maxInactiveInterval: Int): DateTime = {
+    if (maxInactiveInterval <= 0) DateTime.now.plusMonths(3) // 3 months alive is long enough
+    else DateTime.now.plusSeconds(maxInactiveInterval)
+  }
 
+  private[this] def createSkinnySessionAndReturnSkinnySessionId(expireAt: DateTime): Long = {
+    createWithNamedValues(
+      column.createdAt -> DateTime.now,
+      column.expireAt -> expireAt
+    )
+  }
+  private[this] def findActiveByJsessionId(jsessionId: String): Option[SkinnySession] = {
+    joins(attributesRef, servletSessionsRef).findBy(
+      sqls.eq(servletSessionsAlias.jsessionId, jsessionId).and.gt(defaultAlias.expireAt, DateTime.now))
+  }
+  private[this] def attachJsessionIdToSkinnySession(jsessionId: String, session: SkinnySession): Unit = {
+    ServletSession.findByJsessionId(jsessionId).map { servletSession =>
+      servletSession.attachTo(session)
     }.getOrElse {
-      val skinnySessionId = createWithNamedValues(
-        column.createdAt -> DateTime.now,
-        column.expireAt -> expireAt
-      )
-      insert.into(ServletSession).namedValues(
-        ServletSession.column.jsessionId -> jsessionId,
-        ServletSession.column.skinnySessionId -> skinnySessionId
-      ).toSQL.update.apply()
-      joins(attributesRef).findById(skinnySessionId).get
+      ServletSession.create(jsessionId, session)
+    }
+  }
+  private[this] def postponeSkinnySessionTimeout(session: SkinnySession, expireAt: DateTime): Unit = {
+    updateById(session.id).withNamedValues(column.expireAt -> expireAt)
+  }
+
+  def findOrCreate(jsessionId: String, newJsessionId: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
+    findActiveByJsessionId(jsessionId).map { session =>
+      newJsessionId.foreach(jid => attachJsessionIdToSkinnySession(jid, session))
+      ServletSession.narrowDownAttachedServletSession(session, 10)
+      postponeSkinnySessionTimeout(session, expireAt)
+      session
+    }.getOrElse {
+      joins(attributesRef).findById((createSkinnySessionAndReturnSkinnySessionId(expireAt))).map { session =>
+        attachJsessionIdToSkinnySession(jsessionId, session)
+        session
+      }.get
     }
   }
 
@@ -146,8 +159,8 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     val idOpt = select(sv.skinnySessionId).from(ServletSession as sv)
       .where.eq(sv.jsessionId, jsessionId).toSQL.map(_.long(1)).single.apply()
     idOpt.foreach { id =>
-      delete.from(ServletSession).where.eq(ServletSession.column.skinnySessionId, id).toSQL.update.apply()
-      delete.from(SkinnySessionAttribute).where.eq(SkinnySessionAttribute.column.skinnySessionId, id).toSQL.update.apply()
+      ServletSession.deleteBySkinnySessionId(id)
+      SkinnySessionAttribute.deleteBySkinnySessionId(id)
       deleteById(id)
     }
   }

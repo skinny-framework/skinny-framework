@@ -5,6 +5,9 @@ import skinny.session.SkinnyHttpSession
 
 case class SkinnyHttpSessionWrapper(session: HttpSession, skinnySession: SkinnyHttpSession) extends HttpSession {
 
+  /**
+   * Just to sync invalidate event to skinny session.
+   */
   def invalidate() = {
     session.invalidate()
     skinnySession.invalidate()
