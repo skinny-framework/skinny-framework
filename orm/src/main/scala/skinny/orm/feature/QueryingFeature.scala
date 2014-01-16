@@ -56,13 +56,6 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
   def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
 
   /**
-   * Count only.
-   *
-   * @return query builder
-   */
-  def count(): CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
-
-  /**
    * Select query builder.
    *
    * @param mapper mapper
@@ -146,7 +139,7 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      *
      * @return query builder
      */
-    def count(): CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+    def count: CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
 
     /**
      * Actually applies SQL to the DB.
@@ -254,13 +247,6 @@ trait QueryingFeatureWithId[Id, Entity]
   def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
 
   /**
-   * Count only.
-   *
-   * @return query builder
-   */
-  def countOnly: CountSelectOperationBuilder = new CountSelectOperationBuilder(mapper = this)
-
-  /**
    * Select query builder.
    *
    * @param mapper mapper
@@ -344,7 +330,7 @@ trait QueryingFeatureWithId[Id, Entity]
      *
      * @return query builder
      */
-    def count(): CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
+    def count: CountSelectOperationBuilder = CountSelectOperationBuilder(mapper, conditions)
 
     /**
      * Actually applies SQL to the DB.
