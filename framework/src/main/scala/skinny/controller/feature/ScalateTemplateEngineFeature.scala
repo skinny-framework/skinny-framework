@@ -142,9 +142,15 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * Replaces layout template for this action.
    */
   def layout(path: String)(implicit request: HttpServletRequest): ScalateTemplateEngineFeature = {
-    val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
-    templateAttributes += ("layout" -> s"/WEB-INF/layouts/${_path}.${scalateExtension}")
-    this
+    if (request != null) {
+      val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
+      templateAttributes += ("layout" -> s"/WEB-INF/layouts/${_path}.${scalateExtension}")
+      this
+    } else {
+      // TODO this method doesn't work in beforeAction, more investigation
+      logger.warn("You cannot specify layout here. Put this into action methods.")
+      this
+    }
   }
 
 }
