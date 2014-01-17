@@ -2,6 +2,7 @@ package skinny.mailer.feature
 
 import skinny.mailer.{ SkinnyMessage, SkinnyMailerBase }
 import javax.mail.{ Session, Transport }
+import javax.mail.internet.MimeBodyPart
 
 /**
  * Provides SkinnyMessage builder.
@@ -17,6 +18,14 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
   def subject(subject: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(subject = subject))
 
   def body(body: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(body = body))
+
+  def htmlBody(body: String, charset: String = "utf-8")(implicit s: Session = session): SkinnyMessageBuilder = {
+    val msg = mail(body = body)
+    msg.charset = charset
+    msg.contentType = "text/html"
+    msg.setText(body, charset, "html")
+    SkinnyMessageBuilder(msg)
+  }
 
   def bcc(bcc: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder({
     val m = mail()
@@ -57,10 +66,18 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       this
     }
 
+    def htmlBody(body: String, charset: String = "utf-8"): SkinnyMessageBuilder = {
+      message.charset = charset
+      message.contentType = "text/html"
+      message.setText(body, charset, "html")
+      this
+    }
+
     def bcc(bcc: String): SkinnyMessageBuilder = {
       message.bcc = bcc
       this
     }
+
     def bcc(bcc: String*): SkinnyMessageBuilder = {
       message.bcc = bcc
       this
@@ -70,16 +87,32 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       message.cc = cc
       this
     }
+
     def cc(cc: String*): SkinnyMessageBuilder = {
       message.cc = cc
       this
     }
 
-    // TODO validate state
+    def attachment(filename: String, content: AnyRef, mimeType: String): SkinnyMessageBuilder = {
+      message.attachments ++= (filename, content, mimeType)
+      this
+    }
 
-    def deliver()(implicit t: Transport = message.connect()): Unit = message.deliver()
+    def validate() = {
+      if (message.from.isEmpty) throw new IllegalStateException("from address is absent")
+      else if (message.to.isEmpty) throw new IllegalStateException("to addresses are empty")
 
-    def deliver(t: Transport, keepConnection: Boolean): Unit = message.deliver(t, keepConnection)
+    }
+
+    def deliver()(implicit t: Transport = message.connect()): Unit = {
+      validate()
+      message.deliver()
+    }
+
+    def deliver(t: Transport, keepConnection: Boolean): Unit = {
+      validate()
+      message.deliver(t, keepConnection)
+    }
   }
 
 }

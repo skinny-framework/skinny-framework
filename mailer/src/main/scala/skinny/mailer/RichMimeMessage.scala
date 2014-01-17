@@ -19,6 +19,10 @@ trait RichMimeMessage extends Logging {
 
   def underlying: MimeMessage
 
+  var charset = "utf-8"
+
+  private[this] var _contentType = "text/plain"
+
   // -------------
   // all header lines as an Enumeration of Strings
   // (line is a raw RFC 822 header-line, containing both the "name" and "value" field).
@@ -201,8 +205,8 @@ trait RichMimeMessage extends Logging {
   // contentType
   // the value of the RFC 822 "Content-Type" header field.
 
-  def contentType = underlying.getContentType
-  def contentType_=(contentType: String) = underlying.setHeader("Content-Type", contentType)
+  def contentType = _contentType
+  def contentType_=(ct: String): Unit = _contentType = ct
 
   // -------------
   // dataHandler
@@ -330,11 +334,12 @@ trait RichMimeMessage extends Logging {
       underlying.getContent match {
         case s: String =>
           val textPart = new MimeBodyPart()
-          textPart.setText(s)
+          if (contentType.startsWith("text/html")) textPart.setText(s, charset, "html")
+          else textPart.setText(s, charset)
           mimeMultipart.addBodyPart(textPart)
-          underlying.setContent(mimeMultipart)
+          underlying.setContent(mimeMultipart, contentType)
         case mp: MimeMultipart =>
-          underlying.setContent(mp)
+          underlying.setContent(mp, contentType)
         case other =>
           throw new UnsupportedOperationException(other.getClass.getCanonicalName + " is unexpected.")
       }

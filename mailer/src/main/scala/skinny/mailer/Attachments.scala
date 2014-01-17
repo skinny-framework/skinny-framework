@@ -21,6 +21,10 @@ case class Attachments(message: RichMimeMessage) extends IndexedSeq[RichMimeBody
     message.addAttachment(filename, url)
   }
 
+  def ++=(filename: String, bytes: Array[Byte], mimeType: String): Unit = {
+    message.addAttachment(filename, bytes, mimeType)
+  }
+
   override def seq: IndexedSeq[RichMimeBodyPart] = message.underlying.getContent match {
     case mp: MimeMultipart =>
       (for (i <- 0 until mp.getCount()) yield i)

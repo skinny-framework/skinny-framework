@@ -25,6 +25,11 @@ object Controllers {
     val barUrl = get("/custom-layout/bar")(bar).as('bar)
   }
 
+  object mail extends MailController with Routes {
+    get("/mail/")(index)
+    get("/mail/ssp")(ssp)
+  }
+
   object mustache extends MustacheController with Routes {
     val indexUrl = get("/mustache/?".r)(index).as('index)
   }
