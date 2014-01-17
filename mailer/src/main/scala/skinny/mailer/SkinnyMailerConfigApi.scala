@@ -45,7 +45,7 @@ trait SkinnyMailerConfigApi extends SkinnyMailerConfigBase {
   /**
    * Transport protocol.
    */
-  def transportProtocol: String = loadedConfig.flatMap(c => Option(c.getString("transport.protocol"))).getOrElse("smtp")
+  def transportProtocol: String = loadedConfig.flatMap(c => Option(c.getString("transport.protocol"))).getOrElse("logging")
 
   // refs self
   private val self: SkinnyMailerConfigApi = this

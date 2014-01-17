@@ -1,12 +1,14 @@
 package skinny.mailer.feature
 
 import java.util.Properties
-import javax.mail.{ Transport, Session }
+import grizzled.slf4j.Logging
+import javax.mail._
+import skinny.mailer.JavaMailOps
 
 /**
  * Provides Java Mail Session and Transport instance.
  */
-trait JavaMailSessionFeature {
+trait JavaMailSessionFeature extends Logging {
 
   self: ConfigFeature with SmtpConfigFeature with ExtraConfigFeature =>
 
@@ -17,13 +19,13 @@ trait JavaMailSessionFeature {
     props.put("mail.transport.protocol", config.transportProtocol)
     props.put("mail.debug", String.valueOf(config.debug))
 
-    val prefix = if (config.smtp.host.endsWith(".gmail.com")) "mail.smtps" else "mail.smtp"
+    val prefix = s"mail.${config.transportProtocol}"
     props.put(s"${prefix}.debug", str(config.debug))
-    props.put(s"${prefix}.host", smtpConfig.host)
-    props.put(s"${prefix}.port", str(smtpConfig.port))
-    props.put(s"${prefix}.connectiontimeout", str(smtpConfig.connectTimeoutMillis))
-    props.put(s"${prefix}.timeout", str(smtpConfig.readTimeoutMillis))
-    props.put(s"${prefix}.auth", str(smtpConfig.authEnabled))
+    props.put(s"${prefix}.host", config.smtp.host)
+    props.put(s"${prefix}.port", str(config.smtp.port))
+    props.put(s"${prefix}.connectiontimeout", str(config.smtp.connectTimeoutMillis))
+    props.put(s"${prefix}.timeout", str(config.smtp.readTimeoutMillis))
+    props.put(s"${prefix}.auth", str(config.smtp.authEnabled))
     props.put(s"${prefix}.starttls.enable", str(config.transportProtocol))
 
     extraConfig.properties.foreach {
@@ -37,7 +39,7 @@ trait JavaMailSessionFeature {
    * This object doesn't have a connection to smtp server.
    */
   def session: Session = {
-    if (smtpConfig.authEnabled) smtpConfig.passwordAuthenticator match {
+    if (config.smtp.authEnabled) config.smtp.passwordAuthenticator match {
       case Some(authenticator) => Session.getInstance(loadPropertiesForSession, authenticator)
       case _ => throw new IllegalStateException("passwordAuthenticator is absent.")
     }
@@ -48,16 +50,20 @@ trait JavaMailSessionFeature {
    * Provides javax.mail.Transport object with real connection to smtp server.
    */
   def transport: Transport = {
-    val transport = session.getTransport(config.transportProtocol)
-    if (smtpConfig.authEnabled) {
-      (smtpConfig.user, smtpConfig.password) match {
-        case (Some(u), Some(p)) => transport.connect(u, p)
-        case _ => throw new IllegalStateException("Authentication is required but user/password is absent.")
-      }
+    if (config.transportProtocol == "logging") {
+      JavaMailOps.loggingTransport(session)
     } else {
-      transport.connect()
+      val transport = session.getTransport(config.transportProtocol)
+      if (config.smtp.authEnabled) {
+        (config.smtp.user, config.smtp.password) match {
+          case (Some(u), Some(p)) => transport.connect(u, p)
+          case _ => throw new IllegalStateException("Authentication is required but user/password is absent.")
+        }
+      } else {
+        transport.connect()
+      }
+      transport
     }
-    transport
   }
 
 }

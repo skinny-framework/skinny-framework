@@ -162,7 +162,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.0.13"              % "runtime",
+        "ch.qos.logback"     % "logback-classic"     % "1.0.13",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
