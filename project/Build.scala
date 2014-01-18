@@ -41,7 +41,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
+        "com.typesafe" %  "config" % "1.2.0" % "compile"
       ) ++ jodaDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
@@ -107,7 +107,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-freemarker",
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-beanutils" %  "commons-beanutils"  % "1.9.0"   % "compile",
+        "commons-beanutils" %  "commons-beanutils"  % "1.9.1"   % "compile",
         "org.freemarker"    %  "freemarker"         % "2.3.20"  % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -128,9 +128,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
       scalaVersion := "2.10.0",
-      libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+      libraryDependencies ++= jodaDependencies ++ testDependencies
     )
   ) dependsOn(common)
 
