@@ -179,7 +179,8 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
   val slf4jApiDependencies = Seq(
-    "org.slf4j" % "slf4j-api" % "1.7.5" % "compile"
+    "org.slf4j"   %  "slf4j-api"      % "1.7.5" % "compile",
+    "org.clapper" %% "grizzled-slf4j" % "1.0.1" % "compile"
   )
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
@@ -200,9 +201,7 @@ object SkinnyFrameworkBuild extends Build {
     "joda-time" %  "joda-time"    % "2.3"   % "compile",
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
-  val mailDependencies = Seq(
-    "org.scalatra"            %% "scalatra-scalate"   % scalatraVersion  % "compile",
-    "org.slf4j"               %  "slf4j-api"          % "1.7.5"          % "compile",
+  val mailDependencies = slf4jApiDependencies ++ Seq(
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )

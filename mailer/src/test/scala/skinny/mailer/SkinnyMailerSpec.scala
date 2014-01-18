@@ -14,7 +14,7 @@ class SkinnyMailerSpec extends FlatSpec with ShouldMatchers with SkinnyMailTestS
   def inbox = mailbox(toAddress)
 
   before {
-    clearAllMailboxes()
+    clearMailbox(toAddress)
   }
 
   val mailer = new MyMailer()

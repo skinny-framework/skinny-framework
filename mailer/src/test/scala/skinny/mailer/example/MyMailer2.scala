@@ -32,11 +32,6 @@ object MyMailer2 extends SkinnyMailer {
     msg.deliver()
   }
 
-  def deliverSspTemplateMessage(toAddress: String) = mail(to = toAddress,
-    subject = "this mail was created by ssp",
-    body = ssp(getClass.getResource("/").getPath + "test", Map("name" -> "Skinny framework"))
-  ).deliver()
-
   def deliverMultipleMessages(toAddress: String) = {
     val t = transport
     val message = mail(to = toAddress)

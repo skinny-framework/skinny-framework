@@ -17,8 +17,8 @@ trait SkinnyMailTestSupport extends SkinnyMailerImplicits {
   }
 
   /**
-   * Clears all mail boxes.
+   * Clears received messages from this mailbox.
    */
-  def clearAllMailboxes() = Mailbox.clearAll()
+  def clearMailbox(address: String) = mailbox(address).clearReceivedMessages
 
 }

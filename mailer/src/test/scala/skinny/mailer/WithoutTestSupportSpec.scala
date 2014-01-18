@@ -18,19 +18,12 @@ class WithoutTestSupportSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   behavior of "SkinnyMailer without TestSupport"
 
   before {
-    Mailbox.clearAll()
+    inbox.clear()
   }
 
   def inbox = Mailbox.get(toAddress)
 
-  val toAddress = "to@example.com"
-
-  it should "write body with ssp" in {
-    MyMailer2.deliverSspTemplateMessage(toAddress)
-
-    inbox.size should be(1)
-    inbox.get(0).body should be(Some("Hello Skinny framework!"))
-  }
+  val toAddress = "to2@example.com"
 
   it should "send a email" in {
     MyMailer2.mail(

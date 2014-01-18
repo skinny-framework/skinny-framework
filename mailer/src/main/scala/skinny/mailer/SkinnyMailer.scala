@@ -26,5 +26,4 @@ trait SkinnyMailer
   with ExtraConfigFeature
   with JavaMailSessionFeature
   with MessageBuilderFeature
-  with ScalateTemplateFeature
   with SkinnyMailerImplicits
