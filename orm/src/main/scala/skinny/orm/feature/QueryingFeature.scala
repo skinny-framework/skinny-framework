@@ -141,53 +141,76 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
     def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
 
     /**
-     * Count only.
-     *
-     * @return query builder
+     * Calculates rows.
      */
-    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false): CountSelectOperationBuilder = {
-      CountSelectOperationBuilder(mapper, fieldName, distinct, conditions)
+    def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sql).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
     }
-    def count: CountSelectOperationBuilder = count()
+
+    /**
+     * Count only.
+     */
+    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession = autoSession): Long = {
+      calculate {
+        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+        else sqls.count(defaultAlias.field(fieldName.name))
+      }.toLong
+    }
+
+    /**
+     * Counts distinct rows.
+     */
+    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = count(fieldName, true)
 
     /**
      * Calculates sum of a column.
-     *
-     * @return query builder
      */
-    def sum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Sum, fieldName, conditions)
-    }
+    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.sum(defaultAlias.field(fieldName.name)))
 
     /**
      * Calculates average of a column.
-     *
-     * @return query builder
      */
-    def average(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Average, fieldName, conditions, decimals)
+    def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+      calculate(decimals match {
+        case Some(dcml) =>
+          val decimalsValue = dcml match {
+            case 1 => sqls"1"
+            case 2 => sqls"2"
+            case 3 => sqls"3"
+            case 4 => sqls"4"
+            case 5 => sqls"5"
+            case 6 => sqls"6"
+            case 7 => sqls"7"
+            case 8 => sqls"8"
+            case 9 => sqls"9"
+            case _ => sqls"10"
+          }
+          sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+        case _ =>
+          sqls.avg(defaultAlias.field(fieldName.name))
+      })
     }
-    def avg(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = average(fieldName, decimals)
+    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = average(fieldName, decimals)
 
     /**
      * Calculates minimum value of a column.
-     *
-     * @return query builder
      */
-    def minimum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Minimum, fieldName, conditions)
-    }
-    def min(fieldName: Symbol): CalculationSelectOperationBuilder = minimum(fieldName)
+    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.min(defaultAlias.field(fieldName.name)))
+    def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
     /**
      * Calculates minimum value of a column.
-     *
-     * @return query builder
      */
-    def maximum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Maximum, fieldName, conditions)
-    }
-    def max(fieldName: Symbol): CalculationSelectOperationBuilder = maximum(fieldName)
+    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
+    def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
     /**
      * Actually applies SQL to the DB.
@@ -211,102 +234,6 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
       }).list.apply()
     }
 
-  }
-
-  /**
-   * Count operation builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   */
-  case class CountSelectOperationBuilder(
-      mapper: QueryingFeature[Entity],
-      fieldName: Symbol,
-      distinct: Boolean,
-      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): BigDecimal = {
-      val count = {
-        if (distinct) {
-          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-          else sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-        } else {
-          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(defaultAlias.field(fieldName.name))
-          else sqls.count(defaultAlias.field(fieldName.name))
-        }
-      }
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(count).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
-    }
-  }
-
-  /**
-   * Sum operation builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   */
-  case class CalculationSelectOperationBuilder(
-      mapper: QueryingFeature[Entity],
-      calculation: Calculation,
-      fieldName: Symbol,
-      conditions: Seq[SQLSyntax] = Nil,
-      decimals: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, None, None) {
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): Long = {
-      val calc = calculation match {
-        case Average =>
-          decimals match {
-            case Some(dcml) =>
-              val decimalsValue = dcml match {
-                case 1 => sqls"1"
-                case 2 => sqls"2"
-                case 3 => sqls"3"
-                case 4 => sqls"4"
-                case 5 => sqls"5"
-                case 6 => sqls"6"
-                case 7 => sqls"7"
-                case 8 => sqls"8"
-                case 9 => sqls"9"
-                case _ => sqls"10"
-              }
-              sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
-            case _ =>
-              sqls.avg(defaultAlias.field(fieldName.name))
-          }
-        case Minimum => sqls.min(defaultAlias.field(fieldName.name))
-        case Maximum => sqls.max(defaultAlias.field(fieldName.name))
-        case Sum => sqls.sum(defaultAlias.field(fieldName.name))
-      }
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(calc).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.long(1)).single.apply().getOrElse(0L)
-    }
   }
 
 }
@@ -447,53 +374,76 @@ trait QueryingFeatureWithId[Id, Entity]
     def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
 
     /**
-     * Count only.
-     *
-     * @return query builder
+     * Calculates rows.
      */
-    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false): CountSelectOperationBuilder = {
-      CountSelectOperationBuilder(mapper, fieldName, distinct, conditions)
+    def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sql).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
     }
-    def count: CountSelectOperationBuilder = count()
+
+    /**
+     * Count only.
+     */
+    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession = autoSession): Long = {
+      calculate {
+        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
+        else sqls.count(defaultAlias.field(fieldName.name))
+      }.toLong
+    }
+
+    /**
+     * Counts distinct rows.
+     */
+    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = count(fieldName, true)
 
     /**
      * Calculates sum of a column.
-     *
-     * @return query builder
      */
-    def sum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Sum, fieldName, conditions)
-    }
+    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.sum(defaultAlias.field(fieldName.name)))
 
     /**
      * Calculates average of a column.
-     *
-     * @return query builder
      */
-    def average(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Average, fieldName, conditions, decimals)
+    def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+      calculate(decimals match {
+        case Some(dcml) =>
+          val decimalsValue = dcml match {
+            case 1 => sqls"1"
+            case 2 => sqls"2"
+            case 3 => sqls"3"
+            case 4 => sqls"4"
+            case 5 => sqls"5"
+            case 6 => sqls"6"
+            case 7 => sqls"7"
+            case 8 => sqls"8"
+            case 9 => sqls"9"
+            case _ => sqls"10"
+          }
+          sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+        case _ =>
+          sqls.avg(defaultAlias.field(fieldName.name))
+      })
     }
-    def avg(fieldName: Symbol, decimals: Option[Int] = None): CalculationSelectOperationBuilder = average(fieldName, decimals)
+    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = average(fieldName, decimals)
 
     /**
      * Calculates minimum value of a column.
-     *
-     * @return query builder
      */
-    def minimum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Minimum, fieldName, conditions)
-    }
-    def min(fieldName: Symbol): CalculationSelectOperationBuilder = minimum(fieldName)
+    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.min(defaultAlias.field(fieldName.name)))
+    def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
     /**
      * Calculates minimum value of a column.
-     *
-     * @return query builder
      */
-    def maximum(fieldName: Symbol): CalculationSelectOperationBuilder = {
-      CalculationSelectOperationBuilder(mapper, Maximum, fieldName, conditions)
-    }
-    def max(fieldName: Symbol): CalculationSelectOperationBuilder = maximum(fieldName)
+    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
+    def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
     /**
      * Actually applies SQL to the DB.
@@ -517,102 +467,6 @@ trait QueryingFeatureWithId[Id, Entity]
       }).list.apply())
     }
 
-  }
-
-  /**
-   * Count operation builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   */
-  case class CountSelectOperationBuilder(
-      mapper: QueryingFeatureWithId[Id, Entity],
-      fieldName: Symbol,
-      distinct: Boolean,
-      conditions: Seq[SQLSyntax] = Nil) extends SelectOperationBuilder(mapper, conditions, None, None) {
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): Long = {
-      val count = {
-        if (distinct) {
-          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-          else sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-        } else {
-          if (fieldName == Symbol(primaryKeyFieldName)) sqls.count(defaultAlias.field(fieldName.name))
-          else sqls.count(defaultAlias.field(fieldName.name))
-        }
-      }
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(count).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.long(1)).single.apply().getOrElse(0L)
-    }
-  }
-
-  /**
-   * Sum operation builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   */
-  case class CalculationSelectOperationBuilder(
-      mapper: QueryingFeatureWithId[Id, Entity],
-      calculation: Calculation,
-      fieldName: Symbol,
-      conditions: Seq[SQLSyntax] = Nil,
-      decimals: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, None, None) {
-
-    /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
-    def apply()(implicit session: DBSession = autoSession): BigDecimal = {
-      val calc = calculation match {
-        case Average =>
-          decimals match {
-            case Some(dcml) =>
-              val decimalsValue = dcml match {
-                case 1 => sqls"1"
-                case 2 => sqls"2"
-                case 3 => sqls"3"
-                case 4 => sqls"4"
-                case 5 => sqls"5"
-                case 6 => sqls"6"
-                case 7 => sqls"7"
-                case 8 => sqls"8"
-                case 9 => sqls"9"
-                case _ => sqls"10"
-              }
-              sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
-            case _ =>
-              sqls.avg(defaultAlias.field(fieldName.name))
-          }
-        case Minimum => sqls.min(defaultAlias.field(fieldName.name))
-        case Maximum => sqls.max(defaultAlias.field(fieldName.name))
-        case Sum => sqls.sum(defaultAlias.field(fieldName.name))
-      }
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(calc).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
-    }
   }
 
 }

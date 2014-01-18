@@ -129,9 +129,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val p = Product.defaultAlias
 
       Product.count() should equal(2)
-      Product.where(sqls.eq(p.id, id.value)).count.apply() should equal(1)
+      Product.where(sqls.eq(p.id, id.value)).count() should equal(1)
 
-      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen).apply() should equal(3030)
+      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen) should equal(3030)
       Product.sum('priceYen) should equal(3030)
 
       // NOTICE: H2 and others returns value without decimal part.
@@ -146,15 +146,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Product.min('priceYen) should equal(1230)
       Product.max('priceYen) should equal(1800)
 
-      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen).apply() should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen, Some(2)).apply() should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).minimum('priceYen).apply() should equal(1230)
-      Product.where(sqls.isNotNull(p.priceYen)).maximum('priceYen).apply() should equal(1800)
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen, Some(2)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).minimum('priceYen) should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).maximum('priceYen) should equal(1800)
 
-      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen).apply() should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen, Some(3)).apply() should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).min('priceYen).apply() should equal(1230)
-      Product.where(sqls.isNotNull(p.priceYen)).max('priceYen).apply() should equal(1800)
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen, Some(3)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).min('priceYen) should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).max('priceYen) should equal(1800)
     }
 
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
@@ -268,7 +268,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         val members = Member.findAll()
         val membersByIds = Member.where('id -> members.map(_.id)).apply()
         membersByIds.size should equal(members.size)
-        Member.where('id -> members.map(_.id)).count.apply() should equal(members.size)
+        Member.where('id -> members.map(_.id)).count() should equal(members.size)
 
         val withGroups = members.filter(_.name.get.first == "Bob").head
         withGroups.groups.size should equal(2)
