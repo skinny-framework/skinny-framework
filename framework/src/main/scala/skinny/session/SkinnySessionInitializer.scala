@@ -35,10 +35,7 @@ class SkinnySessionInitializer extends Filter with Logging {
     val jsessionIdInCookie = req.getCookies.find(_.getName == jsessionIdCookieName).map(_.getValue)
     val jsessionIdInSession = session.getId
     logger.debug(s"[Skinny Session] session id (cookie: ${jsessionIdInCookie}, local session: ${jsessionIdInSession})")
-    val expireAt = {
-      if (session.getMaxInactiveInterval == 0) DateTime.now.plusMonths(3) // 3 months alive is long enough
-      else DateTime.now.plusSeconds(session.getMaxInactiveInterval)
-    }
+    val expireAt = SkinnySession.getExpireAtFromMaxInactiveInterval(session.getMaxInactiveInterval)
     val skinnySession = if (jsessionIdInCookie.isDefined && jsessionIdInCookie.get != jsessionIdInSession) {
       SkinnySession.findOrCreate(jsessionIdInCookie.get, Option(jsessionIdInSession), expireAt)
     } else {

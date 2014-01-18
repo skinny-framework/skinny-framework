@@ -10,19 +10,21 @@ class ScalatraBootstrap extends SkinnyLifeCycle {
     scalikejdbc.GlobalSettings.loggingSQLAndTime = scalikejdbc.LoggingSQLAndTimeSettings(
       singleLineMode = true
     )
-
     ctx.mount(classOf[SkinnySessionInitializer], "/*")
 
-    SkillsController.mount(ctx)
-    Controllers.root.mount(ctx)
     ErrorController.mount(ctx)
 
+    Controllers.root.mount(ctx)
     Controllers.programmers.mount(ctx)
+    Controllers.mail.mount(ctx)
+    Controllers.customLayout.mount(ctx)
+    Controllers.mustache.mount(ctx)
+    Controllers.thymeleaf.mount(ctx)
+
+    SkillsController.mount(ctx)
     CompaniesController.mount(ctx)
     CommentsController.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)
-    Controllers.mustache.mount(ctx)
-    Controllers.thymeleaf.mount(ctx)
 
     AssetsController.mount(ctx)
   }

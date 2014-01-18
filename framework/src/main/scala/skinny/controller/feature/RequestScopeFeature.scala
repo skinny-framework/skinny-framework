@@ -7,6 +7,7 @@ import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
 import skinny.I18n
+import grizzled.slf4j.Logging
 
 object RequestScopeFeature {
 
@@ -38,7 +39,7 @@ object RequestScopeFeature {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with SessionLocaleFeature {
+trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with SessionLocaleFeature with Logging {
 
   import RequestScopeFeature._
 
@@ -97,6 +98,14 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @return self
    */
   def requestScope(keyAndValues: Seq[(String, Any)]): RequestScopeFeature = {
+    keyAndValues.foreach {
+      case (key, _) =>
+        if (key == "layout") {
+          logger.warn("'layout' is a special attribute for Scalate. " +
+            "If you're not going to replace layout template, use another key for this attribute. " +
+            "Or if you'd like to change layout for this action, use layout(\"/other\") instead.")
+        }
+    }
     requestScope ++= keyAndValues
     this
   }

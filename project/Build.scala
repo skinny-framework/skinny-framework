@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "0.9.25-1"
+  val _version = "0.9.26"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.6"
   val scalikeJDBCVersion = "1.7.3"
@@ -41,11 +41,8 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config" % "1.0.2" % "compile"
-      ) ++ servletApiDependencies 
-        ++ slf4jApiDependencies 
-        ++ jodaDependencies 
-        ++ testDependencies
+        "com.typesafe" %  "config" % "1.2.0" % "compile"
+      ) ++ jodaDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -57,7 +54,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-io"    %  "commons-io" % "2.4"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm)
+  ) dependsOn(common, validator, orm, mailer)
 
   lazy val standalone = Project (id = "standalone", base = file("standalone"),
     settings = baseSettings ++ Seq(
@@ -100,9 +97,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test",
-        "com.h2database"        %  "h2"                % h2Version      % "test",
-        "ch.qos.logback"        %  "logback-classic"   % "1.0.13"       % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -112,7 +107,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-freemarker",
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-beanutils" %  "commons-beanutils"  % "1.9.0"   % "compile",
+        "commons-beanutils" %  "commons-beanutils"  % "1.9.1"   % "compile",
         "org.freemarker"    %  "freemarker"         % "2.3.20"  % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -133,9 +128,15 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
       scalaVersion := "2.10.0",
-      libraryDependencies ++= Seq(
-        "com.typesafe" %  "config"       % "1.0.2" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+      libraryDependencies ++= jodaDependencies ++ testDependencies
+    )
+  ) dependsOn(common)
+
+  lazy val mailer = Project ( id = "mailer", base = file("mailer"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-mailer",
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= mailDependencies ++ testDependencies
     )
   ) dependsOn(common)
 
@@ -143,10 +144,10 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-test",
       scalaVersion := "2.10.0",
-      libraryDependencies ++= scalatraDependencies ++ testDependencies ++ Seq(
+      libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
-        "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "compile",
-        "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "compile"
+        "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
+        "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
       )
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
@@ -159,7 +160,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.0.13"              % "runtime",
+        "ch.qos.logback"     % "logback-classic"     % "1.0.13",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
@@ -175,11 +176,10 @@ object SkinnyFrameworkBuild extends Build {
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
-
   val slf4jApiDependencies = Seq(
-    "org.slf4j" % "slf4j-api" % "1.7.5" % "compile"
+    "org.slf4j"   %  "slf4j-api"      % "1.7.5" % "compile",
+    "org.clapper" %% "grizzled-slf4j" % "1.0.1" % "compile"
   )
-
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
@@ -195,16 +195,21 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile",
     "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"
   )
-
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.3"   % "compile",
     "org.joda"  %  "joda-convert" % "1.5"   % "compile"
   )
-
+  val mailDependencies = slf4jApiDependencies ++ Seq(
+    "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
+    "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
+  )
   // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest" %% "scalatest"   % "1.9.1" % "test"
+    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
+    "ch.qos.logback"          %  "logback-classic" % "1.0.13"  % "test",
+    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
+    "com.h2database"          %  "h2"              % h2Version % "test"
   )
 
   def _publishTo(v: String) = {

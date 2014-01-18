@@ -6,6 +6,9 @@ import org.joda.time.DateTime
 import java.io._
 import grizzled.slf4j.Logging
 
+/**
+ * SkinnySession JDBC implmenetation.
+ */
 case class SkinnySession(
     id: Long,
     createdAt: DateTime,
@@ -86,6 +89,9 @@ case class SkinnySession(
 
 }
 
+/**
+ * SkinnySession JDBC implmenetation.
+ */
 object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
 
   sealed trait LastOperation
@@ -114,58 +120,35 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     merge = (s, as) => s.copy(attributes = as)
   ).byDefault
 
-  def findOrCreate(jsessionId: String, newJsessionId: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
-    joins(attributesRef, servletSessionsRef).findBy(sqls.eq(servletSessionsAlias.jsessionId, jsessionId)).map { session =>
-      newJsessionId.foreach { newId =>
-        joins(servletSessionsRef).findBy(sqls.eq(servletSessionsAlias.jsessionId, newId)).getOrElse {
-          insert.into(ServletSession).namedValues(
-            ServletSession.column.jsessionId -> newId,
-            ServletSession.column.skinnySessionId -> session.id).toSQL.update.apply()
-          joins(attributesRef).findById(session.id).get
-        }
-      }
-      // postpone session timeout
-      updateById(session.id).withNamedValues(column.expireAt -> expireAt)
+  /**
+   * Returns expireAt value to be set for the ServletSession's maxInactiveInterval.
+   */
+  def getExpireAtFromMaxInactiveInterval(maxInactiveInterval: Int): DateTime = {
+    if (maxInactiveInterval <= 0) DateTime.now.plusMonths(3) // 3 months alive is long enough
+    else DateTime.now.plusSeconds(maxInactiveInterval)
+  }
+
+  /**
+   * Finds a SkinnySession which specified JSESSIONID is attached from database.
+   * If absent, create new record and attaches this JSESSIONID to the SkinnySession.
+   */
+  def findOrCreate(jsessionId: String, jsessionidToBeAttached: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
+    findActiveByJsessionId(jsessionId).map { session =>
+      jsessionidToBeAttached.foreach(jid => attachJsessionIdToSkinnySession(jid, session))
+      ServletSession.narrowDownAttachedServletSessions(session, 10)
+      postponeSkinnySessionTimeout(session, expireAt)
       session
-
     }.getOrElse {
-      val skinnySessionId = createWithNamedValues(
-        column.createdAt -> DateTime.now,
-        column.expireAt -> expireAt
-      )
-      insert.into(ServletSession).namedValues(
-        ServletSession.column.jsessionId -> jsessionId,
-        ServletSession.column.skinnySessionId -> skinnySessionId
-      ).toSQL.update.apply()
-      joins(attributesRef).findById(skinnySessionId).get
+      joins(attributesRef).findById(createSkinnySessionAndReturnId(expireAt)).map { session =>
+        attachJsessionIdToSkinnySession(jsessionId, session)
+        session
+      }.get
     }
   }
 
-  def invalidate(jsessionId: String)(implicit s: DBSession = autoSession): Unit = {
-    val sv = servletSessionsAlias
-    val idOpt = select(sv.skinnySessionId).from(ServletSession as sv)
-      .where.eq(sv.jsessionId, jsessionId).toSQL.map(_.long(1)).single.apply()
-    idOpt.foreach { id =>
-      delete.from(ServletSession).where.eq(ServletSession.column.skinnySessionId, id).toSQL.update.apply()
-      delete.from(SkinnySessionAttribute).where.eq(SkinnySessionAttribute.column.skinnySessionId, id).toSQL.update.apply()
-      deleteById(id)
-    }
-  }
-
-  private[this] def toSerializable(v: Any): Any = v match {
-    case null => null
-    case None => null
-    case Some(v) => toSerializable(v)
-    case v => {
-      using(new ByteArrayOutputStream) { bytes =>
-        using(new ObjectOutputStream(bytes)) { out =>
-          out.writeObject(v)
-          bytes.toByteArray
-        }
-      }
-    }
-  }
-
+  /**
+   * Saves an attribute to the database.
+   */
   def setAttributeToDatabase(id: Long, name: String, value: Any)(implicit s: DBSession = autoSession): Unit = {
     if (name != null) {
       val c = SkinnySessionAttribute.column
@@ -174,7 +157,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
         c.name -> name,
         c.value -> toSerializable(value)
       )
-      // easy upsert implementation
+      // easy-upsert
       try {
         if (update(SkinnySessionAttribute).set(namedValues: _*)
           .where.eq(c.skinnySessionId, id).and.eq(c.name, name)
@@ -195,10 +178,62 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     }
   }
 
+  /**
+   * Removes an attribute from the database.
+   */
   def removeAttributeFromDatabase(id: Long, name: String)(implicit s: DBSession = autoSession): Unit = {
     val c = SkinnySessionAttribute.column
     delete.from(SkinnySessionAttribute).where.eq(c.skinnySessionId, id).and.eq(c.name, name)
       .toSQL.update.apply()
+  }
+
+  /**
+   * Invalidates this SkinnySession and all the JSESSIONID are detached too.
+   */
+  def invalidate(jsessionId: String)(implicit s: DBSession = autoSession): Unit = {
+    val sv = servletSessionsAlias
+    val idOpt = select(sv.skinnySessionId).from(ServletSession as sv)
+      .where.eq(sv.jsessionId, jsessionId).toSQL.map(_.long(1)).single.apply()
+    idOpt.foreach { id =>
+      ServletSession.deleteBySkinnySessionId(id)
+      SkinnySessionAttribute.deleteBySkinnySessionId(id)
+      deleteById(id)
+    }
+  }
+
+  private[this] def createSkinnySessionAndReturnId(expireAt: DateTime): Long = {
+    createWithNamedValues(
+      column.createdAt -> DateTime.now,
+      column.expireAt -> expireAt
+    )
+  }
+  private[this] def findActiveByJsessionId(jsessionId: String): Option[SkinnySession] = {
+    joins(attributesRef, servletSessionsRef).findBy(
+      sqls.eq(servletSessionsAlias.jsessionId, jsessionId).and.gt(defaultAlias.expireAt, DateTime.now))
+  }
+  private[this] def attachJsessionIdToSkinnySession(jsessionId: String, session: SkinnySession): Unit = {
+    ServletSession.findByJsessionId(jsessionId).map { servletSession =>
+      servletSession.attachTo(session)
+    }.getOrElse {
+      ServletSession.create(jsessionId, session)
+    }
+  }
+  private[this] def postponeSkinnySessionTimeout(session: SkinnySession, expireAt: DateTime): Unit = {
+    updateById(session.id).withNamedValues(column.expireAt -> expireAt)
+  }
+
+  private[this] def toSerializable(v: Any): Any = v match {
+    case null => null
+    case None => null
+    case Some(v) => toSerializable(v)
+    case v => {
+      using(new ByteArrayOutputStream) { bytes =>
+        using(new ObjectOutputStream(bytes)) { out =>
+          out.writeObject(v)
+          bytes.toByteArray
+        }
+      }
+    }
   }
 
 }

@@ -4,6 +4,7 @@ import org.scalatra.scalate._
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
+import javax.servlet.http.HttpServletRequest
 
 /**
  * Scalate implementation of TemplateEngineSupport.
@@ -135,6 +136,21 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    */
   override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
     layoutTemplate(templatePath(path), requestScope.toMap.toSeq: _*)
+  }
+
+  /**
+   * Replaces layout template for this action.
+   */
+  def layout(path: String)(implicit request: HttpServletRequest): ScalateTemplateEngineFeature = {
+    if (request != null) {
+      val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
+      templateAttributes += ("layout" -> s"/WEB-INF/layouts/${_path}.${scalateExtension}")
+      this
+    } else {
+      // TODO this method doesn't work in beforeAction, more investigation
+      logger.warn("You cannot specify layout here. Put this into action methods.")
+      this
+    }
   }
 
 }

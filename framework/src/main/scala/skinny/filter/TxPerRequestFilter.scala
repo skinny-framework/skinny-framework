@@ -11,27 +11,6 @@ trait TxPerRequestFilter extends SkinnyFilter with Logging {
 
   def dbConnectionPool: ConnectionPool = ConnectionPool.get()
 
-  def txOnly: Seq[String] = Nil
-
-  def txExcept: Seq[String] = Seq("/assets/?.*")
-
-  protected def isDBSessionRequired(req: HttpServletRequest): Boolean = {
-    if (req == null || req.getServletContext == null) {
-      false
-    } else {
-      val contextPath = req.getServletContext.getContextPath
-      val path = req.getRequestURI
-      val shouldBeExcluded = txExcept.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
-      if (!shouldBeExcluded) {
-        val allPathShouldBeIncluded = txOnly.isEmpty
-        val shouldBeIncluded = txOnly.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
-        allPathShouldBeIncluded || shouldBeIncluded
-      } else {
-        false
-      }
-    }
-  }
-
   def beginDBConnection = {
     val db = ThreadLocalDB.create(dbConnectionPool.borrow())
     logger.debug(s"Thread local db session is borrowed from the pool. (db: ${db})")

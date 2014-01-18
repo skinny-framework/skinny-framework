@@ -107,8 +107,54 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Member.findAll(ordering = sqls"${m.id}, ${m.createdAt} desc").size should be > (0)
     }
 
-    it("should have #countAll()") { implicit session =>
-      Member.countAll() should be > (0L)
+    it("should have #count()") { implicit session =>
+      Member.count() should be > (0L)
+    }
+
+    it("should have #count(Symbol)") { implicit session =>
+      Member.count('countryId, false) should equal(3L)
+      Member.count('countryId, true) should equal(2L)
+    }
+
+    it("should have #distinctCount(Symbol)") { implicit session =>
+      Member.distinctCount() should equal(3L)
+      Member.distinctCount('countryId) should equal(2L)
+    }
+
+    // http://api.rubyonrails.org/classes/ActiveRecord/Calculations.html
+    it("should have #count, #sum, #average, #maximum and #minimum") { implicit s =>
+      val id = Product.createWithAttributes('name -> "How to learn Scala", 'priceYen -> 1230)
+      Product.createWithAttributes('name -> "How to learn Scala 2", 'priceYen -> 1800)
+
+      val p = Product.defaultAlias
+
+      Product.count() should equal(2)
+      Product.where(sqls.eq(p.id, id.value)).count() should equal(1)
+
+      Product.where(sqls.isNotNull(p.priceYen)).sum('priceYen) should equal(3030)
+      Product.sum('priceYen) should equal(3030)
+
+      // NOTICE: H2 and others returns value without decimal part.
+      // https://hibernate.atlassian.net/browse/HHH-5173
+      Product.average('priceYen) should equal(1515)
+      Product.average('priceYen, Some(2)) should equal(1515)
+      Product.minimum('priceYen) should equal(1230)
+      Product.maximum('priceYen) should equal(1800)
+
+      Product.avg('priceYen) should equal(1515)
+      Product.avg('priceYen, Some(3)) should equal(1515)
+      Product.min('priceYen) should equal(1230)
+      Product.max('priceYen) should equal(1800)
+
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).average('priceYen, Some(2)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).minimum('priceYen) should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).maximum('priceYen) should equal(1800)
+
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).avg('priceYen, Some(3)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).min('priceYen) should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).max('priceYen) should equal(1800)
     }
 
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
@@ -222,7 +268,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         val members = Member.findAll()
         val membersByIds = Member.where('id -> members.map(_.id)).apply()
         membersByIds.size should equal(members.size)
-        Member.where('id -> members.map(_.id)).count.apply() should equal(members.size)
+        Member.where('id -> members.map(_.id)).count() should equal(members.size)
 
         val withGroups = members.filter(_.name.get.first == "Bob").head
         withGroups.groups.size should equal(2)
@@ -387,7 +433,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
 
       Book.deleteById(isbn)
       Book.findById(isbn) should equal(None)
-      Book.countAll() should equal(2)
+      Book.count() should equal(2)
     }
 
     it("should deal with typed auto-increment value") { implicit s =>
