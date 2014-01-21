@@ -32,6 +32,7 @@ trait SkinnyMailerBase {
     msg.to = to
     msg.mimeVersion = config.mimeVersion
     msg.contentType = s"${config.contentType}; charset=${config.charset}"
+    msg.charset = config.charset
     msg.subject = (subject, config.charset)
     msg.body = body
     msg

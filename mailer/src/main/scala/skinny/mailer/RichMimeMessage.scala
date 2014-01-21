@@ -151,15 +151,15 @@ trait RichMimeMessage extends Logging {
 
   def body_=(text: String) = try {
     underlying.getContent match {
-      case s: String => underlying.setText(text, "utf-8")
+      case s: String => underlying.setText(text, charset)
       case mp: Multipart =>
         val textPart = new MimeBodyPart()
-        textPart.setText(text, "utf-8")
+        textPart.setText(text, charset)
         mp.addBodyPart(textPart)
         underlying.setContent(mp)
       case _ =>
     }
-  } catch { case e: java.io.IOException => underlying.setText(text, "utf-8") }
+  } catch { case e: java.io.IOException => underlying.setText(text, charset) }
 
   // -------------
   // multipart
