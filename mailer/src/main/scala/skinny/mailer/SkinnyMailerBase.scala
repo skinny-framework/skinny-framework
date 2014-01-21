@@ -31,7 +31,7 @@ trait SkinnyMailerBase {
     Option(from).foreach(f => msg.from = new InternetAddress(f))
     msg.to = to
     msg.mimeVersion = config.mimeVersion
-    msg.contentType = s"${config.contentType};${config.charset}"
+    msg.contentType = s"${config.contentType}; charset=${config.charset}"
     msg.subject = (subject, config.charset)
     msg.body = body
     msg
