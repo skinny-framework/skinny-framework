@@ -8,7 +8,8 @@ object SkinnyEnv {
   /**
    * Key for Skinny framework env value.
    */
-  val Key = "skinny.env"
+  val PropertyKey = "skinny.env"
+  val EnvKey = "SKINNY_ENV"
 
   val Development = "development"
   val Dev = "dev"
@@ -26,7 +27,11 @@ object SkinnyEnv {
    *
    * @return env string such as "production"
    */
-  def get(): Option[String] = Option(System.getProperty(Key)).orElse(Option(System.getenv(Key)))
+  def get(): Option[String] = {
+    Option(System.getProperty(PropertyKey))
+      .orElse(Option(System.getProperty(EnvKey)))
+      .orElse(Option(System.getenv(EnvKey)))
+  }
 
   def getOrElse(default: String): String = get().getOrElse(default)
 
