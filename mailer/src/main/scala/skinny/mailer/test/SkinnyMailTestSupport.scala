@@ -7,7 +7,7 @@ import skinny.SkinnyEnv
 trait SkinnyMailTestSupport extends SkinnyMailerImplicits {
 
   // set skinny.env as "test"
-  System.setProperty(SkinnyEnv.Key, "test")
+  System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   /**
    * Creates a new Mailbox for specified email.

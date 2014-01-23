@@ -13,7 +13,7 @@ import skinny.mailer.implicits.SkinnyMailerImplicits
 class WithoutTestSupportSpec extends FlatSpec with ShouldMatchers with BeforeAndAfter with SkinnyMailerImplicits {
 
   // set skinny.env as "test"
-  System.setProperty(SkinnyEnv.Key, "test")
+  System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   behavior of "SkinnyMailer without TestSupport"
 

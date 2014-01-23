@@ -4,9 +4,7 @@ import javax.activation.{ FileDataSource, DataHandler }
 import javax.mail._
 import javax.mail.Message.RecipientType
 import javax.mail.internet.{ InternetAddress, MimeBodyPart, MimeMultipart, MimeMessage }
-import scala.collection.JavaConverters._
 import java.io.InputStream
-import java.util
 import org.joda.time.DateTime
 import grizzled.slf4j.Logging
 
@@ -27,34 +25,16 @@ trait RichMimeMessage extends Logging {
   // all header lines as an Enumeration of Strings
   // (line is a raw RFC 822 header-line, containing both the "name" and "value" field).
 
-  def allHeaderLines: Seq[String] = underlying.getAllHeaderLines.asScala.map(_.asInstanceOf[String]).toSeq
+  val headerLines: HeaderLines = HeaderLines(this)
 
-  // TODO
-  def matchingHeaderLines(names: Seq[String]): util.Enumeration[_] = underlying.getMatchingHeaderLines(names.toArray)
-  def matchingHeaders(names: Seq[String]): util.Enumeration[_] = underlying.getMatchingHeaders(names.toArray)
+  def allHeaderLines: Seq[String] = headerLines.toSeq
 
-  def nonMatchingHeaderLines(names: Seq[String]) = underlying.getNonMatchingHeaderLines(names.toArray)
-  def nonMatchingHeaders(names: Seq[String]) = underlying.getNonMatchingHeaders(names.toArray)
-
-  // TODO
-  //def allHeaders: util.Enumeration[_] = underlying.getAllHeaders
-
-  // TODO
-  val headerLines = new {
-    /**
-     * Add a raw RFC 822 header-line.
-     * @param lines
-     * @return
-     */
-    def ++=(lines: String) = underlying.addHeaderLine(lines)
-
-    /**
-     * Add a raw RFC 822 header-line.
-     * @param lines
-     * @return
-     */
-    def ++=(lines: Iterable[String]) = lines.foreach(underlying.addHeaderLine)
-  }
+  // TODO These should be supported if really needed
+  // def matchingHeaderLines(names: Seq[String]): java.util.Enumeration[_] = underlying.getMatchingHeaderLines(names.toArray)
+  // def matchingHeaders(names: Seq[String]): java.util.Enumeration[_] = underlying.getMatchingHeaders(names.toArray)
+  // def nonMatchingHeaderLines(names: Seq[String]) = underlying.getNonMatchingHeaderLines(names.toArray)
+  // def nonMatchingHeaders(names: Seq[String]) = underlying.getNonMatchingHeaders(names.toArray)
+  // def allHeaders: java.util.Enumeration[_] = underlying.getAllHeaders
 
   // -------------
   // header
@@ -151,15 +131,15 @@ trait RichMimeMessage extends Logging {
 
   def body_=(text: String) = try {
     underlying.getContent match {
-      case s: String => underlying.setText(text, "utf-8")
+      case s: String => underlying.setText(text, charset)
       case mp: Multipart =>
         val textPart = new MimeBodyPart()
-        textPart.setText(text, "utf-8")
+        textPart.setText(text, charset)
         mp.addBodyPart(textPart)
         underlying.setContent(mp)
       case _ =>
     }
-  } catch { case e: java.io.IOException => underlying.setText(text, "utf-8") }
+  } catch { case e: java.io.IOException => underlying.setText(text, charset) }
 
   // -------------
   // multipart

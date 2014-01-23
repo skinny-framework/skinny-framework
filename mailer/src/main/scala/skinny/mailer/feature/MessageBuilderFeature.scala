@@ -19,7 +19,7 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
 
   def body(body: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(body = body))
 
-  def htmlBody(body: String, charset: String = "utf-8")(implicit s: Session = session): SkinnyMessageBuilder = {
+  def htmlBody(body: String, charset: String = config.charset)(implicit s: Session = session): SkinnyMessageBuilder = {
     val msg = mail(body = body)
     msg.charset = charset
     msg.contentType = "text/html"
@@ -66,7 +66,7 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       this
     }
 
-    def htmlBody(body: String, charset: String = "utf-8"): SkinnyMessageBuilder = {
+    def htmlBody(body: String, charset: String = config.charset): SkinnyMessageBuilder = {
       message.charset = charset
       message.contentType = "text/html"
       message.setText(body, charset, "html")
