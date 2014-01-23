@@ -10,7 +10,7 @@ import skinny.SkinnyEnv
 trait SkinnyTestSupport { self: ScalatraTests =>
 
   // set skinny.env as "test"
-  System.setProperty(SkinnyEnv.Key, "test")
+  System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   /**
    * Session injector controller

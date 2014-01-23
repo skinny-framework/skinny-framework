@@ -17,7 +17,7 @@ trait DBMigration {
   def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name) = {
     val skinnyEnv = SkinnyEnv.get()
     try {
-      System.setProperty(SkinnyEnv.Key, env)
+      System.setProperty(SkinnyEnv.PropertyKey, env)
       DBSettings.initialize()
 
       val cp = try {
@@ -47,7 +47,7 @@ trait DBMigration {
       }
 
     } finally {
-      skinnyEnv.foreach { env => System.setProperty(SkinnyEnv.Key, env) }
+      skinnyEnv.foreach { env => System.setProperty(SkinnyEnv.PropertyKey, env) }
       DBSettings.initialize()
     }
   }
