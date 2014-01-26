@@ -117,7 +117,7 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     }
   }
 
-  it should "render a Jade template even if it not its first choice" in {
+  it should "render a Jade template even if it is not its first choice" in {
     get("/anything-but-ssp/b") {
       status should be(200)
       body should include("<p>This is Jade template B")

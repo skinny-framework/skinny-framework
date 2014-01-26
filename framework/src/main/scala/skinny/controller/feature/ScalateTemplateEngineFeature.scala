@@ -62,6 +62,9 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    *
    * If you'd like to change the search order, or you want to
    * restrict the search to fewer template languages, override this attribute.
+   *
+   * Note that removing unnecessary items from this list will improve the
+   * performance of the template engine.
    */
   def scalateExtensions: List[String] = List("ssp", "jade", "scaml", "mustache")
 

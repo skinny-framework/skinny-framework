@@ -2,16 +2,12 @@ package controller
 
 class CustomLayoutController extends ApplicationController {
 
-  override def scalateExtensions = List("scaml")
-
-  layout("/simple/foo")
-
-  def index = layout("/simple/foo").render("/custom-layout/index")
+  def index = layout("/simple/foo.scaml").render("/custom-layout/index")
 
   def default = render("/custom-layout/default")
 
   def bar = {
-    layout("/bar")
+    layout("/bar.scaml")
     render("/custom-layout/bar")
   }
 
