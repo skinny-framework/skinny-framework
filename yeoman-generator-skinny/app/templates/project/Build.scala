@@ -8,6 +8,7 @@ import ScalateKeys._
 object SkinnyAppBuild extends Build {
 
   val skinnyVersion = "0.9.27"
+  val scalatraVersion = "2.2.2"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
   //val jettyVersion = "9.1.0.v20131115"
@@ -23,7 +24,13 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
       "com.h2database"          %  "h2"                 % "1.3.174",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"    % "1.0.13",
+      "ch.qos.logback"          %  "logback-classic"    % "1.0.13",
+      // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
+      "org.scala-lang"          %  "scala-library"      % "2.10.3"              % "test",
       "org.skinny-framework"    %% "skinny-test"        % skinnyVersion         % "test",
+      "org.scalatra"            %% "scalatra-scalatest" % scalatraVersion       % "test",
+      // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
+      // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
       "org.eclipse.jetty"       %  "jetty-plus"         % jettyVersion          % "container",
       "org.eclipse.jetty.orbit" %  "javax.servlet"      % "3.0.0.v201112011016" % "container;provided;test"
