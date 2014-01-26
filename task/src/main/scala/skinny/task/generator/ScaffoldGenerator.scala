@@ -190,7 +190,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |object ${controllerClassName} extends SkinnyResource with ApplicationController {
         |  protectFromForgery()
-        |${if (template != "ssp") "  override def scalateExtension = \"" + template + "\"" else ""}
+        |
         |  override def model = ${modelClassName}
         |  override def resourcesName = "${resources}"
         |  override def resourceName = "${resource}"

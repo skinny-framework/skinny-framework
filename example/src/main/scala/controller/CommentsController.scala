@@ -7,8 +7,6 @@ import model._
 object CommentsController extends SkinnyResource with ApplicationController {
   //protectFromForgery()
 
-  override lazy val scalateExtension: String = "jade"
-
   override def model = Comment
   override def resourcesName = "comments"
   override def resourceName = "comment"

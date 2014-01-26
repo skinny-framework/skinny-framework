@@ -2,7 +2,7 @@ package controller
 
 class CustomLayoutController extends ApplicationController {
 
-  override def scalateExtension = "scaml"
+  override def scalateExtensions = List("scaml")
 
   layout("/simple/foo")
 

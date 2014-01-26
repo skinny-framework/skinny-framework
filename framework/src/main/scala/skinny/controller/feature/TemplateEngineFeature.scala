@@ -43,7 +43,7 @@ trait TemplateEngineFeature
       renderWithTemplate(path)
     } else if (format == Format.HTML) {
       // template not found and should be found
-      throw new ViewTemplateNotFoundException(s"View template not found. (expected: ${templatePath(path)})")
+      throw new ViewTemplateNotFoundException(s"View template not found. (expected one of: ${templatePaths(path)})")
     } else {
       // template not found, but try to render JSON or XML body if possible
       logger.debug(s"Template for ${path} not found.")
@@ -61,13 +61,14 @@ trait TemplateEngineFeature
   }
 
   /**
-   * Returns actual template path.
+   * Returns possible template paths.
+   * Result is a list because the template engine may support multiple template languages.
    *
    * @param path path name
    * @param format format (HTML,JSON,XML...)
    * @return actual path
    */
-  protected def templatePath(path: String)(implicit format: Format = Format.HTML): String
+  protected def templatePaths(path: String)(implicit format: Format = Format.HTML): List[String]
 
   /**
    * Predicates the template exists.
