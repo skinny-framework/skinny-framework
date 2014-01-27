@@ -11,8 +11,6 @@ object CompaniesController extends SkinnyResourceWithId[CompanyId] with Applicat
     def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
   }
 
-  override def scalateExtension = "jade"
-
   override def model = Company
   override def resourcesName = "companies"
   override def resourceName = "company"

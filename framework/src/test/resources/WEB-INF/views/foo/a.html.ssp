@@ -1,0 +1,1 @@
+<p>${ "This is " + "SSP template A" }</p>

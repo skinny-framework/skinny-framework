@@ -10,8 +10,6 @@ object SkillsController extends SkinnyResource with ApplicationController
 
   protectFromForgery()
 
-  override lazy val scalateExtension: String = "scaml"
-
   override def model = Skill
   override def resourcesName = "skills"
   override def resourceName = "skill"

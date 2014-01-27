@@ -5,7 +5,7 @@ import skinny.mailer.SkinnyMailer
 class MailController extends ApplicationController {
   protectFromForgery()
 
-  override lazy val scalateExtension: String = "jade"
+  override def scalateExtensions = List("jade")
 
   class MyMailer extends SkinnyMailer
 

@@ -14,7 +14,11 @@ trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
    */
   lazy val freeMarker: FreeMarker = FreeMarker(FreeMarkerConfig.defaultWithServletContext(servletContext))
 
-  override protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
+  override protected def templatePaths(path: String)(implicit format: Format = Format.HTML): List[String] = {
+    List(templatePath(path))
+  }
+
+  protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
     s"${path}.${format.name}.ftl".replaceAll("//", "/")
   }
 
