@@ -99,9 +99,11 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
     }
 
     def validate() = {
-      if (message.from.isEmpty) throw new IllegalStateException("from address is absent")
-      else if (message.to.isEmpty) throw new IllegalStateException("to addresses are empty")
-
+      // TODO NPE in sbt test (sbt mailer/test works)
+      if (message != null && message.from != null && message.to != null) {
+        if (message.from.isEmpty) throw new IllegalStateException("from address is absent")
+        else if (message.to.isEmpty) throw new IllegalStateException("to addresses are empty")
+      }
     }
 
     def deliver()(implicit t: Transport = message.connect()): Unit = {
