@@ -7,6 +7,10 @@ import model._
 object CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
   protectFromForgery()
 
+  // TODO remove in 1.0.0
+  // just for backward compatibility for 0.9.27 or older
+  override def scalateExtension = "jade"
+
   implicit override val scalatraParamsIdTypeConverter = new TypeConverter[String, CompanyId] {
     def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
   }
