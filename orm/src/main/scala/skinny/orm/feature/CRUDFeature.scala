@@ -8,6 +8,7 @@ import scala.collection.mutable
 import skinny.orm.feature.associations.HasManyAssociation
 import skinny.orm.feature.associations.BelongsToAssociation
 import skinny.orm.feature.associations.HasOneAssociation
+import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides auto-generated CRUD feature.
