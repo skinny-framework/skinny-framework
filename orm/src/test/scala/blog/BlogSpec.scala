@@ -22,7 +22,7 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
     insert.into(PostTag).namedValues(pt.postId -> postId, pt.tagId -> rubyTagId).toSQL.update.apply()
   }
 
-  describe("hasManyThough without byDefault") {
+  describe("hasManyThrough without byDefault") {
     it("should work as expected") { implicit session =>
       val id = Post.limit(1).apply().head.id
       val post = Post.joins(Post.tagsRef).findById(id)
