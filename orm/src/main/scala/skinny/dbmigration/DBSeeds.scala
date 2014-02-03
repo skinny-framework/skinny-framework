@@ -20,7 +20,7 @@ trait DBSeeds {
   /**
    * AutoSession for this.
    */
-  val dbSeedsAutoSession = AutoSession
+  val dbSeedsAutoSession: DBSession = AutoSession
 
   /**
    * Registered operations.
