@@ -142,6 +142,32 @@ object longValue extends ValidationRule {
 }
 
 // ----
+// param("x" -> "1.7976931348623157E308") is doubleValue
+
+object doubleValue extends ValidationRule {
+  def name = "doubleValue"
+  def isValid(v: Any) = isEmpty(v) || {
+    try {
+      v.toString.toDouble
+      true
+    } catch { case e: NumberFormatException => false }
+  }
+}
+
+// ----
+// param("x" -> "3.4028235E38") is floatValue
+
+object floatValue extends ValidationRule {
+  def name = "floatValue"
+  def isValid(v: Any) = isEmpty(v) || {
+    try {
+      v.toString.toFloat
+      true
+    } catch { case e: NumberFormatException => false }
+  }
+}
+
+// ----
 // param("x" -> 4) is intMinMaxValue(3, 5)
 
 case class intMinMaxValue(min: Int, max: Int) extends ValidationRule {
@@ -193,6 +219,60 @@ case class longMaxValue(max: Long) extends ValidationRule {
   def name = "longMaxValue"
   override def messageParams = Seq(max.toString)
   def isValid(v: Any) = isEmpty(v) || v.toString.toLong <= max
+}
+
+// ----
+// param("x" -> "4D") is doubleMinMaxValue(3D, 5D)
+
+case class doubleMinMaxValue(min: Double, max: Double) extends ValidationRule {
+  def name = "doubleMinMaxValue"
+  override def messageParams = Seq(min.toString, max.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble >= min && v.toString.toDouble <= max
+}
+
+// ----
+// param("x" -> 2D) is doubleMinValue(3D)
+
+case class doubleMinValue(min: Double) extends ValidationRule {
+  def name = "doubleMinValue"
+  override def messageParams = Seq(min.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble >= min
+}
+
+// ----
+// param("x" -> 6D) is doubleMaxValue(5D)
+
+case class doubleMaxValue(max: Double) extends ValidationRule {
+  def name = "doubleMaxValue"
+  override def messageParams = Seq(max.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble <= max
+}
+
+// ----
+// param("x" -> "4F") is floatMinMaxValue(3F, 5F)
+
+case class floatMinMaxValue(min: Float, max: Float) extends ValidationRule {
+  def name = "floatMinMaxValue"
+  override def messageParams = Seq(min.toString, max.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat >= min && v.toString.toFloat <= max
+}
+
+// ----
+// param("x" -> 2F) is floatMinValue(3F)
+
+case class floatMinValue(min: Float) extends ValidationRule {
+  def name = "floatMinValue"
+  override def messageParams = Seq(min.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat >= min
+}
+
+// ----
+// param("x" -> 6F) is floatMaxValue(5F)
+
+case class floatMaxValue(max: Float) extends ValidationRule {
+  def name = "floatMaxValue"
+  override def messageParams = Seq(max.toString)
+  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat <= max
 }
 
 // ----
