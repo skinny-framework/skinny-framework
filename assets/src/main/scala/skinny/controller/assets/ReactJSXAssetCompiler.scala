@@ -10,5 +10,5 @@ object ReactJSXAssetCompiler extends AssetCompiler {
 
   def dir(basePath: String) = s"${basePath}/jsx"
   def extension = "jsx"
-  def compile(source: String) = compiler.compile(source)
+  def compile(path: String, source: String) = compiler.compile(path, source)
 }

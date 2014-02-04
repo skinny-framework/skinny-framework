@@ -12,7 +12,7 @@ object ScssAssetCompiler extends AssetCompiler {
 
   def dir(basePath: String) = throw new UnsupportedOperationException
   def extension = "scss"
-  def compile(source: String) = compiler.compile(source)
+  def compile(path: String, source: String) = compiler.compile(path, source)
 
   override def findClassPathResource(basePath: String, path: String): Option[ClassPathResource] = {
     ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.${extension}").orElse(

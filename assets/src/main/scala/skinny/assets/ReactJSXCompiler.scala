@@ -57,7 +57,7 @@ class ReactJSXCompiler {
    * @param jsxCode jsx code
    * @return js code
    */
-  def compile(jsxCode: String): String = {
+  def compile(path: String, jsxCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g react-tools)
       log.debug(s"Native React compiler is found. (version: ${nativeCompilerDescription})")

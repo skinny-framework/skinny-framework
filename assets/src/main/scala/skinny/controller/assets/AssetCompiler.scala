@@ -27,7 +27,7 @@ trait AssetCompiler {
    * @param source code
    * @return js/css code
    */
-  def compile(source: String): String
+  def compile(path: String, source: String): String
 
   /**
    * Finds class path resource.

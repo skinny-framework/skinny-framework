@@ -38,7 +38,7 @@ class SassCompiler {
    * @param scssCode scss code
    * @return css code
    */
-  def compile(scssCode: String): String = {
+  def compile(path: String, scssCode: String): String = {
     ensureSassCommand()
     val (out, err) = (new StringBuilder, new StringBuilder)
     val processLogger = ProcessLogger(
@@ -63,7 +63,7 @@ class SassCompiler {
    * @param sassCode sass code
    * @return css code
    */
-  def compileIndented(sassCode: String): String = {
+  def compileIndented(path: String, sassCode: String): String = {
     ensureSassCommand()
     val (out, err) = (new StringBuilder, new StringBuilder)
     val processLogger = ProcessLogger(
