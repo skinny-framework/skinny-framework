@@ -11,7 +11,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
     it("should be created as expected") {
       val code = generator.controllerCode("members", "member", "ssp", Seq(
         "name" -> "String",
-        "favoriteNumber" -> "Long",
+        "favoriteIntNumber" -> "Int",
+        "favoriteLongNumber" -> "Long",
+        "favoriteShortNumber" -> "Short",
+        "favoriteDoubleNumber" -> "Double",
+        "favoriteFloatNumber" -> "Float",
         "magicNumber" -> "Option[Int]",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]",
@@ -35,7 +39,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |  override def createForm = validation(createParams,
           |    paramKey("name") is required & maxLength(512),
-          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("favoriteIntNumber") is required & numeric & intValue,
+          |    paramKey("favoriteLongNumber") is required & numeric & longValue,
+          |    paramKey("favoriteShortNumber") is required & numeric & intValue,
+          |    paramKey("favoriteDoubleNumber") is required & doubleValue,
+          |    paramKey("favoriteFloatNumber") is required & floatValue,
           |    paramKey("magicNumber") is numeric & intValue,
           |    paramKey("birthday") is dateFormat,
           |    paramKey("timeToWakeUp") is timeFormat,
@@ -47,7 +55,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    .withDateTime("createdAt")
           |  override def createFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
-          |    "favoriteNumber" -> ParamType.Long,
+          |    "favoriteIntNumber" -> ParamType.Int,
+          |    "favoriteLongNumber" -> ParamType.Long,
+          |    "favoriteShortNumber" -> ParamType.Short,
+          |    "favoriteDoubleNumber" -> ParamType.Double,
+          |    "favoriteFloatNumber" -> ParamType.Float,
           |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
           |    "birthday" -> ParamType.LocalDate,
@@ -57,7 +69,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |  override def updateForm = validation(updateParams,
           |    paramKey("name") is required & maxLength(512),
-          |    paramKey("favoriteNumber") is required & numeric & longValue,
+          |    paramKey("favoriteIntNumber") is required & numeric & intValue,
+          |    paramKey("favoriteLongNumber") is required & numeric & longValue,
+          |    paramKey("favoriteShortNumber") is required & numeric & intValue,
+          |    paramKey("favoriteDoubleNumber") is required & doubleValue,
+          |    paramKey("favoriteFloatNumber") is required & floatValue,
           |    paramKey("magicNumber") is numeric & intValue,
           |    paramKey("birthday") is dateFormat,
           |    paramKey("timeToWakeUp") is timeFormat,
@@ -69,7 +85,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    .withDateTime("createdAt")
           |  override def updateFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
-          |    "favoriteNumber" -> ParamType.Long,
+          |    "favoriteIntNumber" -> ParamType.Int,
+          |    "favoriteLongNumber" -> ParamType.Long,
+          |    "favoriteShortNumber" -> ParamType.Short,
+          |    "favoriteDoubleNumber" -> ParamType.Double,
+          |    "favoriteFloatNumber" -> ParamType.Float,
           |    "magicNumber" -> ParamType.Int,
           |    "isActivated" -> ParamType.Boolean,
           |    "birthday" -> ParamType.LocalDate,
@@ -87,6 +107,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
     it("should be created as expected") {
       val code = generator.controllerSpecCode("members", "member", Seq(
         "name" -> "String",
+        "favoriteIntNumber" -> "Int",
+        "favoriteLongNumber" -> "Long",
+        "favoriteShortNumber" -> "Short",
+        "favoriteDoubleNumber" -> "Double",
+        "favoriteFloatNumber" -> "Float",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
       ))
@@ -138,12 +163,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "create a member" in {
-          |    post(s"/members", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString()) {
+          |    post(s"/members", "name" -> "dummy","favoriteIntNumber" -> Int.MaxValue.toString(),"favoriteLongNumber" -> Long.MaxValue.toString(),"favoriteShortNumber" -> Short.MaxValue.toString(),"favoriteDoubleNumber" -> Double.MaxValue.toString(),"favoriteFloatNumber" -> Float.MaxValue.toString(),"isActivated" -> "true","birthday" -> new LocalDate().toString()) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      post(s"/members", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
+          |      post(s"/members", "name" -> "dummy","favoriteIntNumber" -> Int.MaxValue.toString(),"favoriteLongNumber" -> Long.MaxValue.toString(),"favoriteShortNumber" -> Short.MaxValue.toString(),"favoriteDoubleNumber" -> Double.MaxValue.toString(),"favoriteFloatNumber" -> Float.MaxValue.toString(),"isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -158,12 +183,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/members/${member.id}", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString()) {
+          |    put(s"/members/${member.id}", "name" -> "dummy","favoriteIntNumber" -> Int.MaxValue.toString(),"favoriteLongNumber" -> Long.MaxValue.toString(),"favoriteShortNumber" -> Short.MaxValue.toString(),"favoriteDoubleNumber" -> Double.MaxValue.toString(),"favoriteFloatNumber" -> Float.MaxValue.toString(),"isActivated" -> "true","birthday" -> new LocalDate().toString()) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      put(s"/members/${member.id}", "name" -> "dummy","isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
+          |      put(s"/members/${member.id}", "name" -> "dummy","favoriteIntNumber" -> Int.MaxValue.toString(),"favoriteLongNumber" -> Long.MaxValue.toString(),"favoriteShortNumber" -> Short.MaxValue.toString(),"favoriteDoubleNumber" -> Double.MaxValue.toString(),"favoriteFloatNumber" -> Float.MaxValue.toString(),"isActivated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
           |        status should equal(302)
           |      }
           |    }
