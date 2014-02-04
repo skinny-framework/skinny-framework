@@ -5,6 +5,7 @@ import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 import javax.servlet.http.HttpServletRequest
+import scala.annotation.tailrec
 
 /**
  * Scalate implementation of TemplateEngineSupport.
@@ -57,9 +58,26 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
   }
 
   /**
-   * Scalate extension name. If you'd like to use another one, override this attribute.
+   * Scalate extension names. Skinny will search for templates in this order.
+   *
+   * If you'd like to change the search order, or you want to
+   * restrict the search to fewer template languages, override this attribute.
+   *
+   * Note that removing unnecessary items from this list will improve the
+   * performance of the template engine.
    */
-  def scalateExtension: String = "ssp"
+  def scalateExtensions: List[String] = List("ssp", "jade", "scaml", "mustache")
+
+  /**
+   * The Scalate template type that is searched for first.
+   */
+  def preferredScalateExtension = scalateExtensions.head
+
+  /**
+   * NOTICE: just for backward compatibility with version 0.9.27 or older.
+   */
+  @deprecated(message = "You don't need override this method anymore. This API will be removed in version 1.0.0.", since = "0.9.28")
+  def scalateExtension: String = preferredScalateExtension
 
   /**
    * Returns the actual template path for the name.
@@ -68,8 +86,8 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @param format format (HTML,JSON,XML...)
    * @return actual path
    */
-  override protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
-    s"${path}.${format.name}.${scalateExtension}".replaceAll("//", "/").replaceFirst("^/", "")
+  override protected def templatePaths(path: String)(implicit format: Format = Format.HTML): List[String] = {
+    scalateExtensions.map(toTemplatePath(path, format, _))
   }
 
   /**
@@ -80,12 +98,21 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @return true/false
    */
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {
-    val exists = findTemplate(templatePath(path)).isDefined
+    val exists = findFirstAvailableTemplate(templatePaths(path)).isDefined
     if ((SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()) && !exists && format == Format.HTML) {
       generateWelcomePageIfAbsent(path)
       true
     } else {
       exists
+    }
+  }
+
+  @tailrec
+  private def findFirstAvailableTemplate(templatePaths: List[String]): Option[String] = templatePaths match {
+    case Nil => None
+    case p :: ps => {
+      val t = findTemplate(p)
+      if (t.isDefined) t else findFirstAvailableTemplate(ps)
     }
   }
 
@@ -95,9 +122,9 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
   protected def generateWelcomePageIfAbsent(path: String)(implicit format: Format = Format.HTML): Unit = {
     import org.apache.commons.io.FileUtils
     import java.io.File
-    val filePath = servletContext.getRealPath(s"/WEB-INF/views/${templatePath(path)}")
+    val filePath = servletContext.getRealPath(s"/WEB-INF/views/${toTemplatePath(path, format, preferredScalateExtension)}")
     val file = new File(filePath)
-    val code: String = scalateExtension match {
+    val code: String = preferredScalateExtension match {
       case "jade" =>
         """h3 Welcome
           |hr
@@ -135,22 +162,30 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @return true/false
    */
   override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
-    layoutTemplate(templatePath(path), requestScope.toMap.toSeq: _*)
+    // Note: templateExists() should already have been called, so we know we have an actual template
+    val templatePath = findFirstAvailableTemplate(templatePaths(path)).getOrElse("missing-template")
+    layoutTemplate(templatePath, requestScope.toMap.toSeq: _*)
   }
 
   /**
    * Replaces layout template for this action.
+   *
+   * @param path the layout template path, including extension, e.g. "custom.jade"
    */
   def layout(path: String)(implicit request: HttpServletRequest): ScalateTemplateEngineFeature = {
     if (request != null) {
       val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
-      templateAttributes += ("layout" -> s"/WEB-INF/layouts/${_path}.${scalateExtension}")
+      templateAttributes += ("layout" -> s"/WEB-INF/layouts/${_path}")
       this
     } else {
       // TODO this method doesn't work in beforeAction, more investigation
       logger.warn("You cannot specify layout here. Put this into action methods.")
       this
     }
+  }
+
+  protected def toTemplatePath(path: String, format: Format, ext: String): String = {
+    s"${path}.${format.name}.${ext}".replaceAll("//", "/").replaceFirst("^/", "")
   }
 
 }

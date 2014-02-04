@@ -16,7 +16,7 @@ object SkinnyEnv {
 
   val Test = "test"
 
-  val Staging = "stating"
+  val Staging = "staging"
   val QA = "qa"
 
   val Production = "production"

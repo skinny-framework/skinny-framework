@@ -7,7 +7,6 @@ import model.SnakeCaseKeyExample
 object SnakeCaseKeyExamplesController extends SkinnyResource {
   protectFromForgery()
 
-  override def scalateExtension = "jade"
   override def resourcesName = "snakeCaseKeyExamples"
   override def resourceName = "snakeCaseKeyExample"
 

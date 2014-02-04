@@ -160,8 +160,8 @@ trait ScaffoldGenerator extends CodeGenerator {
             case "Long" => Seq("numeric", "longValue")
             case "Int" => Seq("numeric", "intValue")
             case "Short" => Seq("numeric", "intValue")
-            case "Double" => Seq("numeric")
-            case "Float" => Seq("numeric")
+            case "Double" => Seq("doubleValue")
+            case "Float" => Seq("floatValue")
             case "String" => Seq("maxLength(512)")
             case "DateTime" => Seq("dateTimeFormat")
             case "LocalDate" => Seq("dateFormat")
@@ -190,7 +190,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |object ${controllerClassName} extends SkinnyResource with ApplicationController {
         |  protectFromForgery()
-        |${if (template != "ssp") "  override def scalateExtension = \"" + template + "\"" else ""}
+        |
         |  override def model = ${modelClassName}
         |  override def resourcesName = "${resources}"
         |  override def resourceName = "${resource}"
@@ -226,6 +226,12 @@ trait ScaffoldGenerator extends CodeGenerator {
     val modelClassName = toClassName(resource)
 
     val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+      case (k, "Long") => "\"" + k + "\" -> Long.MaxValue.toString()"
+      case (k, "Int") => "\"" + k + "\" -> Int.MaxValue.toString()"
+      case (k, "Short") => "\"" + k + "\" -> Short.MaxValue.toString()"
+      case (k, "Double") => "\"" + k + "\" -> Double.MaxValue.toString()"
+      case (k, "Float") => "\"" + k + "\" -> Float.MaxValue.toString()"
+      case (k, "Byte") => "\"" + k + "\" -> Byte.MaxValue.toString()"
       case (k, "Boolean") => "\"" + k + "\" -> \"true\""
       case (k, "DateTime") => "\"" + k + "\" -> new DateTime().toString()"
       case (k, "LocalDate") => "\"" + k + "\" -> new LocalDate().toString()"
@@ -367,6 +373,12 @@ trait ScaffoldGenerator extends CodeGenerator {
   def appendToFactoriesConf(resource: String, attributePairs: Seq[(String, String)]) {
     val file = new File(s"src/test/resources/factories.conf")
     val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+      case (k, "Long") => "  " + k + "=\"" + Long.MaxValue.toString() + "\""
+      case (k, "Int") => "  " + k + "=\"" + Int.MaxValue.toString() + "\""
+      case (k, "Short") => "  " + k + "=\"" + Short.MaxValue.toString() + "\""
+      case (k, "Double") => "  " + k + "=\"" + Double.MaxValue.toString() + "\""
+      case (k, "Float") => "  " + k + "=\"" + Float.MaxValue.toString() + "\""
+      case (k, "Byte") => "  " + k + "=\"" + Byte.MaxValue.toString() + "\""
       case (k, "Boolean") => "  " + k + "=true"
       case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
       case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
@@ -510,4 +522,3 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 }
-

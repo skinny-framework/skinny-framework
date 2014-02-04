@@ -9,8 +9,7 @@ import skinny.orm.feature.includes.IncludesQueryRepository
  * Provides #joins APIs.
  */
 trait JoinsFeature[Entity]
-    extends SkinnyMapperBase[Entity]
-    with AssociationsFeature[Entity] { self: IdFeature[_] =>
+    extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] { self: IdFeature[_] =>
 
   private[skinny] val belongsToAssociations: Seq[BelongsToAssociation[Entity]] = Nil
   private[skinny] val hasOneAssociations: Seq[HasOneAssociation[Entity]] = Nil
@@ -64,7 +63,7 @@ trait JoinsFeature[Entity]
 
   override def extract(sql: SQL[Entity, NoExtractor])(
     implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
-    super.extractWithAssociations(
+    extractWithAssociations(
       sql,
       belongsToAssociations,
       hasOneAssociations,

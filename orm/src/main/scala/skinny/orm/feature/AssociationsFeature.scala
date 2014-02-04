@@ -392,7 +392,7 @@ trait AssociationsFeature[Entity]
     oneToManyAssociations: Seq[HasManyAssociation[Entity]])(
       implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
 
-    val enabledJoinDefinitions = defaultJoinDefinitions
+    val enabledJoinDefinitions = defaultJoinDefinitions ++ oneToManyAssociations.map(_.joinDefinitions)
     val enabledOneToManyExtractors = defaultOneToManyExtractors ++ oneToManyAssociations.map(_.extractor)
 
     if (enabledJoinDefinitions.isEmpty) {

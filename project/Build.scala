@@ -8,10 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "0.9.27"
+  val _version = "0.9.28"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.6"
-  val scalikeJDBCVersion = "1.7.3"
+  val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.3.174"
 
@@ -160,7 +160,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.0.13",
+        "ch.qos.logback"     % "logback-classic"     % "1.1.0",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
@@ -197,7 +197,7 @@ object SkinnyFrameworkBuild extends Build {
   )
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.3"   % "compile",
-    "org.joda"  %  "joda-convert" % "1.5"   % "compile"
+    "org.joda"  %  "joda-convert" % "1.6"   % "compile"
   )
   val mailDependencies = slf4jApiDependencies ++ Seq(
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
@@ -207,7 +207,7 @@ object SkinnyFrameworkBuild extends Build {
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
     "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "ch.qos.logback"          %  "logback-classic" % "1.0.13"  % "test",
+    "ch.qos.logback"          %  "logback-classic" % "1.1.0"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
   )
