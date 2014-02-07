@@ -15,6 +15,9 @@ class AssetsController extends SkinnyController {
 
   // see https://github.com/scalatra/scalatra/issues/349
   addMimeMapping("text/css", "css")
+  addMimeMapping("application/octet-stream", "map")
+
+  protected def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
 
   /**
    * Returns assets root path.
@@ -84,34 +87,52 @@ class AssetsController extends SkinnyController {
    */
   def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
 
+  def path(extension: String): Option[String] = multiParams("splat").headOption.flatMap { fullPath =>
+    fullPath.split("\\.") match {
+      case Array(path, e) if e == extension => Some(path)
+      case _ => None
+    }
+  }
+  def sourceMapsPath(): Option[String] = path("map")
+
   /**
    * Returns js or coffee assets.
    */
   def js(): Any = if (isEnabled) {
-    multiParams("splat").headOption.flatMap {
-      _.split("\\.") match {
-        case Array(path, "js") => Some(path)
-        case _ => None
-      }
-    }.map { path =>
-      jsFromClassPath(path) orElse
-        compiledJsFromClassPath(path) orElse
-        jsFromFile(path) orElse
-        compiledJsFromFile(path) map { js =>
+    path("js").map { path =>
+      jsFromClassPath(path)
+        .orElse(compiledJsFromClassPath(path))
+        .orElse(jsFromFile(path))
+        .orElse(compiledJsFromFile(path))
+        .map { js =>
           contentType = "application/javascript"
           js
-        } getOrElse pass()
-    }.getOrElse { pass() }
-  } else {
-    pass()
+        }.getOrElse(pass())
+    }.orElse(jsSourceMaps()).getOrElse(pass())
+  } else pass()
+
+  private def jsSourceMaps(): Option[Any] = {
+    if (sourceMapsEnabled) {
+      sourceMapsPath.flatMap { path =>
+        contentType = "application/octet-stream"
+        sourceMapsFromFile(path, jsCompilers)
+      }.orElse {
+        jsCompilers.find(c => path(c.extension).isDefined).flatMap { compiler =>
+          path(compiler.extension).map { path =>
+            contentType = "application/octet-stream"
+            val file = new File(servletContext.getRealPath(s"${basePath}/${compiler.extension}/${path}.${compiler.extension}"))
+            using(Source.fromFile(file))(map => map.mkString)
+          }
+        }
+      }
+    } else None
   }
 
   private def jsFromClassPath(path: String): Option[String] = {
     ClassPathResourceLoader.getClassPathResource(s"${basePath}/js/${path}.js").map { resource =>
       using(resource.stream) { stream =>
         setLastModified(resource.lastModified)
-        if (isModified(resource.lastModified))
-          using(Source.fromInputStream(resource.stream))(_.mkString)
+        if (isModified(resource.lastModified)) using(Source.fromInputStream(resource.stream))(_.mkString)
         else halt(304)
       }
     }
@@ -122,33 +143,58 @@ class AssetsController extends SkinnyController {
       setLastModified(jsFile.lastModified)
       if (isModified(jsFile.lastModified)) Some(using(Source.fromFile(jsFile))(js => js.mkString))
       else halt(304)
-    } else {
-      None
-    }
+    } else None
   }
   private def compiledJsFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, jsCompilers)
   private def compiledJsFromFile(path: String): Option[String] = compiledCodeFromFile(path, jsCompilers)
+
+  private def sourceMapsFromFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
+    compilers.find { compiler =>
+      new File(servletContext.getRealPath(s"${basePath}/${compiler.extension}/${path}.map")).exists()
+    }.map { compiler =>
+      val mapFile = new File(servletContext.getRealPath(s"${basePath}/${compiler.extension}/${path}.map"))
+      setLastModified(mapFile.lastModified)
+      if (isModified(mapFile.lastModified)) using(Source.fromFile(mapFile))(map => map.mkString)
+      else halt(304)
+    }
+  }
 
   /**
    * Returns css or less assets.
    */
   def css(): Any = if (isEnabled) {
-    multiParams("splat").headOption.flatMap {
-      _.split("\\.") match {
+    multiParams("splat").headOption.flatMap { fullPath =>
+      fullPath.split("\\.") match {
         case Array(path, "css") => Some(path)
         case _ => None
       }
     }.map { path =>
-      cssFromClassPath(path) orElse
-        compiledCssFromClassPath(path) orElse
-        cssFromFile(path) orElse
-        compiledCssFromFile(path) map { css =>
+      cssFromClassPath(path)
+        .orElse(compiledCssFromClassPath(path))
+        .orElse(cssFromFile(path))
+        .orElse(compiledCssFromFile(path))
+        .map { css =>
           contentType = "text/css"
           css
-        } getOrElse pass()
-    }.getOrElse { pass() }
-  } else {
-    pass()
+        }.getOrElse(pass())
+    }.orElse(cssSourceMaps()).getOrElse(pass())
+  } else pass()
+
+  private def cssSourceMaps(): Option[Any] = {
+    if (sourceMapsEnabled) {
+      sourceMapsPath.flatMap { path =>
+        contentType = "application/octet-stream"
+        sourceMapsFromFile(path, cssCompilers)
+      }.orElse {
+        cssCompilers.find(c => path(c.extension).isDefined).flatMap { compiler =>
+          path(compiler.extension).map { path =>
+            contentType = "application/octet-stream"
+            val file = new File(servletContext.getRealPath(s"${basePath}/${compiler.extension}/${path}.${compiler.extension}"))
+            using(Source.fromFile(file))(map => map.mkString)
+          }
+        }
+      }
+    } else None
   }
 
   def cssFromClassPath(path: String): Option[String] = {
@@ -167,9 +213,7 @@ class AssetsController extends SkinnyController {
       setLastModified(cssFile.lastModified)
       if (isModified(cssFile.lastModified)) Some(using(Source.fromFile(cssFile))(css => css.mkString))
       else halt(304)
-    } else {
-      None
-    }
+    } else None
   }
   private def compiledCssFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, cssCompilers)
   private def compiledCssFromFile(path: String): Option[String] = compiledCodeFromFile(path, cssCompilers)
@@ -201,13 +245,12 @@ class AssetsController extends SkinnyController {
   private def compiledCodeFromClassPath(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
     // try to load from class path resources
     compilers.flatMap(c => c.findClassPathResource(basePath, path).map(r => (c, r))).headOption.map {
-      case (compiler, resource) =>
-        using(resource.stream) { stream =>
-          setLastModified(resource.lastModified)
-          if (isModified(resource.lastModified)) {
-            compiler.compile(using(Source.fromInputStream(resource.stream))(_.mkString))
-          } else halt(304)
-        }
+      case (compiler, resource) => using(resource.stream) { stream =>
+        setLastModified(resource.lastModified)
+        if (isModified(resource.lastModified)) {
+          compiler.compile(path, using(Source.fromInputStream(resource.stream))(_.mkString))
+        } else halt(304)
+      }
     }
   }
 
@@ -220,7 +263,7 @@ class AssetsController extends SkinnyController {
       case (compiler, file) =>
         setLastModified(file.lastModified)
         if (isModified(file.lastModified)) {
-          using(Source.fromFile(file))(code => compiler.compile(code.mkString))
+          using(Source.fromFile(file))(code => compiler.compile(file.getPath, code.mkString))
         } else halt(304)
     }
   }

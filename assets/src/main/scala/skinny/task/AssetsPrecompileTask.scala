@@ -38,7 +38,7 @@ object AssetsPrecompileTask {
     // CoffeeScript
     FileUtils.listFiles(new File(baseDir + "/coffee"), Array("coffee"), true).asScala.foreach { file =>
       val code = FileUtils.readFileToString(file)
-      val compiledCode = coffeeScriptCompiler.compile(code)
+      val compiledCode = coffeeScriptCompiler.compile(file.getAbsolutePath, code)
       val output = new File(outputDir + "/js/" + file.getName.replaceFirst("\\.coffee$", ".js"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
@@ -51,7 +51,7 @@ object AssetsPrecompileTask {
     // LESS
     FileUtils.listFiles(new File(baseDir + "/less"), Array("less"), true).asScala.foreach { file =>
       val code = FileUtils.readFileToString(file)
-      val compiledCode = lessCompiler.compile(code)
+      val compiledCode = lessCompiler.compile(file.getAbsolutePath, code)
       val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.less$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
@@ -66,7 +66,7 @@ object AssetsPrecompileTask {
     val inSassDir = FileUtils.listFiles(new File(baseDir + "/sass"), Array("scss"), true).asScala
     (inScssDir ++ inSassDir).foreach { file =>
       val code = FileUtils.readFileToString(file)
-      val compiledCode = sassCompiler.compile(code)
+      val compiledCode = sassCompiler.compile(file.getAbsolutePath, code)
       val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.scss$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
@@ -79,7 +79,7 @@ object AssetsPrecompileTask {
     // Sass: old-style sass
     FileUtils.listFiles(new File(baseDir + "/sass"), Array("sass"), true).asScala.foreach { file =>
       val code = FileUtils.readFileToString(file)
-      val compiledCode = sassCompiler.compileIndented(code)
+      val compiledCode = sassCompiler.compileIndented(file.getAbsolutePath, code)
       val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.sass$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {

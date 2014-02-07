@@ -64,7 +64,7 @@ class LessCompiler {
    * @param lessCode less code
    * @return css code
    */
-  def compile(lessCode: String): String = {
+  def compile(path: String, lessCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g less)
       log.debug(s"Native LESS compiler is found. (version: ${nativeCompilerDescription})")
