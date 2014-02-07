@@ -9,7 +9,7 @@ class LessCompilerSpec extends FlatSpec with ShouldMatchers {
 
   it should "compile code" in {
     val compiler = LessCompiler
-    val css = compiler.compile(
+    val css = compiler.compile("box.less",
       """@base: #f938ab;
         |
         |.box-shadow(@style, @c) when (iscolor(@c)) {
