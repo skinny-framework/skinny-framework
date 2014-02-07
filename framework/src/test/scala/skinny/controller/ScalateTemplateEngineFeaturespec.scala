@@ -69,11 +69,23 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     get("/custom-layout/a")(a)
   }
 
+  object NumericFormatController extends SkinnyController {
+    override def scalateExtensions = List("ssp")
+
+    def a = {
+      set("numericParam" -> 12345L)
+      render("foo/numeric")
+    }
+
+    get("/numeric-format/a")(a)
+  }
+
   addFilter(DefaultController, "/*")
   addFilter(SspOnlyController, "/*")
   addFilter(JadeOnlyController, "/*")
   addFilter(AnythingButSspController, "/*")
   addFilter(CustomLayoutController, "/*")
+  addFilter(NumericFormatController, "/*")
 
   before {
     // Delete any auto-generated templates
@@ -143,6 +155,13 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
       status should be(200)
       body should include("<p>This is SSP template A")
       body should include("<p>Custom Jade footer")
+    }
+  }
+
+  it should "prevent commas from being inserted into numbers" in {
+    get("/numeric-format/a") {
+      status should be(200)
+      body should include("12345")
     }
   }
 }
