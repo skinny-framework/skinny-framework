@@ -27,6 +27,10 @@ trait TaskLauncher {
     case env :: dbName :: rest => DBMigration.migrate(env, dbName)
     case params => DBMigration.migrate(params.headOption.getOrElse(SkinnyEnv.Development))
   })
+  register("db:repair", {
+    case env :: dbName :: rest => DBMigration.repair(env, dbName)
+    case params => DBMigration.repair(params.headOption.getOrElse(SkinnyEnv.Development))
+  })
 
   def register(name: String, runner: (List[String]) => Unit) = tasks.update(name, runner)
 
