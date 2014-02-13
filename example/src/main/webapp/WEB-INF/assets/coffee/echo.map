@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "echo.js",
+  "sourceRoot": "",
+  "sources": [
+    "echo.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;AAAA,MAAA,IAAA;;AAAA,EAAA,IAAA,GAAO,SAAC,CAAD,GAAA;WAAO,OAAO,CAAC,GAAR,CAAY,CAAZ,EAAP;EAAA,CAAP,CAAA;;AAAA,EACA,IAAA,CAAK,KAAL,CADA,CAAA;AAAA"
+}

@@ -9,7 +9,7 @@ class CoffeeScriptCompilerSpec extends FlatSpec with ShouldMatchers {
 
   it should "compile code" in {
     val compiler = CoffeeScriptCompiler()
-    val js = compiler.compile(
+    val js = compiler.compile("person.coffee",
       """class Person
         |  constructor: (name, email) ->
         |    @name = name

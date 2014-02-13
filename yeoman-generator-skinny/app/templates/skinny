@@ -56,9 +56,14 @@ elif [ "$command" == "db:migrate" ];then
   rm -rf task/src/main/resources
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
-  echo '<configuration><appender name="console" class="ch.qos.logback.core.ConsoleAppender"><encoder><pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern></encoder></appender><root level="warn"><appender-ref ref="console"/></root></configuration>' > task/src/main/resources/logback.xml
   shift
   ${sbt_path} "task/run db:migrate $@"
+elif [ "$command" == "db:repair" ];then
+  rm -rf task/src/main/resources
+  mkdir -p task/src/main/resources
+  cp -pr src/main/resources/* task/src/main/resources/.
+  shift
+  ${sbt_path} "task/run db:repair $@"
 elif [ "$command" == "eclipse" ];then
   ${sbt_path} eclipse
 elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then

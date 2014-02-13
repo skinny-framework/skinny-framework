@@ -64,3 +64,6 @@ release
 .sass-cache
 standalone-build
 
+# source maps
+*.map
+

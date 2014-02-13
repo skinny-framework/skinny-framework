@@ -112,15 +112,9 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @return value if exists
    */
   def selectDynamic(key: String): Option[Any] = underlying.get(key).map {
-    // #toString is work around for issue #11
-    // 'v' should not be an `Any` value because 1234: Any will be converted to '1,234'.
-    case Some(true) => true
-    case Some(false) => false
-    case Some(v) => v.toString
+    case Some(v) => v
     case None => null
-    case true => true
-    case false => false
-    case v => v.toString
+    case v => v
   }
 
 }

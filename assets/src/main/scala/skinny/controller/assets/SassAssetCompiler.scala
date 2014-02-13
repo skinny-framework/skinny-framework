@@ -10,5 +10,5 @@ object SassAssetCompiler extends AssetCompiler {
 
   def dir(basePath: String) = s"${basePath}/sass"
   def extension = "sass"
-  def compile(source: String) = compiler.compileIndented(source)
+  def compile(path: String, source: String) = compiler.compileIndented(path, source)
 }

@@ -10,5 +10,5 @@ object CoffeeScriptAssetCompiler extends AssetCompiler {
 
   def dir(basePath: String) = s"${basePath}/coffee"
   def extension = "coffee"
-  def compile(source: String) = compiler.compile(source)
+  def compile(path: String, source: String) = compiler.compile(path, source)
 }

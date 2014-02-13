@@ -9,7 +9,7 @@ class SassCompilerSpec extends FlatSpec with ShouldMatchers {
 
   it should "compile scss code" in {
     val compiler = SassCompiler
-    val css = compiler.compile(
+    val css = compiler.compile("font.scss",
       """$font-stack: Helvetica, sans-serif;
         |$primary-color: #333;
         |
@@ -27,7 +27,7 @@ class SassCompilerSpec extends FlatSpec with ShouldMatchers {
 
   it should "compile indented-sass code" in {
     val compiler = SassCompiler
-    val css = compiler.compileIndented(
+    val css = compiler.compileIndented("main.sass",
       """#main
         |  color: blue
         |  font-size: 0.3em

@@ -3,7 +3,7 @@ package skinny.assets
 import org.mozilla.javascript._
 import java.io.{ ByteArrayInputStream, IOException, InputStreamReader }
 import skinny.util.LoanPattern._
-import skinny.ClassPathResourceLoader
+import skinny.{ SkinnyEnv, ClassPathResourceLoader }
 
 import scala.sys.process._
 import org.slf4j.LoggerFactory
@@ -42,6 +42,8 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
 
   private[this] def nativeCompilerCommand = Seq(coffeeCommand, "--compile", "--stdio") ++ (if (bare) Seq("--bare") else Nil)
 
+  def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
+
   private[this] def nativeCompilerExists: Boolean = {
     try Seq(coffeeCommand, "-v").lines.size > 0
     catch { case e: IOException => false }
@@ -53,7 +55,7 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
    * @param coffeeScriptCode coffee code
    * @return js code
    */
-  def compile(coffeeScriptCode: String): String = {
+  def compile(fullpath: String, coffeeScriptCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g coffee-script)
       log.debug(s"Native CoffeeScript compiler is found. (version: ${nativeCompilerDescription})")
@@ -65,8 +67,20 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
       )
       using(new ByteArrayInputStream(coffeeScriptCode.getBytes)) { stdin =>
         val exitCode = (nativeCompilerCommand #< stdin) ! processLogger
-        if (exitCode == 0) out.toString
-        else {
+        if (exitCode == 0) {
+          // create Source Maps file on the same directory
+          if (sourceMapsEnabled) {
+            fullpath.split("WEB-INF/assets/coffee/") match {
+              case Array(dir, path) =>
+                sys.process.Process(Seq(coffeeCommand, "--map", path), new java.io.File(dir + "WEB-INF/assets/coffee")).!
+                out.toString + s"\n\n//# sourceMappingURL=${fullpath.split("/").last.replaceFirst(".coffee", ".map")}"
+              case _ =>
+                out.toString
+            }
+          } else {
+            out.toString
+          }
+        } else {
           val message = s"Failed to compile coffee script code! (exit code: ${exitCode})\n\n${err.toString}"
           log.error(message)
           throw new AssetsPrecompileFailureException(message)
@@ -79,9 +93,9 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
       compileScope.setParentScope(globalScope)
       compileScope.put("coffeeScriptSource", compileScope, coffeeScriptCode)
       val compilerScript = s"CoffeeScript.compile(coffeeScriptSource, {bare: ${bare}});"
-
-      try context.evaluateString(compileScope, compilerScript, "skinny.assets.CoffeeScriptCompiler", 0, null).toString
-      catch {
+      try {
+        context.evaluateString(compileScope, compilerScript, "skinny.assets.CoffeeScriptCompiler", 0, null).toString
+      } catch {
         case e: JavaScriptException =>
           val message = s"Failed to compile coffee script code! (${e.getMessage})"
           log.error(message)

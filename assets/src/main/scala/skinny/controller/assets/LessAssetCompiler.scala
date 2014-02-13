@@ -10,5 +10,5 @@ object LessAssetCompiler extends AssetCompiler {
 
   def dir(basePath: String) = s"${basePath}/less"
   def extension = "less"
-  def compile(source: String) = compiler.compile(source)
+  def compile(path: String, source: String) = compiler.compile(path, source)
 }

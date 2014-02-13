@@ -11,7 +11,7 @@ object CompaniesController extends SkinnyResourceWithId[CompanyId] with Applicat
   // just for backward compatibility for 0.9.27 or older
   override def scalateExtension = "jade"
 
-  implicit override val scalatraParamsIdTypeConverter = new TypeConverter[String, CompanyId] {
+  implicit override val scalatraParamsIdTypeConverter = new skinny.TypeConverter[String, CompanyId] {
     def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
   }
 
