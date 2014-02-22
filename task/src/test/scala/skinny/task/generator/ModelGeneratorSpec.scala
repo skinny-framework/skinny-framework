@@ -21,6 +21,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc._, SQLInterpolation._
           |import org.joda.time._
           |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
@@ -60,6 +61,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc._, SQLInterpolation._
           |import org.joda.time._
           |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
