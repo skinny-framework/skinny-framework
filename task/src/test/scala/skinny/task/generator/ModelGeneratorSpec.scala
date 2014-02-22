@@ -36,12 +36,12 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
-          |    id = rs.long(rn.id),
-          |    name = rs.string(rn.name),
-          |    isActivated = rs.boolean(rn.isActivated),
-          |    birthday = rs.localDateOpt(rn.birthday),
-          |    createdAt = rs.dateTime(rn.createdAt),
-          |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+          |    id = rs.get(rn.id),
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
           |  )
           |}
           |""".stripMargin
@@ -76,12 +76,12 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
-          |    id = rs.long(rn.id),
-          |    name = rs.string(rn.name),
-          |    isActivated = rs.boolean(rn.isActivated),
-          |    birthday = rs.localDateOpt(rn.birthday),
-          |    createdAt = rs.dateTime(rn.createdAt),
-          |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+          |    id = rs.get(rn.id),
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
           |  )
           |}
           |""".stripMargin

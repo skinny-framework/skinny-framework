@@ -22,12 +22,6 @@ trait CodeGenerator {
     if (t.startsWith("Option")) s"${t.trim()} = None" else t.trim()
   }
 
-  protected def toExtractorMethodName(t: String): String = {
-    val method = toParamType(t).head.toLower + toParamType(t).tail
-    if (t.startsWith("Option")) method + "Opt"
-    else method
-  }
-
   protected def forceWrite(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
