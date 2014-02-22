@@ -19,22 +19,41 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
 
       val expected =
         """-@val s: skinny.Skinny
+          |-@val keyAndErrorMessages: skinny.KeyAndErrorMessages
           |
           |%div(class="form-group")
           |  %label(class="control-label" for="name") #{s.i18n.get("member.name")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-12")
-          |      %input(type="text" name="name" class="form-control" value={s.params.name})
+          |    %div(class={if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""})
+          |      %div(class="col-xs-12")
+          |        %input(type="text" name="name" class="form-control" value={s.params.name})
+          |    - keyAndErrorMessages.get("name").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |%div(class="form-group")
           |  %label(class="control-label" for="favoriteNumber") #{s.i18n.get("member.favoriteNumber")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-12")
-          |      %input(type="text" name="favoriteNumber" class="form-control" value={s.params.favoriteNumber})
+          |    %div(class={if(keyAndErrorMessages.hasErrors("favoriteNumber")) "has-error" else ""})
+          |      %div(class="col-xs-12")
+          |        %input(type="text" name="favoriteNumber" class="form-control" value={s.params.favoriteNumber})
+          |    - keyAndErrorMessages.get("favoriteNumber").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |%div(class="form-group")
           |  %label(class="control-label" for="magicNumber") #{s.i18n.get("member.magicNumber")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-12")
-          |      %input(type="text" name="magicNumber" class="form-control" value={s.params.magicNumber})
+          |    %div(class={if(keyAndErrorMessages.hasErrors("magicNumber")) "has-error" else ""})
+          |      %div(class="col-xs-12")
+          |        %input(type="text" name="magicNumber" class="form-control" value={s.params.magicNumber})
+          |    - keyAndErrorMessages.get("magicNumber").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |%div(class="form-group")
           |  %label(class="control-label" for="isActivated") #{s.i18n.get("member.isActivated")}
           |  %div(class="controls row")
@@ -43,12 +62,18 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |%div(class="form-group")
           |  %label(class="control-label") #{s.i18n.get("member.birthday")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="birthdayYear"  class="form-control" value={s.params.birthdayYear}  placeholder={s.i18n.get("year")}  maxlength=4)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="birthdayMonth" class="form-control" value={s.params.birthdayMonth} placeholder={s.i18n.get("month")} maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="birthdayDay"   class="form-control" value={s.params.birthdayDay}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |    %div(class={if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""})
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="birthdayYear"  class="form-control" value={s.params.birthdayYear}  placeholder={s.i18n.get("year")}  maxlength=4)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="birthdayMonth" class="form-control" value={s.params.birthdayMonth} placeholder={s.i18n.get("month")} maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="birthdayDay"   class="form-control" value={s.params.birthdayDay}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |    - keyAndErrorMessages.get("birthday").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |%div(class="form-actions")
           |  =unescape(s.csrfHiddenInputTag)
           |  %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
@@ -74,8 +99,8 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |%h3 #{s.i18n.get("member.new")}
           |%hr
           |
-          |-for (e <- s.errorMessages)
-          |  %p(class="alert alert-danger") #{e}
+          |-#-for (e <- s.errorMessages)
+          |-#  %p(class="alert alert-danger") #{e}
           |
           |%form(method="post" action={url(MembersController.createUrl)} class="form")
           |  =include("_form.html.scaml")
@@ -100,8 +125,8 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |%h3 #{s.i18n.get("member.edit")}
           |%hr
           |
-          |-for (e <- s.errorMessages)
-          |  %p(class="alert alert-danger") #{e}
+          |-#-for (e <- s.errorMessages)
+          |-#  %p(class="alert alert-danger") #{e}
           |
           |%form(method="post" action={url(MembersController.updateUrl, "id" -> s.params.id.get.toString)} class="form")
           |  =include("_form.html.scaml")

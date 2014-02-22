@@ -6,7 +6,12 @@ assemblySettings
 
 mainClass in assembly := Some("skinny.standalone.JettyLauncher")
 
-test in assembly := {}
+_root_.sbt.Keys.test in assembly := {}
+
+// ------------------------------
+// for ./skinny scoverage:test
+
+ScoverageSbtPlugin.instrumentSettings
 
 // ------------------------------
 // Disabled by default because this is confusing for beginners

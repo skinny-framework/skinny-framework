@@ -12,7 +12,8 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    "<%@val s: skinny.Skinny %>\n\n" +
+    "<%@val s: skinny.Skinny %>\n" +
+      "<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
@@ -32,24 +33,33 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Year"   class="form-control" value="$${s.params.${name}Year}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Year"   class="form-control" value="$${s.params.${name}Year}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Month"  class="form-control" value="$${s.params.${name}Month}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Day"    class="form-control" value="$${s.params.${name}Day}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Month"  class="form-control" value="$${s.params.${name}Month}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Day"    class="form-control" value="$${s.params.${name}Day}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -59,15 +69,24 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Year"  class="form-control" value="$${s.params.${name}Year}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Year"  class="form-control" value="$${s.params.${name}Year}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Month" class="form-control" value="$${s.params.${name}Month}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Day"   class="form-control" value="$${s.params.${name}Day}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Month" class="form-control" value="$${s.params.${name}Month}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Day"   class="form-control" value="$${s.params.${name}Day}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -77,15 +96,24 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -95,9 +123,18 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-12">
-        |      <input type="text" name="${name}" class="form-control" value="$${s.params.${name}}" />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |      <div class="col-xs-12">
+        |        <input type="text" name="${name}" class="form-control" value="$${s.params.${name}}" />
+        |      </div>
         |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -118,9 +155,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
         |
+        |<%--
         |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
+        |--%>
         |
         |<form method="post" action="$${url(${controllerClassName}.createUrl)}" class="form">
         | $${include("_form.html.ssp")}
@@ -134,9 +173,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
         |
+        |<%--
         |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
+        |--%>
         |
         |<form method="post" action="$${url(${controllerClassName}.updateUrl, "id" -> s.params.id.get.toString)}" class="form">
         | $${include("_form.html.ssp")}

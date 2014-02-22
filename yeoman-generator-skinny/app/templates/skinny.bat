@@ -45,6 +45,11 @@ IF %command%==test-only (
   GOTO script_eof
 )
 
+IF "%command%"=="scoverage:test" (
+  sbt "scoverage:test"
+  GOTO script_eof
+)
+
 SET is_generator=false
 SET generator_params=
 IF "%command%"=="g"        SET is_generator=true
@@ -127,14 +132,15 @@ REM Didn't select command.
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run        : will run application for local development
-ECHO   clean      : will clear target directory
-ECHO   update     : will run sbt update
-ECHO   console    : will run sbt console
-ECHO   compile    : will compile all the classes
-ECHO   db:migrate : will execute database migration
-ECHO   test       : will run all the tests
-ECHO   test-only  : will run the specified test
+ECHO   run            : will run application for local development
+ECHO   clean          : will clear target directory
+ECHO   update         : will run sbt update
+ECHO   console        : will run sbt console
+ECHO   compile        : will compile all the classes
+ECHO   db:migrate     : will execute database migration
+ECHO   test           : will run all the tests
+ECHO   test-only      : will run the specified test
+ECHO   scoverage:test : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository

@@ -14,7 +14,8 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    "-@val s: skinny.Skinny\n\n" +
+    "-@val s: skinny.Skinny\n" +
+      "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""%div(class="form-group")
@@ -27,48 +28,72 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
           s"""%div(class="form-group")
           |  %label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Year"   class="form-control" value={s.params.${name}Year}   placeholder={s.i18n.get("year")}   maxlength=4)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Month"  class="form-control" value={s.params.${name}Month}  placeholder={s.i18n.get("month")}  maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Day"    class="form-control" value={s.params.${name}Day}    placeholder={s.i18n.get("day")}    maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |    %div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Year"   class="form-control" value={s.params.${name}Year}   placeholder={s.i18n.get("year")}   maxlength=4)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Month"  class="form-control" value={s.params.${name}Month}  placeholder={s.i18n.get("month")}  maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Day"    class="form-control" value={s.params.${name}Day}    placeholder={s.i18n.get("day")}    maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |""".stripMargin
         case (name, "LocalDate") =>
           s"""%div(class="form-group")
           |  %label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Year"  class="form-control" value={s.params.${name}Year}  placeholder={s.i18n.get("year")}  maxlength=4)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Month" class="form-control" value={s.params.${name}Month} placeholder={s.i18n.get("month")} maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Day"   class="form-control" value={s.params.${name}Day}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |    %div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Year"  class="form-control" value={s.params.${name}Year}  placeholder={s.i18n.get("year")}  maxlength=4)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Month" class="form-control" value={s.params.${name}Month} placeholder={s.i18n.get("month")} maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Day"   class="form-control" value={s.params.${name}Day}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |""".stripMargin
         case (name, "LocalTime") =>
           s"""%div(class="form-group")
           |  %label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  %div(class="controls row")
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
-          |    %div(class="col-xs-2")
-          |      %input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |    %div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |      %div(class="col-xs-2")
+          |        %input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
+          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
           |""".stripMargin
         case (name, _) =>
           s"""%div(class="form-group")
-           |  %label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
-           |  %div(class="controls row")
-           |    %div(class="col-xs-12")
-           |      %input(type="text" name="${name}" class="form-control" value={s.params.${name}})
-           |""".stripMargin
+          |  %label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+          |  %div(class="controls row")
+          |    %div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |      %div(class="col-xs-12")
+          |        %input(type="text" name="${name}" class="form-control" value={s.params.${name}})
+          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |      %div(class="col-xs-12 has-error")
+          |        - for (error <- errors)
+          |          %label(class="control-label") #{error}
+          |    - }
+          |""".stripMargin
       }.mkString +
       s"""%div(class="form-actions")
         |  =unescape(s.csrfHiddenInputTag)
@@ -84,8 +109,8 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |%h3 #{s.i18n.get("${resource}.new")}
         |%hr
         |
-        |-for (e <- s.errorMessages)
-        |  %p(class="alert alert-danger") #{e}
+        |-#-for (e <- s.errorMessages)
+        |-#  %p(class="alert alert-danger") #{e}
         |
         |%form(method="post" action={url(${controllerClassName}.createUrl)} class="form")
         |  =include("_form.html.scaml")
@@ -99,8 +124,8 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |%h3 #{s.i18n.get("${resource}.edit")}
         |%hr
         |
-        |-for (e <- s.errorMessages)
-        |  %p(class="alert alert-danger") #{e}
+        |-#-for (e <- s.errorMessages)
+        |-#  %p(class="alert alert-danger") #{e}
         |
         |%form(method="post" action={url(${controllerClassName}.updateUrl, "id" -> s.params.id.get.toString)} class="form")
         |  =include("_form.html.scaml")

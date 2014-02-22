@@ -41,6 +41,7 @@ trait ModelGenerator extends CodeGenerator {
         |import scalikejdbc._, SQLInterpolation._
         |import org.joda.time._
         |
+        |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
         |  id: Long,
         |${attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n")},
@@ -53,10 +54,10 @@ trait ModelGenerator extends CodeGenerator {
         |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
-        |    id = rs.long(rn.id),
-        |${attributePairs.map { case (k, t) => "    " + k + " = rs." + toExtractorMethodName(t) + "(rn." + k + ")" }.mkString(",\n")},
-        |    createdAt = rs.dateTime(rn.createdAt),
-        |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+        |    id = rs.get(rn.id),
+        |${attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n")},
+        |    createdAt = rs.get(rn.createdAt),
+        |    updatedAt = rs.get(rn.updatedAt)
         |  )
         |}
         |""".stripMargin
