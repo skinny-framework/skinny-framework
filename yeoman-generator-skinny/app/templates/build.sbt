@@ -9,6 +9,11 @@ mainClass in assembly := Some("skinny.standalone.JettyLauncher")
 _root_.sbt.Keys.test in assembly := {}
 
 // ------------------------------
+// for ./skinny scoverage:test
+
+ScoverageSbtPlugin.instrumentSettings
+
+// ------------------------------
 // Disabled by default because this is confusing for beginners
 //scalariformSettings
 

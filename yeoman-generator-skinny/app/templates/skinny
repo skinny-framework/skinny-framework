@@ -42,6 +42,8 @@ elif [ "$command" == "test" ];then
   ${sbt_path} dev/test
 elif [ "$command" == "test-only" ];then
   ${sbt_path} "dev/test-only $2"
+elif [ "$command" == "scoverage:test" ];then
+  ${sbt_path} scoverage:test
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
   shift
@@ -81,14 +83,15 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  run        : will run application for local development"
-  echo "  clean      : will clear target directory"
-  echo "  update     : will run sbt update"
-  echo "  console    : will run sbt console"
-  echo "  compile    : will compile all the classes"
-  echo "  db:migrate : will execute database migration"
-  echo "  test       : will run all the tests"
-  echo "  test-only  : will run the specified test"
+  echo "  run            : will run application for local development"
+  echo "  clean          : will clear target directory"
+  echo "  update         : will run sbt update"
+  echo "  console        : will run sbt console"
+  echo "  compile        : will compile all the classes"
+  echo "  db:migrate     : will execute database migration"
+  echo "  test           : will run all the tests"
+  echo "  test-only      : will run the specified test"
+  echo "  scoverage:test : will run all the tests and output coverage reports"
   echo "  package            : will create *.war file to deploy"
   echo "  package:standalone : will create *.jar file to run as stand alone app"
   echo "  publish            : will publish *.war file to repository"
@@ -105,4 +108,3 @@ else
   echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
   echo ""
 fi
-

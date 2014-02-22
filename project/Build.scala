@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   val _organization = "org.skinny-framework"
   val _version = "1.0.0-RC1-SNAPSHOT"
   val scalatraVersion = "2.2.2"
-  val json4SVersion = "3.2.6"
+  val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.3.174"
@@ -160,7 +160,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.1.0",
+        "ch.qos.logback"     % "logback-classic"     % "1.1.1",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
