@@ -246,9 +246,10 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
   describe("db/migration/xxx.sql") {
     it("should be created as expected") {
       val code = generator.migrationSQL("members", "member", Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
+        ScaffoldGeneratorArg("name", "String"),
+        ScaffoldGeneratorArg("nickname", "Option[String]", Some("varchar(64)")),
+        ScaffoldGeneratorArg("isActivated", "Boolean"),
+        ScaffoldGeneratorArg("birthday", "Option[LocalDate]")
       ))
 
       val expected =
@@ -256,6 +257,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |create table members (
           |  id bigserial not null primary key,
           |  name varchar(512) not null,
+          |  nickname varchar(64),
           |  is_activated boolean not null,
           |  birthday date,
           |  created_at timestamp not null,

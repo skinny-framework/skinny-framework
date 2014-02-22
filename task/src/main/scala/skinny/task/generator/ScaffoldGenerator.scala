@@ -97,12 +97,15 @@ trait ScaffoldGenerator extends CodeGenerator {
         } else {
           showSkinnyGenerator()
 
-          val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
+          val generatorArgs: Seq[ScaffoldGeneratorArg] = attributes.flatMap { attribute =>
             attribute.toString.split(":") match {
-              case Array(k, v) => Some(k -> v)
+              case Array(name, typeName, columnName) => Some(ScaffoldGeneratorArg(name, typeName, Some(columnName)))
+              case Array(name, typeName) => Some(ScaffoldGeneratorArg(name, typeName))
               case _ => None
             }
           }
+          val attributePairs: Seq[(String, String)] = generatorArgs.map(a => (a.name, a.typeName))
+
           // Controller
           generateApplicationControllerIfAbsent()
           generateResourceController(resources, resource, template, attributePairs)
@@ -121,7 +124,7 @@ trait ScaffoldGenerator extends CodeGenerator {
           // messages.conf
           generateMessages(resources, resource, attributePairs)
           // migration SQL
-          generateMigrationSQL(resources, resource, attributePairs)
+          generateMigrationSQL(resources, resource, generatorArgs)
 
           println("")
 
@@ -437,11 +440,11 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Flyway migration SQL
   // --------------------------
 
-  def migrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]): String = {
     val name = toSnakeCase(resources)
-    val columns = attributePairs.map {
-      case (k, t) =>
-        s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null")
+    val columns = generatorArgs.map { a =>
+      s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
+        (if (isOptionClassName(a.typeName)) "" else " not null")
     }.mkString(",\n")
     s"""-- For H2 Database
         |create table ${name} (
@@ -453,10 +456,10 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateMigrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
-    writeIfAbsent(file, migrationSQL(resources, resource, attributePairs))
+    writeIfAbsent(file, migrationSQL(resources, resource, generatorArgs))
   }
 
   // --------------------------
