@@ -7,7 +7,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   val generator = ScaffoldSspGenerator
 
-  describe("/_form.html.scaml") {
+  describe("/_form.html.ssp") {
     it("should be created as expected") {
       val code = generator.formHtmlCode("members", "member", Seq(
         "name" -> "String",
@@ -19,15 +19,25 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
       val expected =
         """<%@val s: skinny.Skinny %>
+          |<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
           |
           |<div class="form-group">
           |  <label class="control-label" for="name">
           |    ${s.i18n.get("member.name")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="col-xs-12">
-          |      <input type="text" name="name" class="form-control" value="${s.params.name}" />
+          |    <div class="${if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""}">
+          |      <div class="col-xs-12">
+          |        <input type="text" name="name" class="form-control" value="${s.params.name}" />
+          |      </div>
           |    </div>
+          |    #if (keyAndErrorMessages.hasErrors("name"))
+          |      <div class="col-xs-12 has-error">
+          |        #for (error <- keyAndErrorMessages.getErrors("name"))
+          |          <label class="control-label">${error}</label>
+          |        #end
+          |      </div>
+          |    #end
           |  </div>
           |</div>
           |<div class="form-group">
@@ -35,9 +45,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |    ${s.i18n.get("member.favoriteNumber")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="col-xs-12">
-          |      <input type="text" name="favoriteNumber" class="form-control" value="${s.params.favoriteNumber}" />
+          |    <div class="${if(keyAndErrorMessages.hasErrors("favoriteNumber")) "has-error" else ""}">
+          |      <div class="col-xs-12">
+          |        <input type="text" name="favoriteNumber" class="form-control" value="${s.params.favoriteNumber}" />
+          |      </div>
           |    </div>
+          |    #if (keyAndErrorMessages.hasErrors("favoriteNumber"))
+          |      <div class="col-xs-12 has-error">
+          |        #for (error <- keyAndErrorMessages.getErrors("favoriteNumber"))
+          |          <label class="control-label">${error}</label>
+          |        #end
+          |      </div>
+          |    #end
           |  </div>
           |</div>
           |<div class="form-group">
@@ -45,9 +64,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |    ${s.i18n.get("member.magicNumber")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="col-xs-12">
-          |      <input type="text" name="magicNumber" class="form-control" value="${s.params.magicNumber}" />
+          |    <div class="${if(keyAndErrorMessages.hasErrors("magicNumber")) "has-error" else ""}">
+          |      <div class="col-xs-12">
+          |        <input type="text" name="magicNumber" class="form-control" value="${s.params.magicNumber}" />
+          |      </div>
           |    </div>
+          |    #if (keyAndErrorMessages.hasErrors("magicNumber"))
+          |      <div class="col-xs-12 has-error">
+          |        #for (error <- keyAndErrorMessages.getErrors("magicNumber"))
+          |          <label class="control-label">${error}</label>
+          |        #end
+          |      </div>
+          |    #end
           |  </div>
           |</div>
           |<div class="form-group">
@@ -65,15 +93,24 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |    ${s.i18n.get("member.birthday")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="col-xs-2">
-          |      <input type="text" name="birthdayYear"  class="form-control" value="${s.params.birthdayYear}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+          |    <div class="${if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""}">
+          |      <div class="col-xs-2">
+          |        <input type="text" name="birthdayYear"  class="form-control" value="${s.params.birthdayYear}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+          |      </div>
+          |      <div class="col-xs-2">
+          |        <input type="text" name="birthdayMonth" class="form-control" value="${s.params.birthdayMonth}" placeholder="${s.i18n.get("month")}" maxlength=2 />
+          |      </div>
+          |      <div class="col-xs-2">
+          |        <input type="text" name="birthdayDay"   class="form-control" value="${s.params.birthdayDay}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
+          |      </div>
           |    </div>
-          |    <div class="col-xs-2">
-          |      <input type="text" name="birthdayMonth" class="form-control" value="${s.params.birthdayMonth}" placeholder="${s.i18n.get("month")}" maxlength=2 />
-          |    </div>
-          |    <div class="col-xs-2">
-          |      <input type="text" name="birthdayDay"   class="form-control" value="${s.params.birthdayDay}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
-          |    </div>
+          |    #if (keyAndErrorMessages.hasErrors("birthday"))
+          |      <div class="col-xs-12 has-error">
+          |        #for (error <- keyAndErrorMessages.getErrors("birthday"))
+          |          <label class="control-label">${error}</label>
+          |        #end
+          |      </div>
+          |    #end
           |  </div>
           |</div>
           |<div class="form-actions">
@@ -87,7 +124,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-  describe("/new.html.jade") {
+  describe("/new.html.ssp") {
     it("should be created as expected") {
       val code = generator.newHtmlCode("members", "member", Seq(
         "name" -> "String",
@@ -102,9 +139,11 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |<h3>${s.i18n.get("member.new")}</h3>
           |<hr/>
           |
+          |<%--
           |#for (e <- s.errorMessages)
           |<p class="alert alert-danger">${e}</p>
           |#end
+          |--%>
           |
           |<form method="post" action="${url(MembersController.createUrl)}" class="form">
           | ${include("_form.html.ssp")}
@@ -113,7 +152,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-  describe("/edit.html.jade") {
+  describe("/edit.html.ssp") {
     it("should be created as expected") {
       val code = generator.editHtmlCode("members", "member", Seq(
         "name" -> "String",
@@ -128,9 +167,11 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |<h3>${s.i18n.get("member.edit")}</h3>
           |<hr/>
           |
+          |<%--
           |#for (e <- s.errorMessages)
           |<p class="alert alert-danger">${e}</p>
           |#end
+          |--%>
           |
           |<form method="post" action="${url(MembersController.updateUrl, "id" -> s.params.id.get.toString)}" class="form">
           | ${include("_form.html.ssp")}
@@ -139,7 +180,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-  describe("/index.html.jade") {
+  describe("/index.html.ssp") {
     it("should be created as expected") {
       val code = generator.indexHtmlCode("members", "member", Seq(
         "name" -> "String",
@@ -195,7 +236,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
     }
   }
 
-  describe("/show.html.jade") {
+  describe("/show.html.ssp") {
     it("should be created as expected") {
       val code = generator.showHtmlCode("members", "member", Seq(
         "name" -> "String",

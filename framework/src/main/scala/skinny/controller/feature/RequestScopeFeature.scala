@@ -2,7 +2,7 @@ package skinny.controller.feature
 
 import java.lang.reflect.Modifier
 import org.scalatra.ScalatraBase
-import skinny.controller.{ SkinnyControllerBase, Params }
+import skinny.controller.{ KeyAndErrorMessages, SkinnyControllerBase, Params }
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
@@ -59,7 +59,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
       set(ATTR_PARAMS -> skinny.controller.Params(params))
       set(ATTR_MULTI_PARAMS -> skinny.controller.MultiParams(multiParams))
       set(ATTR_ERROR_MESSAGES -> Seq())
-      set(ATTR_KEY_AND_ERROR_MESSAGES -> Map[String, Seq[String]]())
+      set(ATTR_KEY_AND_ERROR_MESSAGES -> KeyAndErrorMessages())
       // i18n in view templates
       setI18n()
     }

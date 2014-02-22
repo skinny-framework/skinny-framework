@@ -6,7 +6,7 @@ import skinny.validator.MapValidator
 import org.scalatra.ScalatraBase
 import skinny.I18n
 import java.util.Locale
-import skinny.controller.Params
+import skinny.controller.{ KeyAndErrorMessages, Params }
 import skinny.util.StringUtil.toCamelCase
 
 /**
@@ -97,14 +97,14 @@ trait ValidationFeature {
         })
 
         // keyAndErrorMessages
-        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, validations.map(_.paramDef.key).map { key =>
+        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, KeyAndErrorMessages(validations.map(_.paramDef.key).map { key =>
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
               params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
-        }.toMap)
+        }.toMap))
       }.apply()
 
     validator
