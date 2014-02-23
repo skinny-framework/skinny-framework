@@ -13,7 +13,10 @@ import org.scalatra.servlet.ScalatraListener
 object JettyLauncher {
 
   def main(args: Array[String]) {
-    val port = getEnvVarOrSysProp("skinny.port").map(_.toInt) getOrElse 8080
+    val port = sys.env.get("SKINNY_PORT") 
+        .orElse(getEnvVarOrSysProp("skinny.port"))
+        .map(_.toInt)
+        .getOrElse(8080)
     val server = new Server(port)
     val context = new WebAppContext()
     context setContextPath "/"
