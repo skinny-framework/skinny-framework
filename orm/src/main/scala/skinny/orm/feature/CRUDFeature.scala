@@ -8,7 +8,6 @@ import scala.collection.mutable
 import skinny.orm.feature.associations.HasManyAssociation
 import skinny.orm.feature.associations.BelongsToAssociation
 import skinny.orm.feature.associations.HasOneAssociation
-import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides auto-generated CRUD feature.
@@ -518,6 +517,10 @@ trait CRUDFeatureWithId[Id, Entity]
   override def createNewModel(parameters: PermittedStrongParameters) = createWithPermittedAttributes(parameters)
 
   override def findAllModels() = findAll()
+
+  override def countAllModels(): Long = count()
+
+  override def findModels(pageSize: Int, pageNo: Int) = findAllPaging(pageSize, pageSize * (pageNo - 1))
 
   override def findModel(id: Id) = findById(id)
 
