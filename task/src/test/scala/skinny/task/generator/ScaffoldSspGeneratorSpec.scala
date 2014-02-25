@@ -192,12 +192,30 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """<%@val s: skinny.Skinny %>
           |<%@val members: Seq[model.Member] %>
+          |<%@val totalPages: Int %>
           |
           |<h3>${s.i18n.get("member.list")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
           |#end
+          |
+          |#if (totalPages > 1)
+          |  <ul class="pagination">
+          |    <li>
+          |      <a href="${url(MembersController.indexUrl, "page" -> 1.toString)}">&laquo;</a>
+          |    </li>
+          |    #for (i <- (1 to totalPages))
+          |      <li>
+          |        <a href="${url(MembersController.indexUrl, "page" -> i.toString)}">${i}</a>
+          |      </li>
+          |    #end
+          |    <li>
+          |      <a href="${url(MembersController.indexUrl, "page" -> totalPages.toString)}">&raquo;</a>
+          |    </li>
+          |  </ul>
+          |#end
+          |
           |<table class="table table-bordered">
           |<thead>
           |  <tr>

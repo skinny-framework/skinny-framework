@@ -112,10 +112,19 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   //  Actions for this resource
   // ----------------------------
 
+  protected def enablePaging: Boolean = true
+
+  protected def pageSize: Int = 20
+
+  protected def pageNoParamName: String = "page"
+
+  protected def totalPagesAttributeName: String = "totalPages"
+
   /**
    * Shows a list of resource.
    *
    * GET /{resources}/
+   * GET /{resources}/?pageNo=1&pageSize=10
    * GET /{resources}
    * GET /{resources}.xml
    * GET /{resources}.json
@@ -124,7 +133,16 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return list of resource
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(resourcesName, model.findAllModels())
+    if (enablePaging) {
+      val pageNo = params.getAs[Int](pageNoParamName).getOrElse(1)
+      set(resourcesName, model.findModels(pageSize, pageNo))
+      val totalPages: Int = (model.countAllModels() / pageSize).toInt + {
+        if (model.countAllModels() % pageSize == 0) 0 else 1
+      }
+      set(totalPagesAttributeName -> totalPages)
+    } else {
+      set(resourcesName, model.findAllModels())
+    }
     render(s"/${resourcesName}/index")
   }
 

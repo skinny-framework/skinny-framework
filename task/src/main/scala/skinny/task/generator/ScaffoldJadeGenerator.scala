@@ -137,11 +137,22 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     val modelClassName = toClassName(resource)
     s"""-@val s: skinny.Skinny
         |-@val ${resources}: Seq[model.${modelClassName}]
+        |-@val totalPages: Int
         |
         |h3 #{s.i18n.get("${resource}.list")}
         |hr
         |-for (notice <- s.flash.notice)
         |  p(class="alert alert-info") #{notice}
+        |
+        |- if (totalPages > 1)
+        |  ul.pagination
+        |    li
+        |      a(href={url(${controllerClassName}.indexUrl, "page" -> 1.toString)}) &laquo;
+        |    - for (i <- (1 to totalPages))
+        |      li
+        |        a(href={url(${controllerClassName}.indexUrl, "page" -> i.toString)}) #{i}
+        |    li
+        |      a(href={url(${controllerClassName}.indexUrl, "page" -> totalPages.toString)}) &raquo;
         |
         |table(class="table table-bordered")
         |  thead

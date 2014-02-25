@@ -148,11 +148,22 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """-@val s: skinny.Skinny
           |-@val members: Seq[model.Member]
+          |-@val totalPages: Int
           |
           |%h3 #{s.i18n.get("member.list")}
           |%hr
           |-for (notice <- s.flash.notice)
           |  %p(class="alert alert-info") #{notice}
+          |
+          |- if (totalPages > 1)
+          |  %ul.pagination
+          |    %li
+          |      %a(href={url(MembersController.indexUrl, "page" -> 1.toString)}) &laquo;
+          |    - for (i <- (1 to totalPages))
+          |      %li
+          |        %a(href={url(MembersController.indexUrl, "page" -> i.toString)}) #{i}
+          |    %li
+          |      %a(href={url(MembersController.indexUrl, "page" -> totalPages.toString)}) &raquo;
           |
           |%table(class="table table-bordered")
           |  %thead

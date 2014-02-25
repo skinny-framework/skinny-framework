@@ -4,9 +4,9 @@ package skinny
  * Model interface for SkinnyResource.
  *
  * @tparam Id id
- * @tparam Entity entity
+ * @tparam Model model
  */
-trait SkinnyModel[Id, Entity] {
+trait SkinnyModel[Id, Model] {
 
   /**
    * Extracts raw value from Identity.
@@ -33,18 +33,34 @@ trait SkinnyModel[Id, Entity] {
   def createNewModel(parameters: PermittedStrongParameters): Id
 
   /**
-   * Returns all entities.
+   * Returns the count of all models.
    *
-   * @return all entities
+   * @return the count of all models
    */
-  def findAllModels(): List[Entity]
+  def countAllModels(): Long
+
+  /**
+   * Returns all models.
+   *
+   * @return all models
+   */
+  def findAllModels(): List[Model]
+
+  /**
+   * Returns models by paging.
+   *
+   * @param pageSize page size
+   * @param pageNo page no
+   * @return models
+   */
+  def findModels(pageSize: Int, pageNo: Int): List[Model]
 
   /**
    * Returns the specified entity if exists.
    * @param id id
    * @return entity if exists
    */
-  def findModel(id: Id): Option[Entity]
+  def findModel(id: Id): Option[Model]
 
   /**
    * Updates the specified entity with parameters if exists.
