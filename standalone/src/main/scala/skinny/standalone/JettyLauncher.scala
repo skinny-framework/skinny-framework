@@ -17,6 +17,8 @@ object JettyLauncher {
         .orElse(getEnvVarOrSysProp("skinny.port"))
         .map(_.toInt)
         .getOrElse(8080)
+    println(s"Starting Jetty on port ${port}")
+
     val server = new Server(port)
     val context = new WebAppContext()
     context setContextPath "/"
