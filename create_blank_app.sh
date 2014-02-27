@@ -4,8 +4,10 @@ script_dir=`dirname $0`
 mkdir -p ${script_dir}/release
 rm -rf release/*
 cd ${script_dir}/yeoman-generator-skinny
-rm -rf target
-rm -rf */target
+rm -rf app/templates/project/project
+rm -rf app/templates/project/target
+rm -rf app/templates/target
+rm -rf app/templates/*/target
 
 npm link
 cd -

@@ -60,6 +60,11 @@ IF %command%=="scalajs:package" (
   GOTO script_eof
 )
 
+IF %command%=="scalajs:optimize" (
+  sbt "project scalajs" optimizeJS
+  GOTO script_eof
+)
+
 SET is_generator=false
 SET generator_params=
 IF "%command%"=="g"        SET is_generator=true
@@ -155,8 +160,9 @@ ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
 ECHO.
-ECHO   scalajs:watch   : will watch Scala.js Scala code change and convert to JS
-ECHO   scalajs:package : will convert Scala.js Scala code to JS file
+ECHO   scalajs:watch    : will watch Scala.js Scala code change and convert to JS
+ECHO   scalajs:package  : will convert Scala.js Scala code to JS file
+ECHO   scalajs:optimize : will optimize the huge JS file to optimized small JS
 ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
