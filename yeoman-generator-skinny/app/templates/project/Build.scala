@@ -54,6 +54,23 @@ object SkinnyAppBuild extends Build {
   )
 
   // -------------------------------------------------------
+  // Scala.JS Trial
+  // -------------------------------------------------------
+/*
+  lazy val scalaJS = Project(id = "scalajs", base = file("src/main/webapp/WEB-INF/assets"),
+    settings = Defaults.defaultSettings ++ Seq(
+      name := "application", // JavaScript file name
+      unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
+      libraryDependencies ++= Seq(
+        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.2",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.3" % "test"
+      ),
+      crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
+    )
+  )
+*/
+
+  // -------------------------------------------------------
   // Task Runner
   // -------------------------------------------------------
 

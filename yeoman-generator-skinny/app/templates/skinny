@@ -44,6 +44,10 @@ elif [ "$command" == "test-only" ];then
   ${sbt_path} "dev/test-only $2"
 elif [ "$command" == "scoverage:test" ];then
   ${sbt_path} scoverage:test
+elif [ "$command" == "scalajs:watch" ];then
+  ${sbt_path} "project scalajs" "~;packageJS"
+elif [ "$command" == "scalajs:package" ];then
+  ${sbt_path} "project scalajs" packageJS
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
   shift
@@ -95,6 +99,9 @@ else
   echo "  package            : will create *.war file to deploy"
   echo "  package:standalone : will create *.jar file to run as stand alone app"
   echo "  publish            : will publish *.war file to repository"
+  echo ""
+  echo "  scalajs:watch   : will watch Scala.js Scala code change and convert to JS"
+  echo "  scalajs:package : will convert Scala.js Scala code to JS file"
   echo ""
   echo "  eclipse       : will setup Scala IDE settings"
   echo "  idea/gen-idea : will setup IntelliJ IDEA settings"

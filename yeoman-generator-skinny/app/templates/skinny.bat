@@ -50,6 +50,16 @@ IF "%command%"=="scoverage:test" (
   GOTO script_eof
 )
 
+IF %command%=="scalajs:watch" (
+  sbt "project scalajs" "~;packageJS"
+  GOTO script_eof
+)
+
+IF %command%=="scalajs:package" (
+  sbt "project scalajs" packageJS
+  GOTO script_eof
+)
+
 SET is_generator=false
 SET generator_params=
 IF "%command%"=="g"        SET is_generator=true
@@ -144,6 +154,9 @@ ECHO   scoverage:test : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
+ECHO.
+ECHO   scalajs:watch   : will watch Scala.js Scala code change and convert to JS
+ECHO   scalajs:package : will convert Scala.js Scala code to JS file
 ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
