@@ -13,6 +13,8 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def template: String = "ssp"
 
+  protected def withTimestamps: Boolean = true
+
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
@@ -113,8 +115,10 @@ trait ScaffoldGenerator extends CodeGenerator {
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
           // Model
-          ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
-          ModelGenerator.generateSpec(resource, attributePairs)
+          val self = this
+          val modelGenerator = new ModelGenerator { override def withTimestamps = self.withTimestamps }
+          modelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
+          modelGenerator.generateSpec(resource, attributePairs)
           // Views
           generateFormView(resources, resource, attributePairs)
           generateNewView(resources, resource, attributePairs)
@@ -446,12 +450,16 @@ trait ScaffoldGenerator extends CodeGenerator {
       s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
         (if (isOptionClassName(a.typeName)) "" else " not null")
     }.mkString(",\n")
+    val timestamps = if (withTimestamps) {
+      s""",
+      |  created_at timestamp not null,
+      |  updated_at timestamp""".stripMargin
+    } else ""
+
     s"""-- For H2 Database
         |create table ${name} (
         |  id bigserial not null primary key,
-        |${columns},
-        |  created_at timestamp not null,
-        |  updated_at timestamp
+        |${columns}${timestamps}
         |)
         |""".stripMargin
   }

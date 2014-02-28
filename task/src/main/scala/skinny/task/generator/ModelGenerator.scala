@@ -6,9 +6,16 @@ import org.apache.commons.io.FileUtils
 /**
  * Model generator.
  */
-object ModelGenerator extends ModelGenerator
+object ModelGenerator extends ModelGenerator {
+  override def withTimestamps: Boolean = true
+}
+object ModelWithoutTimestampsGenerator extends ModelGenerator {
+  override def withTimestamps: Boolean = false
+}
 
 trait ModelGenerator extends CodeGenerator {
+
+  def withTimestamps: Boolean = true
 
   private[this] def showUsage = {
     showSkinnyGenerator()
@@ -35,6 +42,18 @@ trait ModelGenerator extends CodeGenerator {
 
   def code(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(name)
+    val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
+    val timestamps = if (withTimestamps) {
+      s""",
+      |  createdAt: DateTime,
+      |  updatedAt: Option[DateTime] = None""".stripMargin
+    } else ""
+    val timestampsExtraction = if (withTimestamps) {
+      s""",
+        |    createdAt = rs.get(rn.createdAt),
+        |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
+    } else ""
+
     s"""package model
         |
         |import skinny.orm._, feature._
@@ -44,20 +63,16 @@ trait ModelGenerator extends CodeGenerator {
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
         |  id: Long,
-        |${attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n")},
-        |  createdAt: DateTime,
-        |  updatedAt: Option[DateTime] = None
+        |${attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n")}${timestamps}
         |)
         |
-        |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] with TimestampsFeature[${modelClassName}] {
+        |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
         |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |    id = rs.get(rn.id),
-        |${attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n")},
-        |    createdAt = rs.get(rn.createdAt),
-        |    updatedAt = rs.get(rn.updatedAt)
+        |${attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n")}${timestampsExtraction}
         |  )
         |}
         |""".stripMargin
