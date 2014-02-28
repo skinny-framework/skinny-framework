@@ -3,8 +3,9 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
+import skinny.filter._
 
-object CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
+object CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController with SkinnySessionFilter {
   protectFromForgery()
 
   // TODO remove in 1.0.0

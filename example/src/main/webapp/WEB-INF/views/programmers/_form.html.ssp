@@ -38,16 +38,16 @@
   </div>
 </div>
 <div class="form-group">
-<label class="control-label">Birthday</label>
+<label class="control-label">${i18n.get("programmer.birthday")}</label>
   <div class="controls row row">
     <div class="col-xs-2">
-      <input class="form-control" type="text" name="birthdayYear" value="" placeholder="Year" maxlength="4"/>
+      <input class="form-control" type="text" name="birthdayYear" value="${params.birthdayYear}" placeholder="Year" maxlength="4"/>
     </div>
     <div class="col-xs-2">
-      <input class="form-control" type="text" name="birthdayMonth" value="" placeholder="Month" maxlength="2"/>
+      <input class="form-control" type="text" name="birthdayMonth" value="${params.birthdayMonth}" placeholder="Month" maxlength="2"/>
     </div>
     <div class="col-xs-2">
-      <input class="form-control" type="text" name="birthdayDay" value="" placeholder="Day" maxlength="2"/>
+      <input class="form-control" type="text" name="birthdayDay" value="${params.birthdayDay}" placeholder="Day" maxlength="2"/>
     </div>
   </div>
 </div>
