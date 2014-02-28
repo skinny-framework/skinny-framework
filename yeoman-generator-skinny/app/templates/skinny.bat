@@ -160,6 +160,7 @@ ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
 ECHO.
+ECHO   # Scala.js trial is disabled by default
 ECHO   scalajs:watch    : will watch Scala.js Scala code change and convert to JS
 ECHO   scalajs:package  : will convert Scala.js Scala code to JS file
 ECHO   scalajs:optimize : will optimize the huge JS file to optimized small JS
