@@ -3,8 +3,9 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
+import skinny.filter._
 
-class ProgrammersController extends SkinnyResource with ApplicationController {
+class ProgrammersController extends SkinnyResource with ApplicationController with SkinnySessionFilter {
   protectFromForgery()
 
   override def model = Programmer
