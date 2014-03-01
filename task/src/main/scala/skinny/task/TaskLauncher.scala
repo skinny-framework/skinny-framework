@@ -58,5 +58,3 @@ trait TaskLauncher {
 
 }
 
-object TaskLauncher0 extends TaskLauncher {
-}

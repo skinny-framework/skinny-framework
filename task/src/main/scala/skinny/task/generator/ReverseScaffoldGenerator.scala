@@ -73,7 +73,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
         }
-        case _ => throw new IllegalArgumentException("unknown template type: " + templateType)
+        case _ => throw new IllegalArgumentException("Unknown template type: " + templateType)
       }
       generator.run(Seq(resources, resource) ++ fields)
 
