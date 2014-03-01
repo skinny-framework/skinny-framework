@@ -25,7 +25,7 @@ object SkinnySessionFilter {
  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
  * }}}
  */
-trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with SessionLocaleFeature =>
+trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
   import SkinnySessionFilter._
 
   def initializeSkinnySession: SkinnyHttpSession = {

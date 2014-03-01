@@ -39,7 +39,7 @@ object RequestScopeFeature {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with SessionLocaleFeature with Logging {
+trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
 
   import RequestScopeFeature._
 

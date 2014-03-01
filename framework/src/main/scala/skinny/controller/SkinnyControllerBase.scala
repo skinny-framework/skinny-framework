@@ -7,11 +7,7 @@ import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
 import org.scalatra._
 import java.util.Locale
-import org.scalatra.ScalatraBase._
 import skinny.I18n
-import javax.servlet.Filter
-import javax.servlet.http.HttpServlet
-import scala.util.Failure
 
 trait SkinnyControllerBase
     extends org.scalatra.SkinnyScalatraBase
@@ -22,7 +18,7 @@ trait SkinnyControllerBase
     with RequestScopeFeature
     with ActionDefinitionFeature
     with BeforeAfterActionFeature
-    with SessionLocaleFeature
+    with LocaleFeature
     with FlashFeature
     with ValidationFeature
     with JSONFeature
