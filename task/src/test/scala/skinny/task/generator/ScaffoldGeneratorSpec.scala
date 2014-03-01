@@ -160,12 +160,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "create a member" in {
-          |    post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString()) {
+          |    post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
+          |      post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -180,12 +180,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString()) {
+          |    put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString(), "csrf-token" -> "12345") {
+          |      put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
           |        status should equal(302)
           |      }
           |    }
@@ -266,3 +266,4 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
   }
 
 }
+
