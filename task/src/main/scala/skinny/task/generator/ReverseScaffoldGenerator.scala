@@ -60,7 +60,6 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
     println("  params:")
     params.foreach(x => println("    " + x))
     println()
-    type xx = ScaffoldSspGenerator
     val g = templateType match {
       case "ssp" => new ScaffoldSspGenerator { override def withTimestamps: Boolean = false }
       case "scaml" => new ScaffoldScamlGenerator { override def withTimestamps: Boolean = false }
