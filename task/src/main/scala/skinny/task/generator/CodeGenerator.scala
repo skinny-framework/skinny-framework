@@ -2,6 +2,7 @@ package skinny.task.generator
 
 import java.io.File
 import org.apache.commons.io.FileUtils
+import skinny.util.StringUtil
 
 /**
  * Code generator.
@@ -17,6 +18,16 @@ trait CodeGenerator {
   protected def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
 
   protected def toParamType(t: String): String = t.replaceFirst("Option\\[", "").replaceFirst("\\]", "").trim()
+
+  protected def toSnakeCase(v: String): String = StringUtil.toSnakeCase(v)
+
+  protected def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
+
+  protected def toCapitalizedSplitName(v: String): String = {
+    toSnakeCase(v).split("_").toSeq
+      .map(word => word.head.toUpper + word.tail)
+      .mkString(" ")
+  }
 
   protected def addDefaultValueIfOption(t: String): String = {
     if (t.startsWith("Option")) s"${t.trim()} = None" else t.trim()

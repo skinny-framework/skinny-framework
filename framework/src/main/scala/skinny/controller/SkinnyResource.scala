@@ -112,7 +112,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   //  Actions for this resource
   // ----------------------------
 
-  protected def enablePaging: Boolean = true
+  protected def enablePagination: Boolean = true
 
   protected def pageSize: Int = 20
 
@@ -133,7 +133,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return list of resource
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    if (enablePaging) {
+    if (enablePagination) {
       val pageNo = params.getAs[Int](pageNoParamName).getOrElse(1)
       set(resourcesName, model.findModels(pageSize, pageNo))
       val totalPages: Int = (model.countAllModels() / pageSize).toInt + {

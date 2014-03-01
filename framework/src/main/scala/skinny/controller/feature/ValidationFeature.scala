@@ -14,7 +14,7 @@ import skinny.util.StringUtil.toCamelCase
  */
 trait ValidationFeature {
 
-  self: ScalatraBase with RequestScopeFeature with SessionLocaleFeature =>
+  self: ScalatraBase with RequestScopeFeature with LocaleFeature =>
 
   /**
    * Creates new validation form.

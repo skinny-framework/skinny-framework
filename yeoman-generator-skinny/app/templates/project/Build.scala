@@ -7,7 +7,7 @@ import ScalateKeys._
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC2"
+  val skinnyVersion = "1.0.0-RC3"
   val scalatraVersion = "2.2.2"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
@@ -23,7 +23,6 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
       "com.h2database"          %  "h2"                 % "1.3.174",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"    % "1.0.13",
       "ch.qos.logback"          %  "logback-classic"    % "1.0.13",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"      % "2.10.3"              % "test",
@@ -52,6 +51,23 @@ object SkinnyAppBuild extends Build {
       parallelExecution in Test := false
     )
   )
+
+  // -------------------------------------------------------
+  // Scala.JS Trial
+  // -------------------------------------------------------
+/*
+  lazy val scalaJS = Project(id = "scalajs", base = file("src/main/webapp/WEB-INF/assets"),
+    settings = Defaults.defaultSettings ++ Seq(
+      name := "application", // JavaScript file name
+      unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
+      libraryDependencies ++= Seq(
+        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.2",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.3" % "test"
+      ),
+      crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
+    )
+  )
+*/
 
   // -------------------------------------------------------
   // Task Runner

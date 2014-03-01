@@ -33,42 +33,42 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |          %label(class="control-label") #{error}
           |    - }
           |%div(class="form-group")
-          |  %label(class="control-label" for="favoriteNumber") #{s.i18n.get("member.favoriteNumber")}
+          |  %label(class="control-label" for="favorite_number") #{s.i18n.get("member.favoriteNumber")}
           |  %div(class="controls row")
-          |    %div(class={if(keyAndErrorMessages.hasErrors("favoriteNumber")) "has-error" else ""})
+          |    %div(class={if(keyAndErrorMessages.hasErrors("favorite_number")) "has-error" else ""})
           |      %div(class="col-xs-12")
-          |        %input(type="text" name="favoriteNumber" class="form-control" value={s.params.favoriteNumber})
-          |    - keyAndErrorMessages.get("favoriteNumber").map { errors =>
+          |        %input(type="text" name="favorite_number" class="form-control" value={s.params.favorite_number})
+          |    - keyAndErrorMessages.get("favorite_number").map { errors =>
           |      %div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          %label(class="control-label") #{error}
           |    - }
           |%div(class="form-group")
-          |  %label(class="control-label" for="magicNumber") #{s.i18n.get("member.magicNumber")}
+          |  %label(class="control-label" for="magic_number") #{s.i18n.get("member.magicNumber")}
           |  %div(class="controls row")
-          |    %div(class={if(keyAndErrorMessages.hasErrors("magicNumber")) "has-error" else ""})
+          |    %div(class={if(keyAndErrorMessages.hasErrors("magic_number")) "has-error" else ""})
           |      %div(class="col-xs-12")
-          |        %input(type="text" name="magicNumber" class="form-control" value={s.params.magicNumber})
-          |    - keyAndErrorMessages.get("magicNumber").map { errors =>
+          |        %input(type="text" name="magic_number" class="form-control" value={s.params.magic_number})
+          |    - keyAndErrorMessages.get("magic_number").map { errors =>
           |      %div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          %label(class="control-label") #{error}
           |    - }
           |%div(class="form-group")
-          |  %label(class="control-label" for="isActivated") #{s.i18n.get("member.isActivated")}
+          |  %label(class="control-label" for="is_activated") #{s.i18n.get("member.isActivated")}
           |  %div(class="controls row")
           |    %div(class="col-xs-12")
-          |      %input(type="checkbox" name="isActivated" class="form-control" value="true" checked={s.params.isActivated==Some(true)})
+          |      %input(type="checkbox" name="is_activated" class="form-control" value="true" checked={s.params.is_activated==Some(true)})
           |%div(class="form-group")
           |  %label(class="control-label") #{s.i18n.get("member.birthday")}
           |  %div(class="controls row")
           |    %div(class={if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""})
           |      %div(class="col-xs-2")
-          |        %input(type="text" name="birthdayYear"  class="form-control" value={s.params.birthdayYear}  placeholder={s.i18n.get("year")}  maxlength=4)
+          |        %input(type="text" name="birthday_year"  class="form-control" value={s.params.birthday_year}  placeholder={s.i18n.get("year")}  maxlength=4)
           |      %div(class="col-xs-2")
-          |        %input(type="text" name="birthdayMonth" class="form-control" value={s.params.birthdayMonth} placeholder={s.i18n.get("month")} maxlength=2)
+          |        %input(type="text" name="birthday_month" class="form-control" value={s.params.birthday_month} placeholder={s.i18n.get("month")} maxlength=2)
           |      %div(class="col-xs-2")
-          |        %input(type="text" name="birthdayDay"   class="form-control" value={s.params.birthdayDay}   placeholder={s.i18n.get("day")}   maxlength=2)
+          |        %input(type="text" name="birthday_day"   class="form-control" value={s.params.birthday_day}   placeholder={s.i18n.get("day")}   maxlength=2)
           |    - keyAndErrorMessages.get("birthday").map { errors =>
           |      %div(class="col-xs-12 has-error")
           |        - for (error <- errors)

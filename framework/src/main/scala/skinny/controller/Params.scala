@@ -4,12 +4,31 @@ import scala.language.dynamics
 import skinny._
 import skinny.util.DateTimeUtil
 
+object Params {
+
+  val Year = "Year"
+  val Month = "Month"
+  val Day = "Day"
+  val Hour = "Hour"
+  val Minute = "Minute"
+  val Second = "Second"
+
+  val _year = "_year"
+  val _month = "_month"
+  val _day = "_day"
+  val _hour = "_hour"
+  val _minute = "_minute"
+  val _second = "_second"
+}
+
 /**
  * Scalatra's params wrapper.
  *
  * @param underlying Scalatra's params
  */
 case class Params(underlying: Map[String, Any]) extends Dynamic {
+
+  import Params._
 
   /**
    * Permits parameters to be updated.
@@ -19,6 +38,31 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    */
   def permit(paramKeyAndParamTypes: (String, ParamType)*): PermittedStrongParameters = {
     StrongParameters(underlying).permit(paramKeyAndParamTypes: _*)
+  }
+
+  def isSnakeCasedParams(keyPrefix: String): Boolean = {
+    getAs[String](keyPrefix + Year)
+      .orElse(getAs[String](keyPrefix + Month))
+      .orElse(getAs[String](keyPrefix + Day))
+      .orElse(getAs[String](keyPrefix + Hour))
+      .orElse(getAs[String](keyPrefix + Minute))
+      .orElse(getAs[String](keyPrefix + Second))
+      .isEmpty
+  }
+
+  def toYmdKeys(key: String): (String, String, String) = {
+    if (isSnakeCasedParams(key)) (key + _year, key + _month, key + _day)
+    else (key + Year, key + Month, key + Day)
+  }
+
+  def toYmdhmsKeys(key: String): (String, String, String, String, String, String) = {
+    if (isSnakeCasedParams(key)) (key + _year, key + _month, key + _day, key + _hour, key + _minute, key + _second)
+    else (key + Year, key + Month, key + Day, key + Hour, key + Minute, key + Second)
+  }
+
+  def toHmsKeys(key: String): (String, String, String) = {
+    if (isSnakeCasedParams(key)) (key + _hour, key + _minute, key + _second)
+    else (key + Hour, key + Minute, key + Second)
   }
 
   /**
@@ -42,7 +86,9 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDate(key: String): Params = withDate((key + "Year", key + "Month", key + "Day"), key)
+  def withDate(key: String): Params = {
+    withDate(toYmdKeys(key), key)
+  }
 
   /**
    * Appends a new Date param to params.
@@ -64,7 +110,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withTime(key: String): Params = withDate((key + "Hour", key + "Minute", key + "Second"), key)
+  def withTime(key: String): Params = withDate(toHmsKeys(key), key)
 
   /**
    * Appends a new DateTime param to params.
@@ -87,9 +133,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateTime(key: String): Params = withDateTime(
-    (key + "Year", key + "Month", key + "Day", key + "Hour", key + "Minute", key + "Second"),
-    key)
+  def withDateTime(key: String): Params = withDateTime(toYmdhmsKeys(key), key)
 
   /**
    * Returns value for the key if exists.

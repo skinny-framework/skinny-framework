@@ -1,5 +1,7 @@
 package skinny.task.generator
 
+import skinny.controller.Params
+
 /**
  * Scaffold generator with ssp template.
  */
@@ -17,12 +19,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
-        |  <label class="control-label" for="${name}">
+        |  <label class="control-label" for="${toSnakeCase(name)}">
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="col-xs-12">
-        |      <input type="checkbox" name="${name}" value="true" #if(s.params.${name}==Some(true)) checked #end />
+        |      <input type="checkbox" name="${toSnakeCase(name)}" value="true" #if(s.params.${toSnakeCase(name)}==Some(true)) checked #end />
         |    </div>
         |  </div>
         |</div>
@@ -33,29 +35,29 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Year"   class="form-control" value="$${s.params.${name}Year}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Year)}}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Month"  class="form-control" value="$${s.params.${name}Month}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value="$${s.params.${toSnakeCase(name + Params.Month)}}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Day"    class="form-control" value="$${s.params.${name}Day}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value="$${s.params.${toSnakeCase(name + Params.Day)}}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Hour)}}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Minute)}}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Second)}}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
         |      </div>
         |    </div>
-        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
         |      <div class="col-xs-12 has-error">
-        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
         |          <label class="control-label">$${error}</label>
         |        #end
         |      </div>
@@ -69,20 +71,20 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Year"  class="form-control" value="$${s.params.${name}Year}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Year)}"  class="form-control" value="$${s.params.${toSnakeCase(name + Params.Year)}}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Month" class="form-control" value="$${s.params.${name}Month}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Month)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Month)}}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Day"   class="form-control" value="$${s.params.${name}Day}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Day)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Day)}}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
         |      </div>
         |    </div>
-        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
         |      <div class="col-xs-12 has-error">
-        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
         |          <label class="control-label">$${error}</label>
         |        #end
         |      </div>
@@ -96,20 +98,20 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Hour)}}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Minute)}}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
         |      </div>
         |      <div class="col-xs-2">
-        |        <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |        <input type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Second)}}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
         |      </div>
         |    </div>
-        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
         |      <div class="col-xs-12 has-error">
-        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
         |          <label class="control-label">$${error}</label>
         |        #end
         |      </div>
@@ -119,18 +121,18 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
         case (name, _) =>
           s"""<div class="form-group">
-        |  <label class="control-label" for="${name}">
+        |  <label class="control-label" for="${toSnakeCase(name)}">
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="$${if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""}">
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
         |      <div class="col-xs-12">
-        |        <input type="text" name="${name}" class="form-control" value="$${s.params.${name}}" />
+        |        <input type="text" name="${toSnakeCase(name)}" class="form-control" value="$${s.params.${toSnakeCase(name)}}" />
         |      </div>
         |    </div>
-        |    #if (keyAndErrorMessages.hasErrors("${name}"))
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
         |      <div class="col-xs-12 has-error">
-        |        #for (error <- keyAndErrorMessages.getErrors("${name}"))
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
         |          <label class="control-label">$${error}</label>
         |        #end
         |      </div>

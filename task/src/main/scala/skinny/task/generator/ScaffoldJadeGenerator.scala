@@ -1,5 +1,7 @@
 package skinny.task.generator
 
+import skinny.Params
+
 /**
  * Scaffold generator with jade template.
  */
@@ -19,29 +21,29 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""div(class="form-group")
-          |  label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+          |  label(class="control-label" for="${toSnakeCase(name)}") #{s.i18n.get("${resource}.${name}")}
           |  div(class="controls row")
           |    div(class="col-xs-12")
-          |      input(type="checkbox" name="${name}" class="form-control" value="true" checked={s.params.${name}==Some(true)})
+          |      input(type="checkbox" name="${toSnakeCase(name)}" class="form-control" value="true" checked={s.params.${toSnakeCase(name)}==Some(true)})
           |""".stripMargin
         case (name, "DateTime") =>
           s"""div(class="form-group")
           |  label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  div(class="controls row")
-          |    div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Year"   class="form-control" value={s.params.${name}Year}   placeholder={s.i18n.get("year")}   maxlength=4)
+          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Year)}}   placeholder={s.i18n.get("year")}   maxlength=4)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Month"  class="form-control" value={s.params.${name}Month}  placeholder={s.i18n.get("month")}  maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(name + Params.Month)}}  placeholder={s.i18n.get("month")}  maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Day"    class="form-control" value={s.params.${name}Day}    placeholder={s.i18n.get("day")}    maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(name + Params.Day)}}    placeholder={s.i18n.get("day")}    maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Hour)}}   placeholder={s.i18n.get("hour")}   maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Minute)}} placeholder={s.i18n.get("minute")} maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
-          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Second)}} placeholder={s.i18n.get("second")} maxlength=2)
+          |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          label(class="control-label") #{error}
@@ -51,14 +53,14 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           s"""div(class="form-group")
           |  label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  div(class="controls row")
-          |    div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Year"  class="form-control" value={s.params.${name}Year}  placeholder={s.i18n.get("year")}  maxlength=4)
+          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Year)}}   placeholder={s.i18n.get("year")}   maxlength=4)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Month" class="form-control" value={s.params.${name}Month} placeholder={s.i18n.get("month")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(name + Params.Month)}}  placeholder={s.i18n.get("month")}  maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Day"   class="form-control" value={s.params.${name}Day}   placeholder={s.i18n.get("day")}   maxlength=2)
-          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(name + Params.Day)}}    placeholder={s.i18n.get("day")}    maxlength=2)
+          |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          label(class="control-label") #{error}
@@ -68,14 +70,14 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           s"""div(class="form-group")
           |  label(class="control-label") #{s.i18n.get("${resource}.${name}")}
           |  div(class="controls row")
-          |    div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Hour"   class="form-control" value={s.params.${name}Hour}   placeholder={s.i18n.get("hour")}   maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Hour)}}   placeholder={s.i18n.get("hour")}   maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Minute" class="form-control" value={s.params.${name}Minute} placeholder={s.i18n.get("minute")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Minute)}} placeholder={s.i18n.get("minute")} maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${name}Second" class="form-control" value={s.params.${name}Second} placeholder={s.i18n.get("second")} maxlength=2)
-          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Second)}} placeholder={s.i18n.get("second")} maxlength=2)
+          |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          label(class="control-label") #{error}
@@ -83,12 +85,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |""".stripMargin
         case (name, _) =>
           s"""div(class="form-group")
-          |  label(class="control-label" for="${name}") #{s.i18n.get("${resource}.${name}")}
+          |  label(class="control-label" for="${toSnakeCase(name)}") #{s.i18n.get("${resource}.${name}")}
           |  div(class="controls row")
-          |    div(class={if(keyAndErrorMessages.hasErrors("${name}")) "has-error" else ""})
+          |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-12")
-          |        input(type="text" name="${name}" class="form-control" value={s.params.${name}})
-          |    - keyAndErrorMessages.get("${name}").map { errors =>
+          |        input(type="text" name="${toSnakeCase(name)}" class="form-control" value={s.params.${toSnakeCase(name)}})
+          |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          label(class="control-label") #{error}

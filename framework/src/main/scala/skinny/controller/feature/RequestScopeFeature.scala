@@ -39,7 +39,7 @@ object RequestScopeFeature {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with SessionLocaleFeature with Logging {
+trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
 
   import RequestScopeFeature._
 
@@ -148,7 +148,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
 
     getterNamesFromEntity(model).foreach { getterName =>
       val value = model.getClass.getDeclaredMethod(getterName).invoke(model)
-      if (useSnakeCaseKeys) {
+      if (useSnakeCasedParamKeys) {
         addParam(toSnakeCase(getterName), value)
       } else {
         addParam(getterName, value)
@@ -157,7 +157,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
       value match {
         case opt: Option[_] => opt foreach {
           case dt: DateTime =>
-            if (useSnakeCaseKeys) {
+            if (useSnakeCasedParamKeys) {
               addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
               addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
               addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
@@ -174,7 +174,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
             }
 
           case ld: LocalDate =>
-            if (useSnakeCaseKeys) {
+            if (useSnakeCasedParamKeys) {
               addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
               addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
               addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
@@ -185,7 +185,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
             }
 
           case lt: LocalTime =>
-            if (useSnakeCaseKeys) {
+            if (useSnakeCasedParamKeys) {
               addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
               addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
               addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
@@ -198,7 +198,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
           case value =>
         }
         case dt: DateTime =>
-          if (useSnakeCaseKeys) {
+          if (useSnakeCasedParamKeys) {
             addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
             addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
             addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
@@ -215,7 +215,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
           }
 
         case ld: LocalDate =>
-          if (useSnakeCaseKeys) {
+          if (useSnakeCasedParamKeys) {
             addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
             addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
             addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
@@ -226,7 +226,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
           }
 
         case lt: LocalTime =>
-          if (useSnakeCaseKeys) {
+          if (useSnakeCasedParamKeys) {
             addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
             addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
             addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
