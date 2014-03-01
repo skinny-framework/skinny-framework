@@ -8,7 +8,13 @@ dist/
 lib_managed/
 project/boot/
 project/plugins/project/
+project/target/
+project/project/
 target/
+task/target/
+task/src/main/resources/
+build/target/
+standalone-build/
 
 # use glob syntax.
 syntax: glob
