@@ -41,18 +41,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  </div>
           |</div>
           |<div class="form-group">
-          |  <label class="control-label" for="favoriteNumber">
+          |  <label class="control-label" for="favorite_number">
           |    ${s.i18n.get("member.favoriteNumber")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="${if(keyAndErrorMessages.hasErrors("favoriteNumber")) "has-error" else ""}">
+          |    <div class="${if(keyAndErrorMessages.hasErrors("favorite_number")) "has-error" else ""}">
           |      <div class="col-xs-12">
-          |        <input type="text" name="favoriteNumber" class="form-control" value="${s.params.favoriteNumber}" />
+          |        <input type="text" name="favorite_number" class="form-control" value="${s.params.favorite_number}" />
           |      </div>
           |    </div>
-          |    #if (keyAndErrorMessages.hasErrors("favoriteNumber"))
+          |    #if (keyAndErrorMessages.hasErrors("favorite_number"))
           |      <div class="col-xs-12 has-error">
-          |        #for (error <- keyAndErrorMessages.getErrors("favoriteNumber"))
+          |        #for (error <- keyAndErrorMessages.getErrors("favorite_number"))
           |          <label class="control-label">${error}</label>
           |        #end
           |      </div>
@@ -60,18 +60,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  </div>
           |</div>
           |<div class="form-group">
-          |  <label class="control-label" for="magicNumber">
+          |  <label class="control-label" for="magic_number">
           |    ${s.i18n.get("member.magicNumber")}
           |  </label>
           |  <div class="controls row">
-          |    <div class="${if(keyAndErrorMessages.hasErrors("magicNumber")) "has-error" else ""}">
+          |    <div class="${if(keyAndErrorMessages.hasErrors("magic_number")) "has-error" else ""}">
           |      <div class="col-xs-12">
-          |        <input type="text" name="magicNumber" class="form-control" value="${s.params.magicNumber}" />
+          |        <input type="text" name="magic_number" class="form-control" value="${s.params.magic_number}" />
           |      </div>
           |    </div>
-          |    #if (keyAndErrorMessages.hasErrors("magicNumber"))
+          |    #if (keyAndErrorMessages.hasErrors("magic_number"))
           |      <div class="col-xs-12 has-error">
-          |        #for (error <- keyAndErrorMessages.getErrors("magicNumber"))
+          |        #for (error <- keyAndErrorMessages.getErrors("magic_number"))
           |          <label class="control-label">${error}</label>
           |        #end
           |      </div>
@@ -79,12 +79,12 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  </div>
           |</div>
           |<div class="form-group">
-          |  <label class="control-label" for="isActivated">
+          |  <label class="control-label" for="is_activated">
           |    ${s.i18n.get("member.isActivated")}
           |  </label>
           |  <div class="controls row">
           |    <div class="col-xs-12">
-          |      <input type="checkbox" name="isActivated" value="true" #if(s.params.isActivated==Some(true)) checked #end />
+          |      <input type="checkbox" name="is_activated" value="true" #if(s.params.is_activated==Some(true)) checked #end />
           |    </div>
           |  </div>
           |</div>
@@ -95,13 +95,13 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""}">
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthdayYear"  class="form-control" value="${s.params.birthdayYear}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+          |        <input type="text" name="birthday_year"  class="form-control" value="${s.params.birthday_year}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
           |      </div>
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthdayMonth" class="form-control" value="${s.params.birthdayMonth}" placeholder="${s.i18n.get("month")}" maxlength=2 />
+          |        <input type="text" name="birthday_month" class="form-control" value="${s.params.birthday_month}" placeholder="${s.i18n.get("month")}" maxlength=2 />
           |      </div>
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthdayDay"   class="form-control" value="${s.params.birthdayDay}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
+          |        <input type="text" name="birthday_day"   class="form-control" value="${s.params.birthday_day}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
           |      </div>
           |    </div>
           |    #if (keyAndErrorMessages.hasErrors("birthday"))
