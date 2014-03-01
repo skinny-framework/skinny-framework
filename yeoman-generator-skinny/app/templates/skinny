@@ -118,4 +118,8 @@ else
   echo "  g/generate scaffold:scaml : will generate scaffold files with scaml templates"
   echo "  g/generate scaffold:jade  : will generate scaffold files with jade templates"
   echo ""
+  echo "  g/generate reverse-scaffold       : will generate scaffold from existing database"
+  echo "  g/generate reverse-scaffold:scaml : will generate scaffold from existing database"
+  echo "  g/generate reverse-scaffold:jade  : will generate scaffold from existing database"
+  echo ""
 fi

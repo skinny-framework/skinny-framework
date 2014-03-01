@@ -175,6 +175,10 @@ ECHO.
 ECHO   g/generate scaffold       : will generate scaffold files with ssp templates
 ECHO   g/generate scaffold:scaml : will generate scaffold files with scaml templates
 ECHO   g/generate scaffold:jade  : will generate scaffold files with jade templates
+ECHO.
+ECHO   g/generate reverse-scaffold       : will generate from existing database
+ECHO   g/generate reverse-scaffold:scaml : will generate from existing database
+ECHO   g/generate reverse-scaffold:jade  : will generate from existing database
 
 :script_eof
 

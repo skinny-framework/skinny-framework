@@ -14,17 +14,13 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def withTimestamps: Boolean = true
 
+  // for reverse-scaffold
+  protected def skipDBMigration: Boolean = false
+
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
     println("")
-  }
-
-  private def showErrors(messages: Seq[String]) = {
-    showSkinnyGenerator()
-    println("""  Command failed!""")
-    println("")
-    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
   private[this] def paramTypes = Seq(
@@ -72,11 +68,11 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 
-  def run(args: List[String]) {
+  def run(args: Seq[String]) {
     if (args.size < 3) {
       showUsage
       return
-    } else if (args.head.contains(":") || args.tail.head.contains(":")) {
+    } else if (args(0).contains(":") || args(1).contains(":")) {
       showUsage
       return
     }
@@ -111,21 +107,25 @@ trait ScaffoldGenerator extends CodeGenerator {
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
+
           // Model
           val self = this
           val modelGenerator = new ModelGenerator { override def withTimestamps = self.withTimestamps }
           modelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
           modelGenerator.generateSpec(resource, attributePairs)
+
           // Views
           generateFormView(resources, resource, attributePairs)
           generateNewView(resources, resource, attributePairs)
           generateEditView(resources, resource, attributePairs)
           generateIndexView(resources, resource, attributePairs)
           generateShowView(resources, resource, attributePairs)
+
           // messages.conf
           generateMessages(resources, resource, attributePairs)
+
           // migration SQL
-          generateMigrationSQL(resources, resource, generatorArgs)
+          generateMigrationSQL(resources, resource, generatorArgs, skipDBMigration)
 
           println("")
 
@@ -464,10 +464,11 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]) {
+  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
-    writeIfAbsent(file, migrationSQL(resources, resource, generatorArgs))
+    val sql = migrationSQL(resources, resource, generatorArgs)
+    writeIfAbsent(file, if (skip) s"/*\n${sql}\n*/" else sql)
   }
 
   // --------------------------

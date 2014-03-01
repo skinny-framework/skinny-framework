@@ -13,6 +13,7 @@ create table posts (
   id bigint auto_increment primary key not null,
   title varchar(128) not null,
   body varchar(1024) not null,
+  view_count number(3) not null default 0,
   created_at timestamp not null,
   updated_at timestamp
 )

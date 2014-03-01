@@ -34,5 +34,11 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
       val post = Post.joins(Post.tagsRef, Post.tagsRef).findById(id)
       post.get.tags.size should equal(2)
     }
+
+    it("should work with BigDecimal") { implicit session =>
+      val post = Post.limit(1).apply().head
+      Post.updateById(post.id).withAttributes('viewCount -> 123)
+      Post.findById(post.id).get.viewCount should equal(123)
+    }
   }
 }

@@ -19,6 +19,8 @@ trait CodeGenerator {
 
   protected def toParamType(t: String): String = t.replaceFirst("Option\\[", "").replaceFirst("\\]", "").trim()
 
+  protected def toCamelCase(v: String): String = StringUtil.toCamelCase(v)
+
   protected def toSnakeCase(v: String): String = StringUtil.toSnakeCase(v)
 
   protected def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
@@ -69,6 +71,13 @@ trait CodeGenerator {
     println("""
  *** Skinny Generator Task ***
 """)
+  }
+
+  protected def showErrors(messages: Seq[String]) = {
+    showSkinnyGenerator()
+    println("""  Command failed!""")
+    println("")
+    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
 }
