@@ -11,7 +11,7 @@ object SnakeCaseKeyExamplesController extends SkinnyResource {
   override def resourceName = "snakeCaseKeyExample"
 
   override def resourcesBasePath = "/snake_case_key_examples"
-  override def useSnakeCaseKeys = true
+  override def useSnakeCasedParamKeys = true
 
   override def model = SnakeCaseKeyExample
 

@@ -8,6 +8,7 @@ import skinny.routing.implicits.RoutesAsImplicits
 import org.scalatra._
 import java.util.Locale
 import skinny.I18n
+import skinny.util.StringUtil
 
 trait SkinnyControllerBase
     extends org.scalatra.SkinnyScalatraBase
@@ -58,5 +59,13 @@ trait SkinnyControllerBase
    * @return i18n provider
    */
   protected def createI18n()(implicit locale: java.util.Locale = currentLocale.orNull[Locale]) = I18n(locale)
+
+  /**
+   * Converts string value to snake_case'd value.
+   *
+   * @param s string value
+   * @return snake_case'd value
+   */
+  protected def toSnakeCase(s: String): String = StringUtil.toSnakeCase(s)
 
 }
