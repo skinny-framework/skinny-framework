@@ -1,4 +1,4 @@
--@val snakeCaseKeyExample: model.SnakeCaseKeyExample
+-@val item: model.SnakeCaseKeyExample
 -@val s: skinny.Skinny
 
 h3 #{s.i18n.get("snakeCaseKeyExample.detail")}
@@ -9,16 +9,16 @@ table(class="table table-bordered")
   thead
     tr
       th #{s.i18n.get("snakeCaseKeyExample.id")}
-      td #{snakeCaseKeyExample.id}
+      td #{item.id}
     tr
       th #{s.i18n.get("snakeCaseKeyExample.firstName")}
-      td #{snakeCaseKeyExample.firstName}
+      td #{item.firstName}
     tr
       th #{s.i18n.get("snakeCaseKeyExample.luckeyNumber")}
-      td #{snakeCaseKeyExample.luckeyNumber}
+      td #{item.luckeyNumber}
 
 hr
 div(class="form-actions")
   a(class="btn btn-default" href={url(SnakeCaseKeyExamplesController.indexUrl)}) #{s.i18n.get("backToList")}
-  a(href={url(SnakeCaseKeyExamplesController.editUrl, "id" -> snakeCaseKeyExample.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-  a(data-method="delete" data-confirm={s.i18n.get("snakeCaseKeyExample.delete.confirm")} href={url(SnakeCaseKeyExamplesController.deleteUrl, "id" -> snakeCaseKeyExample.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+  a(href={url(SnakeCaseKeyExamplesController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+  a(data-method="delete" data-confirm={s.i18n.get("item.delete.confirm")} href={url(SnakeCaseKeyExamplesController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}

@@ -81,6 +81,10 @@ IF "%is_generator%"=="true" (
     :generator_loop_end
     REM Delete the head whitespace character
     SET generator_params=%generator_params:~1%
+
+    RMDIR task\src\main\resources /s /q
+    MKDIR task\src\main\resources
+    XCOPY src\main\resources task\src\main\resources /E /D /q
     sbt "task/run generate:%generator_params%"
   )
   GOTO script_eof
@@ -120,6 +124,9 @@ IF %command%==package (
   MKDIR build
   XCOPY src\* build\src\* /E /D /q
   XCOPY build.sbt build\build.sbt /E /D /q
+  RMDIR task\src\main\resources /s /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/package"
   GOTO script_eof
 )
@@ -129,6 +136,9 @@ IF "%command%"=="package:standalone" (
   MKDIR standalone-build
   XCOPY src\* standalone-build\src\* /E /D /q
   XCOPY build.sbt standalone-build\build.sbt /E /D /q
+  RMDIR task\src\main\resources /s /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "standalone-build/assembly"
   GOTO script_eof
 )
@@ -138,6 +148,9 @@ IF %command%==publish (
   mkdir build
   xcopy src\* build\src\* /E /D /q
   xcopy build.sbt build\build.sbt /E /D /q
+  RMDIR task\src\main\resources /s /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/publish"
   GOTO script_eof
 )

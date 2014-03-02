@@ -43,16 +43,16 @@ trait TemplateEngineFeature
       renderWithTemplate(path)
     } else if (format == Format.HTML) {
       // template not found and should be found
-      throw new ViewTemplateNotFoundException(s"View template not found. (expected one of: ${templatePaths(path)})")
+      throw new ViewTemplateNotFoundException(s"View template not found. (expected: one of ${templatePaths(path)})")
     } else {
       // template not found, but try to render JSON or XML body if possible
       logger.debug(s"Template for ${path} not found.")
       val entity = (for {
-        resourcesName <- requestScope[String]("resourcesName")
+        resourcesName <- requestScope[String](RequestScopeFeature.ATTR_RESOURCES_NAME)
         resources <- requestScope[Any](resourcesName)
       } yield resources) getOrElse {
         for {
-          resourceName <- requestScope[String]("resourceName")
+          resourceName <- requestScope[String](RequestScopeFeature.ATTR_RESOURCE_NAME)
           resource <- requestScope[Any](resourceName)
         } yield resource
       }

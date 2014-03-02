@@ -5,8 +5,8 @@ import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
-import skinny.controller.feature.RequestScopeFeature
 import org.scalatra.util.conversion.{ Conversions, TypeConverter }
+import skinny.controller.feature.RequestScopeFeature
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
@@ -29,10 +29,26 @@ trait SkinnyResourceWithId[Id]
  */
 trait SkinnyResourceActions[Id] { self: SkinnyController =>
 
+  // set resourceName/resourcesName to the request scope
+  beforeAction() {
+    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> itemsName)
+    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> itemName)
+  }
+
   /**
    * SkinnyModel for this resource.
    */
   protected def model: SkinnyModel[Id, _]
+
+  /**
+   * Id field name.
+   */
+  protected def idName: String = "id"
+
+  /**
+   * Id parameter name.
+   */
+  protected def idParamName: String = toSnakeCase(idName)
 
   /**
    * Resource name in the plural. This name will be used for path and directory name to locale template files.
@@ -44,8 +60,29 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    */
   protected def resourceName: String
 
+  /**
+   * Items variable name in view templates.
+   */
+  protected def itemsName: String = "items"
+
+  /**
+   * Item variable name in view templates.
+   */
+  protected def itemName: String = "item"
+
+  /**
+   * Directory path which contains view templates under src/main/webapp/WEB-INF/views.
+   */
+  protected def viewsDirectoryPath: String = s"/${resourcesName}"
+
+  /**
+   * Root element name in the XML response.
+   */
   override protected def xmlRootName = resourcesName
 
+  /**
+   * Each resource item element name in the XML response.
+   */
   override protected def xmlItemName = resourceName
 
   /**
@@ -80,7 +117,10 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
     resourcesBasePathPrefix + (if (useRelativePathForResourcesBasePath) "" else s"/${resourcesName}")
   }
 
-  private[this] def normalizedResourcesBasePath: String = {
+  /**
+   * Normalized base path. This method should not be overridden.
+   */
+  protected final def normalizedResourcesBasePath: String = {
     resourcesBasePath.replaceFirst("^/", "").replaceFirst("/$", "")
   }
 
@@ -135,15 +175,15 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
       val pageNo = params.getAs[Int](pageNoParamName).getOrElse(1)
-      set(resourcesName, model.findModels(pageSize, pageNo))
+      set(itemsName, model.findModels(pageSize, pageNo))
       val totalPages: Int = (model.countAllModels() / pageSize).toInt + {
         if (model.countAllModels() % pageSize == 0) 0 else 1
       }
       set(totalPagesAttributeName -> totalPages)
     } else {
-      set(resourcesName, model.findAllModels())
+      set(itemsName, model.findAllModels())
     }
-    render(s"/${resourcesName}/index")
+    render(s"${viewsDirectoryPath}/index")
   }
 
   /**
@@ -158,8 +198,8 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return single resource
    */
   def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
-    render(s"/${resourcesName}/show")
+    set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
+    render(s"${viewsDirectoryPath}/show")
   }
 
   /**
@@ -171,7 +211,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return input form
    */
   def newResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    render(s"/${resourcesName}/new")
+    render(s"${viewsDirectoryPath}/new")
   }
 
   /**
@@ -235,7 +275,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
       }
     } else {
       status = 400
-      render(s"/${resourcesName}/new")
+      render(s"${viewsDirectoryPath}/new")
     }
   }
 
@@ -249,15 +289,14 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return input form
    */
   def editResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map {
-      m =>
-        status = 200
-        format match {
-          case Format.HTML =>
-            setAsParams(m)
-            render(s"/${resourcesName}/edit")
-          case _ =>
-        }
+    model.findModel(id).map { m =>
+      status = 200
+      format match {
+        case Format.HTML =>
+          setAsParams(m)
+          render(s"${viewsDirectoryPath}/edit")
+        case _ =>
+      }
     } getOrElse haltWithBody(404)
   }
 
@@ -320,13 +359,13 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
         format match {
           case Format.HTML =>
             setUpdateCompletionFlash()
-            set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
+            set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
             redirect(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
           case _ =>
         }
       } else {
         status = 400
-        render(s"/${resourcesName}/edit")
+        render(s"${viewsDirectoryPath}/edit")
       }
     } getOrElse haltWithBody(404)
   }
@@ -389,12 +428,6 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
    */
   private[this] implicit val skinnyController: SkinnyController = this
 
-  // set resourceName/resourcesName to the request scope
-  beforeAction() {
-    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
-    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
-  }
-
   // --------------
   // create
 
@@ -422,17 +455,17 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
     }) getOrElse haltWithBody(404)
   }.as('index)
 
-  val showUrl = get(s"${resourcesBasePath}/:id") {
-    if (params.getAs[String]("id").exists(_ == "new")) {
+  val showUrl = get(s"${resourcesBasePath}/:${idParamName}") {
+    if (params.getAs[String](idParamName).exists(_ == "new")) {
       newResource()
     } else {
-      params.getAs[Id]("id").map { id => showResource(id) } getOrElse haltWithBody(404)
+      params.getAs[Id](idParamName).map { id => showResource(id) } getOrElse haltWithBody(404)
     }
   }.as('show)
 
-  val showExtUrl = get(s"${resourcesBasePath}/:id.:ext") {
+  val showExtUrl = get(s"${resourcesBasePath}/:${idParamName}.:ext") {
     (for {
-      id <- params.getAs[Id]("id")
+      id <- params.getAs[Id](idParamName)
       ext <- params.get("ext")
     } yield {
       ext match {
@@ -446,27 +479,27 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
   // --------------
   // update
 
-  val editUrl = get(s"${resourcesBasePath}/:id/edit") {
-    params.getAs[Id]("id").map(id => editResource(id)) getOrElse haltWithBody(404)
+  val editUrl = get(s"${resourcesBasePath}/:${idParamName}/edit") {
+    params.getAs[Id](idParamName).map(id => editResource(id)) getOrElse haltWithBody(404)
   }.as('edit)
 
-  val updatePostUrl = post(s"${resourcesBasePath}/:id") {
-    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+  val updatePostUrl = post(s"${resourcesBasePath}/:${idParamName}") {
+    params.getAs[Id](idParamName).map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
-  val updateUrl = put(s"${resourcesBasePath}/:id") {
-    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+  val updateUrl = put(s"${resourcesBasePath}/:${idParamName}") {
+    params.getAs[Id](idParamName).map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
-  val updatePatchUrl = patch(s"${resourcesBasePath}/:id") {
-    params.getAs[Id]("id").map(id => updateResource(id)) getOrElse haltWithBody(404)
+  val updatePatchUrl = patch(s"${resourcesBasePath}/:${idParamName}") {
+    params.getAs[Id](idParamName).map(id => updateResource(id)) getOrElse haltWithBody(404)
   }.as('update)
 
   // --------------
   // delete
 
-  val deleteUrl = delete(s"${resourcesBasePath}/:id") {
-    params.getAs[Id]("id").map(id => destroyResource(id)) getOrElse haltWithBody(404)
+  val deleteUrl = delete(s"${resourcesBasePath}/:${idParamName}") {
+    params.getAs[Id](idParamName).map(id => destroyResource(id)) getOrElse haltWithBody(404)
   }.as('destroy)
 
 }

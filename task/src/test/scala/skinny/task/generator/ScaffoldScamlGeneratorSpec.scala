@@ -147,7 +147,7 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
 
       val expected =
         """-@val s: skinny.Skinny
-          |-@val members: Seq[model.Member]
+          |-@val items: Seq[model.Member]
           |-@val totalPages: Int
           |
           |%h3 #{s.i18n.get("member.list")}
@@ -176,18 +176,18 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |      %th #{s.i18n.get("member.birthday")}
           |      %th
           |  %tbody
-          |  -for (member <- members)
+          |  -for (item <- items)
           |    %tr
-          |      %td #{member.id}
-          |      %td #{member.name}
-          |      %td #{member.favoriteNumber}
-          |      %td #{member.magicNumber}
-          |      %td #{member.isActivated}
-          |      %td #{member.birthday}
+          |      %td #{item.id}
+          |      %td #{item.name}
+          |      %td #{item.favoriteNumber}
+          |      %td #{item.magicNumber}
+          |      %td #{item.isActivated}
+          |      %td #{item.birthday}
           |      %td
-          |        %a(href={url(MembersController.showUrl, "id" -> member.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
-          |        %a(href={url(MembersController.editUrl, "id" -> member.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |        %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> member.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |        %a(href={url(MembersController.showUrl, "id" -> item.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
+          |        %a(href={url(MembersController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+          |        %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |
           |%a(href={url(MembersController.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
           |""".stripMargin
@@ -206,7 +206,7 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
 
       val expected =
-        """-@val member: model.Member
+        """-@val item: model.Member
           |-@val s: skinny.Skinny
           |
           |%h3 #{s.i18n.get("member.detail")}
@@ -217,28 +217,28 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |  %thead
           |    %tr
           |      %th #{s.i18n.get("member.id")}
-          |      %td #{member.id}
+          |      %td #{item.id}
           |    %tr
           |      %th #{s.i18n.get("member.name")}
-          |      %td #{member.name}
+          |      %td #{item.name}
           |    %tr
           |      %th #{s.i18n.get("member.favoriteNumber")}
-          |      %td #{member.favoriteNumber}
+          |      %td #{item.favoriteNumber}
           |    %tr
           |      %th #{s.i18n.get("member.magicNumber")}
-          |      %td #{member.magicNumber}
+          |      %td #{item.magicNumber}
           |    %tr
           |      %th #{s.i18n.get("member.isActivated")}
-          |      %td #{member.isActivated}
+          |      %td #{item.isActivated}
           |    %tr
           |      %th #{s.i18n.get("member.birthday")}
-          |      %td #{member.birthday}
+          |      %td #{item.birthday}
           |
           |%hr
           |%div(class="form-actions")
           |  %a(class="btn btn-default" href={url(MembersController.indexUrl)}) #{s.i18n.get("backToList")}
-          |  %a(href={url(MembersController.editUrl, "id" -> member.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |  %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> member.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |  %a(href={url(MembersController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
+          |  %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |""".stripMargin
       code should equal(expected)
     }

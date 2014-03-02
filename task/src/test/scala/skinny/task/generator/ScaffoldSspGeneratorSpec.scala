@@ -191,7 +191,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
       val expected =
         """<%@val s: skinny.Skinny %>
-          |<%@val members: Seq[model.Member] %>
+          |<%@val items: Seq[model.Member] %>
           |<%@val totalPages: Int %>
           |
           |<h3>${s.i18n.get("member.list")}</h3>
@@ -229,19 +229,19 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  </tr>
           |</thead>
           |<tbody>
-          |  #for (member <- members)
+          |  #for (item <- items)
           |  <tr>
-          |    <td>${member.id}</td>
-          |    <td>${member.name}</td>
-          |    <td>${member.favoriteNumber}</td>
-          |    <td>${member.magicNumber}</td>
-          |    <td>${member.isActivated}</td>
-          |    <td>${member.birthday}</td>
+          |    <td>${item.id}</td>
+          |    <td>${item.name}</td>
+          |    <td>${item.favoriteNumber}</td>
+          |    <td>${item.magicNumber}</td>
+          |    <td>${item.isActivated}</td>
+          |    <td>${item.birthday}</td>
           |    <td>
-          |      <a href="${url(MembersController.showUrl, "id" -> member.id.toString)}" class="btn btn-default">${s.i18n.get("detail")}</a>
-          |      <a href="${url(MembersController.editUrl, "id" -> member.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
+          |      <a href="${url(MembersController.showUrl, "id" -> item.id.toString)}" class="btn btn-default">${s.i18n.get("detail")}</a>
+          |      <a href="${url(MembersController.editUrl, "id" -> item.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
           |      <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |        href="${url(MembersController.deleteUrl, "id" -> member.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |        href="${url(MembersController.deleteUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
           |    </td>
           |  </tr>
           |  #end
@@ -264,7 +264,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
         "birthday" -> "Option[LocalDate]"
       ))
       val expected =
-        """<%@val member: model.Member %>
+        """<%@val item: model.Member %>
           |<%@val s: skinny.Skinny %>
           |
           |<h3>${s.i18n.get("member.detail")}</h3>
@@ -276,27 +276,27 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |<thead>
           |  <tr>
           |    <th>${s.i18n.get("member.id")}</th>
-          |    <td>${member.id}</td>
+          |    <td>${item.id}</td>
           |  </tr>
           |  <tr>
           |    <th>${s.i18n.get("member.name")}</th>
-          |    <td>${member.name}</td>
+          |    <td>${item.name}</td>
           |  </tr>
           |  <tr>
           |    <th>${s.i18n.get("member.favoriteNumber")}</th>
-          |    <td>${member.favoriteNumber}</td>
+          |    <td>${item.favoriteNumber}</td>
           |  </tr>
           |  <tr>
           |    <th>${s.i18n.get("member.magicNumber")}</th>
-          |    <td>${member.magicNumber}</td>
+          |    <td>${item.magicNumber}</td>
           |  </tr>
           |  <tr>
           |    <th>${s.i18n.get("member.isActivated")}</th>
-          |    <td>${member.isActivated}</td>
+          |    <td>${item.isActivated}</td>
           |  </tr>
           |  <tr>
           |    <th>${s.i18n.get("member.birthday")}</th>
-          |    <td>${member.birthday}</td>
+          |    <td>${item.birthday}</td>
           |  </tr>
           |
           |</tbody>
@@ -305,9 +305,9 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |<hr/>
           |<div class="form-actions">
           |  <a class="btn btn-default" href="${url(MembersController.indexUrl)}">${s.i18n.get("backToList")}</a>
-          |  <a href="${url(MembersController.editUrl, "id" -> member.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
+          |  <a href="${url(MembersController.editUrl, "id" -> item.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
           |  <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |    href="${url(MembersController.deleteUrl, "id" -> member.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |    href="${url(MembersController.deleteUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
           |</div>
           |""".stripMargin
       code should equal(expected)

@@ -50,9 +50,6 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
    */
   def primaryKeyFieldName: String = "id"
 
-  @deprecated(message = "Use primaryKeyFieldName instead. This API will be removed in version 1.0.0.", since = "0.9.22")
-  def primaryKeyName: String = primaryKeyFieldName
-
   /**
    * Returns default table alias.
    *

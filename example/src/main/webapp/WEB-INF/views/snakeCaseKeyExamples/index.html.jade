@@ -1,5 +1,5 @@
 -@val s: skinny.Skinny
--@val snakeCaseKeyExamples: Seq[model.SnakeCaseKeyExample]
+-@val items: Seq[model.SnakeCaseKeyExample]
 
 h3 #{s.i18n.get("snakeCaseKeyExample.list")}
 hr
@@ -14,7 +14,7 @@ table(class="table table-bordered")
       th #{s.i18n.get("snakeCaseKeyExample.luckeyNumber")}
       th
   tbody
-  -for (e <- snakeCaseKeyExamples)
+  -for (e <- items)
     tr
       td #{e.id}
       td #{e.firstName}

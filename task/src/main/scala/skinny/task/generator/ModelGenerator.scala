@@ -17,6 +17,8 @@ trait ModelGenerator extends CodeGenerator {
 
   def withTimestamps: Boolean = true
 
+  def primaryKeyName: String = "id"
+
   private[this] def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:model member name:String birthday:Option[LocalDate]""")
@@ -53,6 +55,10 @@ trait ModelGenerator extends CodeGenerator {
         |    createdAt = rs.get(rn.createdAt),
         |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
+    val customPkName = {
+      if (primaryKeyName != "id") "\n  override val primaryKeyFieldName = \"" + primaryKeyName + "\""
+      else ""
+    }
 
     s"""package model
         |
@@ -62,16 +68,16 @@ trait ModelGenerator extends CodeGenerator {
         |
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
-        |  id: Long,
+        |  ${primaryKeyName}: Long,
         |${attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n")}${timestamps}
         |)
         |
         |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
-        |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")
+        |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")${customPkName}
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
-        |    id = rs.get(rn.id),
+        |    ${primaryKeyName} = rs.get(rn.${primaryKeyName}),
         |${attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n")}${timestampsExtraction}
         |  )
         |}

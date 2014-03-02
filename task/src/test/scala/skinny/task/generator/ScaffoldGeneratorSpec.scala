@@ -10,17 +10,17 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
   describe("Controller (SkinnyResource)") {
     it("should be created as expected") {
       val code = generator.controllerCode("members", "member", "ssp", Seq(
-        "name" -> "String",
-        "favoriteIntNumber" -> "Int",
-        "favoriteLongNumber" -> "Long",
-        "favoriteShortNumber" -> "Short",
-        "favoriteDoubleNumber" -> "Double",
-        "favoriteFloatNumber" -> "Float",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]",
-        "timeToWakeUp" -> "Option[LocalTime]",
-        "createdAt" -> "DateTime"
+        ScaffoldGeneratorArg("name", "String", None),
+        ScaffoldGeneratorArg("favoriteIntNumber", "Int", None),
+        ScaffoldGeneratorArg("favoriteLongNumber", "Long", None),
+        ScaffoldGeneratorArg("favoriteShortNumber", "Short", None),
+        ScaffoldGeneratorArg("favoriteDoubleNumber", "Double", None),
+        ScaffoldGeneratorArg("favoriteFloatNumber", "Float", None),
+        ScaffoldGeneratorArg("magicNumber", "Option[Int]", None),
+        ScaffoldGeneratorArg("isActivated", "Boolean", None),
+        ScaffoldGeneratorArg("birthday", "Option[LocalDate]", None),
+        ScaffoldGeneratorArg("timeToWakeUp", "Option[LocalTime]", None),
+        ScaffoldGeneratorArg("createdAt", "DateTime", None)
       ))
 
       val expected =
