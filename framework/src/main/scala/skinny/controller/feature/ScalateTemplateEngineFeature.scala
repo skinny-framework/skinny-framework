@@ -93,12 +93,6 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
   def preferredScalateExtension = scalateExtensions.head
 
   /**
-   * NOTICE: just for backward compatibility with version 0.9.27 or older.
-   */
-  @deprecated(message = "You don't need override this method anymore. This API will be removed in version 1.0.0.", since = "0.9.28")
-  def scalateExtension: String = preferredScalateExtension
-
-  /**
    * Returns the actual template path for the name.
    *
    * @param path path name
