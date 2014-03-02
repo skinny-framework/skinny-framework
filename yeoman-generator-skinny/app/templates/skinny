@@ -26,6 +26,11 @@ function setup_standalone_build() {
   cp -pr src standalone-build/src
   cp -pr build.sbt standalone-build/build.sbt
 }
+function copry_resources_to_task() {
+  rm -rf task/src/main/resources
+  mkdir -p task/src/main/resources
+  cp -pr src/main/resources/* task/src/main/resources/.
+}
 
 command="$1"
 if [ "$command" == "run" ];then
@@ -57,19 +62,16 @@ elif [ "$command" == "g" -o "$command" == "generate" ];then
   if [ "$generator_type" == "" ]; then
     echo "Usage: ./skinny g/generate [type] [options...]"
   else
+    copry_resources_to_task
     command="task/run generate:$generator_type $@"
     ${sbt_path} "${command}"
   fi
 elif [ "$command" == "db:migrate" ];then
-  rm -rf task/src/main/resources
-  mkdir -p task/src/main/resources
-  cp -pr src/main/resources/* task/src/main/resources/.
+  copry_resources_to_task
   shift
   ${sbt_path} "task/run db:migrate $@"
 elif [ "$command" == "db:repair" ];then
-  rm -rf task/src/main/resources
-  mkdir -p task/src/main/resources
-  cp -pr src/main/resources/* task/src/main/resources/.
+  copry_resources_to_task
   shift
   ${sbt_path} "task/run db:repair $@"
 elif [ "$command" == "eclipse" ];then
@@ -78,12 +80,15 @@ elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
   ${sbt_path} gen-idea
 elif [ "$command" == "package" ];then
   setup_build
+  copry_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "package:standalone" ];then
   setup_standalone_build
+  copry_resources_to_task
   ${sbt_path} "task/run assets:precompile" standalone-build/assembly
 elif [ "$command" == "publish" ];then
   setup_build
+  copry_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/publish
 else
   echo ""
