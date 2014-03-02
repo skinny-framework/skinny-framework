@@ -5,8 +5,8 @@ import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
-import skinny.controller.feature.RequestScopeFeature
 import org.scalatra.util.conversion.{ Conversions, TypeConverter }
+import skinny.controller.feature.RequestScopeFeature
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
@@ -29,6 +29,12 @@ trait SkinnyResourceWithId[Id]
  */
 trait SkinnyResourceActions[Id] { self: SkinnyController =>
 
+  // set resourceName/resourcesName to the request scope
+  beforeAction() {
+    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> itemsName)
+    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> itemName)
+  }
+
   /**
    * SkinnyModel for this resource.
    */
@@ -44,8 +50,29 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    */
   protected def resourceName: String
 
+  /**
+   * Items variable name in view templates.
+   */
+  protected def itemsName: String = "items"
+
+  /**
+   * Item variable name in view templates.
+   */
+  protected def itemName: String = "item"
+
+  /**
+   * Directory path which contains view templates under src/main/webapp/WEB-INF/views.
+   */
+  protected def viewsDirectoryPath: String = s"/${resourcesName}"
+
+  /**
+   * Root element name in the XML response.
+   */
   override protected def xmlRootName = resourcesName
 
+  /**
+   * Each resource item element name in the XML response.
+   */
   override protected def xmlItemName = resourceName
 
   /**
@@ -80,7 +107,10 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
     resourcesBasePathPrefix + (if (useRelativePathForResourcesBasePath) "" else s"/${resourcesName}")
   }
 
-  private[this] def normalizedResourcesBasePath: String = {
+  /**
+   * Normalized base path. This method should not be overridden.
+   */
+  protected final def normalizedResourcesBasePath: String = {
     resourcesBasePath.replaceFirst("^/", "").replaceFirst("/$", "")
   }
 
@@ -135,15 +165,15 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
       val pageNo = params.getAs[Int](pageNoParamName).getOrElse(1)
-      set(resourcesName, model.findModels(pageSize, pageNo))
+      set(itemsName, model.findModels(pageSize, pageNo))
       val totalPages: Int = (model.countAllModels() / pageSize).toInt + {
         if (model.countAllModels() % pageSize == 0) 0 else 1
       }
       set(totalPagesAttributeName -> totalPages)
     } else {
-      set(resourcesName, model.findAllModels())
+      set(itemsName, model.findAllModels())
     }
-    render(s"/${resourcesName}/index")
+    render(s"${viewsDirectoryPath}/index")
   }
 
   /**
@@ -158,8 +188,8 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return single resource
    */
   def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
-    render(s"/${resourcesName}/show")
+    set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
+    render(s"${viewsDirectoryPath}/show")
   }
 
   /**
@@ -171,7 +201,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return input form
    */
   def newResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    render(s"/${resourcesName}/new")
+    render(s"${viewsDirectoryPath}/new")
   }
 
   /**
@@ -235,7 +265,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
       }
     } else {
       status = 400
-      render(s"/${resourcesName}/new")
+      render(s"${viewsDirectoryPath}/new")
     }
   }
 
@@ -255,7 +285,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
         format match {
           case Format.HTML =>
             setAsParams(m)
-            render(s"/${resourcesName}/edit")
+            render(s"${viewsDirectoryPath}/edit")
           case _ =>
         }
     } getOrElse haltWithBody(404)
@@ -320,13 +350,13 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
         format match {
           case Format.HTML =>
             setUpdateCompletionFlash()
-            set(resourceName, model.findModel(id).getOrElse(haltWithBody(404)))
+            set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
             redirect(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
           case _ =>
         }
       } else {
         status = 400
-        render(s"/${resourcesName}/edit")
+        render(s"${viewsDirectoryPath}/edit")
       }
     } getOrElse haltWithBody(404)
   }
@@ -388,12 +418,6 @@ trait SkinnyResourceRoutes[Id] extends SkinnyController with Routes { self: Skin
    * because [[skinny.routing.implicits.RoutesAsImplicits]] expects [[skinny.controller.SkinnyControllerBase]].
    */
   private[this] implicit val skinnyController: SkinnyController = this
-
-  // set resourceName/resourcesName to the request scope
-  beforeAction() {
-    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> resourceName)
-    set(RequestScopeFeature.ATTR_RESOURCES_NAME -> resourcesName)
-  }
 
   // --------------
   // create

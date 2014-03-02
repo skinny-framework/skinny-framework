@@ -32,6 +32,7 @@ object RequestScopeFeature {
   val ATTR_CSRF_KEY = "csrfKey"
   val ATTR_CSRF_TOKEN = "csrfToken"
 
+  // Used in the SkinnyResource & TemplateEngineFeature
   val ATTR_RESOURCE_NAME = "resourceName"
   val ATTR_RESOURCES_NAME = "resourcesName"
 }

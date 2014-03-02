@@ -190,7 +190,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
-        |<%@val ${resources}: Seq[model.${modelClassName}] %>
+        |<%@val items: Seq[model.${modelClassName}] %>
         |<%@val totalPages: Int %>
         |
         |<h3>$${s.i18n.get("${resource}.list")}</h3>
@@ -223,14 +223,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  </tr>
         |</thead>
         |<tbody>
-        |  #for (${resource} <- ${resources})
+        |  #for (item <- items)
         |  <tr>
-        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString("\n")}
+        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => s"    <td>$${item.${k}}</td>" }.mkString("\n")}
         |    <td>
-        |      <a href="$${url(${controllerClassName}.showUrl, "id" -> ${resource}.id.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
-        |      <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |      <a href="$${url(${controllerClassName}.showUrl, "id" -> item.id.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
+        |      <a href="$${url(${controllerClassName}.editUrl, "id" -> item.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |        href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |        href="$${url(${controllerClassName}.deleteUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
@@ -248,12 +248,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       case (name, _) =>
         s"""  <tr>
         |    <th>$${s.i18n.get("${resource}.${name}")}</th>
-        |    <td>$${${resource}.${name}}</td>
+        |    <td>$${item.${name}}</td>
         |  </tr>
         |""".stripMargin
     }.mkString
 
-    s"""<%@val ${resource}: model.${modelClassName} %>
+    s"""<%@val item: model.${modelClassName} %>
         |<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.detail")}</h3>
@@ -270,9 +270,9 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<hr/>
         |<div class="form-actions">
         |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
-        |  <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a href="$${url(${controllerClassName}.editUrl, "id" -> item.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${url(${controllerClassName}.deleteUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
   }

@@ -1,4 +1,4 @@
--@val skill: model.Skill
+-@val item: model.Skill
 -@val s: skinny.Skinny
 
 %h3 #{s.i18n.get("skill.detail")}
@@ -10,15 +10,15 @@
  %thead
   %tr
    %th #{s.i18n.get("skill.id")}
-   %th #{skill.id}
+   %th #{item.id}
   %tr
    %th #{s.i18n.get("skill.name")}
-   %td #{skill.name}
+   %td #{item.name}
 
 %hr
 %div(class="form-actions")
  %a(class="btn btn-default" href={uri("/skills")})  #{s.i18n.get("backToList")}
- %a(href={uri("/skills/"+skill.id+"/edit")} class="btn btn-info")  #{s.i18n.get("edit")}
+ %a(href={uri("/skills/"+item.id+"/edit")} class="btn btn-info")  #{s.i18n.get("edit")}
  %a(data-method="delete" data-confirm={s.i18n.get("skill.delete.confirm")}
-  href={uri("/skills/"+skill.id)} rel="nofollow" class="btn btn-danger")  #{s.i18n.get("delete")}
+  href={uri("/skills/"+item.id)} rel="nofollow" class="btn btn-danger")  #{s.i18n.get("delete")}
 
