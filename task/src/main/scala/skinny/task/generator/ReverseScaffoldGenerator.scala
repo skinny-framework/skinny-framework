@@ -43,6 +43,13 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       DBSettings.initialize()
 
       val columns = extractColumns(tableName)
+      if (columns.find(_.isPrimaryKey).isEmpty) {
+        throw new IllegalStateException(
+          s"Since this table (${tableName}}) has no primary key, generator couldn't create scaffold files")
+      } else if (columns.filter(_.isPrimaryKey).size > 1) {
+        throw new IllegalStateException(
+          s"Since this table (${tableName}}) has composite primary keys, generator couldn't create scaffold files")
+      }
       val pkName = toCamelCase(columns.find(_.isPrimaryKey).get.name.toLowerCase(Locale.ENGLISH))
       val fields = columns
         .map(column => toScaffoldFieldDef(column))
