@@ -109,7 +109,7 @@ trait ScaffoldGenerator extends CodeGenerator {
 
           // Controller
           generateApplicationControllerIfAbsent()
-          generateResourceController(resources, resource, template, attributePairs)
+          generateResourceController(resources, resource, template, generatorArgs)
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
@@ -169,37 +169,41 @@ trait ScaffoldGenerator extends CodeGenerator {
       """.stripMargin)
   }
 
-  def controllerCode(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]): String = {
+  def controllerCode(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
     val primaryKeyNameIfNotId = customPrimaryKeyName.map(name => "\n  override def idName = \"" + name + "\"").getOrElse("")
-    val validations = attributePairs
-      .filterNot { case (_, t) => toParamType(t) == "Boolean" } // boolean param doesn't need required valdiation.
-      .flatMap {
-        case (k, t) =>
-          val validationRules = (if (isOptionClassName(t)) Nil else Seq("required")) ++ (toParamType(t) match {
-            case "Long" => Seq("numeric", "longValue")
-            case "Int" => Seq("numeric", "intValue")
-            case "Short" => Seq("numeric", "intValue")
-            case "Double" => Seq("doubleValue")
-            case "Float" => Seq("floatValue")
-            case "String" => Seq("maxLength(512)")
-            case "DateTime" => Seq("dateTimeFormat")
-            case "LocalDate" => Seq("dateFormat")
-            case "LocalTime" => Seq("timeFormat")
-            case _ => Nil
-          })
-          if (validationRules.isEmpty) None
-          else Some("    paramKey(\"" + toSnakeCase(k) + "\") is " + validationRules.mkString(" & "))
+    val validations = args
+      .filterNot { case arg => toParamType(arg.typeName) == "Boolean" } // boolean param doesn't need required validation.
+      .flatMap { arg =>
+        val required = if (isOptionClassName(arg.typeName)) Nil else Seq("required")
+        val varcharLength = if (arg.columnName.isDefined && (
+          arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR"))) {
+          arg.columnName.get.replaceAll("[varcharVARCHAR\\(\\)]", "")
+        } else "512"
+        val validationRules = required ++ (toParamType(arg.typeName) match {
+          case "Long" => Seq("numeric", "longValue")
+          case "Int" => Seq("numeric", "intValue")
+          case "Short" => Seq("numeric", "intValue")
+          case "Double" => Seq("doubleValue")
+          case "Float" => Seq("floatValue")
+          case "String" => Seq(s"maxLength(${varcharLength})")
+          case "DateTime" => Seq("dateTimeFormat")
+          case "LocalDate" => Seq("dateFormat")
+          case "LocalTime" => Seq("timeFormat")
+          case _ => Nil
+        })
+        if (validationRules.isEmpty) None
+        else Some("    paramKey(\"" + toSnakeCase(arg.name) + "\") is " + validationRules.mkString(" & "))
       }
       .mkString(",\n")
-    val params = attributePairs.flatMap {
-      case (name, t) =>
-        toParamType(t) match {
-          case "DateTime" => Some(s""".withDateTime("${toSnakeCase(name)}")""")
-          case "LocalDate" => Some(s""".withDate("${toSnakeCase(name)}")""")
-          case "LocalTime" => Some(s""".withTime("${toSnakeCase(name)}")""")
+    val params = args.flatMap {
+      case arg =>
+        toParamType(arg.typeName) match {
+          case "DateTime" => Some(s""".withDateTime("${toSnakeCase(arg.name)}")""")
+          case "LocalDate" => Some(s""".withDate("${toSnakeCase(arg.name)}")""")
+          case "LocalTime" => Some(s""".withTime("${toSnakeCase(arg.name)}")""")
           case _ => None
         }
     }.mkString
@@ -225,7 +229,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  )
         |  override def createParams = Params(params)${params}
         |  override def createFormStrongParameters = Seq(
-        |${attributePairs.map { case (k, t) => "    \"" + toSnakeCase(k) + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
+        |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )
         |
         |  override def updateForm = validation(updateParams,
@@ -233,17 +237,17 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  )
         |  override def updateParams = Params(params)${params}
         |  override def updateFormStrongParameters = Seq(
-        |${attributePairs.map { case (k, t) => "    \"" + toSnakeCase(k) + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
+        |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )
         |
         |}
         |""".stripMargin
   }
 
-  def generateResourceController(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]) {
+  def generateResourceController(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
     val controllerClassName = toClassName(resources) + "Controller"
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    writeIfAbsent(file, controllerCode(resources, resource, template, attributePairs))
+    writeIfAbsent(file, controllerCode(resources, resource, template, args))
   }
 
   def controllerSpecCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
