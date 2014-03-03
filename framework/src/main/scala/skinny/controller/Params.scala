@@ -3,6 +3,7 @@ package skinny.controller
 import scala.language.dynamics
 import skinny._
 import skinny.util.DateTimeUtil
+import org.joda.time.DateTime
 
 object Params {
 
@@ -19,6 +20,7 @@ object Params {
   val _hour = "_hour"
   val _minute = "_minute"
   val _second = "_second"
+
 }
 
 /**
@@ -64,6 +66,11 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
     if (isSnakeCasedParams(key)) (key + _hour, key + _minute, key + _second)
     else (key + Hour, key + Minute, key + Second)
   }
+
+  /**
+   * Appends now datetime param to params.
+   */
+  def withNow(key: String): Params = Params(this.underlying + (key -> DateTimeUtil.nowString))
 
   /**
    * Appends a new Date param to params.

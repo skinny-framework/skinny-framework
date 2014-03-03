@@ -18,10 +18,15 @@ object DateTimeUtil {
   /**
    * Returns current timezone value (e.g. +09:00).
    */
-  def currentTimeZone = {
+  def currentTimeZone: String = {
     val minutes = java.util.TimeZone.getDefault.getRawOffset / 1000 / 60
     (if (minutes >= 0) "+" else "-") + "%02d:%02d".format((math.abs(minutes) / 60), (math.abs(minutes) % 60))
   }
+
+  /**
+   * Returns "2014-01-02 03:04:05".
+   */
+  def nowString: String = DateTime.now.toString("YYYY-MM-dd hh:mm:ss")
 
   private case class ZeroPaddingString(s: String) {
     def to04d: String = {
