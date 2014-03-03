@@ -39,6 +39,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     "String",
     "Byte",
     "ByteArray",
+    "BigDecimal",
     "DateTime",
     "LocalDate",
     "LocalTime",
@@ -51,6 +52,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     "Option[String]",
     "Option[Byte]",
     "Option[ByteArray]",
+    "Option[BigDecimal]",
     "Option[DateTime]",
     "Option[LocalDate]",
     "Option[LocalTime]"
@@ -64,6 +66,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       case "Short" => "int"
       case "Byte" => "tinyint"
       case "ByteArray" => "binary"
+      case "BigDecimal" => "numeric"
       case "DateTime" => "timestamp"
       case "LocalDate" => "date"
       case "LocalTime" => "time"
