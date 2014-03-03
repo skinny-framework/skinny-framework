@@ -17,6 +17,5 @@ cd skinny-blank-app
 yo skinny
 rm -f package.json
 cd ..
-zip skinny-blank-app.zip -r ./skinny-blank-app/*
-
+zip -r skinny-blank-app.zip ./skinny-blank-app
 
