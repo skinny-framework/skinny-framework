@@ -90,7 +90,8 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
 
     args match {
-      case resources :: resource :: attributes =>
+      case rs :: r :: attributes =>
+        val (resources, resource) = (toFirstCharLower(rs), toFirstCharLower(r))
         val errorMessages = attributes.flatMap {
           case attr if !attr.contains(":") => Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
           case attr => attr.split(":") match {

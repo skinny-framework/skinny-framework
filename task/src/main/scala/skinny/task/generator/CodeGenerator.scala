@@ -25,6 +25,8 @@ trait CodeGenerator {
 
   protected def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
 
+  protected def toFirstCharLower(s: String): String = s.head.toLower + s.tail
+
   protected def toCapitalizedSplitName(v: String): String = {
     toSnakeCase(v).split("_").toSeq
       .map(word => word.head.toUpper + word.tail)

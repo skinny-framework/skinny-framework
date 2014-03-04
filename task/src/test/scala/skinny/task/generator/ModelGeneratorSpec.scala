@@ -87,6 +87,36 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |""".stripMargin
       code should equal(expected)
     }
+
+    it("should be created as expected without attributes") {
+      val code = generator.code("member", None, Seq())
+      val expected =
+        """package model
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class Member(
+          |  id: Long,
+          |  createdAt: DateTime,
+          |  updatedAt: Option[DateTime] = None
+          |)
+          |
+          |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
+          |
+          |  override val defaultAlias = createAlias("m")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
+          |    id = rs.get(rn.id),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
   }
 
   describe("Model") {

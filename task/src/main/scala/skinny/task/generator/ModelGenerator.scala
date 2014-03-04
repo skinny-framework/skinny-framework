@@ -46,19 +46,27 @@ trait ModelGenerator extends CodeGenerator {
     val modelClassName = toClassName(name)
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
-      s""",
-      |  createdAt: DateTime,
-      |  updatedAt: Option[DateTime] = None""".stripMargin
+      s"""  createdAt: DateTime,
+         |  updatedAt: Option[DateTime] = None""".stripMargin
     } else ""
     val timestampsExtraction = if (withTimestamps) {
-      s""",
-        |    createdAt = rs.get(rn.createdAt),
-        |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
+      s"""    createdAt = rs.get(rn.createdAt),
+         |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
     val customPkName = {
       if (primaryKeyName != "id") "\n  override val primaryKeyFieldName = \"" + primaryKeyName + "\""
       else ""
     }
+
+    val classFields =
+      s"""  ${primaryKeyName}: Long,
+        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString("", ",\n", ",\n")}${timestamps}
+        |""".stripMargin
+
+    val extractors =
+      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName}),
+        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString("", ",\n", ",\n")}${timestampsExtraction}
+        |""".stripMargin
 
     s"""package model
         |
@@ -68,18 +76,14 @@ trait ModelGenerator extends CodeGenerator {
         |
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
-        |  ${primaryKeyName}: Long,
-        |${attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n")}${timestamps}
-        |)
+        |${classFields})
         |
         |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
         |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")${customPkName}
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
-        |    ${primaryKeyName} = rs.get(rn.${primaryKeyName}),
-        |${attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n")}${timestampsExtraction}
-        |  )
+        |${extractors}  )
         |}
         |""".stripMargin
   }
