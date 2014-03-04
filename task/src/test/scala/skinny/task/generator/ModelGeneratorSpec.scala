@@ -49,7 +49,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created as expected without tableName") {
-      val code = generator.code("member", None, Seq(
+      val code = generator.code("projectMember", None, Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
@@ -62,7 +62,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import org.joda.time._
           |
           |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
-          |case class Member(
+          |case class ProjectMember(
           |  id: Long,
           |  name: String,
           |  isActivated: Boolean,
@@ -71,11 +71,11 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  updatedAt: Option[DateTime] = None
           |)
           |
-          |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
+          |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] with TimestampsFeature[ProjectMember] {
           |
-          |  override val defaultAlias = createAlias("m")
+          |  override val defaultAlias = createAlias("pm")
           |
-          |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
           |    id = rs.get(rn.id),
           |    name = rs.get(rn.name),
           |    isActivated = rs.get(rn.isActivated),
@@ -121,7 +121,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Model") {
     it("should be created as expected") {
-      val code = generator.spec("member")
+      val code = generator.spec("projectMember")
       val expected =
         """package model
           |
@@ -131,7 +131,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc.scalatest._
           |import org.joda.time._
           |
-          |class MemberSpec extends FlatSpec with AutoRollback {
+          |class ProjectMemberSpec extends FlatSpec with AutoRollback {
           |}
           |""".stripMargin
       code should equal(expected)

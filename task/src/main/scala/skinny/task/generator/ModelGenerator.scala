@@ -44,6 +44,7 @@ trait ModelGenerator extends CodeGenerator {
 
   def code(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
     val modelClassName = toClassName(name)
+    val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
       s"""  createdAt: DateTime,
@@ -80,7 +81,7 @@ trait ModelGenerator extends CodeGenerator {
         |
         |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
-        |  override val defaultAlias = createAlias("${modelClassName.head.toLower}")${customPkName}
+        |  override val defaultAlias = createAlias("${alias}")${customPkName}
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
