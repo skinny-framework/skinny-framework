@@ -68,21 +68,25 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
               |  Columns:
               |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin)
 
+      val table = tableName
       val generator = templateType match {
         case "ssp" => new ScaffoldSspGenerator {
           override def primaryKeyName = pkName
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
+          override def tableName = Some(table)
         }
         case "scaml" => new ScaffoldScamlGenerator {
           override def primaryKeyName = pkName
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
+          override def tableName = Some(table)
         }
         case "jade" => new ScaffoldJadeGenerator {
           override def primaryKeyName = pkName
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
+          override def tableName = Some(table)
         }
         case _ => throw new IllegalArgumentException("Unknown template type: " + templateType)
       }

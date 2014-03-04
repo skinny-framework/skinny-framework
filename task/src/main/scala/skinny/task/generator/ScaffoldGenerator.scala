@@ -14,10 +14,13 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def withTimestamps: Boolean = true
 
+  protected def primaryKeyName: String = "id"
+
   // for reverse-scaffold
   protected def skipDBMigration: Boolean = false
 
-  protected def primaryKeyName: String = "id"
+  // for reverse-scaffold
+  protected def tableName: Option[String] = None
 
   protected def snakeCasedPrimaryKeyName: String = toSnakeCase(primaryKeyName)
 
@@ -123,7 +126,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             override def primaryKeyName = self.primaryKeyName
             override def withTimestamps = self.withTimestamps
           }
-          modelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
+          modelGenerator.generate(resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
           modelGenerator.generateSpec(resource, attributePairs)
 
           // Views
@@ -167,6 +170,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  // with TxPerRequestFilter
         |  // with SkinnySessionFilter
         |  with ErrorPageFilter {
+        |
+        |  // override def defaultLocale = Some(new java.util.Locale("ja"))
         |
         |}
       """.stripMargin)
@@ -463,7 +468,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // --------------------------
 
   def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]): String = {
-    val name = toSnakeCase(resources)
+    val name = tableName.getOrElse(toSnakeCase(resources))
     val columns = generatorArgs.map { a =>
       s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
         (if (isOptionClassName(a.typeName)) "" else " not null")
