@@ -28,7 +28,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  isActivated: Boolean,
           |  birthday: Option[LocalDate] = None,
           |  createdAt: DateTime,
-          |  updatedAt: Option[DateTime] = None
+          |  updatedAt: DateTime
           |)
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
@@ -68,7 +68,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  isActivated: Boolean,
           |  birthday: Option[LocalDate] = None,
           |  createdAt: DateTime,
-          |  updatedAt: Option[DateTime] = None
+          |  updatedAt: DateTime
           |)
           |
           |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] with TimestampsFeature[ProjectMember] {
@@ -101,7 +101,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |case class Member(
           |  id: Long,
           |  createdAt: DateTime,
-          |  updatedAt: Option[DateTime] = None
+          |  updatedAt: DateTime
           |)
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {

@@ -366,7 +366,7 @@ trait CRUDFeatureWithId[Id, Entity]
      * @param namedValue named value
      * @return self
      */
-    protected def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
+    def addAttributeToBeUpdated(namedValue: (SQLSyntax, Any)): UpdateOperationBuilder = {
       attributesToBeUpdated.update(namedValue._1, namedValue._2)
       this
     }
@@ -377,7 +377,7 @@ trait CRUDFeatureWithId[Id, Entity]
      * @param queryPart query part
      * @return self
      */
-    protected def addUpdateSQLPart(queryPart: SQLSyntax): UpdateOperationBuilder = {
+    def addUpdateSQLPart(queryPart: SQLSyntax): UpdateOperationBuilder = {
       additionalUpdateSQLs.add(queryPart)
       this
     }

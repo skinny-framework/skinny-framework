@@ -308,6 +308,27 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
   }
 
+  describe("Timestamps") {
+    it("should fill timestamps correctly") { implicit session =>
+      val id1 = Skill.createWithAttributes('name -> "Scala")
+      val id2 = Skill.createWithNamedValues(Skill.column.name -> "Java")
+
+      Skill.where('id -> Seq(id1, id2)).apply().foreach { skill =>
+        skill.createdAt should not be (null)
+        skill.updatedAt should not be (null)
+      }
+
+      Thread.sleep(100L)
+
+      Skill.updateById(id1).withAttributes('name -> "Scala Programming")
+      Skill.updateById(id2).withNamedValues(Skill.column.name -> "Java Programming")
+
+      Skill.where('id -> Seq(id1, id2)).apply().foreach { skill =>
+        skill.updatedAt should not equal (skill.createdAt)
+      }
+    }
+  }
+
   describe("Optimistic Lock") {
 
     it("should update with lock version") { implicit session =>

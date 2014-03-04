@@ -48,7 +48,7 @@ trait ModelGenerator extends CodeGenerator {
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
       s"""  createdAt: DateTime,
-         |  updatedAt: Option[DateTime] = None""".stripMargin
+         |  updatedAt: DateTime""".stripMargin
     } else ""
     val timestampsExtraction = if (withTimestamps) {
       s"""    createdAt = rs.get(rn.createdAt),

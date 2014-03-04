@@ -477,7 +477,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val timestamps = if (withTimestamps) {
       s""",
       |  created_at timestamp not null,
-      |  updated_at timestamp""".stripMargin
+      |  updated_at timestamp not null""".stripMargin
     } else ""
 
     s"""-- For H2 Database

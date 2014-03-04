@@ -25,29 +25,31 @@ trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] 
   val updatedAtFieldName = "updatedAt"
 
   override protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
-    if (!strongParameters.params.contains(createdAtFieldName)) {
-      val createdAt: (SQLSyntax, Any) = defaultAlias.support.column.field(createdAtFieldName) -> DateTime.now
-      super.namedValuesForCreation(strongParameters) :+ createdAt
-    } else {
-      super.namedValuesForCreation(strongParameters)
+    val (params, column, now) = (strongParameters.params, defaultAlias.support.column, DateTime.now)
+    val additionalValues: Seq[(SQLSyntax, Any)] = {
+      val values = new collection.mutable.ListBuffer[(SQLSyntax, Any)]
+      if (!params.contains(createdAtFieldName)) values.append(column.field(createdAtFieldName) -> now)
+      if (!params.contains(updatedAtFieldName)) values.append(column.field(updatedAtFieldName) -> now)
+      values.toSeq
     }
+    super.namedValuesForCreation(strongParameters) ++ additionalValues
   }
 
-  override def createWithNamedValues(namedValues: (SQLInterpolation.SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Id = {
-    val createdAt = defaultAlias.support.column.field(createdAtFieldName)
-    val namedValuesWithCreatedAt = {
-      if (namedValues.exists(_._1 == createdAt)) namedValues
-      else namedValues :+ (createdAt -> DateTime.now)
+  override def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Id = {
+    val (column, now) = (defaultAlias.support.column, DateTime.now)
+    val additionalValues: Seq[(SQLSyntax, Any)] = {
+      val values = new collection.mutable.ListBuffer[(SQLSyntax, Any)]
+      if (!namedValues.exists(_._1 == column.field(createdAtFieldName))) values.append(column.field(createdAtFieldName) -> now)
+      if (!namedValues.exists(_._1 == column.field(updatedAtFieldName))) values.append(column.field(updatedAtFieldName) -> now)
+      values.toSeq
     }
-    super.createWithNamedValues(namedValuesWithCreatedAt: _*)
+    super.createWithNamedValues((namedValues ++ additionalValues): _*)
   }
 
-  override def updateById(id: Id): UpdateOperationBuilder = new UpdateOperationBuilderWithUpdateAt(this, id)
-
-  class UpdateOperationBuilderWithUpdateAt(self: CRUDFeatureWithId[Id, Entity], id: Id)
-      extends UpdateOperationBuilder(self, byId(id), beforeUpdateByHandlers, afterUpdateByHandlers) {
-    val column = defaultAlias.support.column
-    addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
+  override def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
+    val builder = new UpdateOperationBuilder(this, where, beforeUpdateByHandlers.toSeq, afterUpdateByHandlers.toSeq)
+    builder.addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
+    builder
   }
 
 }
