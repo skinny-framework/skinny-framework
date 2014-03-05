@@ -232,15 +232,25 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         }
     }
 
-    it("should have querying APIs") { implicit session =>
+    it("should have Querying APIs") { implicit session =>
       val allMembers = Member.findAll()
 
-      val japan = Country.where('name -> "Japan").limit(1000).offset(0).apply().head
+      val c = Country.defaultAlias
+      val japan = Country.where('name -> "Japan").orderBy(c.id.desc).limit(1000).offset(0).apply().head
       val expected = allMembers.filter(_.countryId == japan.id)
 
       val m = Member.defaultAlias
       val actual = Member.where(sqls.eq(m.countryId, japan.id)).limit(1000).offset(0).apply()
       actual should equal(expected)
+    }
+
+    it("should have #orderBy in Querying APIs") { implicit session =>
+      val id1 = Skill.createWithAttributes('name -> "Skill_B")
+      val id2 = Skill.createWithAttributes('name -> "Skill_A")
+      val id3 = Skill.createWithAttributes('name -> "Skill_B")
+      val s = Skill.defaultAlias
+      val ids = Skill.where('id -> Seq(id1, id2, id3)).orderBy(s.name.asc, s.id.desc).apply().map(_.id)
+      ids should equal(Seq(id2, id3, id1))
     }
 
   }
@@ -304,6 +314,27 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
           withoutSkills.skills.size should equal(0)
         }
 
+      }
+    }
+  }
+
+  describe("Timestamps") {
+    it("should fill timestamps correctly") { implicit session =>
+      val id1 = Skill.createWithAttributes('name -> "Scala")
+      val id2 = Skill.createWithNamedValues(Skill.column.name -> "Java")
+
+      Skill.where('id -> Seq(id1, id2)).apply().foreach { skill =>
+        skill.createdAt should not be (null)
+        skill.updatedAt should not be (null)
+      }
+
+      Thread.sleep(100L)
+
+      Skill.updateById(id1).withAttributes('name -> "Scala Programming")
+      Skill.updateById(id2).withNamedValues(Skill.column.name -> "Java Programming")
+
+      Skill.where('id -> Seq(id1, id2)).apply().foreach { skill =>
+        skill.updatedAt should not equal (skill.createdAt)
       }
     }
   }

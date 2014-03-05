@@ -4,7 +4,6 @@ import java.io.File
 import scala.io.Source
 import org.joda.time._
 import org.apache.commons.io.FileUtils
-import skinny.util.StringUtil
 
 /**
  * Skinny Generator Task.
@@ -13,17 +12,24 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def template: String = "ssp"
 
+  protected def withTimestamps: Boolean = true
+
+  protected def primaryKeyName: String = "id"
+
+  // for reverse-scaffold
+  protected def skipDBMigration: Boolean = false
+
+  // for reverse-scaffold
+  protected def tableName: Option[String] = None
+
+  protected def snakeCasedPrimaryKeyName: String = toSnakeCase(primaryKeyName)
+
+  protected def customPrimaryKeyName: Option[String] = if (primaryKeyName == "id") None else Option(primaryKeyName)
+
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
     println("")
-  }
-
-  private def showErrors(messages: Seq[String]) = {
-    showSkinnyGenerator()
-    println("""  Command failed!""")
-    println("")
-    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
   private[this] def paramTypes = Seq(
@@ -36,6 +42,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     "String",
     "Byte",
     "ByteArray",
+    "BigDecimal",
     "DateTime",
     "LocalDate",
     "LocalTime",
@@ -48,12 +55,11 @@ trait ScaffoldGenerator extends CodeGenerator {
     "Option[String]",
     "Option[Byte]",
     "Option[ByteArray]",
+    "Option[BigDecimal]",
     "Option[DateTime]",
     "Option[LocalDate]",
     "Option[LocalTime]"
   )
-
-  private[this] def toSnakeCase(resources: String): String = StringUtil.toSnakeCase(resources)
 
   private[this] def toDBType(t: String): String = {
     toParamType(t) match {
@@ -63,6 +69,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       case "Short" => "int"
       case "Byte" => "tinyint"
       case "ByteArray" => "binary"
+      case "BigDecimal" => "numeric"
       case "DateTime" => "timestamp"
       case "LocalDate" => "date"
       case "LocalTime" => "time"
@@ -73,17 +80,18 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 
-  def run(args: List[String]) {
+  def run(args: Seq[String]) {
     if (args.size < 3) {
       showUsage
       return
-    } else if (args.head.contains(":") || args.tail.head.contains(":")) {
+    } else if (args(0).contains(":") || args(1).contains(":")) {
       showUsage
       return
     }
 
     args match {
-      case resources :: resource :: attributes =>
+      case rs :: r :: attributes =>
+        val (resources, resource) = (toFirstCharLower(rs), toFirstCharLower(r))
         val errorMessages = attributes.flatMap {
           case attr if !attr.contains(":") => Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
           case attr => attr.split(":") match {
@@ -97,31 +105,43 @@ trait ScaffoldGenerator extends CodeGenerator {
         } else {
           showSkinnyGenerator()
 
-          val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
+          val generatorArgs: Seq[ScaffoldGeneratorArg] = attributes.flatMap { attribute =>
             attribute.toString.split(":") match {
-              case Array(k, v) => Some(k -> v)
+              case Array(name, typeName, columnName) => Some(ScaffoldGeneratorArg(name, typeName, Some(columnName)))
+              case Array(name, typeName) => Some(ScaffoldGeneratorArg(name, typeName))
               case _ => None
             }
           }
+          val attributePairs: Seq[(String, String)] = generatorArgs.map(a => (a.name, a.typeName))
+
           // Controller
           generateApplicationControllerIfAbsent()
-          generateResourceController(resources, resource, template, attributePairs)
+          generateResourceController(resources, resource, template, generatorArgs)
           appendToScalatraBootstrap(resources)
           generateResourceControllerSpec(resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
+
           // Model
-          ModelGenerator.generate(resource, Some(toSnakeCase(resources)), attributePairs)
-          ModelGenerator.generateSpec(resource, attributePairs)
+          val self = this
+          val modelGenerator = new ModelGenerator {
+            override def primaryKeyName = self.primaryKeyName
+            override def withTimestamps = self.withTimestamps
+          }
+          modelGenerator.generate(resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
+          modelGenerator.generateSpec(resource, attributePairs)
+
           // Views
           generateFormView(resources, resource, attributePairs)
           generateNewView(resources, resource, attributePairs)
           generateEditView(resources, resource, attributePairs)
           generateIndexView(resources, resource, attributePairs)
           generateShowView(resources, resource, attributePairs)
+
           // messages.conf
           generateMessages(resources, resource, attributePairs)
+
           // migration SQL
-          generateMigrationSQL(resources, resource, attributePairs)
+          generateMigrationSQL(resources, resource, generatorArgs, skipDBMigration)
 
           println("")
 
@@ -142,45 +162,60 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import skinny._
         |import skinny.filter._
         |
+        |/**
+        | * The base controller for this Skinny application.
+        | *
+        | * see also "http://skinny-framework.org/documentation/controller-and-routes.html"
+        | */
         |trait ApplicationController extends SkinnyController
+        |  // with TxPerRequestFilter
+        |  // with SkinnySessionFilter
         |  with ErrorPageFilter {
+        |
+        |  // override def defaultLocale = Some(new java.util.Locale("ja"))
         |
         |}
       """.stripMargin)
   }
 
-  def controllerCode(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]): String = {
+  def controllerCode(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
-    val validations = attributePairs
-      .filterNot { case (_, t) => toParamType(t) == "Boolean" } // boolean param doesn't need required valdiation.
-      .flatMap {
-        case (k, t) =>
-          val validationRules = (if (isOptionClassName(t)) Nil else Seq("required")) ++ (toParamType(t) match {
-            case "Long" => Seq("numeric", "longValue")
-            case "Int" => Seq("numeric", "intValue")
-            case "Short" => Seq("numeric", "intValue")
-            case "Double" => Seq("doubleValue")
-            case "Float" => Seq("floatValue")
-            case "String" => Seq("maxLength(512)")
-            case "DateTime" => Seq("dateTimeFormat")
-            case "LocalDate" => Seq("dateFormat")
-            case "LocalTime" => Seq("timeFormat")
-            case _ => Nil
-          })
-          if (validationRules.isEmpty) None
-          else Some("    paramKey(\"" + k + "\") is " + validationRules.mkString(" & "))
+
+    val primaryKeyNameIfNotId = customPrimaryKeyName.map(name => "\n  override def idName = \"" + name + "\"").getOrElse("")
+    val validations = args
+      .filterNot { case arg => toParamType(arg.typeName) == "Boolean" } // boolean param doesn't need required validation.
+      .flatMap { arg =>
+        val required = if (isOptionClassName(arg.typeName)) Nil else Seq("required")
+        val varcharLength = if (arg.columnName.isDefined && (
+          arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR"))) {
+          arg.columnName.get.replaceAll("[varcharVARCHAR\\(\\)]", "")
+        } else "512"
+        val validationRules = required ++ (toParamType(arg.typeName) match {
+          case "Long" => Seq("numeric", "longValue")
+          case "Int" => Seq("numeric", "intValue")
+          case "Short" => Seq("numeric", "intValue")
+          case "Double" => Seq("doubleValue")
+          case "Float" => Seq("floatValue")
+          case "String" => Seq(s"maxLength(${varcharLength})")
+          case "DateTime" => Seq("dateTimeFormat")
+          case "LocalDate" => Seq("dateFormat")
+          case "LocalTime" => Seq("timeFormat")
+          case _ => Nil
+        })
+        if (validationRules.isEmpty) None
+        else Some("    paramKey(\"" + toSnakeCase(arg.name) + "\") is " + validationRules.mkString(" & "))
       }
       .mkString(",\n")
-    val params = attributePairs.flatMap {
-      case (name, t) =>
-        toParamType(t) match {
-          case "DateTime" => Some(s""".withDateTime("${name}")""")
-          case "LocalDate" => Some(s""".withDate("${name}")""")
-          case "LocalTime" => Some(s""".withTime("${name}")""")
+    val params = args.flatMap {
+      case arg =>
+        toParamType(arg.typeName) match {
+          case "DateTime" => Some(s""".withDateTime("${toSnakeCase(arg.name)}")""")
+          case "LocalDate" => Some(s""".withDate("${toSnakeCase(arg.name)}")""")
+          case "LocalTime" => Some(s""".withTime("${toSnakeCase(arg.name)}")""")
           case _ => None
         }
-    }.mkString("\n    ", "\n    ", "")
+    }.mkString
 
     s"""package controller
         |
@@ -193,14 +228,17 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  override def model = ${modelClassName}
         |  override def resourcesName = "${resources}"
-        |  override def resourceName = "${resource}"
+        |  override def resourceName = "${resource}"${primaryKeyNameIfNotId}
+        |
+        |  override def resourcesBasePath = s"/$${toSnakeCase(resourcesName)}"
+        |  override def useSnakeCasedParamKeys = true
         |
         |  override def createForm = validation(createParams,
         |${validations}
         |  )
         |  override def createParams = Params(params)${params}
         |  override def createFormStrongParameters = Seq(
-        |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
+        |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )
         |
         |  override def updateForm = validation(updateParams,
@@ -208,24 +246,24 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  )
         |  override def updateParams = Params(params)${params}
         |  override def updateFormStrongParameters = Seq(
-        |${attributePairs.map { case (k, t) => "    \"" + k + "\" -> ParamType." + toParamType(t) }.mkString(",\n")}
+        |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )
         |
         |}
         |""".stripMargin
   }
 
-  def generateResourceController(resources: String, resource: String, template: String, attributePairs: Seq[(String, String)]) {
+  def generateResourceController(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
     val controllerClassName = toClassName(resources) + "Controller"
     val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    writeIfAbsent(file, controllerCode(resources, resource, template, attributePairs))
+    writeIfAbsent(file, controllerCode(resources, resource, template, args))
   }
 
   def controllerSpecCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
-    val params = attributePairs.map { case (k, t) => k -> toParamType(t) }.map {
+    val params = attributePairs.map { case (k, t) => toSnakeCase(k) -> toParamType(t) }.map {
       case (k, "Long") => "\"" + k + "\" -> Long.MaxValue.toString()"
       case (k, "Int") => "\"" + k + "\" -> Int.MaxValue.toString()"
       case (k, "Short") => "\"" + k + "\" -> Short.MaxValue.toString()"
@@ -233,9 +271,9 @@ trait ScaffoldGenerator extends CodeGenerator {
       case (k, "Float") => "\"" + k + "\" -> Float.MaxValue.toString()"
       case (k, "Byte") => "\"" + k + "\" -> Byte.MaxValue.toString()"
       case (k, "Boolean") => "\"" + k + "\" -> \"true\""
-      case (k, "DateTime") => "\"" + k + "\" -> new DateTime().toString()"
-      case (k, "LocalDate") => "\"" + k + "\" -> new LocalDate().toString()"
-      case (k, "LocalTime") => "\"" + k + "\" -> new LocalTime().toString()"
+      case (k, "DateTime") => "\"" + k + "\" -> new DateTime().toString(\"YYYY-MM-dd hh:mm:ss\")"
+      case (k, "LocalDate") => "\"" + k + "\" -> new LocalDate().toString(\"YYYY-MM-dd\")"
+      case (k, "LocalTime") => "\"" + k + "\" -> new LocalTime().toString(\"hh:mm:ss\")"
       case (k, _) => "\"" + k + "\" -> \"dummy\""
     }.mkString(",")
 
@@ -252,45 +290,45 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  def ${resource} = FactoryGirl(${modelClassName}).create()
         |
         |  it should "show ${resources}" in {
-        |    get("/${resources}") {
+        |    get("/${toSnakeCase(resources)}") {
         |      status should equal(200)
         |    }
-        |    get("/${resources}/") {
+        |    get("/${toSnakeCase(resources)}/") {
         |      status should equal(200)
         |    }
-        |    get("/${resources}.json") {
+        |    get("/${toSnakeCase(resources)}.json") {
         |      status should equal(200)
         |    }
-        |    get("/${resources}.xml") {
+        |    get("/${toSnakeCase(resources)}.xml") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "show a ${resource} in detail" in {
-        |    get(s"/${resources}/$${${resource}.id}") {
+        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(200)
         |    }
-        |    get(s"/${resources}/$${${resource}.id}.xml") {
+        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.xml") {
         |      status should equal(200)
         |    }
-        |    get(s"/${resources}/$${${resource}.id}.json") {
+        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.json") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "show new entry form" in {
-        |    get(s"/${resources}/new") {
+        |    get(s"/${toSnakeCase(resources)}/new") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "create a ${resource}" in {
-        |    post(s"/${resources}", ${params}) {
+        |    post(s"/${toSnakeCase(resources)}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "12345") {
-        |      post(s"/${resources}", ${params}, "csrf-token" -> "12345") {
+        |      post(s"/${toSnakeCase(resources)}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -299,18 +337,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "show the edit form" in {
-        |    get(s"/${resources}/$${${resource}.id}/edit") {
+        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}/edit") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "update a ${resource}" in {
-        |    put(s"/${resources}/$${${resource}.id}", ${params}) {
+        |    put(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "12345") {
-        |      put(s"/${resources}/$${${resource}.id}", ${params}, "csrf-token" -> "12345") {
+        |      put(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(302)
         |      }
         |    }
@@ -318,11 +356,11 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  it should "delete a ${resource}" in {
         |    val ${resource} = FactoryGirl(${modelClassName}).create()
-        |    delete(s"/${resources}/$${${resource}.id}") {
+        |    delete(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(403)
         |    }
         |    withSession("csrf-token" -> "aaaaaa") {
-        |      delete(s"/${resources}/$${${resource}.id}?csrf-token=aaaaaa") {
+        |      delete(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=aaaaaa") {
         |        status should equal(200)
         |      }
         |    }
@@ -400,23 +438,23 @@ trait ScaffoldGenerator extends CodeGenerator {
   // --------------------------
 
   def messagesConfCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val _resources = toClassName(resources)
-    val _resource = toClassName(resource)
+    val _resources = toCapitalizedSplitName(resources)
+    val _resource = toCapitalizedSplitName(resource)
 
     s"""
         |${resource} {
         |  flash {
-        |    created="The ${resource} was created."
-        |    updated="The ${resource} was updated."
-        |    deleted="The ${resource} was deleted."
+        |    created="The ${toSplitName(resource)} was created."
+        |    updated="The ${toSplitName(resource)} was updated."
+        |    deleted="The ${toSplitName(resource)} was deleted."
         |  }
         |  list="${_resources}"
         |  detail="${_resource}"
         |  edit="Edit ${_resource}"
         |  new="New ${_resource}"
         |  delete.confirm="Are you sure?"
-        |  id="ID"
-        |${attributePairs.map { case (k, _) => "  " + k + "=\"" + toClassName(k) + "\"" }.mkString("\n")}
+        |  ${primaryKeyName}="ID"
+        |${attributePairs.map { case (k, _) => "  " + k + "=\"" + toCapitalizedSplitName(k) + "\"" }.mkString("\n")}
         |}
         |""".stripMargin
   }
@@ -430,26 +468,31 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Flyway migration SQL
   // --------------------------
 
-  def migrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val name = toSnakeCase(resources)
-    val columns = attributePairs.map {
-      case (k, t) =>
-        s"  ${toSnakeCase(k)} ${toDBType(t)}" + (if (isOptionClassName(t)) "" else " not null")
+  def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]): String = {
+    val name = tableName.getOrElse(toSnakeCase(resources))
+    val columns = generatorArgs.map { a =>
+      s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
+        (if (isOptionClassName(a.typeName)) "" else " not null")
     }.mkString(",\n")
+    val timestamps = if (withTimestamps) {
+      s""",
+      |  created_at timestamp not null,
+      |  updated_at timestamp not null""".stripMargin
+    } else ""
+
     s"""-- For H2 Database
         |create table ${name} (
-        |  id bigserial not null primary key,
-        |${columns},
-        |  created_at timestamp not null,
-        |  updated_at timestamp
+        |  ${toSnakeCase(primaryKeyName)} bigserial not null primary key,
+        |${columns}${timestamps}
         |)
         |""".stripMargin
   }
 
-  def generateMigrationSQL(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
-    writeIfAbsent(file, migrationSQL(resources, resource, attributePairs))
+    val sql = migrationSQL(resources, resource, generatorArgs)
+    writeIfAbsent(file, if (skip) s"/*\n${sql}\n*/" else sql)
   }
 
   // --------------------------

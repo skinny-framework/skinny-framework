@@ -21,13 +21,14 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc._, SQLInterpolation._
           |import org.joda.time._
           |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
           |  isActivated: Boolean,
           |  birthday: Option[LocalDate] = None,
           |  createdAt: DateTime,
-          |  updatedAt: Option[DateTime] = None
+          |  updatedAt: DateTime
           |)
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
@@ -35,12 +36,12 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
-          |    id = rs.long(rn.id),
-          |    name = rs.string(rn.name),
-          |    isActivated = rs.boolean(rn.isActivated),
-          |    birthday = rs.localDateOpt(rn.birthday),
-          |    createdAt = rs.dateTime(rn.createdAt),
-          |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+          |    id = rs.get(rn.id),
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
           |  )
           |}
           |""".stripMargin
@@ -48,7 +49,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created as expected without tableName") {
-      val code = generator.code("member", None, Seq(
+      val code = generator.code("projectMember", None, Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
@@ -60,13 +61,47 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc._, SQLInterpolation._
           |import org.joda.time._
           |
-          |case class Member(
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class ProjectMember(
           |  id: Long,
           |  name: String,
           |  isActivated: Boolean,
           |  birthday: Option[LocalDate] = None,
           |  createdAt: DateTime,
-          |  updatedAt: Option[DateTime] = None
+          |  updatedAt: DateTime
+          |)
+          |
+          |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] with TimestampsFeature[ProjectMember] {
+          |
+          |  override val defaultAlias = createAlias("pm")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
+          |    id = rs.get(rn.id),
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected without attributes") {
+      val code = generator.code("member", None, Seq())
+      val expected =
+        """package model
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class Member(
+          |  id: Long,
+          |  createdAt: DateTime,
+          |  updatedAt: DateTime
           |)
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
@@ -74,12 +109,9 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
-          |    id = rs.long(rn.id),
-          |    name = rs.string(rn.name),
-          |    isActivated = rs.boolean(rn.isActivated),
-          |    birthday = rs.localDateOpt(rn.birthday),
-          |    createdAt = rs.dateTime(rn.createdAt),
-          |    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+          |    id = rs.get(rn.id),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
           |  )
           |}
           |""".stripMargin
@@ -89,7 +121,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Model") {
     it("should be created as expected") {
-      val code = generator.spec("member")
+      val code = generator.spec("projectMember")
       val expected =
         """package model
           |
@@ -99,7 +131,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |import scalikejdbc.scalatest._
           |import org.joda.time._
           |
-          |class MemberSpec extends FlatSpec with AutoRollback {
+          |class ProjectMemberSpec extends FlatSpec with AutoRollback {
           |}
           |""".stripMargin
       code should equal(expected)

@@ -8,12 +8,12 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "0.9.29"
+  val _version = "1.0.0-RC6"
   val scalatraVersion = "2.2.2"
-  val json4SVersion = "3.2.6"
+  val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
-  val h2Version = "1.3.174"
+  val h2Version = "1.3.175"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
   //val jettyVersion = "9.1.0.v20131115"
@@ -97,7 +97,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.0.Final"  % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.1.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -160,7 +160,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.1.0",
+        "ch.qos.logback"     % "logback-classic"     % "1.1.1",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
@@ -177,7 +177,7 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
   val slf4jApiDependencies = Seq(
-    "org.slf4j"   %  "slf4j-api"      % "1.7.5" % "compile",
+    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile",
     "org.clapper" %% "grizzled-slf4j" % "1.0.1" % "compile"
   )
   val scalatraDependencies = Seq(
@@ -207,7 +207,7 @@ object SkinnyFrameworkBuild extends Build {
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
     "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "ch.qos.logback"          %  "logback-classic" % "1.1.0"   % "test",
+    "ch.qos.logback"          %  "logback-classic" % "1.1.1"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
   )

@@ -1,5 +1,5 @@
 -@val s :skinny.Skinny
--@val companies: Seq[model.Company]
+-@val items: Seq[model.Company]
 
 h3 #{s.i18n.get("company.list")}
 hr
@@ -14,15 +14,15 @@ table(class="table table-bordered")
    th #{s.i18n.get("company.url")}
    th
  tbody
-  -for (company <- companies)
+  -for (item <- items)
    tr
-    td #{company.id}
-    td #{company.name}
-    td #{company.url}
+    td #{item.id}
+    td #{item.name}
+    td #{item.url}
     td
-     a(href={uri("/companies/" + company.id)} class="btn btn-default") #{s.i18n.get("detail")}
-     a(href={uri("/companies/" + company.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
-     a(data-method="delete" data-confirm={s.i18n.get("company.delete.confirm")} href={uri("/companies/" + company.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+     a(href={uri("/companies/" + item.id)} class="btn btn-default") #{s.i18n.get("detail")}
+     a(href={uri("/companies/" + item.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
+     a(data-method="delete" data-confirm={s.i18n.get("company.delete.confirm")} href={uri("/companies/" + item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
 
 a(href={uri("/companies/new")} class="btn btn-primary") #{s.i18n.get("new")}
 

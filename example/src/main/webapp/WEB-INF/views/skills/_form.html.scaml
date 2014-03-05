@@ -1,18 +1,16 @@
 -@val s: skinny.Skinny
--@val keyAndErrorMessages: Map[String, Seq[String]] = Map()
+-@val keyAndErrorMessages: skinny.KeyAndErrorMessages = skinny.KeyAndErrorMessages()
 
 %div(class="form-group")
  %label(class="control-label" for="name") #{s.i18n.get("skill.name")}
  %div(class="controls row")
   %div(class="col-xs-12")
-   -keyAndErrorMessages.get("name").map { errors =>
-    %div(class="form-group has-error")
-     %input(type="text" name="name" id="nameInput" class="form-control" value={s.params.name})
-     -for (error <- errors)
-      %label(class="control-label" for="nameInput") #{error}
-   - }.getOrElse {
+   %div(class={if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""})
     %input(type="text" name="name" class="form-control" value={s.params.name})
-   - }
+    - keyAndErrorMessages.get("name").map { errors =>
+     - for (error <- errors)
+      %label(class="control-label" for="nameInput") #{error}
+    - }
 != s.csrfHiddenInputTag
 
 %div(class="form-actions")

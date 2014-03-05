@@ -25,7 +25,7 @@ object SkinnySessionFilter {
  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
  * }}}
  */
-trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with SessionLocaleFeature =>
+trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
   import SkinnySessionFilter._
 
   def initializeSkinnySession: SkinnyHttpSession = {
@@ -86,7 +86,10 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   override def setCurrentLocale(locale: String): Unit = skinnySession.setAttribute(sessionLocaleKey, locale)
 
-  override def currentLocale: Option[Locale] = skinnySession.getAttribute(sessionLocaleKey).map(l => new Locale(l.toString))
+  override def currentLocale: Option[Locale] = {
+    skinnySession.getAttribute(sessionLocaleKey)
+      .map(l => new Locale(l.toString)).orElse(defaultLocale)
+  }
 
   afterAction() {
     try {

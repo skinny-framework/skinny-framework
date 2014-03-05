@@ -34,6 +34,7 @@ trait StrongParametersFeature {
         case v: DateTime if paramType == ParamType.DateTime => v
         case v: LocalDate if paramType == ParamType.LocalDate => v
         case v: LocalTime if paramType == ParamType.LocalTime => v
+        case v: scala.math.BigDecimal if paramType == ParamType.BigDecimal => v
         case v: String if v == "" => null
         case v: String =>
           paramType match {
@@ -49,6 +50,7 @@ trait StrongParametersFeature {
             case ParamType.DateTime => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.DateTime))
             case ParamType.LocalDate => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalDate)).toLocalDate
             case ParamType.LocalTime => DateTime.parse(DateTimeUtil.toISODateTimeFormat(v, ParamType.LocalTime)).toLocalTime
+            case ParamType.BigDecimal => scala.math.BigDecimal(v)
             case v => v
           }
         case v => throw new IllegalArgumentException(s"Cannot convert '${v}' to ${paramType} value.")

@@ -160,7 +160,7 @@ object GroupMember extends SkinnyJoinTable[GroupMember] {
   override val defaultAlias = createAlias("gm")
 }
 
-case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: Option[DateTime] = None, lockVersion: Long)
+case class Skill(id: Long, name: String, createdAt: DateTime, updatedAt: DateTime, lockVersion: Long)
 
 object Skill extends SkinnyCRUDMapper[Skill]
     with TimestampsFeature[Skill]
@@ -172,7 +172,7 @@ object Skill extends SkinnyCRUDMapper[Skill]
     id = rs.long(s.id),
     name = rs.string(s.name),
     createdAt = rs.dateTime(s.createdAt),
-    updatedAt = rs.dateTimeOpt(s.updatedAt),
+    updatedAt = rs.dateTime(s.updatedAt),
     lockVersion = rs.long(s.lockVersion)
   )
 }

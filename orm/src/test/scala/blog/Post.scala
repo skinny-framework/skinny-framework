@@ -8,6 +8,7 @@ case class Post(
   id: Long,
   title: String,
   body: String,
+  viewCount: BigDecimal,
   tags: Seq[Tag] = Nil,
   createdAt: DateTime,
   updatedAt: Option[DateTime] = None)
@@ -26,6 +27,7 @@ object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
     id = rs.get(rn.id),
     title = rs.get(rn.title),
     body = rs.get(rn.body),
+    viewCount = rs.get(rn.viewCount),
     createdAt = rs.get(rn.createdAt),
     updatedAt = rs.get(rn.updatedAt)
   )

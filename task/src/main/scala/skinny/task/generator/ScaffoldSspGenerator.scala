@@ -1,5 +1,7 @@
 package skinny.task.generator
 
+import skinny.controller.Params
+
 /**
  * Scaffold generator with ssp template.
  */
@@ -12,16 +14,17 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    "<%@val s: skinny.Skinny %>\n\n" +
+    "<%@val s: skinny.Skinny %>\n" +
+      "<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
-        |  <label class="control-label" for="${name}">
+        |  <label class="control-label" for="${toSnakeCase(name)}">
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="col-xs-12">
-        |      <input type="checkbox" name="${name}" value="true" #if(s.params.${name}==Some(true)) checked #end />
+        |      <input type="checkbox" name="${toSnakeCase(name)}" value="true" #if(s.params.${toSnakeCase(name)}==Some(true)) checked #end />
         |    </div>
         |  </div>
         |</div>
@@ -32,24 +35,33 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Year"   class="form-control" value="$${s.params.${name}Year}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Year)}}"   placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value="$${s.params.${toSnakeCase(name + Params.Month)}}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value="$${s.params.${toSnakeCase(name + Params.Day)}}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Hour)}}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Minute)}}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Second)}}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Month"  class="form-control" value="$${s.params.${name}Month}"  placeholder="$${s.i18n.get("month")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Day"    class="form-control" value="$${s.params.${name}Day}"    placeholder="$${s.i18n.get("day")}"   maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"  maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -59,15 +71,24 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Year"  class="form-control" value="$${s.params.${name}Year}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Year)}"  class="form-control" value="$${s.params.${toSnakeCase(name + Params.Year)}}"  placeholder="$${s.i18n.get("year")}"  maxlength=4 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Month)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Month)}}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Day)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Day)}}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Month" class="form-control" value="$${s.params.${name}Month}" placeholder="$${s.i18n.get("month")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Day"   class="form-control" value="$${s.params.${name}Day}"   placeholder="$${s.i18n.get("day")}"   maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -77,27 +98,45 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Hour"   class="form-control" value="$${s.params.${name}Hour}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value="$${s.params.${toSnakeCase(name + Params.Hour)}}"   placeholder="$${s.i18n.get("hour")}"   maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Minute)}}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
+        |      </div>
+        |      <div class="col-xs-2">
+        |        <input type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value="$${s.params.${toSnakeCase(name + Params.Second)}}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
+        |      </div>
         |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Minute" class="form-control" value="$${s.params.${name}Minute}" placeholder="$${s.i18n.get("minute")}" maxlength=2 />
-        |    </div>
-        |    <div class="col-xs-2">
-        |      <input type="text" name="${name}Second" class="form-control" value="$${s.params.${name}Second}" placeholder="$${s.i18n.get("second")}" maxlength=2 />
-        |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
         case (name, _) =>
           s"""<div class="form-group">
-        |  <label class="control-label" for="${name}">
+        |  <label class="control-label" for="${toSnakeCase(name)}">
         |    $${s.i18n.get("${resource}.${name}")}
         |  </label>
         |  <div class="controls row">
-        |    <div class="col-xs-12">
-        |      <input type="text" name="${name}" class="form-control" value="$${s.params.${name}}" />
+        |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
+        |      <div class="col-xs-12">
+        |        <input type="text" name="${toSnakeCase(name)}" class="form-control" value="$${s.params.${toSnakeCase(name)}}" />
+        |      </div>
         |    </div>
+        |    #if (keyAndErrorMessages.hasErrors("${toSnakeCase(name)}"))
+        |      <div class="col-xs-12 has-error">
+        |        #for (error <- keyAndErrorMessages.getErrors("${toSnakeCase(name)}"))
+        |          <label class="control-label">$${error}</label>
+        |        #end
+        |      </div>
+        |    #end
         |  </div>
         |</div>
         |""".stripMargin
@@ -118,9 +157,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
         |
+        |<%--
         |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
+        |--%>
         |
         |<form method="post" action="$${url(${controllerClassName}.createUrl)}" class="form">
         | $${include("_form.html.ssp")}
@@ -134,11 +175,13 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
         |
+        |<%--
         |#for (e <- s.errorMessages)
         |<p class="alert alert-danger">$${e}</p>
         |#end
+        |--%>
         |
-        |<form method="post" action="$${url(${controllerClassName}.updateUrl, "id" -> s.params.id.get.toString)}" class="form">
+        |<form method="post" action="$${url(${controllerClassName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName}.get.toString)}" class="form">
         | $${include("_form.html.ssp")}
         |""".stripMargin
   }
@@ -147,29 +190,47 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
-        |<%@val ${resources}: Seq[model.${modelClassName}] %>
+        |<%@val items: Seq[model.${modelClassName}] %>
+        |<%@val totalPages: Int %>
         |
         |<h3>$${s.i18n.get("${resource}.list")}</h3>
         |<hr/>
         |#for (notice <- s.flash.notice)
         |  <p class="alert alert-info">$${notice}</p>
         |#end
+        |
+        |#if (totalPages > 1)
+        |  <ul class="pagination">
+        |    <li>
+        |      <a href="$${url(${controllerClassName}.indexUrl, "page" -> 1.toString)}">&laquo;</a>
+        |    </li>
+        |    #for (i <- (1 to totalPages))
+        |      <li>
+        |        <a href="$${url(${controllerClassName}.indexUrl, "page" -> i.toString)}">$${i}</a>
+        |      </li>
+        |    #end
+        |    <li>
+        |      <a href="$${url(${controllerClassName}.indexUrl, "page" -> totalPages.toString)}">&raquo;</a>
+        |    </li>
+        |  </ul>
+        |#end
+        |
         |<table class="table table-bordered">
         |<thead>
         |  <tr>
-        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${s.i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${s.i18n.get(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
         |    <th></th>
         |  </tr>
         |</thead>
         |<tbody>
-        |  #for (${resource} <- ${resources})
+        |  #for (item <- items)
         |  <tr>
-        |${(("id" -> "Long") :: attributePairs.toList).map { case (k, _) => "    <td>${" + resource + "." + k + "}</td>" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => s"    <td>$${item.${k}}</td>" }.mkString("\n")}
         |    <td>
-        |      <a href="$${url(${controllerClassName}.showUrl, "id" -> ${resource}.id.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
-        |      <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |      <a href="$${url(${controllerClassName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
+        |      <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |        href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |        href="$${url(${controllerClassName}.deleteUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
@@ -183,16 +244,16 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
   override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
-    val attributesPart = (("id" -> "Long") :: attributePairs.toList).map {
+    val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
         |    <th>$${s.i18n.get("${resource}.${name}")}</th>
-        |    <td>$${${resource}.${name}}</td>
+        |    <td>$${item.${name}}</td>
         |  </tr>
         |""".stripMargin
     }.mkString
 
-    s"""<%@val ${resource}: model.${modelClassName} %>
+    s"""<%@val item: model.${modelClassName} %>
         |<%@val s: skinny.Skinny %>
         |
         |<h3>$${s.i18n.get("${resource}.detail")}</h3>
@@ -209,9 +270,9 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<hr/>
         |<div class="form-actions">
         |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
-        |  <a href="$${url(${controllerClassName}.editUrl, "id" -> ${resource}.id.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${url(${controllerClassName}.deleteUrl, "id" -> ${resource}.id.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${url(${controllerClassName}.deleteUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
   }

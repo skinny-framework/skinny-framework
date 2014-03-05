@@ -2,6 +2,7 @@ package skinny.task.generator
 
 import java.io.File
 import org.apache.commons.io.FileUtils
+import skinny.util.StringUtil
 
 /**
  * Code generator.
@@ -18,14 +19,22 @@ trait CodeGenerator {
 
   protected def toParamType(t: String): String = t.replaceFirst("Option\\[", "").replaceFirst("\\]", "").trim()
 
-  protected def addDefaultValueIfOption(t: String): String = {
-    if (t.startsWith("Option")) s"${t.trim()} = None" else t.trim()
+  protected def toCamelCase(v: String): String = StringUtil.toCamelCase(v)
+
+  protected def toSnakeCase(v: String): String = StringUtil.toSnakeCase(v)
+
+  protected def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
+
+  protected def toFirstCharLower(s: String): String = s.head.toLower + s.tail
+
+  protected def toCapitalizedSplitName(v: String): String = {
+    toSnakeCase(v).split("_").toSeq
+      .map(word => word.head.toUpper + word.tail)
+      .mkString(" ")
   }
 
-  protected def toExtractorMethodName(t: String): String = {
-    val method = toParamType(t).head.toLower + toParamType(t).tail
-    if (t.startsWith("Option")) method + "Opt"
-    else method
+  protected def addDefaultValueIfOption(t: String): String = {
+    if (t.startsWith("Option")) s"${t.trim()} = None" else t.trim()
   }
 
   protected def forceWrite(file: File, code: String) {
@@ -64,6 +73,13 @@ trait CodeGenerator {
     println("""
  *** Skinny Generator Task ***
 """)
+  }
+
+  protected def showErrors(messages: Seq[String]) = {
+    showSkinnyGenerator()
+    println("""  Command failed!""")
+    println("")
+    println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
 }

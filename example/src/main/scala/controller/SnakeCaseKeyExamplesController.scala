@@ -7,13 +7,12 @@ import model.SnakeCaseKeyExample
 object SnakeCaseKeyExamplesController extends SkinnyResource {
   protectFromForgery()
 
+  override def model = SnakeCaseKeyExample
   override def resourcesName = "snakeCaseKeyExamples"
   override def resourceName = "snakeCaseKeyExample"
 
   override def resourcesBasePath = "/snake_case_key_examples"
-  override def useSnakeCaseKeys = true
-
-  override def model = SnakeCaseKeyExample
+  override def useSnakeCasedParamKeys = true
 
   override def createForm = validation(createParams,
     paramKey("first_name") is required & maxLength(512),

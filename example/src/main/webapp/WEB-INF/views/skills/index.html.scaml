@@ -1,4 +1,4 @@
--@val skills: Seq[model.Skill]
+-@val items: Seq[model.Skill]
 -@val s: skinny.Skinny
 %h3 #{s.i18n.get("skill.list")}
 %hr
@@ -13,15 +13,15 @@
    %th
   </tr>
  %tbody
-  - for(skill <- skills)
+  - for(item <- items)
    %tr
-    %td= skill.id
-    %td= skill.name
+    %td= item.id
+    %td= item.name
     %td
-     %a(href={uri("/skills/"+skill.id)} class="btn btn-default")  #{s.i18n.get("detail")}
-     %a(href={uri("/skills/"+skill.id+"/edit")} class="btn btn-info")  #{s.i18n.get("edit")}
+     %a(href={uri("/skills/"+item.id)} class="btn btn-default")  #{s.i18n.get("detail")}
+     %a(href={uri("/skills/"+item.id+"/edit")} class="btn btn-info")  #{s.i18n.get("edit")}
      %a(data-method="delete" data-confirm={s.i18n.get("skill.delete.confirm")}
-      href={uri("/skills/"+skill.id)} rel="nofollow" class="btn btn-danger")  #{s.i18n.get("delete")}
+      href={uri("/skills/"+item.id)} rel="nofollow" class="btn btn-danger")  #{s.i18n.get("delete")}
 
 %a(href={uri("/skills/new")} class="btn btn-primary")  #{s.i18n.get("new")}
 

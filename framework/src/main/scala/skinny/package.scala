@@ -26,6 +26,9 @@ package object skinny {
   type Flash = skinny.controller.Flash
   val Flash = skinny.controller.Flash
 
+  type KeyAndErrorMessages = skinny.controller.KeyAndErrorMessages
+  val KeyAndErrorMessages = skinny.controller.KeyAndErrorMessages
+
   type Routes = skinny.routing.Routes
 
   type SkinnyCRUDMapper[A] = skinny.orm.SkinnyCRUDMapper[A]

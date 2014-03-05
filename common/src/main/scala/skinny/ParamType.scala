@@ -16,6 +16,7 @@ object ParamType {
   case object Long extends ParamType
   case object Int extends ParamType
   case object Short extends ParamType
+  case object BigDecimal extends ParamType
   case object String extends ParamType
   case object Byte extends ParamType
   case object ByteArray extends ParamType
