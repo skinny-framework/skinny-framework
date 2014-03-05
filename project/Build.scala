@@ -8,12 +8,12 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.0-RC6-SNAPSHOT"
+  val _version = "1.0.0-RC6"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
-  val h2Version = "1.3.174"
+  val h2Version = "1.3.175"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
   //val jettyVersion = "9.1.0.v20131115"
