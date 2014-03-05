@@ -3,5 +3,5 @@ scala:
   - 2.10.3
 jdk:
   - oraclejdk7
-script: "./skinny db:migrate test;sbt test"
+script: "gem install sass;./skinny db:migrate test;sbt test"
 
