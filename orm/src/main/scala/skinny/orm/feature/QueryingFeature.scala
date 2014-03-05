@@ -62,6 +62,16 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
   def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
 
   /**
+   * Appends order by condition.
+   *
+   * @param orderings orderings
+   * @return query builder
+   */
+  def orderBy(orderings: SQLSyntax*): EntitiesSelectOperationBuilder = {
+    new EntitiesSelectOperationBuilder(mapper = this, orderings = orderings)
+  }
+
+  /**
    * Select query builder.
    *
    * @param mapper mapper
@@ -72,6 +82,7 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
   abstract class SelectOperationBuilder(
       mapper: QueryingFeature[Entity],
       conditions: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None,
       isCountOnly: Boolean = false) {
@@ -121,8 +132,9 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
   case class EntitiesSelectOperationBuilder(
       mapper: QueryingFeature[Entity],
       conditions: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
-      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
+      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
 
     /**
      * Appends limit part.
@@ -229,8 +241,17 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
             }.and(defaultScopeWithDefaultAlias)
           }
         }
-        val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
-        paging.foldLeft(query) { case (query, part) => query.append(part) }
+
+        def appendOrderingIfExists(query: SQLBuilder[Entity]) = {
+          if (orderings.isEmpty) query
+          else query.append(sqls"order by").append(sqls.csv(orderings: _*))
+        }
+        def appendPagingIfExists(query: SQLBuilder[Entity]) = {
+          val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
+          paging.foldLeft(query) { case (query, part) => query.append(part) }
+        }
+        appendPagingIfExists(appendOrderingIfExists(query))
+
       }).list.apply()
     }
 
@@ -305,6 +326,7 @@ trait QueryingFeatureWithId[Id, Entity]
   abstract class SelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None,
       isCountOnly: Boolean = false) {
@@ -324,6 +346,7 @@ trait QueryingFeatureWithId[Id, Entity]
             case value => sqls.eq(defaultAlias.field(key.name), value)
           }
       },
+      orderings = orderings,
       limit = limit,
       offset = offset
     )
@@ -354,8 +377,9 @@ trait QueryingFeatureWithId[Id, Entity]
   case class EntitiesSelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
-      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, limit, offset, false) {
+      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
 
     /**
      * Appends limit part.
@@ -372,6 +396,14 @@ trait QueryingFeatureWithId[Id, Entity]
      * @return query builder
      */
     def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
+
+    /**
+     * Appends order by condition.
+     *
+     * @param orderings orderings
+     * @return query builder
+     */
+    def orderBy(orderings: SQLSyntax*): EntitiesSelectOperationBuilder = this.copy(orderings = orderings)
 
     /**
      * Calculates rows.
@@ -462,8 +494,17 @@ trait QueryingFeatureWithId[Id, Entity]
             }.and(defaultScopeWithDefaultAlias)
           }
         }
-        val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
-        paging.foldLeft(query) { case (query, part) => query.append(part) }
+
+        def appendOrderingIfExists(query: SQLBuilder[Entity]) = {
+          if (orderings.isEmpty) query
+          else query.append(sqls"order by").append(sqls.csv(orderings: _*))
+        }
+        def appendPagingIfExists(query: SQLBuilder[Entity]) = {
+          val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
+          paging.foldLeft(query) { case (query, part) => query.append(part) }
+        }
+        appendPagingIfExists(appendOrderingIfExists(query))
+
       }).list.apply())
     }
 

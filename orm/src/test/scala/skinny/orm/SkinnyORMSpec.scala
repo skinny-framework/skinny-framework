@@ -232,15 +232,25 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         }
     }
 
-    it("should have querying APIs") { implicit session =>
+    it("should have Querying APIs") { implicit session =>
       val allMembers = Member.findAll()
 
-      val japan = Country.where('name -> "Japan").limit(1000).offset(0).apply().head
+      val c = Country.defaultAlias
+      val japan = Country.where('name -> "Japan").orderBy(c.id.desc).limit(1000).offset(0).apply().head
       val expected = allMembers.filter(_.countryId == japan.id)
 
       val m = Member.defaultAlias
       val actual = Member.where(sqls.eq(m.countryId, japan.id)).limit(1000).offset(0).apply()
       actual should equal(expected)
+    }
+
+    it("should have #orderBy in Querying APIs") { implicit session =>
+      val id1 = Skill.createWithAttributes('name -> "Skill_B")
+      val id2 = Skill.createWithAttributes('name -> "Skill_A")
+      val id3 = Skill.createWithAttributes('name -> "Skill_B")
+      val s = Skill.defaultAlias
+      val ids = Skill.where('id -> Seq(id1, id2, id3)).orderBy(s.name.asc, s.id.desc).apply().map(_.id)
+      ids should equal(Seq(id2, id3, id1))
     }
 
   }
