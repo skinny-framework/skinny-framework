@@ -47,7 +47,7 @@ trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] 
   }
 
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
-    val builder = new UpdateOperationBuilder(this, where, beforeUpdateByHandlers.toSeq, afterUpdateByHandlers.toSeq)
+    val builder = super.updateBy(where)
     builder.addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
     builder
   }
