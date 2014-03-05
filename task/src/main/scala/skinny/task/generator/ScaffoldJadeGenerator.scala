@@ -14,10 +14,11 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
 
   protected override def template: String = "jade"
 
-  override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     "-@val s: skinny.Skinny\n" +
       "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
+      s"- import ${toNamespace("controller", namespaces)}.${controllerClassName}\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""div(class="form-group")
@@ -104,9 +105,11 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
+        |
+        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
         |
         |h3 #{s.i18n.get("${resource}.new")}
         |hr
@@ -119,9 +122,11 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
+        |
+        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
         |
         |h3 #{s.i18n.get("${resource}.edit")}
         |hr
@@ -134,12 +139,14 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     s"""-@val s: skinny.Skinny
-        |-@val items: Seq[model.${modelClassName}]
+        |-@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}]
         |-@val totalPages: Int
+        |
+        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
         |
         |h3 #{s.i18n.get("${resource}.list")}
         |hr
@@ -174,7 +181,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
     val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
@@ -185,8 +192,10 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    s"""-@val item: model.${modelClassName}
+    s"""-@val item: ${toNamespace("model", namespaces)}.${modelClassName}
         |-@val s: skinny.Skinny
+        |
+        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
         |
         |h3 #{s.i18n.get("${resource}.detail")}
         |hr

@@ -9,7 +9,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Controller (SkinnyResource)") {
     it("should be created as expected") {
-      val code = generator.controllerCode("members", "member", "ssp", Seq(
+      val code = generator.controllerCode(Seq("admin"), "members", "member", "ssp", Seq(
         ScaffoldGeneratorArg("name", "String", None),
         ScaffoldGeneratorArg("favoriteIntNumber", "Int", None),
         ScaffoldGeneratorArg("favoriteLongNumber", "Long", None),
@@ -24,11 +24,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
 
       val expected =
-        """package controller
+        """package controller.admin
           |
           |import skinny._
           |import skinny.validator._
-          |import model.Member
+          |import _root_.controller._
+          |import model.admin.Member
           |
           |object MembersController extends SkinnyResource with ApplicationController {
           |  protectFromForgery()
@@ -37,7 +38,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def resourcesName = "members"
           |  override def resourceName = "member"
           |
-          |  override def resourcesBasePath = s"/${toSnakeCase(resourcesName)}"
+          |  override def resourcesBasePath = s"/admin/${toSnakeCase(resourcesName)}"
+          |  override def viewsDirectoryPath = s"/admin/${toSnakeCase(resourcesName)}"
           |  override def useSnakeCasedParamKeys = true
           |
           |  override def createForm = validation(createParams,
@@ -102,7 +104,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Spec for Controller (SkinnyResource)") {
     it("should be created as expected") {
-      val code = generator.controllerSpecCode("members", "member", Seq(
+      val code = generator.controllerSpecCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteIntNumber" -> "Int",
         "favoriteLongNumber" -> "Long",
@@ -114,12 +116,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
 
       val expected =
-        """package controller
+        """package controller.admin
           |
           |import org.scalatra.test.scalatest._
           |import skinny._, test._
           |import org.joda.time._
-          |import model._
+          |import model.admin._
           |
           |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
           |  addFilter(MembersController, "/*")
@@ -127,45 +129,45 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  def member = FactoryGirl(Member).create()
           |
           |  it should "show members" in {
-          |    get("/members") {
+          |    get("/admin/members") {
           |      status should equal(200)
           |    }
-          |    get("/members/") {
+          |    get("/admin/members/") {
           |      status should equal(200)
           |    }
-          |    get("/members.json") {
+          |    get("/admin/members.json") {
           |      status should equal(200)
           |    }
-          |    get("/members.xml") {
+          |    get("/admin/members.xml") {
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show a member in detail" in {
-          |    get(s"/members/${member.id}") {
+          |    get(s"/admin/members/${member.id}") {
           |      status should equal(200)
           |    }
-          |    get(s"/members/${member.id}.xml") {
+          |    get(s"/admin/members/${member.id}.xml") {
           |      status should equal(200)
           |    }
-          |    get(s"/members/${member.id}.json") {
+          |    get(s"/admin/members/${member.id}.json") {
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show new entry form" in {
-          |    get(s"/members/new") {
+          |    get(s"/admin/members/new") {
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "create a member" in {
-          |    post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
+          |    post(s"/admin/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      post(s"/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
+          |      post(s"/admin/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -174,18 +176,18 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "show the edit form" in {
-          |    get(s"/members/${member.id}/edit") {
+          |    get(s"/admin/members/${member.id}/edit") {
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
+          |    put(s"/admin/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "12345") {
-          |      put(s"/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
+          |      put(s"/admin/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
           |        status should equal(302)
           |      }
           |    }
@@ -193,11 +195,11 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |  it should "delete a member" in {
           |    val member = FactoryGirl(Member).create()
-          |    delete(s"/members/${member.id}") {
+          |    delete(s"/admin/members/${member.id}") {
           |      status should equal(403)
           |    }
           |    withSession("csrf-token" -> "aaaaaa") {
-          |      delete(s"/members/${member.id}?csrf-token=aaaaaa") {
+          |      delete(s"/admin/members/${member.id}?csrf-token=aaaaaa") {
           |        status should equal(200)
           |      }
           |    }
