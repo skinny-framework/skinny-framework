@@ -3,5 +3,5 @@ scala:
   - 2.10.3
 jdk:
   - oraclejdk7
-script: "sbt coveralls"
+script: "sbt test"
 
