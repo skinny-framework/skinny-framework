@@ -10,3 +10,17 @@ See the website in detail.
 
 http://skinny-framework.org/
 
+## Try Skinny Framework now!
+
+Download latest skinny-blank-app.zip and unzip it, then just run ./skinny command on your terminal. That’s all!
+
+If you’re a Windows user, don’t worry. Use skinny.bat on cmd.exe instead.
+
+https://github.com/skinny-framework/skinny-framework/releases
+
+## Under The MIT License
+
+(The MIT License)
+
+Copyright (c) skinny-framework.org
+
