@@ -258,7 +258,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  is_activated boolean not null,
           |  birthday date,
           |  created_at timestamp not null,
-          |  updated_at timestamp
+          |  updated_at timestamp not null
           |)
           |""".stripMargin
       code should equal(expected)
