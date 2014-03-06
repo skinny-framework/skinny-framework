@@ -17,21 +17,25 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def run(args: List[String]) {
-    args.toList match {
-      case name :: _ =>
+    val completedArgs = if (args.size == 1) Seq("") ++ args
+    else args
+
+    completedArgs match {
+      case namespace :: name :: _ =>
+        val namespaces = namespace.split('.')
         showSkinnyGenerator()
         generateApplicationControllerIfAbsent()
-        generate(name)
-        appendToControllers(name)
+        generate(namespaces, name)
+        appendToControllers(namespaces, name)
         appendToScalatraBootstrap(name)
-        generateSpec(name)
+        generateSpec(namespaces, name)
         println("")
       case _ => showUsage
     }
   }
 
-  def code(name: String): String = {
-    s"""package controller
+  def code(namespaces: Seq[String], name: String): String = {
+    s"""package ${toNamespace("controller", namespaces)}
         |
         |import skinny._
         |import skinny.validator._
@@ -39,7 +43,7 @@ trait ControllerGenerator extends CodeGenerator {
         |class ${toClassName(name)}Controller extends ApplicationController {
         |  protectFromForgery()
         |
-        |  def index = render("/${toVariable(name)}/index")
+        |  def index = render("${toResourcesBasePath(namespaces)}/${toVariable(name)}/index")
         |
         |}
         |""".stripMargin
@@ -69,17 +73,17 @@ trait ControllerGenerator extends CodeGenerator {
       """.stripMargin)
   }
 
-  def generate(name: String) {
-    val file = new File(s"src/main/scala/controller/${toClassName(name)}Controller.scala")
-    writeIfAbsent(file, code(name))
+  def generate(namespaces: Seq[String], name: String) {
+    val file = new File(s"src/main/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}Controller.scala")
+    writeIfAbsent(file, code(namespaces, name))
   }
 
-  def appendToControllers(name: String) {
+  def appendToControllers(namespaces: Seq[String], name: String) {
     val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
     val newCode =
       s"""object Controllers {
-        |  object ${toVariable(name)} extends ${controllerClassName} with Routes {
-        |    val indexUrl = get("/${toVariable(name)}/?")(index).as('index)
+        |  object ${toVariable(name)} extends ${toNamespace("controller", namespaces)}.${controllerClassName} with Routes {
+        |    val indexUrl = get("/${toResourcesBasePath(namespaces)}/${toVariable(name)}/?")(index).as('index)
         |  }
         |""".stripMargin
     val file = new File("src/main/scala/controller/Controllers.scala")
@@ -115,8 +119,8 @@ trait ControllerGenerator extends CodeGenerator {
     }
   }
 
-  def spec(name: String): String = {
-    s"""package controller
+  def spec(namespaces: Seq[String], name: String): String = {
+    s"""package ${toNamespace("controller", namespaces)}
         |
         |import _root_.controller._
         |import _root_.model._
@@ -130,9 +134,9 @@ trait ControllerGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateSpec(name: String) {
-    val specFile = new File(s"src/test/scala/controller/${toClassName(name)}ControllerSpec.scala")
-    writeIfAbsent(specFile, spec(name))
+  def generateSpec(namespaces: Seq[String], name: String) {
+    val specFile = new File(s"src/test/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}ControllerSpec.scala")
+    writeIfAbsent(specFile, spec(namespaces, name))
   }
 
 }
