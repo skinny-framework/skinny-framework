@@ -29,6 +29,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
+    println("""         sbt "task/run generate:scaffold internal.admin members member name:String birthday:Option[LocalDate]" """)
     println("")
   }
 
