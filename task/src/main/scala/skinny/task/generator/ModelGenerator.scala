@@ -47,11 +47,13 @@ trait ModelGenerator extends CodeGenerator {
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
-      s"""  createdAt: DateTime,
+      s""",
+         |  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
     } else ""
     val timestampsExtraction = if (withTimestamps) {
-      s"""    createdAt = rs.get(rn.createdAt),
+      s""",
+         |    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
     val customPkName = {
@@ -60,13 +62,11 @@ trait ModelGenerator extends CodeGenerator {
     }
 
     val classFields =
-      s"""  ${primaryKeyName}: Long,
-        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString("", ",\n", ",\n")}${timestamps}
+      s"""  ${primaryKeyName}: Long${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n", ",\n", "")}${timestamps}
         |""".stripMargin
 
     val extractors =
-      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName}),
-        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString("", ",\n", ",\n")}${timestampsExtraction}
+      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n", ",\n", "")}${timestampsExtraction}
         |""".stripMargin
 
     s"""package model

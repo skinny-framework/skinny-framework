@@ -49,6 +49,45 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created as expected without tableName") {
+      val generator = new ModelGenerator {
+        override def withTimestamps = false
+      }
+      val code = generator.code("projectMember", None, Seq(
+        "name" -> "String",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      val expected =
+        """package model
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class ProjectMember(
+          |  id: Long,
+          |  name: String,
+          |  isActivated: Boolean,
+          |  birthday: Option[LocalDate] = None
+          |)
+          |
+          |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] {
+          |
+          |  override val defaultAlias = createAlias("pm")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
+          |    id = rs.get(rn.id),
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected without timestamps") {
       val code = generator.code("projectMember", None, Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
