@@ -6,6 +6,7 @@ import skinny.mailer.{ SkinnyMessage, SkinnyMailer }
 class MyMailer extends SkinnyMailer {
 
   def sendMessage(toAddress: String) = {
+    from("from@example.com")
     to(toAddress)
       .cc("cc@example.com", "cc2@example.com")
       .bcc("bcc@example.com")
