@@ -9,7 +9,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("/_form.html.ssp") {
     it("should be created as expected") {
-      val code = generator.formHtmlCode("members", "member", Seq(
+      val code = generator.formHtmlCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteNumber" -> "Long",
         "magicNumber" -> "Option[Int]",
@@ -20,6 +20,8 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """<%@val s: skinny.Skinny %>
           |<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>
+          |
+          |<% import controller.admin.MembersController %>
           |
           |<div class="form-group">
           |  <label class="control-label" for="name">
@@ -126,7 +128,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("/new.html.ssp") {
     it("should be created as expected") {
-      val code = generator.newHtmlCode("members", "member", Seq(
+      val code = generator.newHtmlCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteNumber" -> "Long",
         "magicNumber" -> "Option[Int]",
@@ -135,6 +137,8 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
       val expected =
         """<%@val s: skinny.Skinny %>
+          |
+          |<% import controller.admin.MembersController %>
           |
           |<h3>${s.i18n.get("member.new")}</h3>
           |<hr/>
@@ -154,7 +158,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("/edit.html.ssp") {
     it("should be created as expected") {
-      val code = generator.editHtmlCode("members", "member", Seq(
+      val code = generator.editHtmlCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteNumber" -> "Long",
         "magicNumber" -> "Option[Int]",
@@ -163,6 +167,8 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
       val expected =
         """<%@val s: skinny.Skinny %>
+          |
+          |<% import controller.admin.MembersController %>
           |
           |<h3>${s.i18n.get("member.edit")}</h3>
           |<hr/>
@@ -182,7 +188,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("/index.html.ssp") {
     it("should be created as expected") {
-      val code = generator.indexHtmlCode("members", "member", Seq(
+      val code = generator.indexHtmlCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteNumber" -> "Long",
         "magicNumber" -> "Option[Int]",
@@ -191,8 +197,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
       val expected =
         """<%@val s: skinny.Skinny %>
-          |<%@val items: Seq[model.Member] %>
+          |<%@val items: Seq[model.admin.Member] %>
           |<%@val totalPages: Int %>
+          |
+          |<% import controller.admin.MembersController %>
           |
           |<h3>${s.i18n.get("member.list")}</h3>
           |<hr/>
@@ -256,7 +264,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("/show.html.ssp") {
     it("should be created as expected") {
-      val code = generator.showHtmlCode("members", "member", Seq(
+      val code = generator.showHtmlCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteNumber" -> "Long",
         "magicNumber" -> "Option[Int]",
@@ -264,8 +272,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
         "birthday" -> "Option[LocalDate]"
       ))
       val expected =
-        """<%@val item: model.Member %>
+        """<%@val item: model.admin.Member %>
           |<%@val s: skinny.Skinny %>
+          |
+          |<% import controller.admin.MembersController %>
           |
           |<h3>${s.i18n.get("member.detail")}</h3>
           |<hr/>
