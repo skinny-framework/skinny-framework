@@ -10,7 +10,7 @@ import skinny.I18n
 import grizzled.slf4j.Logging
 import javax.servlet.http.HttpServletRequest
 
-object RequestScopeFeature {
+object RequestScopeFeature extends Logging {
 
   /**
    * Key for request scope.
@@ -37,6 +37,9 @@ object RequestScopeFeature {
   val ATTR_RESOURCE_NAME = "resourceName"
   val ATTR_RESOURCES_NAME = "resourcesName"
 
+  /**
+   * Returns request scope Map value.
+   */
   def requestScope(request: HttpServletRequest): scala.collection.concurrent.Map[String, Any] = {
     request.getAttribute(REQUEST_SCOPE_KEY) match {
       case null =>
@@ -47,6 +50,35 @@ object RequestScopeFeature {
         values.asInstanceOf[scala.collection.concurrent.Map[String, Any]]
       case _ => throw new RequestScopeConflictException(
         s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
+    }
+  }
+
+  /**
+   * Set attributes to request scope.
+   */
+  def setAttributes(request: HttpServletRequest, keyAndValues: Seq[(String, Any)]) = {
+    keyAndValues.foreach {
+      case (key, _) =>
+        if (key == "layout") {
+          logger.warn("'layout' is a special attribute for Scalate. " +
+            "If you're not going to replace layout template, use another key for this attribute. " +
+            "Or if you'd like to change layout for this action, use layout(\"/other\") instead.")
+        }
+    }
+    requestScope(request) ++= keyAndValues
+  }
+
+  /**
+   * Fetches value from request scope.
+   */
+  def getAs[A](request: HttpServletRequest, key: String): Option[A] = {
+    requestScope(request).get(key).map { v =>
+      try v.asInstanceOf[A]
+      catch {
+        case e: ClassCastException =>
+          throw new RequestScopeConflictException(
+            s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})""")
+      }
     }
   }
 
@@ -102,15 +134,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @return self
    */
   def requestScope(keyAndValues: Seq[(String, Any)]): RequestScopeFeature = {
-    keyAndValues.foreach {
-      case (key, _) =>
-        if (key == "layout") {
-          logger.warn("'layout' is a special attribute for Scalate. " +
-            "If you're not going to replace layout template, use another key for this attribute. " +
-            "Or if you'd like to change layout for this action, use layout(\"/other\") instead.")
-        }
-    }
-    requestScope ++= keyAndValues
+    RequestScopeFeature.setAttributes(request, keyAndValues)
     this
   }
 
@@ -131,16 +155,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @tparam A type
    * @return value if exists
    */
-  def requestScope[A](key: String): Option[A] = {
-    requestScope.get(key).map { v =>
-      try v.asInstanceOf[A]
-      catch {
-        case e: ClassCastException =>
-          throw new RequestScopeConflictException(
-            s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})""")
-      }
-    }
-  }
+  def requestScope[A](key: String): Option[A] = RequestScopeFeature.getAs[A](request, key)
 
   /**
    * Set params which is generated from a model object using Java reflection APIs.
