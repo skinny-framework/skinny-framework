@@ -8,6 +8,7 @@ import java.util.Locale
 import org.joda.time._
 import skinny.I18n
 import grizzled.slf4j.Logging
+import javax.servlet.http.HttpServletRequest
 
 object RequestScopeFeature {
 
@@ -35,6 +36,20 @@ object RequestScopeFeature {
   // Used in the SkinnyResource & TemplateEngineFeature
   val ATTR_RESOURCE_NAME = "resourceName"
   val ATTR_RESOURCES_NAME = "resourcesName"
+
+  def requestScope(request: HttpServletRequest): scala.collection.concurrent.Map[String, Any] = {
+    request.getAttribute(REQUEST_SCOPE_KEY) match {
+      case null =>
+        val values = scala.collection.concurrent.TrieMap[String, Any]()
+        request.setAttribute(REQUEST_SCOPE_KEY, values)
+        values
+      case values: scala.collection.concurrent.Map[_, _] =>
+        values.asInstanceOf[scala.collection.concurrent.Map[String, Any]]
+      case _ => throw new RequestScopeConflictException(
+        s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
+    }
+  }
+
 }
 
 /**
@@ -48,7 +63,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * Registers default attributes in the request scope.
    */
   before() {
-    if (requestScope().isEmpty) {
+    if (requestScope().get(ATTR_SKINNY).isEmpty) {
       set(ATTR_SKINNY, skinny.Skinny(requestScope()))
       // requestPath/contextPath
       val requestPathWithContext = contextPath + requestPath
@@ -71,19 +86,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    *
    * @return whole attributes
    */
-  def requestScope(): scala.collection.concurrent.Map[String, Any] = {
-    request.getAttribute(REQUEST_SCOPE_KEY) match {
-      case null =>
-        val values = scala.collection.concurrent.TrieMap[String, Any]()
-        request.setAttribute(REQUEST_SCOPE_KEY, values)
-        values
-      case values: scala.collection.concurrent.Map[_, _] =>
-        values.asInstanceOf[scala.collection.concurrent.Map[String, Any]]
-      case _ => throw new RequestScopeConflictException(
-        s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
-    }
-  }
-
+  def requestScope(): scala.collection.concurrent.Map[String, Any] = RequestScopeFeature.requestScope(request)
   /**
    * Set attribute to request scope.
    *
