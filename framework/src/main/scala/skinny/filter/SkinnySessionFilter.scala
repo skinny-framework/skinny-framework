@@ -28,24 +28,7 @@ object SkinnySessionFilter {
 trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
   import SkinnySessionFilter._
 
-  def initializeSkinnySession: SkinnyHttpSession = {
-    val jsessionIdCookieName = servletContext.getSessionCookieConfig.getName
-    val jsessionIdInCookie = request.getCookies.find(_.getName == jsessionIdCookieName).map(_.getValue)
-    val jsessionIdInSession = request.getSession.getId
-    logger.debug(s"[Skinny Session] session id (cookie: ${jsessionIdInCookie}, local session: ${jsessionIdInSession})")
-
-    val expireAt = SkinnySession.getExpireAtFromMaxInactiveInterval(session.getMaxInactiveInterval)
-    val skinnySession = if (jsessionIdInCookie.isDefined && jsessionIdInCookie.get != jsessionIdInSession) {
-      SkinnySession.findOrCreate(jsessionIdInCookie.get, Option(jsessionIdInSession), expireAt)
-    } else {
-      SkinnySession.findOrCreate(jsessionIdInSession, None, expireAt)
-    }
-    val skinnySessionWrapper = new SkinnyHttpSessionJDBCImpl(request.getSession, skinnySession)
-    logger.debug("[Skinny Session] " +
-      s"initial attributes: ${skinnySession.attributeNames.map(name => s"$name -> ${skinnySession.getAttribute(name)}")}")
-    set(ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE, skinnySessionWrapper)
-    skinnySessionWrapper
-  }
+  def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
 
   beforeAction()(initializeSkinnySession)
 

@@ -29,6 +29,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
+    println("""         sbt "task/run generate:scaffold internal.admin members member name:String birthday:Option[LocalDate]" """)
     println("")
   }
 
@@ -89,9 +90,12 @@ trait ScaffoldGenerator extends CodeGenerator {
       return
     }
 
-    args match {
-      case rs :: r :: attributes =>
-        val (resources, resource) = (toFirstCharLower(rs), toFirstCharLower(r))
+    val completedArgs = if (args(2).contains(":")) Seq("") ++ args
+    else args
+
+    completedArgs match {
+      case ns :: rs :: r :: attributes =>
+        val (namespaces, resources, resource) = (ns.split('.'), toFirstCharLower(rs), toFirstCharLower(r))
         val errorMessages = attributes.flatMap {
           case attr if !attr.contains(":") => Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
           case attr => attr.split(":") match {
@@ -116,9 +120,9 @@ trait ScaffoldGenerator extends CodeGenerator {
 
           // Controller
           generateApplicationControllerIfAbsent()
-          generateResourceController(resources, resource, template, generatorArgs)
-          appendToScalatraBootstrap(resources)
-          generateResourceControllerSpec(resources, resource, attributePairs)
+          generateResourceController(namespaces, resources, resource, template, generatorArgs)
+          appendToScalatraBootstrap(namespaces, resources)
+          generateResourceControllerSpec(namespaces, resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
 
           // Model
@@ -127,15 +131,15 @@ trait ScaffoldGenerator extends CodeGenerator {
             override def primaryKeyName = self.primaryKeyName
             override def withTimestamps = self.withTimestamps
           }
-          modelGenerator.generate(resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
-          modelGenerator.generateSpec(resource, attributePairs)
+          modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
+          modelGenerator.generateSpec(namespaces, resource, attributePairs)
 
           // Views
-          generateFormView(resources, resource, attributePairs)
-          generateNewView(resources, resource, attributePairs)
-          generateEditView(resources, resource, attributePairs)
-          generateIndexView(resources, resource, attributePairs)
-          generateShowView(resources, resource, attributePairs)
+          generateFormView(namespaces, resources, resource, attributePairs)
+          generateNewView(namespaces, resources, resource, attributePairs)
+          generateEditView(namespaces, resources, resource, attributePairs)
+          generateIndexView(namespaces, resources, resource, attributePairs)
+          generateShowView(namespaces, resources, resource, attributePairs)
 
           // messages.conf
           generateMessages(resources, resource, attributePairs)
@@ -178,7 +182,8 @@ trait ScaffoldGenerator extends CodeGenerator {
       """.stripMargin)
   }
 
-  def controllerCode(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
+  def controllerCode(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
+    val namespace = toNamespace("controller", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
@@ -217,11 +222,12 @@ trait ScaffoldGenerator extends CodeGenerator {
         }
     }.mkString
 
-    s"""package controller
+    s"""package ${namespace}
         |
         |import skinny._
         |import skinny.validator._
-        |import model.${modelClassName}
+        |import _root_.controller._
+        |import ${toNamespace("model", namespaces)}.${modelClassName}
         |
         |object ${controllerClassName} extends SkinnyResource with ApplicationController {
         |  protectFromForgery()
@@ -230,7 +236,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def resourcesName = "${resources}"
         |  override def resourceName = "${resource}"${primaryKeyNameIfNotId}
         |
-        |  override def resourcesBasePath = s"/$${toSnakeCase(resourcesName)}"
+        |  override def resourcesBasePath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
+        |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
         |  override def useSnakeCasedParamKeys = true
         |
         |  override def createForm = validation(createParams,
@@ -253,13 +260,15 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateResourceController(resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
+  def generateResourceController(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val file = new File(s"src/main/scala/controller/${controllerClassName}.scala")
-    writeIfAbsent(file, controllerCode(resources, resource, template, args))
+    val dir = toDirectoryPath("controller", namespaces)
+    val file = new File(s"src/main/scala/${dir}/${controllerClassName}.scala")
+    writeIfAbsent(file, controllerCode(namespaces, resources, resource, template, args))
   }
 
-  def controllerSpecCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  def controllerSpecCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val namespace = toNamespace("controller", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
@@ -277,12 +286,12 @@ trait ScaffoldGenerator extends CodeGenerator {
       case (k, _) => "\"" + k + "\" -> \"dummy\""
     }.mkString(",")
 
-    s"""package controller
+    s"""package ${namespace}
         |
         |import org.scalatra.test.scalatest._
         |import skinny._, test._
         |import org.joda.time._
-        |import model._
+        |import ${toNamespace("model", namespaces)}._
         |
         |class ${controllerClassName}Spec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
         |  addFilter(${controllerClassName}, "/*")
@@ -290,45 +299,45 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  def ${resource} = FactoryGirl(${modelClassName}).create()
         |
         |  it should "show ${resources}" in {
-        |    get("/${toSnakeCase(resources)}") {
+        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}") {
         |      status should equal(200)
         |    }
-        |    get("/${toSnakeCase(resources)}/") {
+        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/") {
         |      status should equal(200)
         |    }
-        |    get("/${toSnakeCase(resources)}.json") {
+        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}.json") {
         |      status should equal(200)
         |    }
-        |    get("/${toSnakeCase(resources)}.xml") {
+        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}.xml") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "show a ${resource} in detail" in {
-        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
+        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(200)
         |    }
-        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.xml") {
+        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.xml") {
         |      status should equal(200)
         |    }
-        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.json") {
+        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.json") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "show new entry form" in {
-        |    get(s"/${toSnakeCase(resources)}/new") {
+        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/new") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "create a ${resource}" in {
-        |    post(s"/${toSnakeCase(resources)}", ${params}) {
+        |    post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "12345") {
-        |      post(s"/${toSnakeCase(resources)}", ${params}, "csrf-token" -> "12345") {
+        |      post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -337,18 +346,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "show the edit form" in {
-        |    get(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}/edit") {
+        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}/edit") {
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "update a ${resource}" in {
-        |    put(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}) {
+        |    put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}) {
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "12345") {
-        |      put(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}, "csrf-token" -> "12345") {
+        |      put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}, "csrf-token" -> "12345") {
         |        status should equal(302)
         |      }
         |    }
@@ -356,11 +365,11 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  it should "delete a ${resource}" in {
         |    val ${resource} = FactoryGirl(${modelClassName}).create()
-        |    delete(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
+        |    delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(403)
         |    }
         |    withSession("csrf-token" -> "aaaaaa") {
-        |      delete(s"/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=aaaaaa") {
+        |      delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=aaaaaa") {
         |        status should equal(200)
         |      }
         |    }
@@ -370,21 +379,23 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateResourceControllerSpec(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateResourceControllerSpec(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val file = new File(s"src/test/scala/controller/${controllerClassName}Spec.scala")
-    writeIfAbsent(file, controllerSpecCode(resources, resource, attributePairs))
+    val dir = toDirectoryPath("controller", namespaces)
+    val file = new File(s"src/test/scala/${dir}/${controllerClassName}Spec.scala")
+    writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, attributePairs))
   }
 
   // --------------------------
   // ScalatraBootstrap.scala
   // --------------------------
 
-  def appendToScalatraBootstrap(resources: String) {
+  def appendToScalatraBootstrap(namespaces: Seq[String], resources: String) {
+    val namespace = toNamespace("_root_.controller", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val newCode =
       s"""override def initSkinnyApp(ctx: ServletContext) {
-        |    ${controllerClassName}.mount(ctx)""".stripMargin
+        |    ${namespace}.${controllerClassName}.mount(ctx)""".stripMargin
     val file = new File("src/main/scala/ScalatraBootstrap.scala")
     if (file.exists()) {
       val code = Source.fromFile(file).mkString.replaceFirst(
@@ -499,68 +510,73 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Views
   // --------------------------
 
-  def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
-  def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
-  def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
-  def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
-  def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String
+  def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String
 
-  def generateFormView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+  def generateFormView(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val dir = toDirectoryPath("views", namespaces)
+    val viewDir = s"src/main/webapp/WEB-INF/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/_form.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, formHtmlCode(resources, resource, attributePairs))
+      FileUtils.write(file, formHtmlCode(namespaces, resources, resource, attributePairs))
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateNewView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+  def generateNewView(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val dir = toDirectoryPath("views", namespaces)
+    val viewDir = s"src/main/webapp/WEB-INF/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/new.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, newHtmlCode(resources, resource, attributePairs))
+      FileUtils.write(file, newHtmlCode(namespaces, resources, resource, attributePairs))
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateEditView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+  def generateEditView(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val dir = toDirectoryPath("views", namespaces)
+    val viewDir = s"src/main/webapp/WEB-INF/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/edit.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, editHtmlCode(resources, resource, attributePairs))
+      FileUtils.write(file, editHtmlCode(namespaces, resources, resource, attributePairs))
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateIndexView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+  def generateIndexView(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val dir = toDirectoryPath("views", namespaces)
+    val viewDir = s"src/main/webapp/WEB-INF/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/index.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, indexHtmlCode(resources, resource, attributePairs))
+      FileUtils.write(file, indexHtmlCode(namespaces, resources, resource, attributePairs))
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateShowView(resources: String, resource: String, attributePairs: Seq[(String, String)]) {
-    val viewDir = s"src/main/webapp/WEB-INF/views/${resources}"
+  def generateShowView(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val dir = toDirectoryPath("views", namespaces)
+    val viewDir = s"src/main/webapp/WEB-INF/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/show.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, showHtmlCode(resources, resource, attributePairs))
+      FileUtils.write(file, showHtmlCode(namespaces, resources, resource, attributePairs))
       println("  \"" + file.getPath + "\" created.")
     }
   }

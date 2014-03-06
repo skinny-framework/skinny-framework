@@ -9,13 +9,13 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Model") {
     it("should be created as expected with tableName") {
-      val code = generator.code("member", Some("members"), Seq(
+      val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
       ))
       val expected =
-        """package model
+        """package model.admin
           |
           |import skinny.orm._, feature._
           |import scalikejdbc._, SQLInterpolation._
@@ -52,7 +52,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
       val generator = new ModelGenerator {
         override def withTimestamps = false
       }
-      val code = generator.code("projectMember", None, Seq(
+      val code = generator.code(Nil, "projectMember", None, Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
@@ -88,13 +88,13 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created as expected without timestamps") {
-      val code = generator.code("projectMember", None, Seq(
+      val code = generator.code(Seq("admin"), "projectMember", None, Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"
       ))
       val expected =
-        """package model
+        """package model.admin
           |
           |import skinny.orm._, feature._
           |import scalikejdbc._, SQLInterpolation._
@@ -128,9 +128,9 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created as expected without attributes") {
-      val code = generator.code("member", None, Seq())
+      val code = generator.code(Seq("admin"), "member", None, Seq())
       val expected =
-        """package model
+        """package model.admin
           |
           |import skinny.orm._, feature._
           |import scalikejdbc._, SQLInterpolation._
@@ -160,9 +160,9 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Model") {
     it("should be created as expected") {
-      val code = generator.spec("projectMember")
+      val code = generator.spec(Seq("admin"), "projectMember")
       val expected =
-        """package model
+        """package model.admin
           |
           |import skinny.test._
           |import org.scalatest.fixture.FlatSpec

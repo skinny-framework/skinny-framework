@@ -12,10 +12,12 @@ object ScaffoldSspGenerator extends ScaffoldSspGenerator
  */
 trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
-  override def formHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
+    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     "<%@val s: skinny.Skinny %>\n" +
       "<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
+      s"<% import ${importController} %>\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
@@ -150,9 +152,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def newHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
+    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
+        |
+        |<% import ${importController} %>
         |
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
@@ -168,9 +173,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def editHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
+    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
+        |
+        |<% import ${importController} %>
         |
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
@@ -186,12 +194,15 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def indexHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
+    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
-        |<%@val items: Seq[model.${modelClassName}] %>
+        |<%@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}] %>
         |<%@val totalPages: Int %>
+        |
+        |<% import ${importController} %>
         |
         |<h3>$${s.i18n.get("${resource}.list")}</h3>
         |<hr/>
@@ -241,9 +252,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def showHtmlCode(resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
+    val controllerNamespace = toNamespace("controller", namespaces)
+    val modelNamespace = toNamespace("model", namespaces)
+    val importController = s"${controllerNamespace}.${controllerClassName}"
     val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
@@ -253,8 +267,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    s"""<%@val item: model.${modelClassName} %>
+    s"""<%@val item: ${modelNamespace}.${modelClassName} %>
         |<%@val s: skinny.Skinny %>
+        |
+        |<% import ${importController} %>
         |
         |<h3>$${s.i18n.get("${resource}.detail")}</h3>
         |<hr/>
