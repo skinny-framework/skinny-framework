@@ -1,0 +1,5 @@
+language: scala
+scala:
+  - 2.10.3
+script: "gem install sass;sbt \"example/run db:migrate test\";sbt test"
+

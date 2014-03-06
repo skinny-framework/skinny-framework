@@ -13,6 +13,15 @@ trait CodeGenerator {
 
   protected def toClassName(name: String) = name.head.toUpper + name.tail
 
+  protected def toNamespace(basePackage: String, namespaces: Seq[String]): String =
+    (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "." + b }
+
+  protected def toDirectoryPath(baseDir: String, namespaces: Seq[String]): String =
+    (Seq(baseDir) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "/" + b }
+
+  protected def toResourcesBasePath(namespaces: Seq[String]): String = if (namespaces.filter(!_.isEmpty).isEmpty) ""
+  else "/" + namespaces.filter(!_.isEmpty).reduceLeft { (a, b) => a + "/" + b }
+
   protected def toControllerClassName(name: String) = toClassName(name) + "Controller"
 
   protected def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
