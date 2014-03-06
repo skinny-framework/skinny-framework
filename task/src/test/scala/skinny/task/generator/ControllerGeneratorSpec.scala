@@ -9,9 +9,9 @@ class ControllerGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("Controller") {
     it("should be created as expected") {
-      val code = generator.code("members")
+      val code = generator.code(Seq("admin"), "members")
       val expected =
-        """package controller
+        """package controller.admin
           |
           |import skinny._
           |import skinny.validator._
@@ -19,7 +19,7 @@ class ControllerGeneratorSpec extends FunSpec with ShouldMatchers {
           |class MembersController extends ApplicationController {
           |  protectFromForgery()
           |
-          |  def index = render("/members/index")
+          |  def index = render("/admin/members/index")
           |
           |}
           |""".stripMargin
@@ -29,9 +29,9 @@ class ControllerGeneratorSpec extends FunSpec with ShouldMatchers {
 
   describe("ControllerSpec") {
     it("should be created as expected") {
-      val code = generator.spec("members")
+      val code = generator.spec(Seq("admin"), "members")
       val expected =
-        """package controller
+        """package controller.admin
           |
           |import _root_.controller._
           |import _root_.model._

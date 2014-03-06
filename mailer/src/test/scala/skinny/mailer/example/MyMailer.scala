@@ -6,7 +6,8 @@ import skinny.mailer.{ SkinnyMessage, SkinnyMailer }
 class MyMailer extends SkinnyMailer {
 
   def sendMessage(toAddress: String) = {
-    to(toAddress)
+    from("from@example.com")
+      .to(toAddress)
       .cc("cc@example.com", "cc2@example.com")
       .bcc("bcc@example.com")
       .subject("test subject 日本語")
@@ -20,9 +21,11 @@ class MyMailer extends SkinnyMailer {
       }.deliver()
   }
 
-  def sendMessage2(toAddress: String) = to(toAddress).subject("subject2").body("body2").deliver()
+  def sendMessage2(toAddress: String) = {
+    from("from@example.com").to(toAddress).subject("subject2").body("body2").deliver()
+  }
 
-  def sendOther = to("other@example.com").deliver()
+  def sendOther = from("from@example.com").to("other@example.com").deliver()
 
   def notSending: Either[MessagingException, SkinnyMessage] = Left(new MessagingException())
 

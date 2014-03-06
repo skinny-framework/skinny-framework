@@ -26,8 +26,10 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def run(args: List[String]) {
-    args.toList match {
-      case name :: attributes =>
+    val completedArgs: Seq[String] = if (args(1).contains(":")) Seq("") ++ args
+    else args
+    completedArgs.toList match {
+      case namespace :: name :: attributes =>
         showSkinnyGenerator()
         val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
@@ -35,23 +37,26 @@ trait ModelGenerator extends CodeGenerator {
             case _ => None
           }
         }
-        generate(name, None, attributePairs)
+        generate(namespace.split('.'), name, None, attributePairs)
         println("")
 
       case _ => showUsage
     }
   }
 
-  def code(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
+  def code(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
+    val namespace = toNamespace("model", namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
-      s"""  createdAt: DateTime,
+      s""",
+         |  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
     } else ""
     val timestampsExtraction = if (withTimestamps) {
-      s"""    createdAt = rs.get(rn.createdAt),
+      s""",
+         |    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
     val customPkName = {
@@ -60,16 +65,14 @@ trait ModelGenerator extends CodeGenerator {
     }
 
     val classFields =
-      s"""  ${primaryKeyName}: Long,
-        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString("", ",\n", ",\n")}${timestamps}
+      s"""  ${primaryKeyName}: Long${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n", ",\n", "")}${timestamps}
         |""".stripMargin
 
     val extractors =
-      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName}),
-        |${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString("", ",\n", ",\n")}${timestampsExtraction}
+      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n", ",\n", "")}${timestampsExtraction}
         |""".stripMargin
 
-    s"""package model
+    s"""package ${namespace}
         |
         |import skinny.orm._, feature._
         |import scalikejdbc._, SQLInterpolation._
@@ -89,13 +92,13 @@ trait ModelGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generate(name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
-    val productionFile = new File(s"src/main/scala/model/${toClassName(name)}.scala")
-    writeIfAbsent(productionFile, code(name, tableName, attributePairs))
+  def generate(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
+    val productionFile = new File(s"src/main/scala/${toDirectoryPath("model", namespaces)}/${toClassName(name)}.scala")
+    writeIfAbsent(productionFile, code(namespaces, name, tableName, attributePairs))
   }
 
-  def spec(name: String): String = {
-    s"""package model
+  def spec(namespaces: Seq[String], name: String): String = {
+    s"""package ${toNamespace("model", namespaces)}
         |
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
@@ -108,10 +111,10 @@ trait ModelGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateSpec(name: String, attributePairs: Seq[(String, String)]) {
-    val specFile = new File(s"src/test/scala/model/${toClassName(name)}Spec.scala")
+  def generateSpec(namespaces: Seq[String], name: String, attributePairs: Seq[(String, String)]) {
+    val specFile = new File(s"src/test/scala/${toDirectoryPath("model", namespaces)}/${toClassName(name)}Spec.scala")
     FileUtils.forceMkdir(specFile.getParentFile)
-    writeIfAbsent(specFile, spec(name))
+    writeIfAbsent(specFile, spec(namespaces, name))
   }
 
 }

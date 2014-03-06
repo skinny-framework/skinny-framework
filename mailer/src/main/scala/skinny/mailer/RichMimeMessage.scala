@@ -49,7 +49,7 @@ trait RichMimeMessage extends Logging {
   // If this header field is absent, the "Sender" header field is used.
 
   // TODO headOption ok?
-  def from: Option[Address] = underlying.getFrom.headOption
+  def from: Option[Address] = if (underlying.getFrom != null) underlying.getFrom.headOption else None
   def from_=(address: Address): Unit = underlying.setFrom(address)
   def from_=(address: String): Unit = underlying.setFrom(new InternetAddress(address))
 
