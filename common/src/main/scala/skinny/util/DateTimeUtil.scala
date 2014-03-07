@@ -26,7 +26,12 @@ object DateTimeUtil {
   /**
    * Returns "2014-01-02 03:04:05".
    */
-  def nowString: String = DateTime.now.toString("YYYY-MM-dd hh:mm:ss")
+  def toString(d: DateTime): String = d.toString("YYYY-MM-dd hh:mm:ss")
+
+  /**
+   * Returns "2014-01-02 03:04:05".
+   */
+  def nowString: String = toString(DateTime.now)
 
   private case class ZeroPaddingString(s: String) {
     def to04d: String = {
