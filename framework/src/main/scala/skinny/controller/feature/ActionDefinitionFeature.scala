@@ -30,7 +30,9 @@ trait ActionDefinitionFeature extends ScalatraBase {
    * @return action name
    */
   def currentActionName: Option[Symbol] = {
-    actionDefinitions.find { actionDef =>
+    // Scalatra takes priority to routing definition which is defined later.
+    // So we should take priority to the first action name found from reversed action definitions here.
+    actionDefinitions.reverse.find { actionDef =>
       actionDef.matcher.apply(HttpMethod(request.getMethod), requestPath)
     }.map(_.name)
   }

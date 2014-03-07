@@ -241,7 +241,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |      <a href="$${url(${controllerClassName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
         |      <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |        href="$${url(${controllerClassName}.deleteUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |        href="$${url(${controllerClassName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
@@ -288,7 +288,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
         |  <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${url(${controllerClassName}.deleteUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${url(${controllerClassName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
   }

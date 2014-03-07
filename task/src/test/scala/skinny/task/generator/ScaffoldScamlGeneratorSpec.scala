@@ -195,7 +195,7 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |      %td
           |        %a(href={url(MembersController.showUrl, "id" -> item.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
           |        %a(href={url(MembersController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |        %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |        %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.destroyUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |
           |%a(href={url(MembersController.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
           |""".stripMargin
@@ -248,7 +248,7 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |%div(class="form-actions")
           |  %a(class="btn btn-default" href={url(MembersController.indexUrl)}) #{s.i18n.get("backToList")}
           |  %a(href={url(MembersController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |  %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |  %a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(MembersController.destroyUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |""".stripMargin
       code should equal(expected)
     }
