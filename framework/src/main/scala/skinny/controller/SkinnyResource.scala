@@ -184,12 +184,14 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
-      val pageNo = params.getAs[Int](pageNoParamName).getOrElse(1)
+
+      val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
+      val totalCount: Long = model.countAllModels()
+      val totalPages: Int = (totalCount / pageSize).toInt + (if (model.countAllModels() % pageSize == 0) 0 else 1)
+
       set(itemsName, model.findModels(pageSize, pageNo))
-      val totalPages: Int = (model.countAllModels() / pageSize).toInt + {
-        if (model.countAllModels() % pageSize == 0) 0 else 1
-      }
       set(totalPagesAttributeName -> totalPages)
+
     } else {
       set(itemsName, model.findAllModels())
     }
