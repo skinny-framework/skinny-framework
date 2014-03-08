@@ -1,11 +1,14 @@
 package skinny.orm.feature
 
-import skinny.orm.SkinnyMapperBase
+import skinny.orm.{ Pagination, SkinnyMapperBase }
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides #find something APIs.
+ *
+ * NOTE: For some reasons, skinny.orm.SkinnyJoinTable has copy implementation of this trait (subset).
+ * Be aware that you should fix SkinnyJoinTable too.
  */
 trait FinderFeature[Entity]
   extends FinderFeatureWithId[Long, Entity]
@@ -20,6 +23,11 @@ trait FinderFeatureWithId[Id, Entity]
     with IncludesFeatureWithId[Id, Entity] {
 
   /**
+   * Default ordering condition.
+   */
+  def defaultOrdering = defaultAlias.field(primaryKeyFieldName)
+
+  /**
    * Finds a single entity by primary key.
    *
    * @param id id
@@ -29,7 +37,7 @@ trait FinderFeatureWithId[Id, Entity]
   def findById(id: Id)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.eq(defaultAlias.field(primaryKeyFieldName), idToRawValue(id)).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.eq(defaultOrdering, idToRawValue(id)).and(defaultScopeWithDefaultAlias)
     }).single.apply())
   }
 
@@ -43,7 +51,7 @@ trait FinderFeatureWithId[Id, Entity]
   def findAllByIds(ids: Id*)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.in(defaultAlias.field(primaryKeyFieldName), ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.in(defaultOrdering, ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
     }).list.apply())
   }
 
@@ -53,7 +61,7 @@ trait FinderFeatureWithId[Id, Entity]
    * @param s db session
    * @return entities
    */
-  def findAll(ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(implicit s: DBSession = autoSession): List[Entity] = {
+  def findAll(ordering: SQLSyntax = defaultOrdering)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering)
@@ -61,20 +69,29 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   /**
-   * Finds all entities by paging.
-   *
-   * @param limit limit
-   * @param offset offset
-   * @param s db session
-   * @return entities
+   * Finds all entities with pagination.
    */
-  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
+  def findAllWithPagination(pagination: Pagination, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllWithLimitOffset(pagination.limit, pagination.offset, ordering)
+  }
+
+  /**
+   * Finds all entities with pagination.
+   */
+  def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
+  }
+
+  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllWithLimitOffset(limit, offset, ordering)
   }
 
   /**
@@ -164,7 +181,7 @@ trait FinderFeatureWithId[Id, Entity]
    * @param s db session
    * @return entities
    */
-  def findAllBy(where: SQLSyntax, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
+  def findAllBy(where: SQLSyntax, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -174,15 +191,17 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   /**
-   * Finds all entities by condition and paging.
-   *
-   * @param where where condition
-   * @param limit limit
-   * @param offset offset
-   * @param s db session
-   * @return entities
+   * Finds all entities by condition and with pagination.
    */
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
+  def findAllByWithPagination(where: SQLSyntax, pagination: Pagination, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllByWithLimitOffset(where, pagination.limit, pagination.offset, ordering)
+  }
+
+  /**
+   * Finds all entities by condition and with pagination.
+   */
+  def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -190,6 +209,12 @@ trait FinderFeatureWithId[Id, Entity]
       selectQueryWithAssociations.where(where).and(defaultScopeWithDefaultAlias)
         .orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
+  }
+
+  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllByWithLimitOffset(where, limit, offset, ordering)
   }
 
   /**

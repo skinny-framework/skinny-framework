@@ -22,20 +22,33 @@ trait SkinnyJoinTableWithId[Id, Entity]
 
   override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
 
-  def findAll(ordering: SQLSyntax = syntax.id)(implicit s: DBSession = autoSession): List[Entity] = {
+  def defaultOrdering = defaultAlias.field(primaryKeyFieldName)
+
+  def findAll(ordering: SQLSyntax = defaultOrdering)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations.orderBy(ordering)
     }).list.apply())
   }
 
-  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = syntax.id)(
+  def findAllWithPagination(pagination: Pagination, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllWithLimitOffset(pagination.limit, pagination.offset, ordering)
+  }
+
+  def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.orderBy(ordering).limit(limit).offset(offset)
+      selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
+  }
+
+  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  def findAllPaging(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllWithLimitOffset(limit, offset, ordering)
   }
 
   def countAll()(implicit s: DBSession = autoSession): Long = {
@@ -58,13 +71,25 @@ trait SkinnyJoinTableWithId[Id, Entity]
     }).list.apply())
   }
 
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = syntax.id)(
+  def findAllByWithPagination(where: SQLSyntax, pagination: Pagination, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllByWithLimitOffset(where, pagination.limit, pagination.offset, ordering)
+  }
+
+  def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
     implicit s: DBSession = autoSession): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.append(where).orderBy(ordering).limit(limit).offset(offset)
+      selectQueryWithAssociations.where(where).and(defaultScopeWithDefaultAlias)
+        .orderBy(ordering).limit(limit).offset(offset)
     }).list.apply())
+  }
+
+  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    findAllByWithLimitOffset(where, limit, offset, ordering)
   }
 
   def countAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {

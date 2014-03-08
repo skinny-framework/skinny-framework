@@ -86,10 +86,13 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     it("returns nested belongsTo relations") { implicit session =>
       val m = Member.defaultAlias
 
-      val member = Member.findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
+      val member = Member.findAllByWithLimitOffset(sqls.isNotNull(m.companyId), 1, 0).head
       member.company.get.country.isDefined should be(false)
 
-      val memberWithCountry = Member.includes(Member.companyOpt).findAllByPaging(sqls.isNotNull(m.companyId), 1, 0).head
+      val member2 = Member.findAllByWithPagination(sqls.isNotNull(m.companyId), Pagination.page(1).per(1)).head
+      member2.company.get.country.isDefined should be(false)
+
+      val memberWithCountry = Member.includes(Member.companyOpt).findAllByWithLimitOffset(sqls.isNotNull(m.companyId), 1, 0).head
       memberWithCountry.company.get.country.isDefined should be(true)
     }
 
@@ -161,10 +164,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val countryId = Country.findAll().map(_.id).head
       Member.withAlias { m =>
         Member.findAllBy(sqls.eq(m.countryId, countryId)).size should be > (0)
-        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
+        Member.findAllByWithLimitOffset(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
+        Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1)).size should equal(1)
 
         val ordering = sqls"${m.id}, ${m.createdAt} desc"
         Member.findAllBy(sqls.eq(m.countryId, countryId), ordering).size should be > (0)
+        Member.findAllByWithLimitOffset(sqls.eq(m.countryId, countryId), 1, 0, ordering).size should equal(1)
+        Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1), ordering).size should equal(1)
+        // TODO remove this in 1.1.0
+        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
         Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, ordering).size should equal(1)
       }
     }
@@ -251,6 +259,15 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val s = Skill.defaultAlias
       val ids = Skill.where('id -> Seq(id1, id2, id3)).orderBy(s.name.asc, s.id.desc).apply().map(_.id)
       ids should equal(Seq(id2, id3, id1))
+    }
+
+    it("should have #paginate in Querying APIs") { implicit session =>
+      Seq("America", "Russia", "Korea", "India", "Brazil").foreach { name =>
+        Country.createWithAttributes('name -> name)
+      }
+      val res1 = Country.limit(3).offset(3).apply().map(_.id)
+      val res2 = Country.paginate(Pagination.page(2).per(3)).apply().map(_.id)
+      res1 should equal(res2)
     }
 
   }
