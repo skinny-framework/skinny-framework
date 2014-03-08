@@ -297,7 +297,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
       status = 400
       format match {
         case Format.HTML => render(s"${viewsDirectoryPath}/new")
-        case _ => renderWithFormatOptionally(keyAndErrorMessages).getOrElse("")
+        case _ => renderWithFormat(keyAndErrorMessages)
       }
     }
   }
@@ -390,7 +390,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
         status = 400
         format match {
           case Format.HTML => render(s"${viewsDirectoryPath}/edit")
-          case _ => renderWithFormatOptionally(keyAndErrorMessages).getOrElse("")
+          case _ => renderWithFormat(keyAndErrorMessages)
         }
       }
     } getOrElse haltWithBody(404)

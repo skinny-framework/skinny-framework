@@ -56,7 +56,8 @@ trait TemplateEngineFeature
           resource <- requestScope[Any](resourceName)
         } yield resource
       }
-      renderWithFormatOptionally(entity).getOrElse(haltWithBody(404))
+      // renderWithFormat returns null when body is empty
+      Option(renderWithFormat(entity)).getOrElse(haltWithBody(404))
     }
   }
 
@@ -95,15 +96,13 @@ trait TemplateEngineFeature
    * @param format format (HTML,JSON,XML...)
    * @return body if possible
    */
-  protected def renderWithFormatOptionally(entity: Any)(implicit format: Format = Format.HTML): Option[String] = {
-    Option {
-      format match {
-        case Format.XML =>
-          val entityXml = toXml(toJSON(entity)).toString
-          s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
-        case Format.JSON => toJSONString(entity)
-        case _ => null
-      }
+  protected def renderWithFormat(entity: Any)(implicit format: Format = Format.HTML): String = {
+    format match {
+      case Format.XML =>
+        val entityXml = toXml(toJSON(entity)).toString
+        s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
+      case Format.JSON => toJSONString(entity)
+      case _ => null
     }
   }
 
@@ -115,13 +114,13 @@ trait TemplateEngineFeature
    * @return body if possible
    */
   def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = {
-    val bodyOpt = format match {
-      case Format.HTML => Option(render(s"/error/${httpStatus}"))
-      case _ => renderWithFormatOptionally(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))
+    val body: String = format match {
+      case Format.HTML => render(s"/error/${httpStatus}")
+      case _ => renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))
     }
-    bodyOpt.map { body =>
-      halt(status = httpStatus, body = body)
-    } getOrElse {
+    Option(body).map { b =>
+      halt(status = httpStatus, body = b)
+    }.getOrElse {
       halt(status = httpStatus)
     }
   }
