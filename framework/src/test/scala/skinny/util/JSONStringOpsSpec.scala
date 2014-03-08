@@ -11,7 +11,7 @@ class JSONStringOpsSpec extends FunSpec with ShouldMatchers {
 
   describe("JSONStringOps#fromJSONString") {
 
-    it("parse Play2 documentation example") {
+    it("parses Play2 documentation example") {
       val jsonString =
         """{
           |  "user": {
@@ -38,6 +38,19 @@ class JSONStringOpsSpec extends FunSpec with ShouldMatchers {
       user.isAlive should equal(true)
       user.name should equal("toto")
     }
+  }
+
+  describe("JSONStringOps#toJSONString") {
+
+    it("converts Scala objects to JSON string value") {
+      val value = Map(
+        "name" -> Seq("name is required", "name's length must be less than 32."),
+        "somethingLikeThat" -> Nil)
+      val result = JSONStringOps.toJSONString(value, true)
+      result should equal(
+        """{"name":["name is required","name's length must be less than 32."],"something_like_that":[]}""")
+    }
+
   }
 
 }

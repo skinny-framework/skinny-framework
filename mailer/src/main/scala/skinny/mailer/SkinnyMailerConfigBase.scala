@@ -31,4 +31,13 @@ trait SkinnyMailerConfigBase extends Logging {
     }
   }
 
+  // scala.Try may return Some(null)
+  protected def opt[A](op: => A): Option[A] = {
+    try Option(op)
+    catch {
+      case e: Exception =>
+        None
+    }
+  }
+
 }

@@ -11,13 +11,19 @@
     parts.pop();
     return parts.join("/");
   }
+  function hasQuestion(url) {
+    return url.indexOf("?") != -1
+  }
+  function withCsrfToken(url, token) {
+    return hasQuestion(url) ? url + '&csrf-token=' + token : url + '?csrf-token=' + token;
+  }
   $(document).delegate('a[data-method], a[data-confirm]', 'click', function(event) {
     if (window.confirm($(event.target).data('confirm'))) {
       var csrfToken = $('meta[name=csrf-token]').attr("content") || $(event.target).data('csrf-token');
       var url = event.target.href;
       var method = $(event.target).data('method');
       $.ajax({
-        url: url + '?csrf-token=' + csrfToken,
+        url: withCsrfToken(url, csrfToken),
         method: method,
         success: function(data, status, xhr) {
           if (method === 'delete') location.href = toResourcesUrl(url);

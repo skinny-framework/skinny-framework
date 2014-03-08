@@ -42,6 +42,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def viewsDirectoryPath = s"/admin/${toSnakeCase(resourcesName)}"
           |  override def useSnakeCasedParamKeys = true
           |
+          |  override def createParams = Params(params).withDate("birthday").withTime("time_to_wake_up").withDateTime("created_at")
           |  override def createForm = validation(createParams,
           |    paramKey("name") is required & maxLength(512),
           |    paramKey("favorite_int_number") is required & numeric & intValue,
@@ -54,7 +55,6 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    paramKey("time_to_wake_up") is timeFormat,
           |    paramKey("created_at") is required & dateTimeFormat
           |  )
-          |  override def createParams = Params(params).withDate("birthday").withTime("time_to_wake_up").withDateTime("created_at")
           |  override def createFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
           |    "favorite_int_number" -> ParamType.Int,
@@ -69,6 +69,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    "created_at" -> ParamType.DateTime
           |  )
           |
+          |  override def updateParams = Params(params).withDate("birthday").withTime("time_to_wake_up").withDateTime("created_at")
           |  override def updateForm = validation(updateParams,
           |    paramKey("name") is required & maxLength(512),
           |    paramKey("favorite_int_number") is required & numeric & intValue,
@@ -81,7 +82,6 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    paramKey("time_to_wake_up") is timeFormat,
           |    paramKey("created_at") is required & dateTimeFormat
           |  )
-          |  override def updateParams = Params(params).withDate("birthday").withTime("time_to_wake_up").withDateTime("created_at")
           |  override def updateFormStrongParameters = Seq(
           |    "name" -> ParamType.String,
           |    "favorite_int_number" -> ParamType.Int,

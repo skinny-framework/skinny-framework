@@ -1,7 +1,8 @@
 package skinny.orm.feature
 
-import skinny.orm.SkinnyMapperBase
 import scalikejdbc._, SQLInterpolation._
+import skinny.Pagination
+import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
@@ -44,6 +45,17 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
    */
   def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this, conditions = Seq(condition))
+
+  /**
+   * Appends pagination settings as limit/offset.
+   *
+   * @param pagination  pagination
+   * @return query buildder
+   */
+  def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
+    new EntitiesSelectOperationBuilder(
+      mapper = this, limit = Some(pagination.limit), offset = Some(pagination.offset))
+  }
 
   /**
    * Appends limit part.
@@ -135,6 +147,16 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
       orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
+
+    /**
+     * Appends pagination settings as limit/offset.
+     *
+     * @param pagination  pagination
+     * @return query buildder
+     */
+    def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
+      this.copy(limit = Some(pagination.limit), offset = Some(pagination.offset))
+    }
 
     /**
      * Appends limit part.
@@ -300,6 +322,17 @@ trait QueryingFeatureWithId[Id, Entity]
     mapper = this, conditions = Seq(condition))
 
   /**
+   * Appends pagination settings as limit/offset.
+   *
+   * @param pagination  pagination
+   * @return query buildder
+   */
+  def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
+    new EntitiesSelectOperationBuilder(
+      mapper = this, limit = Some(pagination.limit), offset = Some(pagination.offset))
+  }
+
+  /**
    * Appends limit part.
    *
    * @param n value
@@ -380,6 +413,16 @@ trait QueryingFeatureWithId[Id, Entity]
       orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
+
+    /**
+     * Appends pagination settings as limit/offset.
+     *
+     * @param pagination  pagination
+     * @return query buildder
+     */
+    def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
+      this.copy(limit = Some(pagination.limit), offset = Some(pagination.offset))
+    }
 
     /**
      * Appends limit part.

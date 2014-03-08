@@ -8,7 +8,7 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(SkillsController, "/*")
 
-  def skill = Skill.findAllPaging(1, 0).head
+  def skill = Skill.findAllWithLimitOffset(1, 0).head
 
   it should "have correct url" in {
     SkillsController.urlSample should equal("/skills?page=1")

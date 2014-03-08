@@ -20,32 +20,32 @@ trait SkinnyMailerConfigApi extends SkinnyMailerConfigBase {
   /**
    * Debug mode if true.
    */
-  def debug: Boolean = loadedConfig.flatMap(c => Option(c.getBoolean("debug"))).getOrElse(false)
+  def debug: Boolean = loadedConfig.flatMap(c => opt(c.getBoolean("debug"))).getOrElse(false)
 
   /**
    * MIME version.
    */
-  def mimeVersion: String = loadedConfig.flatMap(c => Option(c.getString("mimeVersion"))).getOrElse("1.0")
+  def mimeVersion: String = loadedConfig.flatMap(c => opt(c.getString("mimeVersion"))).getOrElse("1.0")
 
   /**
    * Charset.
    */
-  def charset: String = loadedConfig.flatMap(c => Option(c.getString("charset"))).getOrElse("UTF-8")
+  def charset: String = loadedConfig.flatMap(c => opt(c.getString("charset"))).getOrElse("UTF-8")
 
   /**
    * Content-Type header (default: text/plain)
    */
-  def contentType: String = loadedConfig.flatMap(c => Option(c.getString("contentType"))).getOrElse("text/plain")
+  def contentType: String = loadedConfig.flatMap(c => opt(c.getString("contentType"))).getOrElse("text/plain")
 
   /**
    * From header default value.
    */
-  def defaultFrom: Option[String] = loadedConfig.flatMap(c => Option(c.getString("from")))
+  def defaultFrom: Option[String] = loadedConfig.flatMap(c => opt(c.getString("from")))
 
   /**
    * Transport protocol.
    */
-  def transportProtocol: String = loadedConfig.flatMap(c => Option(c.getString("transport.protocol"))).getOrElse("logging")
+  def transportProtocol: String = loadedConfig.flatMap(c => opt(c.getString("transport.protocol"))).getOrElse("logging")
 
   // refs self
   private val self: SkinnyMailerConfigApi = this

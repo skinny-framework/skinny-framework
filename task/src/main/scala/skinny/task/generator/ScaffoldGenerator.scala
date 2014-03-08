@@ -240,18 +240,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
         |  override def useSnakeCasedParamKeys = true
         |
+        |  override def createParams = Params(params)${params}
         |  override def createForm = validation(createParams,
         |${validations}
         |  )
-        |  override def createParams = Params(params)${params}
         |  override def createFormStrongParameters = Seq(
         |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )
         |
+        |  override def updateParams = Params(params)${params}
         |  override def updateForm = validation(updateParams,
         |${validations}
         |  )
-        |  override def updateParams = Params(params)${params}
         |  override def updateFormStrongParameters = Seq(
         |${args.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + toParamType(a.typeName) }.mkString(",\n")}
         |  )

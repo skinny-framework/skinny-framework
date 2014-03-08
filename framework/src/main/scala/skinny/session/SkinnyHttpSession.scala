@@ -15,6 +15,8 @@ trait SkinnyHttpSession {
 
   def getAttribute(name: String): Option[Any]
 
+  def getAs[A](name: String): Option[A] = getAttribute(name).map(_.asInstanceOf[A])
+
   def setAttribute(name: String, value: Any): Unit
 
   def removeAttribute(name: String): Unit

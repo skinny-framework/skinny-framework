@@ -149,7 +149,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @tparam A type
    * @return value
    */
-  def getAs[A](key: String): Option[A] = underlying.get(key).map(_.asInstanceOf[A])
+  def getAs[A](key: String): Option[A] = selectDynamic(key).map(_.asInstanceOf[A])
 
   /**
    * Enables accessing key using type-dynamic. Both of the following code is same.
@@ -162,10 +162,11 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key key
    * @return value if exists
    */
-  def selectDynamic(key: String): Option[Any] = underlying.get(key).map {
-    case Some(v) => v
-    case None => null
-    case v => v
+  def selectDynamic(key: String): Option[Any] = underlying.get(key).flatMap {
+    case Some(v) if v != null => Some(v)
+    case Some(v) if v == null => None
+    case None => None
+    case v => Option(v)
   }
 
 }

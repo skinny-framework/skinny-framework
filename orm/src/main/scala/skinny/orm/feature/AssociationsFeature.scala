@@ -46,7 +46,20 @@ trait AssociationsFeature[Entity]
   /**
    * Associations
    */
-  val associations = new mutable.LinkedHashSet[Association[_]]
+  def associations = new mutable.LinkedHashSet[Association[_]]
+
+  private[skinny] def belongsToAssociations: Seq[BelongsToAssociation[Entity]] = {
+    associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]])
+      .map(_.asInstanceOf[BelongsToAssociation[Entity]]).toSeq
+  }
+  private[skinny] def hasOneAssociations: Seq[HasOneAssociation[Entity]] = {
+    associations.filter(_.isInstanceOf[HasOneAssociation[Entity]])
+      .map(_.asInstanceOf[HasOneAssociation[Entity]]).toSeq
+  }
+  private[skinny] def hasManyAssociations: Seq[HasManyAssociation[Entity]] = {
+    associations.filter(_.isInstanceOf[HasManyAssociation[Entity]])
+      .map(_.asInstanceOf[HasManyAssociation[Entity]]).toSeq
+  }
 
   /**
    * Join definitions that are enabled by default.
@@ -369,11 +382,7 @@ trait AssociationsFeature[Entity]
 
   def extract(sql: SQL[Entity, NoExtractor])(
     implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
-
-    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
-    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
-    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
-    extractWithAssociations(sql, _belongsTo.toSeq, _hasOne.toSeq, _hasMany.toSeq)
+    extractWithAssociations(sql, belongsToAssociations, hasOneAssociations, hasManyAssociations)
   }
 
   /**
@@ -392,14 +401,17 @@ trait AssociationsFeature[Entity]
     oneToManyAssociations: Seq[HasManyAssociation[Entity]])(
       implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
 
-    val enabledJoinDefinitions = defaultJoinDefinitions ++ oneToManyAssociations.map(_.joinDefinitions)
+    val enabledJoinDefinitions = defaultJoinDefinitions ++
+      belongsToAssociations.map(_.joinDefinitions) ++
+      hasOneAssociations.map(_.joinDefinitions) ++
+      oneToManyAssociations.map(_.joinDefinitions)
+
     val enabledOneToManyExtractors = defaultOneToManyExtractors ++ oneToManyAssociations.map(_.extractor)
 
     if (enabledJoinDefinitions.isEmpty) {
       sql.map(rs => extract(rs, defaultAlias.resultName))
 
     } else if (enabledOneToManyExtractors.size > 0) {
-
       val oneExtractedSql: OneToXSQL[Entity, NoExtractor, Entity] = sql.one(rs =>
         extractWithOneToOneTables(rs,
           belongsToAssociations.map(_.extractor).toSet,
@@ -536,18 +548,18 @@ trait AssociationsFeature[Entity]
     belongsToExtractors: Set[BelongsToExtractor[Entity]],
     hasOneExtractors: Set[HasOneExtractor[Entity]])(implicit includesRepository: IncludesQueryRepository[Entity]): Entity = {
 
-    val allBelongsTo = (defaultBelongsToExtractors ++ belongsToExtractors)
+    val allBelongsTo = defaultBelongsToExtractors ++ belongsToExtractors
     val withBelongsTo = allBelongsTo.foldLeft(extract(rs, defaultAlias.resultName)) {
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
-        val toOne: Option[_] = rs.anyOpt(this.defaultAlias.resultName.field(extractor.fk))
+        val toOne: Option[_] = rs.anyOpt(defaultAlias.resultName.field(extractor.fk))
           .map { _ =>
             val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
             includesRepository.putAndReturn(extractor, entity)
           }
         extractor.merge(entity, toOne)
     }
-    val allHasOne = (defaultHasOneExtractors ++ hasOneExtractors)
+    val allHasOne = defaultHasOneExtractors ++ hasOneExtractors
     val withAssociations = allHasOne.foldLeft(withBelongsTo) {
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]

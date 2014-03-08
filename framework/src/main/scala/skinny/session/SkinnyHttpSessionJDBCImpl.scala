@@ -4,7 +4,8 @@ import javax.servlet.http.HttpSession
 import skinny.session.jdbc.SkinnySession
 import grizzled.slf4j.Logging
 
-class SkinnyHttpSessionJDBCImpl(underlying: HttpSession, skinnySession: SkinnySession) extends SkinnyHttpSession with Logging {
+case class SkinnyHttpSessionJDBCImpl(underlying: HttpSession, skinnySession: SkinnySession)
+    extends SkinnyHttpSession with Logging {
 
   override def save() = skinnySession.save()
 

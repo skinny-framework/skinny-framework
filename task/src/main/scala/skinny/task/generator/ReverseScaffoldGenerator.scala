@@ -14,13 +14,10 @@ object ReverseScaffoldGenerator extends ReverseScaffoldGenerator
  */
 trait ReverseScaffoldGenerator extends CodeGenerator {
 
-  case class ParamTypeAndNullable(
-    paramType: ParamType,
-    nullable: Boolean)
-
   protected def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:reverse-scaffold table_name resources resource" """)
+    println("""         sbt "task/run generate:reverse-scaffold table_name namespace resources resource" """)
     println()
   }
 
@@ -30,16 +27,18 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
 """)
   }
 
-  def run(templateType: String, args: List[String]): Unit = {
+  def run(templateType: String, args: List[String], skinnyEnv: Option[String] = None): Unit = {
     if (args.size < 3) {
       showUsage
       return
     }
     try {
-      val (tableName, resources, resource) = (args(0), args(1), args(2))
+      val (tableName, namespace, resources, resource) = {
+        if (args.size >= 4) (args(0), args(1), args(2), args(3))
+        else (args(0), "", args(1), args(2))
+      }
 
-      val skinnyEnv = if (args.size >= 4) args(3) else SkinnyEnv.Development
-      System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv)
+      System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
       DBSettings.initialize()
 
       val columns = extractColumns(tableName)
@@ -90,7 +89,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
         }
         case _ => throw new IllegalArgumentException("Unknown template type: " + templateType)
       }
-      generator.run(Seq(resources, resource) ++ fields)
+      generator.run(Seq(namespace, resources, resource) ++ fields)
 
     } catch {
       case e: Exception =>

@@ -1,0 +1,13 @@
+#!/bin/bash
+# Wrapper for the 'skinny' command.
+# Sets up environment variables, etc for running the skinny command on Heroku.
+#
+# Example usage:
+# $ heroku run heroku/skinny db:migrate production
+
+. $(dirname $0)/common.sh
+
+setup_db_env_vars
+
+# Run ../skinny, passing arguments
+$(dirname $(dirname $0))/skinny "$@"

@@ -8,9 +8,9 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
 
   addFilter(Controllers.programmers, "/*")
 
-  def skill = Skill.findAllPaging(1, 0).head
-  def company = Company.findAllPaging(1, 0).head
-  def programmer = Programmer.findAllPaging(1, 0).head
+  def skill = Skill.findAllWithLimitOffset(1, 0).head
+  def company = Company.findAllWithLimitOffset(1, 0).head
+  def programmer = Programmer.findAllWithLimitOffset(1, 0).head
 
   it should "show programmers" in {
     get("/programmers") {

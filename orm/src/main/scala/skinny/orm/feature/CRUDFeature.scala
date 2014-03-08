@@ -41,9 +41,6 @@ trait CRUDFeatureWithId[Id, Entity]
   override def joins[Id](associations: Association[_]*): CRUDFeatureWithId[Id, Entity] = {
     val _self = this
     val _associations = associations
-    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
-    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
-    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
     // creates new instance but ideally this should be more DRY & safe implementation
     new CRUDFeatureWithId[Id, Entity] {
@@ -54,11 +51,8 @@ trait CRUDFeatureWithId[Id, Entity]
       // override def idToRawValue(id: Id) = _self.idToRawValue(id)
       override def idToRawValue(id: Id) = id
 
-      override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
-      override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
-      override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
+      override def associations = _self.associations ++ _associations
 
-      override val associations = _self.associations ++ _associations
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
       override val defaultHasOneExtractors = _self.defaultHasOneExtractors
@@ -92,10 +86,8 @@ trait CRUDFeatureWithId[Id, Entity]
       override def idToRawValue(id: Id) = _self.idToRawValue(id)
 
       override protected val underlying = _self
-      override private[skinny] val belongsToAssociations = _self.belongsToAssociations
-      override private[skinny] val hasOneAssociations = _self.hasOneAssociations
-      override private[skinny] val hasManyAssociations = _self.hasManyAssociations
-      override val associations = _self.associations
+      override def associations = _self.associations
+
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
       override val defaultHasOneExtractors = _self.defaultHasOneExtractors
