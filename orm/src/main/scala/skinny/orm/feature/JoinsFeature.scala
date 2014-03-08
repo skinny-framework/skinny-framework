@@ -7,13 +7,10 @@ import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
  * Provides #joins APIs.
+ *
+ * NOTE: CRUDFeature has copy implementation from this trait.
  */
-trait JoinsFeature[Entity]
-    extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] { self: IdFeature[_] =>
-
-  private[skinny] val belongsToAssociations: Seq[BelongsToAssociation[Entity]] = Nil
-  private[skinny] val hasOneAssociations: Seq[HasOneAssociation[Entity]] = Nil
-  private[skinny] val hasManyAssociations: Seq[HasManyAssociation[Entity]] = Nil
+trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] { self: IdFeature[_] =>
 
   /**
    * Appends join definition on runtime.
@@ -24,9 +21,6 @@ trait JoinsFeature[Entity]
   def joins[Id](associations: Association[_]*): JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] = {
     val _self = this
     val _associations = associations
-    val _belongsTo = associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]]).map(_.asInstanceOf[BelongsToAssociation[Entity]])
-    val _hasOne = associations.filter(_.isInstanceOf[HasOneAssociation[Entity]]).map(_.asInstanceOf[HasOneAssociation[Entity]])
-    val _hasMany = associations.filter(_.isInstanceOf[HasManyAssociation[Entity]]).map(_.asInstanceOf[HasManyAssociation[Entity]])
 
     new JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] {
       override protected val underlying = _self
@@ -35,11 +29,8 @@ trait JoinsFeature[Entity]
       override def rawValueToId(value: Any) = _self.rawValueToId(value).asInstanceOf[Id]
       override def idToRawValue(id: Id) = id
 
-      override private[skinny] val belongsToAssociations = _self.belongsToAssociations ++ _belongsTo
-      override private[skinny] val hasOneAssociations = _self.hasOneAssociations ++ _hasOne
-      override private[skinny] val hasManyAssociations = _self.hasManyAssociations ++ _hasMany
+      override def associations = _self.associations ++ _associations
 
-      override val associations = _self.associations ++ _associations
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
       override val defaultHasOneExtractors = _self.defaultHasOneExtractors
@@ -69,4 +60,5 @@ trait JoinsFeature[Entity]
       hasOneAssociations,
       hasManyAssociations)
   }
+
 }

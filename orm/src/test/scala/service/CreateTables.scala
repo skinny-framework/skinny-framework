@@ -1,0 +1,40 @@
+package service
+
+import scalikejdbc._, SQLInterpolation._
+import skinny.dbmigration.DBSeeds
+
+trait CreateTables extends DBSeeds { self: Connection =>
+
+  override val dbSeedsAutoSession = NamedAutoSession('service)
+
+  addSeedSQL(
+    sql"""
+create table services (
+  id bigint auto_increment primary key not null,
+  name varchar(128) not null,
+  created_at timestamp not null,
+  updated_at timestamp not null
+)
+""",
+    sql"""
+create table applications (
+  id bigint auto_increment primary key not null,
+  name varchar(128) not null,
+  service_id bigint not null references services(id),
+  created_at timestamp not null,
+  updated_at timestamp not null
+)
+""",
+    sql"""
+create table service_settings (
+  id bigint auto_increment primary key not null,
+  maximum_accounts bigint not null default 10000,
+  service_id bigint not null references services(id),
+  created_at timestamp not null,
+  updated_at timestamp not null
+)
+"""
+  )
+
+  runIfFailed(sql"select count(1) from services")
+}
