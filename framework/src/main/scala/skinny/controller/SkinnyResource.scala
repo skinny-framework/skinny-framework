@@ -198,13 +198,9 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
 
   protected def countResources(): Long = model.countAllModels()
 
-  protected def findResources[A](pageSize: Int, pageNo: Int): List[A] = {
-    model.findModels(pageSize, pageNo).map(_.asInstanceOf[A])
-  }
+  protected def findResources(pageSize: Int, pageNo: Int): List[_] = model.findModels(pageSize, pageNo)
 
-  protected def findResources[A](): List[A] = {
-    model.findAllModels().map(_.asInstanceOf[A])
-  }
+  protected def findResources(): List[_] = model.findAllModels()
 
   /**
    * Show single resource.
