@@ -56,7 +56,7 @@ trait TemplateEngineFeature
           resource <- requestScope[Any](resourceName)
         } yield resource
       }
-      renderWithFormat(entity) getOrElse haltWithBody(404)
+      renderWithFormatOptionally(entity).getOrElse(haltWithBody(404))
     }
   }
 
@@ -95,7 +95,7 @@ trait TemplateEngineFeature
    * @param format format (HTML,JSON,XML...)
    * @return body if possible
    */
-  protected def renderWithFormat(entity: Any)(implicit format: Format = Format.HTML): Option[String] = {
+  protected def renderWithFormatOptionally(entity: Any)(implicit format: Format = Format.HTML): Option[String] = {
     Option {
       format match {
         case Format.XML =>
@@ -117,7 +117,7 @@ trait TemplateEngineFeature
   def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = {
     val bodyOpt = format match {
       case Format.HTML => Option(render(s"/error/${httpStatus}"))
-      case _ => renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))
+      case _ => renderWithFormatOptionally(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))
     }
     bodyOpt.map { body =>
       halt(status = httpStatus, body = body)

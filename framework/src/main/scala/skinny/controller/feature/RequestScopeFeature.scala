@@ -329,4 +329,9 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
     }
   }
 
+  def keyAndErrorMessages: Map[String, Seq[String]] = {
+    requestScope.get(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES)
+      .map(_.asInstanceOf[KeyAndErrorMessages].underlying).getOrElse(Map())
+  }
+
 }

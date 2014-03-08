@@ -57,6 +57,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
   it should "have create API" in {
     post("/api/apis.json", "name" -> "Twitter APi") {
       status should equal(400)
+      body should equal("""{"name":[],"url":["url is required"]}""")
     }
     post("/api/apis.json", "name" -> "Twitter APi", "url" -> "https://dev.twitter.com/") {
       status should equal(201)
