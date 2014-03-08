@@ -87,24 +87,27 @@ trait ValidationFeature {
         def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
 
         // errorMessages
-        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, validations.map(_.paramDef.key).flatMap { key =>
+        val errorMessages: Seq[String] = validations.map(_.paramDef.key).flatMap { key =>
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
               params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
-        })
+        }
+        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, errorMessages)
 
         // keyAndErrorMessages
-        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, KeyAndErrorMessages(validations.map(_.paramDef.key).map { key =>
+        val keyAndErrorMessages: KeyAndErrorMessages = KeyAndErrorMessages(validations.map(_.paramDef.key).map { key =>
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
               params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
             ).getOrElse(error.name)
           }
-        }.toMap))
+        }.toMap)
+        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, keyAndErrorMessages)
+
       }.apply()
 
     validator
