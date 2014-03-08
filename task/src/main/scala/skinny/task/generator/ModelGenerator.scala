@@ -26,7 +26,7 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def run(args: List[String]) {
-    val completedArgs: Seq[String] = if (args(1).contains(":")) Seq("") ++ args
+    val completedArgs: Seq[String] = if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
     else args
     completedArgs.toList match {
       case namespace :: name :: attributes =>
