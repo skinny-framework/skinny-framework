@@ -86,7 +86,7 @@ trait SkinnyJoinTableWithId[Id, Entity]
     }).list.apply())
   }
 
-  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  @deprecated("Use #findAllByWithLimitOffset or #findAllByWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultAlias.field(primaryKeyFieldName))(
     implicit s: DBSession = autoSession): List[Entity] = {
     findAllByWithLimitOffset(where, limit, offset, ordering)
