@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
+import skinny.Pagination
 import skinny.test.FactoryGirl
 import skinny.orm.exception.OptimisticLockException
 import skinny.{ ParamType, StrongParameters }

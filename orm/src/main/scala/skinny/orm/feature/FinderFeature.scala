@@ -1,7 +1,8 @@
 package skinny.orm.feature
 
-import skinny.orm.{ Pagination, SkinnyMapperBase }
 import scalikejdbc._, SQLInterpolation._
+import skinny.Pagination
+import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**

@@ -20,7 +20,9 @@ trait SkinnyJoinTable[Entity] extends SkinnyJoinTableWithId[Long, Entity] {
 trait SkinnyJoinTableWithId[Id, Entity]
     extends SkinnyMapperWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] {
 
-  override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = ???
+  override def extract(rs: WrappedResultSet, s: ResultName[Entity]): Entity = {
+    throw new IllegalStateException("You must implement this method if ResultSet extraction is needed.")
+  }
 
   def defaultOrdering = defaultAlias.field(primaryKeyFieldName)
 

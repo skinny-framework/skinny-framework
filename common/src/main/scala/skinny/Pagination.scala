@@ -1,4 +1,4 @@
-package skinny.orm
+package skinny
 
 /**
  * Pagination builder.
@@ -21,6 +21,7 @@ object Pagination {
 case class PaginationPageNoBuilder(pageNo: Option[Int] = None) {
   def per(pageSize: Int): Pagination = Pagination(pageNo = pageNo.get, pageSize = pageSize)
 }
+
 /**
  * Pagination builder.
  */
