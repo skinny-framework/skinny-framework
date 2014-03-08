@@ -184,18 +184,26 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
-
       val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
-      val totalCount: Long = model.countAllModels()
-      val totalPages: Int = (totalCount / pageSize).toInt + (if (model.countAllModels() % pageSize == 0) 0 else 1)
+      val totalCount: Long = countResources()
+      val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
 
-      set(itemsName, model.findModels(pageSize, pageNo))
+      set(itemsName, findResources(pageSize, pageNo))
       set(totalPagesAttributeName -> totalPages)
-
     } else {
-      set(itemsName, model.findAllModels())
+      set(itemsName, findResources())
     }
     render(s"${viewsDirectoryPath}/index")
+  }
+
+  protected def countResources(): Long = model.countAllModels()
+
+  protected def findResources[A](pageSize: Int, pageNo: Int): List[A] = {
+    model.findModels(pageSize, pageNo).map(_.asInstanceOf[A])
+  }
+
+  protected def findResources[A](): List[A] = {
+    model.findAllModels().map(_.asInstanceOf[A])
   }
 
   /**
@@ -210,8 +218,12 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
    * @return single resource
    */
   def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
+    set(itemName, findResource(id).getOrElse(haltWithBody(404)))
     render(s"${viewsDirectoryPath}/show")
+  }
+
+  protected def findResource[A](id: Id): Option[A] = {
+    model.findModel(id).map(_.asInstanceOf[A])
   }
 
   /**
