@@ -14,7 +14,7 @@ object SkinnyAppBuild extends Build {
   //val jettyVersion = "9.1.0.v20131115"
   val jettyVersion = "9.0.7.v20131107"
 
-  lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ Seq(
+  lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := "org.skinny-framework",
     version      := "0.1.0-SNAPSHOT",
     scalaVersion := "2.10.3",
@@ -114,6 +114,15 @@ object SkinnyAppBuild extends Build {
     ivyXML := <dependencies>
       <exclude org="org.eclipse.jetty.orbit" />
     </dependencies>
+  )
+
+  // -------------------------------------------------------
+  // Deployment on Heroku
+  // -------------------------------------------------------
+  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
+
+  lazy val herokuSettings = Seq(
+    stage        := { "heroku/stage" ! }
   )
 
 }

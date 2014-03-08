@@ -1,0 +1,14 @@
+#!/bin/bash
+# Skinny Framework run script for Heroku.
+# Starts the embedded Jetty web server.
+#
+# Assumes that the standalone jar has already been built, 
+# e.g. by the heroku/stage script.
+
+. $(dirname $0)/common.sh
+
+setup_db_env_vars
+
+# Run the standalone jar
+java -jar -Dskinny.port=$PORT -Dskinny.env=production standalone-build/target/scala-2.10/skinny-standalone-app-assembly-*.jar
+

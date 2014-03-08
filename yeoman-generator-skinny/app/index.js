@@ -18,6 +18,7 @@ SkinnyGenerator.prototype.app = function app() {
   this.directory('bin', 'bin');
   this.directory('task', 'task');
   this.directory('project', 'project');
+  this.directory('heroku', 'heroku');
   this.copy('_gitignore', '.gitignore');
   this.copy('build.sbt', 'build.sbt');
   this.copy('package.json', 'package.json');
@@ -26,5 +27,7 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('skinny.bat', 'skinny.bat');
   this.copy('sbt', 'sbt');
   this.copy('sbt.bat', 'sbt.bat');
+  this.copy('Procfile', 'Procfile');
+  this.copy('system.properties', 'system.properties');
 };
 
