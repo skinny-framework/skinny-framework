@@ -14,6 +14,14 @@ IF %command%==run (
   sbt "~;container:stop;container:start"
   GOTO script_eof
 )
+IF %command%==server (
+  sbt "~;container:stop;container:start"
+  GOTO script_eof
+)
+IF %command%==s (
+  sbt "~;container:stop;container:start"
+  GOTO script_eof
+)
 
 IF %command%==clean (
   sbt clean
@@ -160,7 +168,7 @@ REM Didn't select command.
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run            : will run application for local development
+ECHO   run/server/s   : will run application for local development
 ECHO   clean          : will clear target directory
 ECHO   update         : will run sbt update
 ECHO   console        : will run sbt console

@@ -35,6 +35,8 @@ function copry_resources_to_task() {
 command="$1"
 if [ "$command" == "run" ];then
   run_app
+elif [ "$command" == "s" -o "$command" == "server" ];then
+  run_app
 elif [ "$command" == "clean" ];then
   ${sbt_path} dev/clean
 elif [ "$command" == "update" ];then
@@ -94,7 +96,7 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  run            : will run application for local development"
+  echo "  run/server/s   : will run application for local development"
   echo "  clean          : will clear target directory"
   echo "  update         : will run sbt update"
   echo "  console        : will run sbt console"
