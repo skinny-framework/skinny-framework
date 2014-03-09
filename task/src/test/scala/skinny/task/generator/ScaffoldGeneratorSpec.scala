@@ -166,12 +166,29 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "create a member" in {
-          |    post(s"/admin/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
+          |    post(s"/admin/members",
+          |      "name" -> "dummy",
+          |      "favorite_int_number" -> Int.MaxValue.toString(),
+          |      "favorite_long_number" -> Long.MaxValue.toString(),
+          |      "favorite_short_number" -> Short.MaxValue.toString(),
+          |      "favorite_double_number" -> Double.MaxValue.toString(),
+          |      "favorite_float_number" -> Float.MaxValue.toString(),
+          |      "is_activated" -> "true",
+          |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrf-token" -> "12345") {
-          |      post(s"/admin/members", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      post(s"/admin/members",
+          |        "name" -> "dummy",
+          |        "favorite_int_number" -> Int.MaxValue.toString(),
+          |        "favorite_long_number" -> Long.MaxValue.toString(),
+          |        "favorite_short_number" -> Short.MaxValue.toString(),
+          |        "favorite_double_number" -> Double.MaxValue.toString(),
+          |        "favorite_float_number" -> Float.MaxValue.toString(),
+          |        "is_activated" -> "true",
+          |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
+          |        "csrf-token" -> "valid_token") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -186,12 +203,29 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/admin/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd")) {
+          |    put(s"/admin/members/${member.id}",
+          |      "name" -> "dummy",
+          |      "favorite_int_number" -> Int.MaxValue.toString(),
+          |      "favorite_long_number" -> Long.MaxValue.toString(),
+          |      "favorite_short_number" -> Short.MaxValue.toString(),
+          |      "favorite_double_number" -> Double.MaxValue.toString(),
+          |      "favorite_float_number" -> Float.MaxValue.toString(),
+          |      "is_activated" -> "true",
+          |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrf-token" -> "12345") {
-          |      put(s"/admin/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      put(s"/admin/members/${member.id}",
+          |        "name" -> "dummy",
+          |        "favorite_int_number" -> Int.MaxValue.toString(),
+          |        "favorite_long_number" -> Long.MaxValue.toString(),
+          |        "favorite_short_number" -> Short.MaxValue.toString(),
+          |        "favorite_double_number" -> Double.MaxValue.toString(),
+          |        "favorite_float_number" -> Float.MaxValue.toString(),
+          |        "is_activated" -> "true",
+          |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
+          |        "csrf-token" -> "valid_token") {
           |        status should equal(302)
           |      }
           |    }
@@ -202,8 +236,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    delete(s"/admin/members/${member.id}") {
           |      status should equal(403)
           |    }
-          |    withSession("csrf-token" -> "aaaaaa") {
-          |      delete(s"/admin/members/${member.id}?csrf-token=aaaaaa") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      delete(s"/admin/members/${member.id}?csrf-token=valid_token") {
           |        status should equal(200)
           |      }
           |    }
@@ -268,12 +302,19 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "create a member" in {
-          |    post(s"/admin/members", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy") {
+          |    post(s"/admin/members",
+          |      "name" -> "dummy",
+          |      "bytes" -> "dummy",
+          |      "bytes_opt" -> "dummy") {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrf-token" -> "12345") {
-          |      post(s"/admin/members", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy", "csrf-token" -> "12345") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      post(s"/admin/members",
+          |        "name" -> "dummy",
+          |        "bytes" -> "dummy",
+          |        "bytes_opt" -> "dummy",
+          |        "csrf-token" -> "valid_token") {
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -288,12 +329,19 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/admin/members/${member.id}", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy") {
+          |    put(s"/admin/members/${member.id}",
+          |      "name" -> "dummy",
+          |      "bytes" -> "dummy",
+          |      "bytes_opt" -> "dummy") {
           |      status should equal(403)
           |    }
           |
-          |    withSession("csrf-token" -> "12345") {
-          |      put(s"/admin/members/${member.id}", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy", "csrf-token" -> "12345") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      put(s"/admin/members/${member.id}",
+          |        "name" -> "dummy",
+          |        "bytes" -> "dummy",
+          |        "bytes_opt" -> "dummy",
+          |        "csrf-token" -> "valid_token") {
           |        status should equal(302)
           |      }
           |    }
@@ -304,8 +352,8 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    delete(s"/admin/members/${member.id}") {
           |      status should equal(403)
           |    }
-          |    withSession("csrf-token" -> "aaaaaa") {
-          |      delete(s"/admin/members/${member.id}?csrf-token=aaaaaa") {
+          |    withSession("csrf-token" -> "valid_token") {
+          |      delete(s"/admin/members/${member.id}?csrf-token=valid_token") {
           |        status should equal(200)
           |      }
           |    }
