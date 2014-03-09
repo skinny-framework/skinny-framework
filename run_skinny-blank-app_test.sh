@@ -1,5 +1,5 @@
 #!/bin/bash
-
+npm install -g yo
 rm -rf $HOME/.ivy2/cache/org.skinny-framework
 rm -rf $HOME/.ivy2/local/org.skinny-framework
 cd `dirname $0`
