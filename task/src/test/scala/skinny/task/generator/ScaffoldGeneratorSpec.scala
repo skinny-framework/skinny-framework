@@ -18,6 +18,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         ScaffoldGeneratorArg("favoriteFloatNumber", "Float", None),
         ScaffoldGeneratorArg("magicNumber", "Option[Int]", None),
         ScaffoldGeneratorArg("isActivated", "Boolean", None),
+        ScaffoldGeneratorArg("bytes", "Option[ByteArray]", None),
         ScaffoldGeneratorArg("birthday", "Option[LocalDate]", None),
         ScaffoldGeneratorArg("timeToWakeUp", "Option[LocalTime]", None),
         ScaffoldGeneratorArg("createdAt", "DateTime", None)
@@ -64,6 +65,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    "favorite_float_number" -> ParamType.Float,
           |    "magic_number" -> ParamType.Int,
           |    "is_activated" -> ParamType.Boolean,
+          |    "bytes" -> ParamType.ByteArray,
           |    "birthday" -> ParamType.LocalDate,
           |    "time_to_wake_up" -> ParamType.LocalTime,
           |    "created_at" -> ParamType.DateTime
@@ -91,6 +93,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |    "favorite_float_number" -> ParamType.Float,
           |    "magic_number" -> ParamType.Int,
           |    "is_activated" -> ParamType.Boolean,
+          |    "bytes" -> ParamType.ByteArray,
           |    "birthday" -> ParamType.LocalDate,
           |    "time_to_wake_up" -> ParamType.LocalTime,
           |    "created_at" -> ParamType.DateTime
@@ -188,6 +191,108 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |    withSession("csrf-token" -> "12345") {
           |      put(s"/admin/members/${member.id}", "name" -> "dummy","favorite_int_number" -> Int.MaxValue.toString(),"favorite_long_number" -> Long.MaxValue.toString(),"favorite_short_number" -> Short.MaxValue.toString(),"favorite_double_number" -> Double.MaxValue.toString(),"favorite_float_number" -> Float.MaxValue.toString(),"is_activated" -> "true","birthday" -> new LocalDate().toString("YYYY-MM-dd"), "csrf-token" -> "12345") {
+          |        status should equal(302)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "delete a member" in {
+          |    val member = FactoryGirl(Member).create()
+          |    delete(s"/admin/members/${member.id}") {
+          |      status should equal(403)
+          |    }
+          |    withSession("csrf-token" -> "aaaaaa") {
+          |      delete(s"/admin/members/${member.id}?csrf-token=aaaaaa") {
+          |        status should equal(200)
+          |      }
+          |    }
+          |  }
+          |
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created with ByteArray") {
+      val code = generator.controllerSpecCode(Seq("admin"), "members", "member", Seq(
+        "name" -> "String",
+        "bytes" -> "ByteArray",
+        "bytesOpt" -> "Option[ByteArray]"
+      ))
+
+      val expected =
+        """package controller.admin
+          |
+          |import org.scalatra.test.scalatest._
+          |import skinny._, test._
+          |import org.joda.time._
+          |import model.admin._
+          |
+          |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(MembersController, "/*")
+          |
+          |  def member = FactoryGirl(Member).create()
+          |
+          |  it should "show members" in {
+          |    get("/admin/members") {
+          |      status should equal(200)
+          |    }
+          |    get("/admin/members/") {
+          |      status should equal(200)
+          |    }
+          |    get("/admin/members.json") {
+          |      status should equal(200)
+          |    }
+          |    get("/admin/members.xml") {
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show a member in detail" in {
+          |    get(s"/admin/members/${member.id}") {
+          |      status should equal(200)
+          |    }
+          |    get(s"/admin/members/${member.id}.xml") {
+          |      status should equal(200)
+          |    }
+          |    get(s"/admin/members/${member.id}.json") {
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show new entry form" in {
+          |    get(s"/admin/members/new") {
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "create a member" in {
+          |    post(s"/admin/members", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy") {
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "12345") {
+          |      post(s"/admin/members", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy", "csrf-token" -> "12345") {
+          |        status should equal(302)
+          |        val id = header("Location").split("/").last.toLong
+          |        Member.findById(id).isDefined should equal(true)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "show the edit form" in {
+          |    get(s"/admin/members/${member.id}/edit") {
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "update a member" in {
+          |    put(s"/admin/members/${member.id}", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy") {
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "12345") {
+          |      put(s"/admin/members/${member.id}", "name" -> "dummy","bytes" -> "dummy","bytes_opt" -> "dummy", "csrf-token" -> "12345") {
           |        status should equal(302)
           |      }
           |    }

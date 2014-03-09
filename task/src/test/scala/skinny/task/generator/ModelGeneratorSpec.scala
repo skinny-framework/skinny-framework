@@ -12,6 +12,8 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
       val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
+        "bytes" -> "ByteArray",
+        "bytesOpt" -> "Option[ByteArray]",
         "birthday" -> "Option[LocalDate]"
       ))
       val expected =
@@ -26,6 +28,8 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |  id: Long,
           |  name: String,
           |  isActivated: Boolean,
+          |  bytes: Array[Byte],
+          |  bytesOpt: Option[Array[Byte]] = None,
           |  birthday: Option[LocalDate] = None,
           |  createdAt: DateTime,
           |  updatedAt: DateTime
@@ -39,6 +43,8 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |    id = rs.get(rn.id),
           |    name = rs.get(rn.name),
           |    isActivated = rs.get(rn.isActivated),
+          |    bytes = rs.get(rn.bytes),
+          |    bytesOpt = rs.get(rn.bytesOpt),
           |    birthday = rs.get(rn.birthday),
           |    createdAt = rs.get(rn.createdAt),
           |    updatedAt = rs.get(rn.updatedAt)
