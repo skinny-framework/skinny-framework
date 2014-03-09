@@ -42,7 +42,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
         "com.typesafe" %  "config" % "1.2.0" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+      ) ++ jodaDependencies ++ slf4jApiDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -177,11 +177,10 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
   val slf4jApiDependencies = Seq(
-    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile",
-    "org.clapper" %% "grizzled-slf4j" % "1.0.1" % "compile"
+    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile"
   )
   val scalatraDependencies = Seq(
-    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
+    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile" excludeAll(ExclusionRule(organization = "org.clapper")),
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile",
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile",

@@ -30,7 +30,7 @@ trait SkinnyControllerBase
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits
-    with grizzled.slf4j.Logging {
+    with Logging {
 
   /**
    * Defines formats to be respond. By default, HTML, JSON, XML are available.

@@ -1,10 +1,10 @@
 package skinny.session
 
-import skinny.session.jdbc.SkinnySession
 import javax.servlet.http.HttpServletRequest
-import skinny.filter.SkinnySessionFilter
-import grizzled.slf4j.Logging
 import skinny.controller.feature.RequestScopeFeature
+import skinny.filter.SkinnySessionFilter
+import skinny.logging.Logging
+import skinny.session.jdbc.SkinnySession
 
 /**
  * SkinnySession works as a shared session for multiple servers.

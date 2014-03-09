@@ -7,7 +7,7 @@ import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
 import skinny.I18n
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 import javax.servlet.http.HttpServletRequest
 
 object RequestScopeFeature extends Logging {

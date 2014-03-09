@@ -4,7 +4,7 @@ import skinny.orm._
 import scalikejdbc._, SQLInterpolation._
 import org.joda.time.DateTime
 import java.io._
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 
 /**
  * SkinnySession JDBC implmenetation.

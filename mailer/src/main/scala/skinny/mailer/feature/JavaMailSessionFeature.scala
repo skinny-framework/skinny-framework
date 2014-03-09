@@ -1,8 +1,8 @@
 package skinny.mailer.feature
 
-import java.util.Properties
-import grizzled.slf4j.Logging
 import javax.mail._
+import java.util.Properties
+import skinny.logging.Logging
 import skinny.mailer.JavaMailOps
 
 /**

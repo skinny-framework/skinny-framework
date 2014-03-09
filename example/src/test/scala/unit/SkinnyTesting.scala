@@ -2,7 +2,7 @@ package unit
 
 import skinny.test._
 import org.scalatest._
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 import scalikejdbc.{ LoggingSQLAndTimeSettings, GlobalSettings }
 
 trait SkinnyTesting extends SkinnyTestSupport with Logging {

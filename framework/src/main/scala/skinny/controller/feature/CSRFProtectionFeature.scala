@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
+import skinny.logging.Logging
 import org.scalatra._
-import grizzled.slf4j.Logging
 
 object CSRFProtectionFeature {
 

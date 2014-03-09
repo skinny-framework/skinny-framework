@@ -3,10 +3,10 @@ package skinny.session
 import javax.servlet._
 import javax.servlet.http._
 import org.joda.time.DateTime
-import grizzled.slf4j.Logging
+import skinny.filter.SkinnySessionFilter
+import skinny.logging.Logging
 import skinny.session.jdbc.SkinnySession
 import skinny.session.servlet._
-import skinny.filter.SkinnySessionFilter
 
 /**
  * Servlet filter to attach skinny sessions to Servlet session due to invalidation.
