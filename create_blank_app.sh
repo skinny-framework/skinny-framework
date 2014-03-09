@@ -14,7 +14,7 @@ cd -
 cd ${script_dir}/release
 mkdir skinny-blank-app
 cd skinny-blank-app
-yo skinny
+yo --no-insight skinny
 rm -f package.json
 cd ..
 zip -r skinny-blank-app.zip ./skinny-blank-app
