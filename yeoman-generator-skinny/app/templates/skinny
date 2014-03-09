@@ -47,7 +47,7 @@ elif [ "$command" == "compile" ];then
   ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
   ${sbt_path} dev/test
-elif [ "$command" == "test-only" ];then
+elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
   ${sbt_path} "dev/test-only $2"
 elif [ "$command" == "test:coverage" ];then
   ${sbt_path} scoverage:test

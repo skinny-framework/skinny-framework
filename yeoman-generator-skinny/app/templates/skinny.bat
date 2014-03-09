@@ -52,6 +52,10 @@ IF %command%==test-only (
   sbt "dev/test-only %2"
   GOTO script_eof
 )
+IF %command%==testOnly (
+  sbt "dev/test-only %2"
+  GOTO script_eof
+)
 
 IF "%command%"=="test:coverage" (
   sbt "scoverage:test"
