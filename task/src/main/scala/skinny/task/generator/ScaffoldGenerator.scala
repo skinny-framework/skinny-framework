@@ -237,8 +237,9 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def resourceName = "${resource}"${primaryKeyNameIfNotId}
         |
         |  override def resourcesBasePath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
-        |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
         |  override def useSnakeCasedParamKeys = true
+        |
+        |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${resourcesName}"
         |
         |  override def createParams = Params(params)${params}
         |  override def createForm = validation(createParams,

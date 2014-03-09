@@ -40,8 +40,9 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  override def resourceName = "member"
           |
           |  override def resourcesBasePath = s"/admin/${toSnakeCase(resourcesName)}"
-          |  override def viewsDirectoryPath = s"/admin/${toSnakeCase(resourcesName)}"
           |  override def useSnakeCasedParamKeys = true
+          |
+          |  override def viewsDirectoryPath = s"/admin/${resourcesName}"
           |
           |  override def createParams = Params(params).withDate("birthday").withTime("time_to_wake_up").withDateTime("created_at")
           |  override def createForm = validation(createParams,
