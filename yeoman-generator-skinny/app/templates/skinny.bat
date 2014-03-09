@@ -176,7 +176,6 @@ ECHO   compile        : will compile all the classes
 ECHO   db:migrate     : will execute database migration
 ECHO   test           : will run all the tests
 ECHO   test-only      : will run the specified test
-ECHO   test:coverage  : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository

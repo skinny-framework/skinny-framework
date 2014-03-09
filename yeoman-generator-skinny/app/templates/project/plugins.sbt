@@ -1,15 +1,21 @@
-// sbt plugins for this project
+// --------------------------------------------
+// sbt plugins for this Skinny app project
+// --------------------------------------------
 
 // --------
-// Scalatra
+// Scalatra sbt plugin
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.4")
 
+// scalatra-sbt depends on xsbt-web-plugin
 addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.7.0")
 
+// for Scalate template compilaion
 addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 
 // --------
-// scalarifrom (disabled by default for beginners)
+// scalarifrom for code formatting
+// NOTE: Disabled by default because this is confusing for beginners
+//
 //addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.2.1")
 
 // --------
@@ -21,15 +27,15 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.4.0")
 
 // --------
-// for ./skinny package:standalone
+// for standalone jar packaging (./skinny package:standalone)
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.10.2")
 
 // --------
-// for test coverage
-// https://github.com/scoverage/sbt-scoverage
-resolvers += Classpaths.sbtPluginReleases
-
-addSbtPlugin("com.sksamuel.scoverage" %% "sbt-scoverage" % "0.95.7")
+// scoverage for test coverage (./skinny test:coverage)
+// NOTE: Disabled by default because scoverage 0.95.7 doesn't work with Skinny ORM
+//
+//resolvers += Classpaths.sbtPluginReleases
+//addSbtPlugin("com.sksamuel.scoverage" %% "sbt-scoverage" % "0.95.7")
 
 // --------
 // Scala.js
