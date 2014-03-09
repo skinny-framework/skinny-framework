@@ -218,9 +218,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
     render(s"${viewsDirectoryPath}/show")
   }
 
-  protected def findResource[A](id: Id): Option[A] = {
-    model.findModel(id).map(_.asInstanceOf[A])
-  }
+  protected def findResource(id: Id): Option[_] = model.findModel(id)
 
   /**
    * Shows input form for creation.
