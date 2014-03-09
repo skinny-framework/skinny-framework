@@ -232,7 +232,6 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "delete a member" in {
-          |    val member = FactoryGirl(Member).create()
           |    delete(s"/admin/members/${member.id}") {
           |      status should equal(403)
           |    }
@@ -348,7 +347,6 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "delete a member" in {
-          |    val member = FactoryGirl(Member).create()
           |    delete(s"/admin/members/${member.id}") {
           |      status should equal(403)
           |    }

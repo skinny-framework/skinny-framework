@@ -378,7 +378,6 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "delete a ${resource}" in {
-        |    val ${resource} = FactoryGirl(${modelClassName}).create()
         |    delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(403)
         |    }

@@ -21,7 +21,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
         """-@val s: skinny.Skinny
           |-@val keyAndErrorMessages: skinny.KeyAndErrorMessages
           |
-          |- import controller.admin.MembersController
+          |-# Be aware of package imports.
+          |-# 1. src/main/scala/templates/ScalatePackage.scala
+          |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |%div(class="form-group")
           |  %label(class="control-label" for="name") #{s.i18n.get("member.name")}
@@ -98,7 +100,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """-@val s: skinny.Skinny
           |
-          |- import controller.admin.MembersController
+          |-# Be aware of package imports.
+          |-# 1. src/main/scala/templates/ScalatePackage.scala
+          |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |%h3 #{s.i18n.get("member.new")}
           |%hr
@@ -126,7 +130,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """-@val s: skinny.Skinny
           |
-          |- import controller.admin.MembersController
+          |-# Be aware of package imports.
+          |-# 1. src/main/scala/templates/ScalatePackage.scala
+          |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |%h3 #{s.i18n.get("member.edit")}
           |%hr
@@ -156,7 +162,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
           |-@val items: Seq[model.admin.Member]
           |-@val totalPages: Int
           |
-          |- import controller.admin.MembersController
+          |-# Be aware of package imports.
+          |-# 1. src/main/scala/templates/ScalatePackage.scala
+          |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |%h3 #{s.i18n.get("member.list")}
           |%hr
@@ -217,7 +225,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with ShouldMatchers {
         """-@val item: model.admin.Member
           |-@val s: skinny.Skinny
           |
-          |- import controller.admin.MembersController
+          |-# Be aware of package imports.
+          |-# 1. src/main/scala/templates/ScalatePackage.scala
+          |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |%h3 #{s.i18n.get("member.detail")}
           |%hr
