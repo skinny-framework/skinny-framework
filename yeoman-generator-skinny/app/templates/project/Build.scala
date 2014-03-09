@@ -4,6 +4,7 @@ import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
+import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
@@ -37,7 +38,8 @@ object SkinnyAppBuild extends Build {
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
       //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-    )
+    ),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
   // -------------------------------------------------------

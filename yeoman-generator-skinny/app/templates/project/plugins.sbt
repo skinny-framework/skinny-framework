@@ -42,3 +42,5 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.10.2")
 // http://www.scala-js.org/
 //addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.3")
 
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+
