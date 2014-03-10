@@ -13,7 +13,8 @@ create table services (
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
   created_at timestamp not null,
-  updated_at timestamp not null
+  updated_at timestamp not null,
+  deleted_at timestamp
 )
 """,
     sql"""
@@ -22,7 +23,8 @@ create table applications (
   name varchar(128) not null,
   service_id bigint not null references services(id),
   created_at timestamp not null,
-  updated_at timestamp not null
+  updated_at timestamp not null,
+  deleted_at timestamp
 )
 """,
     sql"""

@@ -3,7 +3,7 @@ package service
 import org.joda.time.DateTime
 import skinny.orm.SkinnyCRUDMapper
 import scalikejdbc._, SQLInterpolation._
-import skinny.orm.feature.TimestampsFeature
+import skinny.orm.feature.{ SoftDeleteWithTimestampFeature, TimestampsFeature }
 
 case class Application(
   id: Long,
@@ -13,7 +13,10 @@ case class Application(
   createdAt: DateTime,
   updatedAt: DateTime)
 
-object Application extends SkinnyCRUDMapper[Application] with TimestampsFeature[Application] {
+object Application extends SkinnyCRUDMapper[Application]
+    with TimestampsFeature[Application]
+    with SoftDeleteWithTimestampFeature[Application] {
+
   override val connectionPoolName = 'service
   override val tableName = "applications"
   override def defaultAlias = createAlias("a")

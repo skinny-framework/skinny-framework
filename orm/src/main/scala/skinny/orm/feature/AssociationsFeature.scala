@@ -3,11 +3,11 @@ package skinny.orm.feature
 import scala.language.existentials
 
 import skinny.orm._
+import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.feature.associations._
 import scalikejdbc._, SQLInterpolation._
 import scala.collection.mutable
 import skinny.util.JavaReflectAPI
-import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.exception.AssociationSettingsException
 
 object AssociationsFeature {
@@ -347,9 +347,11 @@ trait AssociationsFeature[Entity]
       }
 
     mergedJoinDefinitions.foldLeft(sql) { (query, join) =>
+      // merge soft deletion or something else default scope condition
+      val condition: SQLSyntax = sqls.toAndConditionOpt(Some(join.on), join.rightMapper.defaultScope(join.rightAlias)).get
       join.joinType match {
-        case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
-        case LeftOuterJoin => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
+        case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(condition)
+        case LeftOuterJoin => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(condition)
         case jt => throw new IllegalStateException(s"Unexpected pattern ${jt}")
       }
     }

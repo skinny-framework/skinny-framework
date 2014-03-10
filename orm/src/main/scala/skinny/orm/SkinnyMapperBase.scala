@@ -39,7 +39,9 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
    *
    * @return default scope
    */
-  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = None
+  def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = None
+
+  def defaultScopeWithDefaultAlias: Option[SQLSyntax] = defaultScope(defaultAlias)
 
   /**
    * Returns primary key name. (default: "id")

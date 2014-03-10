@@ -5,9 +5,6 @@ import skinny._
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scala.collection.mutable
-import skinny.orm.feature.associations.HasManyAssociation
-import skinny.orm.feature.associations.BelongsToAssociation
-import skinny.orm.feature.associations.HasOneAssociation
 
 /**
  * Provides auto-generated CRUD feature.
