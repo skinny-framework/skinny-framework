@@ -26,9 +26,9 @@ object DateTimeUtil {
   /**
    * Returns "2014-01-02 03:04:05".
    */
-  def toString(d: DateTime): String = d.toString("YYYY-MM-dd hh:mm:ss")
+  def toString(d: DateTime): String = d.toString("YYYY-MM-dd HH:mm:ss")
   def toString(d: LocalDate): String = d.toString("YYYY-MM-dd")
-  def toString(d: LocalTime): String = d.toString("hh:mm:ss")
+  def toString(d: LocalTime): String = d.toString("HH:mm:ss")
 
   /**
    * Returns "2014-01-02 03:04:05".

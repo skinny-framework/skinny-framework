@@ -45,4 +45,9 @@ class DateTimeUtilTest extends FlatSpec with ShouldMatchers {
     DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05+09:00", ParamType.DateTime) should equal("2013-01-02T03:04:05+09:00")
   }
 
+  it should "have #toString" in {
+    val dt = DateTimeUtil.parseDateTime("2013-02-03 15:11:22")
+    DateTimeUtil.toString(dt) should equal("2013-02-03 15:11:22")
+  }
+
 }
