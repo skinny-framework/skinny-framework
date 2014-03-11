@@ -49,7 +49,9 @@ object ServletSession extends SkinnyTable[ServletSession] {
       select(sv.jsessionId).from(this as sv).where.eq(sv.skinnySessionId, session.id).orderBy(sv.createdAt).desc
     }.map(_.string(1)).list.apply().drop(aliveCount)
 
-    withSQL(delete.from(ServletSession).where.in(column.jsessionId, jsessionIds)).update.apply()
+    if (!jsessionIds.isEmpty) {
+      withSQL(delete.from(ServletSession).where.in(column.jsessionId, jsessionIds)).update.apply()
+    }
   }
 
 }
