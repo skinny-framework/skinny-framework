@@ -1,6 +1,6 @@
 {
   "name": "generator-skinny",
-  "version": "1.0.0-RC8",
+  "version": "1.0.0-RC9",
   "description": "A generator for Skinny framework which is a 'Scala on Rails'",
   "keywords": [
     "yeoman-generator",

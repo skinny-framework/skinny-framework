@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC9-SNAPSHOT"
+  val skinnyVersion = "1.0.0-RC9"
   val scalatraVersion = "2.2.2"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
