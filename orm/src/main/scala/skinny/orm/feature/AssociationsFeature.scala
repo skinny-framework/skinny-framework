@@ -348,7 +348,11 @@ trait AssociationsFeature[Entity]
 
     mergedJoinDefinitions.foldLeft(sql) { (query, join) =>
       // merge soft deletion or something else default scope condition
-      val condition: SQLSyntax = sqls.toAndConditionOpt(Some(join.on), join.rightMapper.defaultScope(join.rightAlias)).get
+      val condition: SQLSyntax = sqls.toAndConditionOpt(
+        Some(join.on),
+        join.leftMapper.defaultScope(join.leftAlias),
+        join.rightMapper.defaultScope(join.rightAlias)
+      ).get
       join.joinType match {
         case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(condition)
         case LeftOuterJoin => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(condition)
