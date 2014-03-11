@@ -27,7 +27,7 @@ class WithoutTestSupportSpec extends FlatSpec with ShouldMatchers with BeforeAnd
 
   it should "send a email" in {
     MyMailer2.mail(
-      to = toAddress,
+      to = Seq(toAddress),
       subject = "test subject 日本語",
       body = "body 日本語"
     ).deliver()
@@ -46,7 +46,7 @@ class WithoutTestSupportSpec extends FlatSpec with ShouldMatchers with BeforeAnd
   }
 
   it should "send text only email" in {
-    MyMailer2.mail(to = toAddress, body = "text Only").deliver()
+    MyMailer2.mail(to = Seq(toAddress), body = "text Only").deliver()
 
     inbox.size should be(1)
     inbox.get(0).body.get should be("text Only")

@@ -2,7 +2,6 @@ package skinny.mailer.feature
 
 import skinny.mailer.{ SkinnyMessage, SkinnyMailerBase }
 import javax.mail.{ Session, Transport }
-import javax.mail.internet.MimeBodyPart
 
 /**
  * Provides SkinnyMessage builder.
@@ -13,7 +12,7 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
 
   def from(from: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(from = from))
 
-  def to(to: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(to = to))
+  def to(to: String*)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(to = to))
 
   def subject(subject: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(subject = subject))
 
@@ -51,7 +50,7 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       this
     }
 
-    def to(to: String): SkinnyMessageBuilder = {
+    def to(to: String*): SkinnyMessageBuilder = {
       message.to = to
       this
     }
@@ -73,18 +72,8 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       this
     }
 
-    def bcc(bcc: String): SkinnyMessageBuilder = {
-      message.bcc = bcc
-      this
-    }
-
     def bcc(bcc: String*): SkinnyMessageBuilder = {
       message.bcc = bcc
-      this
-    }
-
-    def cc(cc: String): SkinnyMessageBuilder = {
-      message.cc = cc
       this
     }
 
