@@ -1,11 +1,11 @@
 package skinny.orm.feature
 
-import skinny.orm.SkinnyMapperBase
+import skinny.orm._
 import skinny.orm.feature.associations._
-import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.includes.IncludesQueryRepository
-import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException
+import scalikejdbc._, SQLInterpolation._
+import skinny.util.JavaReflectAPI
 
 /**
  * Provides #includes APIs.
@@ -61,6 +61,8 @@ trait IncludesFeatureWithId[Id, Entity]
       override def autoSession = underlying.autoSession
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
+
+      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
 
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
     }
