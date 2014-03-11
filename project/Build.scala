@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.0-RC8"
+  val _version = "1.0.0-RC9"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
@@ -42,7 +42,7 @@ object SkinnyFrameworkBuild extends Build {
       scalaVersion := "2.10.0",
       libraryDependencies ++= Seq(
         "com.typesafe" %  "config" % "1.2.0" % "compile"
-      ) ++ jodaDependencies ++ testDependencies
+      ) ++ jodaDependencies ++ slf4jApiDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
 
@@ -177,8 +177,7 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
   val slf4jApiDependencies = Seq(
-    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile",
-    "org.clapper" %% "grizzled-slf4j" % "1.0.1" % "compile"
+    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile"
   )
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",

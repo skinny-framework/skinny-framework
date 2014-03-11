@@ -237,8 +237,9 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  override def resourceName = "${resource}"${primaryKeyNameIfNotId}
         |
         |  override def resourcesBasePath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
-        |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
         |  override def useSnakeCasedParamKeys = true
+        |
+        |  override def viewsDirectoryPath = s"${toResourcesBasePath(namespaces)}/$${resourcesName}"
         |
         |  override def createParams = Params(params)${params}
         |  override def createForm = validation(createParams,
@@ -272,19 +273,26 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
-    val params = attributePairs.map { case (k, t) => toSnakeCase(k) -> toParamType(t) }.map {
-      case (k, "Long") => "\"" + k + "\" -> Long.MaxValue.toString()"
-      case (k, "Int") => "\"" + k + "\" -> Int.MaxValue.toString()"
-      case (k, "Short") => "\"" + k + "\" -> Short.MaxValue.toString()"
-      case (k, "Double") => "\"" + k + "\" -> Double.MaxValue.toString()"
-      case (k, "Float") => "\"" + k + "\" -> Float.MaxValue.toString()"
-      case (k, "Byte") => "\"" + k + "\" -> Byte.MaxValue.toString()"
-      case (k, "Boolean") => "\"" + k + "\" -> \"true\""
-      case (k, "DateTime") => "\"" + k + "\" -> new DateTime().toString(\"YYYY-MM-dd hh:mm:ss\")"
-      case (k, "LocalDate") => "\"" + k + "\" -> new LocalDate().toString(\"YYYY-MM-dd\")"
-      case (k, "LocalTime") => "\"" + k + "\" -> new LocalTime().toString(\"hh:mm:ss\")"
-      case (k, _) => "\"" + k + "\" -> \"dummy\""
-    }.mkString(",")
+    def params(space: String) = {
+      attributePairs.map { case (k, t) => toSnakeCase(k) -> toParamType(t) }.map {
+        case (key, paramType) =>
+          space + "\"" + key + "\" -> " + {
+            paramType match {
+              case "Long" => "Long.MaxValue.toString()"
+              case "Int" => "Int.MaxValue.toString()"
+              case "Short" => "Short.MaxValue.toString()"
+              case "Double" => "Double.MaxValue.toString()"
+              case "Float" => "Float.MaxValue.toString()"
+              case "Byte" => "Byte.MaxValue.toString()"
+              case "Boolean" => "\"true\""
+              case "DateTime" => "skinny.util.DateTimeUtil.toString(new DateTime())"
+              case "LocalDate" => "skinny.util.DateTimeUtil.toString(new LocalDate())"
+              case "LocalTime" => "skinny.util.DateTimeUtil.toString(new LocalTime())"
+              case _ => "\"dummy\""
+            }
+          }
+      }.mkString(",\n")
+    }
 
     s"""package ${namespace}
         |
@@ -332,12 +340,15 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "create a ${resource}" in {
-        |    post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}", ${params}) {
+        |    post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}",
+        |${params("      ")}) {
         |      status should equal(403)
         |    }
         |
-        |    withSession("csrf-token" -> "12345") {
-        |      post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}", ${params}, "csrf-token" -> "12345") {
+        |    withSession("csrf-token" -> "valid_token") {
+        |      post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}",
+        |${params("        ")},
+        |        "csrf-token" -> "valid_token") {
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -352,24 +363,26 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "update a ${resource}" in {
-        |    put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}) {
+        |    put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}",
+        |${params("      ")}) {
         |      status should equal(403)
         |    }
         |
-        |    withSession("csrf-token" -> "12345") {
-        |      put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}", ${params}, "csrf-token" -> "12345") {
+        |    withSession("csrf-token" -> "valid_token") {
+        |      put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}",
+        |${params("        ")},
+        |        "csrf-token" -> "valid_token") {
         |        status should equal(302)
         |      }
         |    }
         |  }
         |
         |  it should "delete a ${resource}" in {
-        |    val ${resource} = FactoryGirl(${modelClassName}).create()
         |    delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
         |      status should equal(403)
         |    }
-        |    withSession("csrf-token" -> "aaaaaa") {
-        |      delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=aaaaaa") {
+        |    withSession("csrf-token" -> "valid_token") {
+        |      delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=valid_token") {
         |        status should equal(200)
         |      }
         |    }

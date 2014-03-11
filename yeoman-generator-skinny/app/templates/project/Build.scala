@@ -4,10 +4,11 @@ import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
+import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC8"
+  val skinnyVersion = "1.0.0-RC9"
   val scalatraVersion = "2.2.2"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
@@ -36,8 +37,9 @@ object SkinnyAppBuild extends Build {
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
-      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
-    )
+      ,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+    ),
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
   // -------------------------------------------------------

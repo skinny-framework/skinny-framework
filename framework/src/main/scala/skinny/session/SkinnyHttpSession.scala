@@ -1,10 +1,10 @@
 package skinny.session
 
-import skinny.session.jdbc.SkinnySession
 import javax.servlet.http.HttpServletRequest
-import skinny.filter.SkinnySessionFilter
-import grizzled.slf4j.Logging
 import skinny.controller.feature.RequestScopeFeature
+import skinny.filter.SkinnySessionFilter
+import skinny.logging.Logging
+import skinny.session.jdbc.SkinnySession
 
 /**
  * SkinnySession works as a shared session for multiple servers.
@@ -30,16 +30,16 @@ trait SkinnyHttpSession {
 object SkinnyHttpSession extends Logging {
 
   def getOrCreate(request: HttpServletRequest): SkinnyHttpSession = {
-    val jsessionIdCookieName = request.getServletContext.getSessionCookieConfig.getName
-    val jsessionIdInCookie = request.getCookies.find(_.getName == jsessionIdCookieName).map(_.getValue)
-    val jsessionIdInSession = request.getSession.getId
+    val jsessionIdCookieName: String = request.getServletContext.getSessionCookieConfig.getName
+    val jsessionIdInCookie: Option[String] = Option(request.getCookies).flatMap(_.find(_.getName == jsessionIdCookieName).map(_.getValue))
+    val jsessionIdInSession: Option[String] = Option(request.getSession).map(_.getId)
     logger.debug(s"[Skinny Session] session id (cookie: ${jsessionIdInCookie}, local session: ${jsessionIdInSession})")
 
     val expireAt = SkinnySession.getExpireAtFromMaxInactiveInterval(request.getSession.getMaxInactiveInterval)
     val skinnySession = if (jsessionIdInCookie.isDefined && jsessionIdInCookie.get != jsessionIdInSession) {
-      SkinnySession.findOrCreate(jsessionIdInCookie.get, Option(jsessionIdInSession), expireAt)
+      SkinnySession.findOrCreate(jsessionIdInCookie.get, jsessionIdInSession, expireAt)
     } else {
-      SkinnySession.findOrCreate(jsessionIdInSession, None, expireAt)
+      SkinnySession.findOrCreate(jsessionIdInSession.orNull[String], None, expireAt)
     }
 
     val skinnySessionWrapper = new SkinnyHttpSessionJDBCImpl(request.getSession, skinnySession)

@@ -42,4 +42,6 @@ package object skinny {
 
   type TypeConverter[A, B] = org.scalatra.util.conversion.TypeConverter[A, B]
 
+  type Logging = skinny.logging.Logging
+
 }

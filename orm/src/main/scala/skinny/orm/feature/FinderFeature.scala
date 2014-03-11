@@ -26,7 +26,7 @@ trait FinderFeatureWithId[Id, Entity]
   /**
    * Default ordering condition.
    */
-  def defaultOrdering = defaultAlias.field(primaryKeyFieldName)
+  def defaultOrdering: SQLSyntax = primaryKeyField
 
   /**
    * Finds a single entity by primary key.
@@ -38,7 +38,7 @@ trait FinderFeatureWithId[Id, Entity]
   def findById(id: Id)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.eq(defaultOrdering, idToRawValue(id)).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.eq(primaryKeyField, idToRawValue(id)).and(defaultScopeWithDefaultAlias)
     }).single.apply())
   }
 
@@ -52,7 +52,7 @@ trait FinderFeatureWithId[Id, Entity]
   def findAllByIds(ids: Id*)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where.in(defaultOrdering, ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.in(primaryKeyField, ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
     }).list.apply())
   }
 

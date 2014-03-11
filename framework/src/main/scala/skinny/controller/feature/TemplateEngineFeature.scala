@@ -2,12 +2,11 @@ package skinny.controller.feature
 
 import org.scalatra._
 import org.json4s._
+import scala.xml._
 
 import skinny.Format
+import skinny.logging.Logging
 import skinny.exception.ViewTemplateNotFoundException
-
-import scala.xml._
-import grizzled.slf4j.Logging
 import skinny.controller.SkinnyControllerBase
 
 /**

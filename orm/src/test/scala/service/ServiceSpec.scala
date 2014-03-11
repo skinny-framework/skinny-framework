@@ -31,6 +31,14 @@ class ServiceSpec extends fixture.FunSpec with ShouldMatchers
     it("should work as expected") { implicit session =>
       val app = Application.joins(Application.service).findAll().head
       app.service.isDefined should equal(true)
+
+      val beforeService = Service.joins(Service.applications).findById(app.serviceId).get
+
+      Application.deleteById(beforeService.applications.head.id)
+
+      val afterService = Service.joins(Service.applications).findById(app.serviceId).get
+      afterService.applications.size should equal(
+        beforeService.applications.size - 1)
     }
   }
 }

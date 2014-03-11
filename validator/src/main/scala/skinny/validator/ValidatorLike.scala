@@ -21,7 +21,7 @@ trait ValidatorLike {
   lazy val errors: Errors = Errors(validations.statesAsSeq.filter {
     result => result.isInstanceOf[ValidationFailure]
   }.groupBy(_.paramDef.key).map {
-    case (key, failures) => (key, failures.flatMap(_.errors))
+    case (key, failures) => (key, failures.flatMap(_.errors).distinct)
   })
 
   /**

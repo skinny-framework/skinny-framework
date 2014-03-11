@@ -1,9 +1,9 @@
 package skinny.orm.feature
 
-import skinny.orm.SkinnyMapperBase
-import skinny.orm.feature.associations.{ HasManyAssociation, HasOneAssociation, BelongsToAssociation, Association }
-import scalikejdbc._, SQLInterpolation._
+import skinny.orm._
+import skinny.orm.feature.associations._
 import skinny.orm.feature.includes.IncludesQueryRepository
+import scalikejdbc._, SQLInterpolation._
 
 /**
  * Provides #joins APIs.
@@ -39,6 +39,8 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
       override def autoSession = underlying.autoSession
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
+
+      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
 
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
     }

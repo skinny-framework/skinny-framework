@@ -15,7 +15,7 @@ object MyMailer2 extends SkinnyMailer {
   }
 
   def deliverMessageWithAttachments(toAddress: String) = {
-    val msg = mail(to = toAddress)
+    val msg = mail(to = Seq(toAddress))
     msg.body = "foo"
     msg.attachments ++= ("d1.txt", getClass.getResource("/dummy.txt").toURI.getPath)
     msg.attachments ++= ("d2.txt", getClass.getResource("/dummy2.txt").toURI.getPath)
@@ -34,7 +34,7 @@ object MyMailer2 extends SkinnyMailer {
 
   def deliverMultipleMessages(toAddress: String) = {
     val t = transport
-    val message = mail(to = toAddress)
+    val message = mail(to = Seq(toAddress))
     for (i <- 0 until 3) message.deliver(t, true)
     t.close
   }

@@ -5,9 +5,6 @@ import skinny._
 import skinny.orm._
 import skinny.orm.feature.associations._
 import scala.collection.mutable
-import skinny.orm.feature.associations.HasManyAssociation
-import skinny.orm.feature.associations.BelongsToAssociation
-import skinny.orm.feature.associations.HasOneAssociation
 
 /**
  * Provides auto-generated CRUD feature.
@@ -62,6 +59,8 @@ trait CRUDFeatureWithId[Id, Entity]
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
 
+      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
+
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
     }
   }
@@ -95,6 +94,8 @@ trait CRUDFeatureWithId[Id, Entity]
       override def autoSession = underlying.autoSession
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
+
+      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
 
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
     }

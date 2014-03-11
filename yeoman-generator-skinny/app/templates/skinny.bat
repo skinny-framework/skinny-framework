@@ -14,6 +14,14 @@ IF %command%==run (
   sbt "~;container:stop;container:start"
   GOTO script_eof
 )
+IF %command%==server (
+  sbt "~;container:stop;container:start"
+  GOTO script_eof
+)
+IF %command%==s (
+  sbt "~;container:stop;container:start"
+  GOTO script_eof
+)
 
 IF %command%==clean (
   sbt clean
@@ -41,6 +49,10 @@ IF %command%==test (
 )
 
 IF %command%==test-only (
+  sbt "dev/test-only %2"
+  GOTO script_eof
+)
+IF %command%==testOnly (
   sbt "dev/test-only %2"
   GOTO script_eof
 )
@@ -160,7 +172,7 @@ REM Didn't select command.
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run            : will run application for local development
+ECHO   run/server/s   : will run application for local development
 ECHO   clean          : will clear target directory
 ECHO   update         : will run sbt update
 ECHO   console        : will run sbt console
@@ -168,7 +180,6 @@ ECHO   compile        : will compile all the classes
 ECHO   db:migrate     : will execute database migration
 ECHO   test           : will run all the tests
 ECHO   test-only      : will run the specified test
-ECHO   test:coverage  : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository

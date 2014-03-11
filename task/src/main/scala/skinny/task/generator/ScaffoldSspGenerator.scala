@@ -12,12 +12,16 @@ object ScaffoldSspGenerator extends ScaffoldSspGenerator
  */
 trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
+  val packageImportsWarning =
+    s"""<%-- Be aware of package imports.
+        | 1. src/main/scala/templates/ScalatePackage.scala
+        | 2. scalateTemplateConfig in project/Build.scala
+        |--%>""".stripMargin
+
   override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
-    "<%@val s: skinny.Skinny %>\n" +
-      "<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
-      s"<% import ${importController} %>\n\n" +
+    "<%@val s: skinny.Skinny %>\n<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
+      packageImportsWarning + "\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
@@ -154,10 +158,9 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
         |
-        |<% import ${importController} %>
+        |${packageImportsWarning}
         |
         |<h3>$${s.i18n.get("${resource}.new")}</h3>
         |<hr/>
@@ -175,10 +178,9 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
-    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
         |
-        |<% import ${importController} %>
+        |${packageImportsWarning}
         |
         |<h3>$${s.i18n.get("${resource}.edit")}</h3>
         |<hr/>
@@ -197,12 +199,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
   override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
-    val importController = s"${toNamespace("controller", namespaces)}.${controllerClassName}"
     s"""<%@val s: skinny.Skinny %>
         |<%@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}] %>
         |<%@val totalPages: Int %>
         |
-        |<% import ${importController} %>
+        |${packageImportsWarning}
         |
         |<h3>$${s.i18n.get("${resource}.list")}</h3>
         |<hr/>
@@ -255,9 +256,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
   override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     val modelClassName = toClassName(resource)
-    val controllerNamespace = toNamespace("controller", namespaces)
     val modelNamespace = toNamespace("model", namespaces)
-    val importController = s"${controllerNamespace}.${controllerClassName}"
     val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
@@ -270,7 +269,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     s"""<%@val item: ${modelNamespace}.${modelClassName} %>
         |<%@val s: skinny.Skinny %>
         |
-        |<% import ${importController} %>
+        |${packageImportsWarning}
         |
         |<h3>$${s.i18n.get("${resource}.detail")}</h3>
         |<hr/>

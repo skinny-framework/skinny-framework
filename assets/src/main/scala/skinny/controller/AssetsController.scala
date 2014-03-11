@@ -98,18 +98,24 @@ class AssetsController extends SkinnyController {
   /**
    * Returns js or coffee assets.
    */
-  def js(): Any = if (isEnabled) {
-    path("js").map { path =>
-      jsFromClassPath(path)
-        .orElse(compiledJsFromClassPath(path))
-        .orElse(jsFromFile(path))
-        .orElse(compiledJsFromFile(path))
-        .map { js =>
-          contentType = "application/javascript"
-          js
-        }.getOrElse(pass())
-    }.orElse(jsSourceMaps()).getOrElse(pass())
-  } else pass()
+  def js(): Any = if (path("js") == Some("skinny-framework")) {
+    path("js").flatMap(p => jsFromClassPath(p)).getOrElse(
+      throw new IllegalStateException("skinny-framework.js should be found. This is a framework bug.")
+    )
+  } else {
+    if (isEnabled) {
+      path("js").map { path =>
+        jsFromClassPath(path)
+          .orElse(compiledJsFromClassPath(path))
+          .orElse(jsFromFile(path))
+          .orElse(compiledJsFromFile(path))
+          .map { js =>
+            contentType = "application/javascript"
+            js
+          }.getOrElse(pass())
+      }.orElse(jsSourceMaps()).getOrElse(pass())
+    } else pass()
+  }
 
   private def jsSourceMaps(): Option[Any] = {
     if (sourceMapsEnabled) {

@@ -3,8 +3,8 @@ package skinny.mailer
 import javax.mail._
 import javax.mail.internet.MimeMessage
 import scala.io.Source
-import grizzled.slf4j.Logging
 import scala.collection.JavaConverters._
+import skinny.logging.Logging
 
 /**
  * Operations about javax.mail APIs.

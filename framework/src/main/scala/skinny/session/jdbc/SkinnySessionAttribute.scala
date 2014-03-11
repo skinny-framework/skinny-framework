@@ -1,7 +1,7 @@
 package skinny.session.jdbc
 
-import grizzled.slf4j.Logging
 import skinny.orm._
+import skinny.logging.Logging
 import scalikejdbc._, SQLInterpolation._
 
 case class SkinnySessionAttribute(skinnySessionId: Long, name: String, value: Option[Any], session: Option[SkinnySession] = None)

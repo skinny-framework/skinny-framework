@@ -6,42 +6,54 @@ class UsageSpec extends FunSpec with ShouldMatchers {
 
   describe("Validator") {
 
-    it("provides #validate for if/else statements") {
-      val validator = Validator(
-        param("user_id" -> 123) is notNull,
-        param("name" -> null) is required & minLength(3)
-      )
+    def simpleValidator1(userId: Int, name: String): Validator = Validator(
+      param("user_id" -> userId) is notNull & numeric & intValue,
+      param("name" -> name) is required & minLength(3)
+    )
 
+    it("should provide #validate for if/else statements") {
+      val validator = simpleValidator1(123, null)
       if (validator.validate()) {
+        // -----------------------
         // success
         fail("validation should be failed")
       } else {
-        // error
-        val (params, errors) = (validator.params, validator.errors)
+        // -----------------------
+        // validation errors
+
+        // can access parameters via #params
+        val params: Parameters = validator.params
         params.toMap should equal(Map("user_id" -> 123, "name" -> null))
+        params.keys() should equal(Seq("user_id", "name"))
+        params.values() should equal(Seq(123, null))
+
+        // can access errors
+        val errors: Errors = validator.errors
+        // user_id is valid
         errors.get("user_id") should equal(Nil)
-        val nameError = errors.get("name").head
-        nameError.name should equal("required")
-        nameError.messageParams should equal(Nil)
+        // name is invalid and one error is found
+        val errorsForName: Seq[Error] = errors.get("name")
+        errorsForName.head should equal(Error("required", Nil))
       }
     }
 
-    it("provides #fold") {
-      val validator = Validator(
-        param("user_id" -> 123) is notNull,
-        param("name" -> "seratch") is required & maxLength(3)
-      )
+    def simpleValidator2(userId: Int, name: String): Validator = Validator(
+      param("user_id" -> userId) is notNull & numeric & intValue,
+      param("name" -> name) is required & maxLength(3)
+    )
+
+    it("should provide #fold") {
+      val validator = simpleValidator2(123, "seratch")
       validator.fold[Any](
-        (params, errors) => {
-          // do something when errors are found
-          params.toMap should equal(Map("user_id" -> 123, "name" -> "seratch"))
+        (params: Parameters, errors: Errors) => {
+          // -----------------------
+          // validation errors
           errors.get("user_id") should equal(Nil)
-          val nameError = errors.get("name").head
-          nameError.name should equal("maxLength")
-          nameError.messageParams.mkString(",") should equal("3")
+          errors.get("name") should equal(Seq(Error("maxLength", Seq("3"))))
         },
-        (params) => {
-          // do something when success
+        (params: Parameters) => {
+          // -----------------------
+          // success
           fail("validation should be failed")
         }
       )
@@ -49,45 +61,47 @@ class UsageSpec extends FunSpec with ShouldMatchers {
   }
 
   describe("MapValidator") {
-    it("provides #validate for if/else statements") {
-      val params = Map("user_id" -> 123, "name" -> "seratch")
-      val validator = MapValidator(params)(
-        paramKey("user_id") is notNull,
-        paramKey("name") is required & maxLength(3)
-      )
 
+    def mapValidator1(params: Map[String, Any]): MapValidator = MapValidator(params)(
+      paramKey("user_id") is notNull,
+      paramKey("name") is required & maxLength(3)
+    )
+
+    it("should provide #validate for if/else statements") {
+      val params = Map("user_id" -> 123, "name" -> "seratch")
+      val validator = mapValidator1(params)
       if (validator.validate()) {
+        // -----------------------
         // success
         fail("validation should be failed")
       } else {
-        // error
-        val (params, errors) = (validator.params, validator.errors)
-        params.toMap should equal(Map("user_id" -> 123, "name" -> "seratch"))
-        errors.get("user_id") should equal(Nil)
-        val nameError = errors.get("name").head
-        nameError.name should equal("maxLength")
-        nameError.messageParams.mkString(",") should equal("3")
+        // -----------------------
+        // validation errors
+        validator.params.toMap should equal(Map("user_id" -> 123, "name" -> "seratch"))
+        validator.errors.get("user_id") should equal(Nil)
+        validator.errors.get("name") should equal(Seq(Error("maxLength", Seq("3"))))
       }
     }
 
-    it("provides #fold") {
-      val params = Map("user_id" -> 123, "name" -> "x")
-      val validator = MapValidator(params)(
-        paramKey("user_id") is notNull,
-        paramKey("name") is required & minLength(3)
-      )
+    def mapValidator2(params: Map[String, Any]): MapValidator = MapValidator(params)(
+      paramKey("user_id") is notNull,
+      paramKey("name") is required & minLength(3)
+    )
 
+    it("should provide #fold") {
+      val params = Map("user_id" -> 123, "name" -> "x")
+      val validator = mapValidator2(params)
       validator.fold[Any](
         (params, errors) => {
-          // do something when errors are found
+          // -----------------------
+          // validation errors
           params.toMap should equal(Map("user_id" -> 123, "name" -> "x"))
           errors.get("user_id") should equal(Nil)
-          val nameError = errors.get("name").head
-          nameError.name should equal("minLength")
-          nameError.messageParams.mkString(",") should equal("3")
+          errors.get("name") should equal(Seq(Error("minLength", Seq("3"))))
         },
         (params) => {
-          // do something when success
+          // -----------------------
+          // success
           fail("validation should be failed")
         }
       )
@@ -95,8 +109,8 @@ class UsageSpec extends FunSpec with ShouldMatchers {
   }
 
   describe("Messages") {
-    it("is available") {
-      val messages = Messages.loadFromConfig()
+    it("should be available") {
+      val messages: Messages = Messages.loadFromConfig()
       messages.get("required", Seq("name")) should equal(Some("name is required"))
       messages.get("required", "name") should equal(Some("name is required")) // String is also a Seq
       messages.get("minLength", Seq("password", 6)) should equal(Some("password length must be greater than or equal to 6"))

@@ -2,7 +2,7 @@ package skinny.mailer
 
 import skinny.SkinnyEnv
 import com.typesafe.config.{ Config, ConfigFactory }
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 
 /**
  * Basic trait for SkinnyMailer configuration.

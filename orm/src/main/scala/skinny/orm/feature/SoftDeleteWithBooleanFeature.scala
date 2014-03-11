@@ -1,6 +1,7 @@
 package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
+import skinny.orm._
 
 /**
  * Soft delete with boolean value.
@@ -18,13 +19,14 @@ trait SoftDeleteWithBooleanFeatureWithId[Id, Entity] extends CRUDFeatureWithId[I
   val isDeletedFieldName = "isDeleted"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
-    val scope = sqls.eq(defaultAlias.support.column.field(isDeletedFieldName), false)
+    val c = defaultAlias.support.column
+    val scope = sqls.eq(c.field(isDeletedFieldName), false)
     super.defaultScopeForUpdateOperations.map(_.and.append(scope)) orElse Some(scope)
   }
 
-  override def defaultScopeWithDefaultAlias: Option[SQLSyntax] = {
-    val scope = sqls.eq(defaultAlias.field(isDeletedFieldName), false)
-    super.defaultScopeWithDefaultAlias.map(_.and.append(scope)) orElse Some(scope)
+  override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = {
+    val scope = sqls.eq(alias.field(isDeletedFieldName), false)
+    super.defaultScope(alias).map(_.and.append(scope)) orElse Some(scope)
   }
 
   override def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {

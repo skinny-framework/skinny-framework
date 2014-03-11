@@ -14,11 +14,16 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
 
   protected override def template: String = "jade"
 
+  val packageImportsWarning =
+    s"""-# Be aware of package imports.
+       |-# 1. src/main/scala/templates/ScalatePackage.scala
+       |-# 2. scalateTemplateConfig in project/Build.scala""".stripMargin
+
   override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerClassName = toControllerClassName(resources)
     "-@val s: skinny.Skinny\n" +
       "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
-      s"- import ${toNamespace("controller", namespaces)}.${controllerClassName}\n\n" +
+      packageImportsWarning + "\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
         case (name, "Boolean") =>
           s"""div(class="form-group")
@@ -109,7 +114,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
         |
-        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
+        |${packageImportsWarning}
         |
         |h3 #{s.i18n.get("${resource}.new")}
         |hr
@@ -126,7 +131,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     val controllerClassName = toControllerClassName(resources)
     s"""-@val s: skinny.Skinny
         |
-        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
+        |${packageImportsWarning}
         |
         |h3 #{s.i18n.get("${resource}.edit")}
         |hr
@@ -146,7 +151,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |-@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}]
         |-@val totalPages: Int
         |
-        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
+        |${packageImportsWarning}
         |
         |h3 #{s.i18n.get("${resource}.list")}
         |hr
@@ -195,7 +200,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     s"""-@val item: ${toNamespace("model", namespaces)}.${modelClassName}
         |-@val s: skinny.Skinny
         |
-        |- import ${toNamespace("controller", namespaces)}.${controllerClassName}
+        |${packageImportsWarning}
         |
         |h3 #{s.i18n.get("${resource}.detail")}
         |hr

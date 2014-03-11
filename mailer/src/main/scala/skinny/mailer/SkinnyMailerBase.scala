@@ -15,7 +15,7 @@ trait SkinnyMailerBase {
    * Creates SkinnyMessage object.
    */
   def mail(from: String = config.defaultFrom.orNull[String],
-    to: String = "",
+    to: Seq[String] = Nil,
     subject: String = "",
     body: String = "")(implicit s: Session = session): SkinnyMessage = {
 

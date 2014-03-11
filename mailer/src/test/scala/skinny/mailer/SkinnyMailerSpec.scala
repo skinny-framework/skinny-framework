@@ -4,7 +4,7 @@ import org.scalatest.{ BeforeAndAfter, FlatSpec }
 import org.scalatest.matchers.ShouldMatchers
 import skinny.mailer.test.SkinnyMailTestSupport
 import skinny.mailer.example.MyMailer
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 
 class SkinnyMailerSpec extends FlatSpec with ShouldMatchers with SkinnyMailTestSupport with BeforeAndAfter with Logging {
 

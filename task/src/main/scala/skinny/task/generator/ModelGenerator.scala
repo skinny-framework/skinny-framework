@@ -65,11 +65,23 @@ trait ModelGenerator extends CodeGenerator {
     }
 
     val classFields =
-      s"""  ${primaryKeyName}: Long${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => s"  ${k}: ${addDefaultValueIfOption(t)}" }.mkString(",\n", ",\n", "")}${timestamps}
+      s"""  ${primaryKeyName}: Long${
+        if (attributePairs.isEmpty) ""
+        else attributePairs.map {
+          case (k, t) =>
+            s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
+        }.mkString(",\n", ",\n", "")
+      }${timestamps}
         |""".stripMargin
 
     val extractors =
-      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${if (attributePairs.isEmpty) "" else attributePairs.map { case (k, t) => "    " + k + " = rs.get(rn." + k + ")" }.mkString(",\n", ",\n", "")}${timestampsExtraction}
+      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${
+        if (attributePairs.isEmpty) ""
+        else attributePairs.map {
+          case (k, t) =>
+            "    " + k + " = rs.get(rn." + k + ")"
+        }.mkString(",\n", ",\n", "")
+      }${timestampsExtraction}
         |""".stripMargin
 
     s"""package ${namespace}

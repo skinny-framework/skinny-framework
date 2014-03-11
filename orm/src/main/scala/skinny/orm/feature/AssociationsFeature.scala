@@ -2,12 +2,13 @@ package skinny.orm.feature
 
 import scala.language.existentials
 
+import skinny.logging.Logging
 import skinny.orm._
+import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.feature.associations._
 import scalikejdbc._, SQLInterpolation._
 import scala.collection.mutable
 import skinny.util.JavaReflectAPI
-import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.exception.AssociationSettingsException
 
 object AssociationsFeature {
@@ -39,7 +40,8 @@ object AssociationsFeature {
 trait AssociationsFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
-    with AutoSessionFeature { self: SQLSyntaxSupport[Entity] =>
+    with AutoSessionFeature
+    with Logging { self: SQLSyntaxSupport[Entity] =>
 
   import AssociationsFeature._
 
@@ -347,9 +349,16 @@ trait AssociationsFeature[Entity]
       }
 
     mergedJoinDefinitions.foldLeft(sql) { (query, join) =>
+      // Merge soft deletion or something else default scope condition here
+      // (Left one must have the defaultScope in where clause)
+      val condition: SQLSyntax = sqls.toAndConditionOpt(
+        Some(join.on),
+        join.rightMapper.defaultScope(join.rightAlias)
+      ).get
+
       join.joinType match {
-        case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
-        case LeftOuterJoin => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
+        case InnerJoin => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(condition)
+        case LeftOuterJoin => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(condition)
         case jt => throw new IllegalStateException(s"Unexpected pattern ${jt}")
       }
     }
@@ -553,9 +562,17 @@ trait AssociationsFeature[Entity]
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
         val toOne: Option[_] = rs.anyOpt(defaultAlias.resultName.field(extractor.fk))
-          .map { _ =>
-            val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
-            includesRepository.putAndReturn(extractor, entity)
+          .flatMap { _ =>
+            try {
+              val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
+              Some(includesRepository.putAndReturn(extractor, entity))
+            } catch {
+              case e: ResultSetExtractorException =>
+                // Although fk in the left entity is available 
+                // but the right entity is absent when the right one is deleted softly
+                logger.debug(s"The right entity is absent. It may be deleted softly. (fk: ${extractor.fk})")
+                None
+            }
           }
         extractor.merge(entity, toOne)
     }
@@ -564,9 +581,17 @@ trait AssociationsFeature[Entity]
       case (entity, extractor) =>
         val mapper = extractor.mapper.asInstanceOf[AssociationsFeature[Any]]
         val toOne: Option[_] = rs.anyOpt(extractor.alias.resultName.field(extractor.fk))
-          .map { _ =>
-            val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
-            includesRepository.putAndReturn(extractor, entity)
+          .flatMap { _ =>
+            try {
+              val entity = mapper.extract(rs, extractor.alias.resultName.asInstanceOf[ResultName[Any]])
+              Some(includesRepository.putAndReturn(extractor, entity))
+            } catch {
+              case e: ResultSetExtractorException =>
+                // Although fk in the left entity is available
+                // but the right entity is absent when the right one is deleted softly
+                logger.debug(s"The right entity is absent. It may be deleted softly. (fk: ${extractor.fk})")
+                None
+            }
           }
         extractor.merge(entity, toOne)
     }

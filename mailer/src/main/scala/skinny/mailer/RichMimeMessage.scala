@@ -6,7 +6,7 @@ import javax.mail.Message.RecipientType
 import javax.mail.internet.{ InternetAddress, MimeBodyPart, MimeMultipart, MimeMessage }
 import java.io.InputStream
 import org.joda.time.DateTime
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 
 /**
  * Enriched MimeMessage .

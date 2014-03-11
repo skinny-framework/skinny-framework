@@ -2,7 +2,7 @@ package skinny.filter
 
 import scalikejdbc._
 import javax.servlet.http.HttpServletRequest
-import grizzled.slf4j.Logging
+import skinny.logging.Logging
 
 /**
  * A filter which enables controller wired with a single transactional DB session.

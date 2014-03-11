@@ -42,8 +42,16 @@ trait CodeGenerator {
       .mkString(" ")
   }
 
-  protected def addDefaultValueIfOption(t: String): String = {
-    if (t.startsWith("Option")) s"${t.trim()} = None" else t.trim()
+  protected def toScalaTypeName(paramTypeName: String): String = paramTypeName match {
+    case "ByteArray" => "Array[Byte]"
+    case "Option[ByteArray]" => "Option[Array[Byte]]"
+    case _ => paramTypeName
+  }
+
+  protected def toScalaTypeNameWithDefaultValueIfOption(paramTypeName: String): String = {
+    val scalaTypeName = toScalaTypeName(paramTypeName.trim())
+    if (scalaTypeName.startsWith("Option")) s"${scalaTypeName} = None"
+    else scalaTypeName
   }
 
   protected def forceWrite(file: File, code: String) {

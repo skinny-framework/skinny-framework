@@ -1,8 +1,7 @@
 package skinny.orm.feature
 
-import skinny.orm.SkinnyMapperBase
+import skinny.orm._
 import scalikejdbc._, SQLInterpolation._
-import skinny.SkinnyModel
 
 /**
  * Provides #withTableNmae APIs.
@@ -30,6 +29,8 @@ trait DynamicTableNameFeatureWithId[Id, Entity] { self: SkinnyMapperBase[Entity]
 
       override def rawValueToId(value: Any) = _self.rawValueToId(value)
       override def idToRawValue(id: Id) = _self.idToRawValue(id)
+
+      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
 
       def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = _self.extract(rs, n)
     }

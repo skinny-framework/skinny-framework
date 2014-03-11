@@ -35,6 +35,8 @@ function copry_resources_to_task() {
 command="$1"
 if [ "$command" == "run" ];then
   run_app
+elif [ "$command" == "s" -o "$command" == "server" ];then
+  run_app
 elif [ "$command" == "clean" ];then
   ${sbt_path} dev/clean
 elif [ "$command" == "update" ];then
@@ -45,7 +47,7 @@ elif [ "$command" == "compile" ];then
   ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
   ${sbt_path} dev/test
-elif [ "$command" == "test-only" ];then
+elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
   ${sbt_path} "dev/test-only $2"
 elif [ "$command" == "test:coverage" ];then
   ${sbt_path} scoverage:test
@@ -94,7 +96,7 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  run            : will run application for local development"
+  echo "  run/server/s   : will run application for local development"
   echo "  clean          : will clear target directory"
   echo "  update         : will run sbt update"
   echo "  console        : will run sbt console"
@@ -102,7 +104,8 @@ else
   echo "  db:migrate     : will execute database migration"
   echo "  test           : will run all the tests"
   echo "  test-only      : will run the specified test"
-  echo "  test:coverage  : will run all the tests and output coverage reports"
+  # scoverage doesn't work fine yet
+  #  echo "  test:coverage  : will run all the tests and output coverage reports"
   echo "  package            : will create *.war file to deploy"
   echo "  package:standalone : will create *.jar file to run as stand alone app"
   echo "  publish            : will publish *.war file to repository"
