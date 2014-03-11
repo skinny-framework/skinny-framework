@@ -180,7 +180,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile"
   )
   val scalatraDependencies = Seq(
-    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile" excludeAll(ExclusionRule(organization = "org.clapper")),
+    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile",
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile",
