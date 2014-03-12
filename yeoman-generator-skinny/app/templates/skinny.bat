@@ -48,6 +48,15 @@ IF %command%==test (
   GOTO script_eof
 )
 
+IF %command%==test-quick (
+  sbt "dev/test-quick"
+  GOTO script_eof
+)
+IF %command%==testQuick (
+  sbt "dev/test-quick"
+  GOTO script_eof
+)
+
 IF %command%==test-only (
   sbt "dev/test-only %2"
   GOTO script_eof
@@ -179,6 +188,7 @@ ECHO   console        : will run sbt console
 ECHO   compile        : will compile all the classes
 ECHO   db:migrate     : will execute database migration
 ECHO   test           : will run all the tests
+ECHO   test-quick     : will run only failed tests
 ECHO   test-only      : will run the specified test
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app

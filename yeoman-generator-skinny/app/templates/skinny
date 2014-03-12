@@ -47,6 +47,8 @@ elif [ "$command" == "compile" ];then
   ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
   ${sbt_path} dev/test
+elif [ "$command" == "test-quick" -o "$command" == "testQuick" ];then
+  ${sbt_path} dev/test-quick
 elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
   ${sbt_path} "dev/test-only $2"
 elif [ "$command" == "test:coverage" ];then
@@ -103,6 +105,7 @@ else
   echo "  compile        : will compile all the classes"
   echo "  db:migrate     : will execute database migration"
   echo "  test           : will run all the tests"
+  echo "  test-quick     : will run only failed tests"
   echo "  test-only      : will run the specified test"
   # scoverage doesn't work fine yet
   #  echo "  test:coverage  : will run all the tests and output coverage reports"
