@@ -60,7 +60,7 @@ trait ModelGenerator extends CodeGenerator {
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
     val customPkName = {
-      if (primaryKeyName != "id") "\n  override val primaryKeyFieldName = \"" + primaryKeyName + "\""
+      if (primaryKeyName != "id") "\n  override lazy val primaryKeyFieldName = \"" + primaryKeyName + "\""
       else ""
     }
 
@@ -95,8 +95,8 @@ trait ModelGenerator extends CodeGenerator {
         |${classFields})
         |
         |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
-        |${tableName.map(t => "  override val tableName = \"" + t + "\"").getOrElse("")}
-        |  override val defaultAlias = createAlias("${alias}")${customPkName}
+        |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
+        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
