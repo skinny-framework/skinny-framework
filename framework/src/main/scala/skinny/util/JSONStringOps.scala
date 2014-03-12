@@ -46,13 +46,16 @@ trait JSONStringOps extends jackson.JsonMethods {
 
   /**
    * Extracts a value from JSON string.
+   * NOTE: When you convert to Map objects, be aware that underscoreKeys is false by default.
    *
    * @param json json string
    * @tparam A type
    * @return value
    */
-  def fromJSONString[A](json: String)(implicit mf: Manifest[A]): Option[A] = {
-    parseOpt(StringInput(json)).map(v => v.camelizeKeys).map[A](_.extract[A])
+  def fromJSONString[A](json: String, underscoreKeys: Boolean = false)(implicit mf: Manifest[A]): Option[A] = {
+    parseOpt(StringInput(json)).map { v =>
+      if (underscoreKeys) v.underscoreKeys else v.camelizeKeys
+    }.map[A](_.extract[A])
   }
 
 }
