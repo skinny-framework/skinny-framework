@@ -11,9 +11,10 @@ object SkinnyAppBuild extends Build {
   val skinnyVersion = "1.0.0-RC10-SNAPSHOT"
   val scalatraVersion = "2.2.2"
 
-  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
-  //val jettyVersion = "9.1.0.v20131115"
-  val jettyVersion = "9.0.7.v20131107"
+  // We choose Jetty 8 as default for Java 6(!) users. 
+  // Jetty 9 is preferred but 9.1 looks very slow in some cases.
+  //val jettyVersion = "9.0.7.v20131107"
+  val jettyVersion = "8.1.14.v20131031"
 
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := "org.skinny-framework",
