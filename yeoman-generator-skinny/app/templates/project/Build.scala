@@ -64,8 +64,9 @@ object SkinnyAppBuild extends Build {
       name := "application", // JavaScript file name
       unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.2",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.3" % "test"
+        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.3",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jquery"                 % "0.3",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.4.0" % "test"
       ),
       crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
     )
