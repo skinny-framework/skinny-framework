@@ -1,15 +1,8 @@
 #!/bin/bash
 
 current_dir=`dirname $0`
-sbt_path=`which sbt`
-if [ "${sbt_path}" == "" ]; then
-  if [ "`which brew`" != "" ];then
-    brew install sbt
-  else
-    sbt_path=${current_dir}/sbt
-    chmod +x ${sbt_path}
-  fi
-fi
+sbt_path=${current_dir}/sbt
+chmod +x ${sbt_path}
 
 function run_app() {
   ${sbt_path} "~;container:stop;container:start"
@@ -46,13 +39,14 @@ elif [ "$command" == "console" ];then
 elif [ "$command" == "compile" ];then
   ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
+  export SKINNY_ENV="test"
   ${sbt_path} dev/test
 elif [ "$command" == "test-quick" -o "$command" == "testQuick" ];then
+  export SKINNY_ENV="test"
   ${sbt_path} dev/test-quick
 elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
+  export SKINNY_ENV="test"
   ${sbt_path} "dev/test-only $2"
-elif [ "$command" == "test:coverage" ];then
-  ${sbt_path} scoverage:test
 elif [ "$command" == "scalajs:watch" ];then
   ${sbt_path} "project scalajs" "~;packageJS"
 elif [ "$command" == "scalajs:package" ];then
@@ -104,6 +98,7 @@ else
   echo "  console        : will run sbt console"
   echo "  compile        : will compile all the classes"
   echo "  db:migrate     : will execute database migration"
+  echo "  db:repair      : will recover when previous migration failed"
   echo "  test           : will run all the tests"
   echo "  test-quick     : will run only failed tests"
   echo "  test-only      : will run the specified test"

@@ -44,30 +44,28 @@ IF %command%==compile (
 )
 
 IF %command%==test (
+  SET SKINNY_ENV=test
   sbt "dev/test"
   GOTO script_eof
 )
-
 IF %command%==test-quick (
+  SET SKINNY_ENV=test
   sbt "dev/test-quick"
   GOTO script_eof
 )
 IF %command%==testQuick (
+  SET SKINNY_ENV=test
   sbt "dev/test-quick"
   GOTO script_eof
 )
-
 IF %command%==test-only (
+  SET SKINNY_ENV=test
   sbt "dev/test-only %2"
   GOTO script_eof
 )
 IF %command%==testOnly (
+  SET SKINNY_ENV=test
   sbt "dev/test-only %2"
-  GOTO script_eof
-)
-
-IF "%command%"=="test:coverage" (
-  sbt "scoverage:test"
   GOTO script_eof
 )
 
@@ -75,12 +73,10 @@ IF %command%=="scalajs:watch" (
   sbt "project scalajs" "~;packageJS"
   GOTO script_eof
 )
-
 IF %command%=="scalajs:package" (
   sbt "project scalajs" packageJS
   GOTO script_eof
 )
-
 IF %command%=="scalajs:optimize" (
   sbt "project scalajs" optimizeJS
   GOTO script_eof
@@ -187,6 +183,7 @@ ECHO   update         : will run sbt update
 ECHO   console        : will run sbt console
 ECHO   compile        : will compile all the classes
 ECHO   db:migrate     : will execute database migration
+ECHO   db:repair      : will recover when previous migration failed
 ECHO   test           : will run all the tests
 ECHO   test-quick     : will run only failed tests
 ECHO   test-only      : will run the specified test
