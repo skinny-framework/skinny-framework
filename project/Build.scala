@@ -19,7 +19,8 @@ object SkinnyFrameworkBuild extends Build {
   //val jettyVersion = "9.1.0.v20131115"
   val jettyVersion = "9.0.7.v20131107"
 
-  lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  //lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
     resolvers ++= Seq(
