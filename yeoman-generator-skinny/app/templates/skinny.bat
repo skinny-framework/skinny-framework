@@ -68,6 +68,11 @@ IF %command%==testOnly (
   sbt "dev/test-only %2"
   GOTO script_eof
 )
+IF %command%=="test:coverage" (
+  SET SKINNY_ENV=test
+  sbt "dev/scoverage:test"
+  GOTO script_eof
+)
 
 IF %command%=="scalajs:watch" (
   sbt "project scalajs" "~;packageJS"
@@ -187,6 +192,7 @@ ECHO   db:repair      : will recover when previous migration failed
 ECHO   test           : will run all the tests
 ECHO   test-quick     : will run only failed tests
 ECHO   test-only      : will run the specified test
+ECHO   test:coverage  : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
