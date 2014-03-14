@@ -22,6 +22,7 @@ trait ModelGenerator extends CodeGenerator {
   private[this] def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:model member name:String birthday:Option[LocalDate]""")
+    println("""         sbt "task/run generate:model admin.legacy member name:String birthday:Option[LocalDate]""")
     println("")
   }
 

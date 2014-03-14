@@ -13,6 +13,7 @@ trait ControllerGenerator extends CodeGenerator {
   private[this] def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:controller help" """)
+    println("""         sbt "task/run generate:controller admin.legacy help" """)
     println("")
   }
 
