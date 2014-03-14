@@ -124,13 +124,11 @@ object SkinnyAppBuild extends Build {
   // -------------------------------------------------------
   // Deployment on Heroku
   // -------------------------------------------------------
-/*
-  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
 
+  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
   lazy val herokuSettings = Seq(
     stage        := { "heroku/stage" ! }
   )
- */
 
 }
 
