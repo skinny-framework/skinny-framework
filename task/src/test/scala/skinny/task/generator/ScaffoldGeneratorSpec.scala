@@ -123,44 +123,53 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package controller.admin
           |
           |import org.scalatra.test.scalatest._
-          |import skinny._, test._
+          |import skinny._
+          |import skinny.test._
           |import org.joda.time._
           |import model.admin._
           |
           |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
           |  addFilter(MembersController, "/*")
           |
-          |  def member = FactoryGirl(Member).create()
+          |  def newMember = FactoryGirl(Member).create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members/") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members.json") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members.xml") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show a member in detail" in {
-          |    get(s"/admin/members/${member.id}") {
+          |    get(s"/admin/members/${newMember.id}") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
-          |    get(s"/admin/members/${member.id}.xml") {
+          |    get(s"/admin/members/${newMember.id}.xml") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
-          |    get(s"/admin/members/${member.id}.json") {
+          |    get(s"/admin/members/${newMember.id}.json") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show new entry form" in {
           |    get(s"/admin/members/new") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
@@ -175,6 +184,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |      "favorite_float_number" -> Float.MaxValue.toString(),
           |      "is_activated" -> "true",
           |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |
@@ -189,6 +199,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |        "is_activated" -> "true",
           |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
           |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -197,13 +208,14 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "show the edit form" in {
-          |    get(s"/admin/members/${member.id}/edit") {
+          |    get(s"/admin/members/${newMember.id}/edit") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/admin/members/${member.id}",
+          |    put(s"/admin/members/${newMember.id}",
           |      "name" -> "dummy",
           |      "favorite_int_number" -> Int.MaxValue.toString(),
           |      "favorite_long_number" -> Long.MaxValue.toString(),
@@ -212,11 +224,12 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |      "favorite_float_number" -> Float.MaxValue.toString(),
           |      "is_activated" -> "true",
           |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "valid_token") {
-          |      put(s"/admin/members/${member.id}",
+          |      put(s"/admin/members/${newMember.id}",
           |        "name" -> "dummy",
           |        "favorite_int_number" -> Int.MaxValue.toString(),
           |        "favorite_long_number" -> Long.MaxValue.toString(),
@@ -226,17 +239,156 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |        "is_activated" -> "true",
           |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
           |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
           |        status should equal(302)
           |      }
           |    }
           |  }
           |
           |  it should "delete a member" in {
-          |    delete(s"/admin/members/${member.id}") {
+          |    delete(s"/admin/members/${newMember.id}") {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |    withSession("csrf-token" -> "valid_token") {
-          |      delete(s"/admin/members/${member.id}?csrf-token=valid_token") {
+          |      delete(s"/admin/members/${newMember.id}?csrf-token=valid_token") {
+          |        logBodyUnless(200)
+          |        status should equal(200)
+          |      }
+          |    }
+          |  }
+          |
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created for groupMembers") {
+      val code = generator.controllerSpecCode(Seq("admin"), "groupMembers", "groupMember", Seq(
+        "name" -> "String",
+        "favoriteIntNumber" -> "Int",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+
+      val expected =
+        """package controller.admin
+          |
+          |import org.scalatra.test.scalatest._
+          |import skinny._
+          |import skinny.test._
+          |import org.joda.time._
+          |import model.admin._
+          |
+          |class GroupMembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(GroupMembersController, "/*")
+          |
+          |  def newGroupMember = FactoryGirl(GroupMember).create()
+          |
+          |  it should "show group members" in {
+          |    get("/admin/group_members") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/admin/group_members/") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/admin/group_members.json") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/admin/group_members.xml") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show a group member in detail" in {
+          |    get(s"/admin/group_members/${newGroupMember.id}") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get(s"/admin/group_members/${newGroupMember.id}.xml") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get(s"/admin/group_members/${newGroupMember.id}.json") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show new entry form" in {
+          |    get(s"/admin/group_members/new") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "create a group member" in {
+          |    post(s"/admin/group_members",
+          |      "name" -> "dummy",
+          |      "favorite_int_number" -> Int.MaxValue.toString(),
+          |      "is_activated" -> "true",
+          |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "valid_token") {
+          |      post(s"/admin/group_members",
+          |        "name" -> "dummy",
+          |        "favorite_int_number" -> Int.MaxValue.toString(),
+          |        "is_activated" -> "true",
+          |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
+          |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
+          |        status should equal(302)
+          |        val id = header("Location").split("/").last.toLong
+          |        GroupMember.findById(id).isDefined should equal(true)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "show the edit form" in {
+          |    get(s"/admin/group_members/${newGroupMember.id}/edit") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "update a group member" in {
+          |    put(s"/admin/group_members/${newGroupMember.id}",
+          |      "name" -> "dummy",
+          |      "favorite_int_number" -> Int.MaxValue.toString(),
+          |      "is_activated" -> "true",
+          |      "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate())) {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "valid_token") {
+          |      put(s"/admin/group_members/${newGroupMember.id}",
+          |        "name" -> "dummy",
+          |        "favorite_int_number" -> Int.MaxValue.toString(),
+          |        "is_activated" -> "true",
+          |        "birthday" -> skinny.util.DateTimeUtil.toString(new LocalDate()),
+          |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
+          |        status should equal(302)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "delete a group member" in {
+          |    delete(s"/admin/group_members/${newGroupMember.id}") {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |    withSession("csrf-token" -> "valid_token") {
+          |      delete(s"/admin/group_members/${newGroupMember.id}?csrf-token=valid_token") {
+          |        logBodyUnless(200)
           |        status should equal(200)
           |      }
           |    }
@@ -258,44 +410,53 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package controller.admin
           |
           |import org.scalatra.test.scalatest._
-          |import skinny._, test._
+          |import skinny._
+          |import skinny.test._
           |import org.joda.time._
           |import model.admin._
           |
           |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
           |  addFilter(MembersController, "/*")
           |
-          |  def member = FactoryGirl(Member).create()
+          |  def newMember = FactoryGirl(Member).create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members/") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members.json") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |    get("/admin/members.xml") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show a member in detail" in {
-          |    get(s"/admin/members/${member.id}") {
+          |    get(s"/admin/members/${newMember.id}") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
-          |    get(s"/admin/members/${member.id}.xml") {
+          |    get(s"/admin/members/${newMember.id}.xml") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
-          |    get(s"/admin/members/${member.id}.json") {
+          |    get(s"/admin/members/${newMember.id}.json") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "show new entry form" in {
           |    get(s"/admin/members/new") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
@@ -305,6 +466,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |      "name" -> "dummy",
           |      "bytes" -> "dummy",
           |      "bytes_opt" -> "dummy") {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |
@@ -314,6 +476,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |        "bytes" -> "dummy",
           |        "bytes_opt" -> "dummy",
           |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
           |        status should equal(302)
           |        val id = header("Location").split("/").last.toLong
           |        Member.findById(id).isDefined should equal(true)
@@ -322,36 +485,41 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |  }
           |
           |  it should "show the edit form" in {
-          |    get(s"/admin/members/${member.id}/edit") {
+          |    get(s"/admin/members/${newMember.id}/edit") {
+          |      logBodyUnless(200)
           |      status should equal(200)
           |    }
           |  }
           |
           |  it should "update a member" in {
-          |    put(s"/admin/members/${member.id}",
+          |    put(s"/admin/members/${newMember.id}",
           |      "name" -> "dummy",
           |      "bytes" -> "dummy",
           |      "bytes_opt" -> "dummy") {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |
           |    withSession("csrf-token" -> "valid_token") {
-          |      put(s"/admin/members/${member.id}",
+          |      put(s"/admin/members/${newMember.id}",
           |        "name" -> "dummy",
           |        "bytes" -> "dummy",
           |        "bytes_opt" -> "dummy",
           |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
           |        status should equal(302)
           |      }
           |    }
           |  }
           |
           |  it should "delete a member" in {
-          |    delete(s"/admin/members/${member.id}") {
+          |    delete(s"/admin/members/${newMember.id}") {
+          |      logBodyUnless(403)
           |      status should equal(403)
           |    }
           |    withSession("csrf-token" -> "valid_token") {
-          |      delete(s"/admin/members/${member.id}?csrf-token=valid_token") {
+          |      delete(s"/admin/members/${newMember.id}?csrf-token=valid_token") {
+          |        logBodyUnless(200)
           |        status should equal(200)
           |      }
           |    }
