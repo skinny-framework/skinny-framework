@@ -102,7 +102,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(common)
 
-  lazy val factoryGirl = Project (id = "factory-girl", base = file("factory-girl"),
+  lazy val factoryGirl = Project (id = "factoryGirl", base = file("factory-girl"),
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       scalaVersion := "2.10.0",
