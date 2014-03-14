@@ -27,9 +27,10 @@ object SkinnyAppBuild extends Build {
       "com.h2database"          %  "h2"                 % "1.3.175",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"    % "1.1.1",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
-      "org.scala-lang"          %  "scala-library"      % "2.10.3"              % "test",
-      "org.skinny-framework"    %% "skinny-test"        % skinnyVersion         % "test",
-      "org.scalatra"            %% "scalatra-scalatest" % scalatraVersion       % "test",
+      "org.scala-lang"          %  "scala-library"       % "2.10.3"              % "test",
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion         % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion         % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion       % "test",
       // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
       // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
@@ -123,11 +124,13 @@ object SkinnyAppBuild extends Build {
   // -------------------------------------------------------
   // Deployment on Heroku
   // -------------------------------------------------------
+/*
   lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
 
   lazy val herokuSettings = Seq(
     stage        := { "heroku/stage" ! }
   )
+ */
 
 }
 

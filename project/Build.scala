@@ -102,6 +102,16 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(common)
 
+  lazy val factoryGirl = Project (id = "factory-girl", base = file("factory-girl"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-factory-girl",
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= scalikejdbcDependencies ++ Seq(
+        "com.twitter"           %% "util-eval"        % "6.12.1"
+      ) ++ testDependencies
+    )
+  ) dependsOn(common, orm)
+
   lazy val freemarker = Project (id = "freemarker", base = file("freemarker"),
     settings = baseSettings ++ Seq(
       name := "skinny-freemarker",
@@ -171,7 +181,7 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, test, task)
+  ) dependsOn(framework, assets, thymeleaf, factoryGirl, test, task)
 
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
