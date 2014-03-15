@@ -37,7 +37,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyController with Routes { self: S
   // --------------
   // index API
 
-  val indexApiUrl: Route = get(s"${resourcesBasePath}.:ext")(indexApiAction).as('index)
+  val indexApiUrl: Route = get(s"${resourcesBasePath}.:ext")(indexApiAction).as('indexApi)
   @deprecated("Use indexApiUrl instead", since = "1.0.0")
   val indexExtUrl = indexApiUrl
 
