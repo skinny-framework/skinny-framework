@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC11"
+  val skinnyVersion = "1.0.0-RC11-SNAPSHOT"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
