@@ -15,4 +15,6 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.3")
 //addSbtPlugin("com.sksamuel.scoverage" % "sbt-scoverage" % "0.95.7")
 //addSbtPlugin("com.sksamuel.scoverage" %% "sbt-coveralls" % "0.0.5")
 
+// TODO java.lang.ArrayIndexOutOfBoundsException: -1 with 0.13.2-MX
+//scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 

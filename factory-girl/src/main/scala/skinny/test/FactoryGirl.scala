@@ -1,21 +1,20 @@
 package skinny.test
 
-import scalikejdbc._, SQLInterpolation._
 import com.typesafe.config.ConfigFactory
+import com.twitter.util.Eval
 import scala.collection.JavaConverters._
-import skinny.util.JavaReflectAPI
-import org.slf4j.LoggerFactory
-import skinny.exception.FactoryGirlException
+import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.CRUDFeatureWithId
+import skinny.exception.FactoryGirlException
+import skinny.util.JavaReflectAPI
+import skinny.logging.Logging
 
 /**
  * Test data generator highly inspired by thoughtbot/factory_girl
  *
  * @see "https://github.com/thoughtbot/factory_girl"
  */
-case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) {
-
-  private[this] val logger = LoggerFactory.getLogger(classOf[FactoryGirl[Id, Entity]])
+case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends Logging {
 
   private[this] val c = mapper.column
 
@@ -66,6 +65,11 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
+  def eval(v: Any): String = {
+    if (v == null) null
+    else new Eval(None).apply("s\"\"\"" + v.toString + "\"\"\"")
+  }
+
   /**
    * Creates a record with factories.conf & some replaced attributes.
    *
@@ -84,12 +88,21 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
         } else xs.updated(c.field(key), value)
     }.map {
       case (key, value) => {
-        // will replace only value which starts with #{ ... } because '#' might be used for test data in some case
-        if (value.toString.startsWith("#")) {
-          val variableKey = value.toString.trim.replaceAll("[#{}]", "")
-          val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).orNull[Any]
-          key -> replacedValue
-        } else key -> value
+        if (value.toString.contains("#{")) {
+          val replacements = "#\\{[^\\}]+\\}".r.findAllIn(value.toString).flatMap { matched =>
+            val variableKey = matched.trim.replaceAll("[#{}]", "")
+            // Only when the key exists, FactoryGirl replaces variables.
+            valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).map { v =>
+              val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).orNull[String]
+              (matched.replaceFirst("\\{", "\\\\{").replaceFirst("\\}", "\\\\}"), replacedValue)
+            }
+          }
+          val replacedValue = replacements.foldLeft(value.toString) {
+            case (result, replacement) =>
+              result.replaceAll(replacement._1, replacement._2)
+          }
+          key -> eval(replacedValue)
+        } else key -> eval(value)
       }
     }.toSeq
 

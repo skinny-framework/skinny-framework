@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.0-RC9"
+  val _version = "1.0.0-RC10"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
@@ -19,7 +19,8 @@ object SkinnyFrameworkBuild extends Build {
   //val jettyVersion = "9.1.0.v20131115"
   val jettyVersion = "9.0.7.v20131107"
 
-  lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  //lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
     resolvers ++= Seq(
@@ -102,6 +103,16 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(common)
 
+  lazy val factoryGirl = Project (id = "factoryGirl", base = file("factory-girl"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-factory-girl",
+      scalaVersion := "2.10.0",
+      libraryDependencies ++= scalikejdbcDependencies ++ Seq(
+        "com.twitter"           %% "util-eval"        % "6.12.1"
+      ) ++ testDependencies
+    )
+  ) dependsOn(common, orm)
+
   lazy val freemarker = Project (id = "freemarker", base = file("freemarker"),
     settings = baseSettings ++ Seq(
       name := "skinny-freemarker",
@@ -171,7 +182,7 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, test, task)
+  ) dependsOn(framework, assets, thymeleaf, factoryGirl, test, task)
 
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
