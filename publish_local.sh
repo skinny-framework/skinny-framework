@@ -1,6 +1,7 @@
 #!/bin/sh
 
-sbt ++2.10.0 \
+sbt clean \
+  ++2.10.0 \
   common/publishLocal \
   assets/publishLocal \
   orm/publishLocal \
