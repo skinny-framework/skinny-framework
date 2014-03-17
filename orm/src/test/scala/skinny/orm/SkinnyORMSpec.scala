@@ -6,7 +6,7 @@ import scalikejdbc.scalatest.AutoRollback
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
 import skinny.Pagination
-import skinny.test.FactoryGirl
+import skinny.test.LightFactoryGirl
 import skinny.orm.exception.OptimisticLockException
 import skinny.{ ParamType, StrongParameters }
 
@@ -360,7 +360,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
   describe("Optimistic Lock") {
 
     it("should update with lock version") { implicit session =>
-      val skill = FactoryGirl(Skill).create()
+      val skill = LightFactoryGirl(Skill).create()
 
       // with optimistic lock
       Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withAttributes('name -> "Java Programming")
@@ -372,7 +372,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should delete with lock version") { implicit session =>
-      val skill = FactoryGirl(Skill).create()
+      val skill = LightFactoryGirl(Skill).create()
 
       // with optimistic lock
       Skill.deleteByIdAndVersion(skill.id, skill.lockVersion)
@@ -384,9 +384,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should update with lock timestamp") { implicit session =>
-      val member = FactoryGirl(Member).withVariables('countryId -> FactoryGirl(Country, 'countryyy).create().id)
-        .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
-      val name = FactoryGirl(Name).create('memberId -> member.id)
+      val member = LightFactoryGirl(Member).withVariables('countryId -> LightFactoryGirl(Country, 'countryyy).create().id)
+        .create('companyId -> LightFactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
+      val name = LightFactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
       Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes('first -> "Kaz")
@@ -398,10 +398,10 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
 
     it("should delete with lock timestamp") { implicit session =>
-      val member = FactoryGirl(Member)
-        .withVariables('countryId -> FactoryGirl(Country, 'countryyy).create().id)
-        .create('companyId -> FactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
-      val name = FactoryGirl(Name).create('memberId -> member.id)
+      val member = LightFactoryGirl(Member)
+        .withVariables('countryId -> LightFactoryGirl(Country, 'countryyy).create().id)
+        .create('companyId -> LightFactoryGirl(Company).create().id, 'createdAt -> DateTime.now)
+      val name = LightFactoryGirl(Name).create('memberId -> member.id)
 
       // with optimistic lock
       Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
@@ -427,48 +427,23 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     }
   }
 
-  describe("FactoryGirl") {
-    it("should work") { implicit session =>
-
-      val company1 = FactoryGirl(Company).create()
-      company1.name should equal("FactoryGirl")
-
-      val company2 = FactoryGirl(Company).create('name -> "FactoryPal")
-      company2.name should equal("FactoryPal")
-
-      val country = FactoryGirl(Country, 'countryyy).create()
-
-      val memberFactory = FactoryGirl(Member).withVariables('countryId -> country.id)
-      val member = memberFactory.create('companyId -> company1.id, 'createdAt -> DateTime.now)
-      val name = FactoryGirl(Name).create('memberId -> member.id)
-
-      name.first should equal("Kazuhiro")
-      name.last should equal("Sera")
-      name.member.get.id should equal(member.id)
-
-      val skill = FactoryGirl(Skill).create()
-      skill.name should equal("Scala Programming")
-
-    }
-  }
-
   describe("WithId") {
     it("should work") { implicit session =>
-      val book = FactoryGirl(Book).create()
+      val book = LightFactoryGirl(Book).create()
       book.title should equal("Play in Action")
       book.destroy()
 
-      val book2 = FactoryGirl(Book).withAttributes('isbn -> "11111-2222-33333", 'title -> "Play2 in Action").create()
+      val book2 = LightFactoryGirl(Book).withAttributes('isbn -> "11111-2222-33333", 'title -> "Play2 in Action").create()
       book2.isbn should equal(ISBN("11111-2222-33333"))
       book2.destroy()
 
-      val book3 = FactoryGirl(Book).create('isbn -> ISBN("aaaa-bbbb-cccc"), 'title -> "Play3 in Action")
+      val book3 = LightFactoryGirl(Book).create('isbn -> ISBN("aaaa-bbbb-cccc"), 'title -> "Play3 in Action")
       book3.isbn should equal(ISBN("aaaa-bbbb-cccc"))
       book3.title should equal("Play3 in Action")
 
       val isbn: ISBN = Book.createWithAttributes('title -> "ScalikeJDBC Cookbook")
       ISBNMaster.createWithAttributes('isbn -> isbn, 'publisher -> "O'Reilly")
-      FactoryGirl(ISBNMaster).withVariables('isbn -> java.util.UUID.randomUUID).create()
+      LightFactoryGirl(ISBNMaster).withVariables('isbn -> java.util.UUID.randomUUID).create()
 
       val newBook = Book.findById(isbn).get
       newBook.title should equal("ScalikeJDBC Cookbook")

@@ -7,14 +7,14 @@ import java.util.concurrent._
 /**
  * Service which manages workers.
  */
-case class SkinnyWorkerService(name: String = "skinny-framework-worker-service") extends Logging {
+case class SkinnyWorkerService(name: String = "skinny-framework-worker-service", threadPoolSize: Int = 10) extends Logging {
 
   logger.info(s"SkinnyWorkerService (name: ${name}) is activated.")
 
   /**
    * Thread pool for this worker service.
    */
-  private[this] val pool = Executors.newScheduledThreadPool(10, new ThreadFactory() {
+  private[this] val pool = Executors.newScheduledThreadPool(threadPoolSize, new ThreadFactory() {
     val threadGroup = new ThreadGroup(name)
     def newThread(r: Runnable): Thread = {
       val t = new Thread(threadGroup, r);

@@ -3,11 +3,12 @@ package skinny.test
 import org.scalatra.test._
 import skinny.controller.{ SkinnySessionInjectorController, SessionInjectorController }
 import skinny.SkinnyEnv
+import skinny.logging.Logging
 
 /**
  * Skinny framework testing support
  */
-trait SkinnyTestSupport { self: ScalatraTests =>
+trait SkinnyTestSupport extends Logging { self: ScalatraTests =>
 
   // set skinny.env as "test"
   System.setProperty(SkinnyEnv.PropertyKey, "test")
@@ -27,11 +28,6 @@ trait SkinnyTestSupport { self: ScalatraTests =>
 
   /**
    * Provides a code block with injected session.
-   *
-   * @param attributes attributes to inject
-   * @param action code block
-   * @tparam A return type
-   * @return result
    */
   def withSession[A](attributes: (String, String)*)(action: => A): A = session {
     put("/tmp/SkinnyTestSupport/session", attributes)()
@@ -40,15 +36,19 @@ trait SkinnyTestSupport { self: ScalatraTests =>
 
   /**
    * Provides a code block with injected session.
-   *
-   * @param attributes attributes to inject
-   * @param action code block
-   * @tparam A return type
-   * @return result
    */
   def withSkinnySession[A](attributes: (String, String)*)(action: => A): A = session {
     put("/tmp/SkinnyTestSupport/skinnySession", attributes)()
     action
+  }
+
+  /**
+   * Logs response body when response status is unexpected.
+   */
+  def logBodyUnless(expectedStatus: Int) = {
+    if (status != expectedStatus) {
+      logger.warn(s"Unexpected status: ${status}, body: ${body}")
+    }
   }
 
 }

@@ -8,12 +8,13 @@ import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC9"
+  val skinnyVersion = "1.0.0-RC10-1"
   val scalatraVersion = "2.2.2"
 
-  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
-  //val jettyVersion = "9.1.0.v20131115"
-  val jettyVersion = "9.0.7.v20131107"
+  // We choose Jetty 8 as default for Java 6(!) users. 
+  // Jetty 9 is preferred but 9.1 looks very slow in some cases.
+  //val jettyVersion = "9.0.7.v20131107"
+  val jettyVersion = "8.1.14.v20131031"
 
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := "org.skinny-framework",
@@ -26,9 +27,10 @@ object SkinnyAppBuild extends Build {
       "com.h2database"          %  "h2"                 % "1.3.175",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"    % "1.1.1",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
-      "org.scala-lang"          %  "scala-library"      % "2.10.3"              % "test",
-      "org.skinny-framework"    %% "skinny-test"        % skinnyVersion         % "test",
-      "org.scalatra"            %% "scalatra-scalatest" % scalatraVersion       % "test",
+      "org.scala-lang"          %  "scala-library"       % "2.10.3"              % "test",
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion         % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion         % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion       % "test",
       // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
       // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
@@ -37,7 +39,7 @@ object SkinnyAppBuild extends Build {
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
-      ,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
@@ -63,8 +65,9 @@ object SkinnyAppBuild extends Build {
       name := "application", // JavaScript file name
       unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.2",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.3" % "test"
+        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.3",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jquery"                 % "0.3",
+        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.4.0" % "test"
       ),
       crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
     )
@@ -121,8 +124,8 @@ object SkinnyAppBuild extends Build {
   // -------------------------------------------------------
   // Deployment on Heroku
   // -------------------------------------------------------
-  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
 
+  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
   lazy val herokuSettings = Seq(
     stage        := { "heroku/stage" ! }
   )

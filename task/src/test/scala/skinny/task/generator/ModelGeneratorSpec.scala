@@ -36,8 +36,8 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |)
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
-          |  override val tableName = "members"
-          |  override val defaultAlias = createAlias("m")
+          |  override lazy val tableName = "members"
+          |  override lazy val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
           |    id = rs.get(rn.id),
@@ -80,7 +80,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] {
           |
-          |  override val defaultAlias = createAlias("pm")
+          |  override lazy val defaultAlias = createAlias("pm")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
           |    id = rs.get(rn.id),
@@ -118,7 +118,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |object ProjectMember extends SkinnyCRUDMapper[ProjectMember] with TimestampsFeature[ProjectMember] {
           |
-          |  override val defaultAlias = createAlias("pm")
+          |  override lazy val defaultAlias = createAlias("pm")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
           |    id = rs.get(rn.id),
@@ -151,7 +151,7 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |object Member extends SkinnyCRUDMapper[Member] with TimestampsFeature[Member] {
           |
-          |  override val defaultAlias = createAlias("m")
+          |  override lazy val defaultAlias = createAlias("m")
           |
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
           |    id = rs.get(rn.id),

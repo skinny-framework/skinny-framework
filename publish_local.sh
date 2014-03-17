@@ -1,15 +1,16 @@
 #!/bin/sh
 
 sbt ++2.10.0 \
-  common/publish-local \
-  assets/publish-local \
-  orm/publish-local \
-  validator/publish-local \
-  framework/publish-local \
-  mailer/publish-local \
-  standalone/publish-local \
-  task/publish-local \
-  test/publish-local \
-  freemarker/publish-local \
-  thymeleaf/publish-local 
+  common/publishLocal \
+  assets/publishLocal \
+  orm/publishLocal \
+  factoryGirl/publishLocal \
+  validator/publishLocal \
+  framework/publishLocal \
+  mailer/publishLocal \
+  standalone/publishLocal \
+  task/publishLocal \
+  test/publishLocal \
+  freemarker/publishLocal \
+  thymeleaf/publishLocal 
 

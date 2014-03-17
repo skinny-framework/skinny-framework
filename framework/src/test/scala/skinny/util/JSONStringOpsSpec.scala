@@ -2,6 +2,7 @@ package skinny.util
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
+import java.io.Serializable
 
 // http://www.playframework.com/documentation/2.2.x/ScalaJson
 case class UserResponse(user: User)
@@ -49,6 +50,21 @@ class JSONStringOpsSpec extends FunSpec with ShouldMatchers {
       val result = JSONStringOps.toJSONString(value, true)
       result should equal(
         """{"name":["name is required","name's length must be less than 32."],"something_like_that":[]}""")
+    }
+
+  }
+
+  describe("JSONStringOps#fromJSONString for Map objects") {
+
+    it("converts JSON string value to Map object") {
+      val source: Map[String, Any] = Map(
+        "name" -> "name's length must be less than 32.",
+        "something_like_that" -> "")
+
+      val result: Option[Map[String, Any]] = JSONStringOps.fromJSONString[Map[String, String]](
+        JSONStringOps.toJSONString(source), true)
+
+      result.get should equal(source)
     }
 
   }

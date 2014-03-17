@@ -29,7 +29,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
-    println("""         sbt "task/run generate:scaffold internal.admin members member name:String birthday:Option[LocalDate]" """)
+    println("""         sbt "task/run generate:scaffold admin.legacy members member name:String birthday:Option[LocalDate]" """)
     println("")
   }
 
@@ -294,61 +294,77 @@ trait ScaffoldGenerator extends CodeGenerator {
       }.mkString(",\n")
     }
 
+    val resourcesInLabel = toSplitName(resources)
+    val resourceInLabel = toSplitName(resource)
+    val newResourceName = s"new${toClassName(resource)}"
+    val resourceBaseUrl = s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}"
+
     s"""package ${namespace}
         |
         |import org.scalatra.test.scalatest._
-        |import skinny._, test._
+        |import skinny._
+        |import skinny.test._
         |import org.joda.time._
         |import ${toNamespace("model", namespaces)}._
         |
         |class ${controllerClassName}Spec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
         |  addFilter(${controllerClassName}, "/*")
         |
-        |  def ${resource} = FactoryGirl(${modelClassName}).create()
+        |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
         |
-        |  it should "show ${resources}" in {
-        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}") {
+        |  it should "show ${resourcesInLabel}" in {
+        |    get("${resourceBaseUrl}") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
-        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/") {
+        |    get("${resourceBaseUrl}/") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
-        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}.json") {
+        |    get("${resourceBaseUrl}.json") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
-        |    get("${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}.xml") {
+        |    get("${resourceBaseUrl}.xml") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
         |  }
         |
-        |  it should "show a ${resource} in detail" in {
-        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
+        |  it should "show a ${resourceInLabel} in detail" in {
+        |    get(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
-        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.xml") {
+        |    get(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}.xml") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
-        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}.json") {
+        |    get(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}.json") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
         |  }
         |
         |  it should "show new entry form" in {
-        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/new") {
+        |    get(s"${resourceBaseUrl}/new") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
         |  }
         |
-        |  it should "create a ${resource}" in {
-        |    post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}",
+        |  it should "create a ${resourceInLabel}" in {
+        |    post(s"${resourceBaseUrl}",
         |${params("      ")}) {
+        |      logBodyUnless(403)
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "valid_token") {
-        |      post(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}",
+        |      post(s"${resourceBaseUrl}",
         |${params("        ")},
         |        "csrf-token" -> "valid_token") {
+        |        logBodyUnless(302)
         |        status should equal(302)
         |        val id = header("Location").split("/").last.toLong
         |        ${modelClassName}.findById(id).isDefined should equal(true)
@@ -357,32 +373,37 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  }
         |
         |  it should "show the edit form" in {
-        |    get(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}/edit") {
+        |    get(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}/edit") {
+        |      logBodyUnless(200)
         |      status should equal(200)
         |    }
         |  }
         |
-        |  it should "update a ${resource}" in {
-        |    put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}",
+        |  it should "update a ${resourceInLabel}" in {
+        |    put(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}",
         |${params("      ")}) {
+        |      logBodyUnless(403)
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "valid_token") {
-        |      put(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}",
+        |      put(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}",
         |${params("        ")},
         |        "csrf-token" -> "valid_token") {
+        |        logBodyUnless(302)
         |        status should equal(302)
         |      }
         |    }
         |  }
         |
-        |  it should "delete a ${resource}" in {
-        |    delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}") {
+        |  it should "delete a ${resourceInLabel}" in {
+        |    delete(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}") {
+        |      logBodyUnless(403)
         |      status should equal(403)
         |    }
         |    withSession("csrf-token" -> "valid_token") {
-        |      delete(s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}/$${${resource}.${primaryKeyName}}?csrf-token=valid_token") {
+        |      delete(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}?csrf-token=valid_token") {
+        |        logBodyUnless(200)
         |        status should equal(200)
         |      }
         |    }

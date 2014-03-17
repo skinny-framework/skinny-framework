@@ -1,12 +1,10 @@
-## Skinny appliation
+## Skinny application
 
 Run Skinny app now!
 
     ./skinny run
 
-### Skinny framework
+### Skinny Framework
 
 http://skinny-framework.org/
-
-
 

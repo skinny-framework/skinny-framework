@@ -1,21 +1,20 @@
 package skinny.test
 
-import scalikejdbc._, SQLInterpolation._
 import com.typesafe.config.ConfigFactory
+import com.twitter.util.Eval
 import scala.collection.JavaConverters._
-import skinny.util.JavaReflectAPI
-import org.slf4j.LoggerFactory
-import skinny.exception.FactoryGirlException
+import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.CRUDFeatureWithId
+import skinny.exception.FactoryGirlException
+import skinny.util.JavaReflectAPI
+import skinny.logging.Logging
 
 /**
  * Test data generator highly inspired by thoughtbot/factory_girl
  *
  * @see "https://github.com/thoughtbot/factory_girl"
  */
-case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) {
-
-  private[this] val logger = LoggerFactory.getLogger(classOf[FactoryGirl[Id, Entity]])
+case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends Logging {
 
   private[this] val c = mapper.column
 
@@ -66,6 +65,11 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
+  private def eval(v: String): String = {
+    if (v == null) null
+    else new Eval(None).apply("s\"\"\"" + v + "\"\"\"")
+  }
+
   /**
    * Creates a record with factories.conf & some replaced attributes.
    *
@@ -74,7 +78,8 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    * @return created entity
    */
   def create(attributes: (Symbol, Any)*)(implicit s: DBSession = autoSession): Entity = {
-    val mergedAttributes = (additionalNamedValues ++ attributes).foldLeft(loadedAttributes()) {
+
+    val mergedAttributes: Seq[(SQLSyntax, Any)] = (additionalNamedValues ++ attributes).foldLeft(loadedAttributes()) {
       case (xs, (Symbol(key), value)) =>
         if (xs.exists(_._1 == mapper.column.field(key))) {
           xs.map {
@@ -82,14 +87,35 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
             case (k, v) => (k, v)
           }
         } else xs.updated(c.field(key), value)
+
     }.map {
       case (key, value) => {
-        // will replace only value which starts with #{ ... } because '#' might be used for test data in some case
-        if (value.toString.startsWith("#")) {
-          val variableKey = value.toString.trim.replaceAll("[#{}]", "")
-          val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).orNull[Any]
-          key -> replacedValue
-        } else key -> value
+        if (value.toString.contains("#{")) {
+          val replacements: Seq[(String, String)] = "#\\{[^\\}]+\\}".r.findAllIn(value.toString).map { matched =>
+            val variableKey = matched.trim.replaceAll("[#{}]", "")
+            val replacedValue: String = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).getOrElse {
+              // throw exception when the variable is absent
+              throw new IllegalStateException(s"The '#{${variableKey}}' variable used in factories.conf is unset. " +
+                s"You should append #withVariables before calling #create() in this case. " +
+                s"e.g. FactoryGirl(Entity).withVariables('${variableKey} -> something).create()")
+            }
+            (matched.replaceFirst("\\{", "\\\\{").replaceFirst("\\}", "\\\\}"), replacedValue)
+          }.toSeq
+          val replacedValue = replacements.foldLeft(value.toString) {
+            case (result, replacement) =>
+              result.replaceAll(replacement._1, replacement._2)
+          }
+          key -> eval(replacedValue)
+
+        } else {
+          value match {
+            case null => key -> null
+            case None => key -> None
+            case Some(v: String) => key -> eval(v)
+            case v: String => key -> eval(v)
+            case _ => key -> value
+          }
+        }
       }
     }.toSeq
 
