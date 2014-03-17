@@ -65,9 +65,9 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
-  def eval(v: Any): String = {
+  private def eval(v: String): String = {
     if (v == null) null
-    else new Eval(None).apply("s\"\"\"" + v.toString + "\"\"\"")
+    else new Eval(None).apply("s\"\"\"" + v + "\"\"\"")
   }
 
   /**
@@ -78,7 +78,8 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    * @return created entity
    */
   def create(attributes: (Symbol, Any)*)(implicit s: DBSession = autoSession): Entity = {
-    val mergedAttributes = (additionalNamedValues ++ attributes).foldLeft(loadedAttributes()) {
+
+    val mergedAttributes: Seq[(SQLSyntax, Any)] = (additionalNamedValues ++ attributes).foldLeft(loadedAttributes()) {
       case (xs, (Symbol(key), value)) =>
         if (xs.exists(_._1 == mapper.column.field(key))) {
           xs.map {
@@ -86,23 +87,35 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
             case (k, v) => (k, v)
           }
         } else xs.updated(c.field(key), value)
+
     }.map {
       case (key, value) => {
         if (value.toString.contains("#{")) {
-          val replacements = "#\\{[^\\}]+\\}".r.findAllIn(value.toString).flatMap { matched =>
+          val replacements: Seq[(String, String)] = "#\\{[^\\}]+\\}".r.findAllIn(value.toString).map { matched =>
             val variableKey = matched.trim.replaceAll("[#{}]", "")
-            // Only when the key exists, FactoryGirl replaces variables.
-            valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).map { v =>
-              val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).orNull[String]
-              (matched.replaceFirst("\\{", "\\\\{").replaceFirst("\\}", "\\\\}"), replacedValue)
+            val replacedValue: String = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).getOrElse {
+              // throw exception when the variable is absent
+              throw new IllegalStateException(s"The '#{${variableKey}}' variable used in factories.conf is unset. " +
+                s"You should append #withVariables before calling #create() in this case. " +
+                s"e.g. FactoryGirl(Entity).withVariables('${variableKey} -> something).create()")
             }
-          }
+            (matched.replaceFirst("\\{", "\\\\{").replaceFirst("\\}", "\\\\}"), replacedValue)
+          }.toSeq
           val replacedValue = replacements.foldLeft(value.toString) {
             case (result, replacement) =>
               result.replaceAll(replacement._1, replacement._2)
           }
           key -> eval(replacedValue)
-        } else key -> eval(value)
+
+        } else {
+          value match {
+            case null => key -> null
+            case None => key -> None
+            case Some(v: String) => key -> eval(v)
+            case v: String => key -> eval(v)
+            case _ => key -> value
+          }
+        }
       }
     }.toSeq
 
