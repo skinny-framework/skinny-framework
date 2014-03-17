@@ -8,7 +8,7 @@ case class Post(
   id: Long,
   title: String,
   body: String,
-  viewCount: BigDecimal,
+  viewCount: Long,
   tags: Seq[Tag] = Nil,
   createdAt: DateTime,
   updatedAt: Option[DateTime] = None)
