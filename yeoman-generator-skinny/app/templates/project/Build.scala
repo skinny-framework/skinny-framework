@@ -8,7 +8,7 @@ import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC11-SNAPSHOT"
+  val skinnyVersion = "1.0.0-RC10-1"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -39,7 +39,7 @@ object SkinnyAppBuild extends Build {
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
-      ,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
