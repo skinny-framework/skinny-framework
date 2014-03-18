@@ -20,10 +20,12 @@ elif [ "$command" == "console" ];then
   sbt example/console
 elif [ "$command" == "compile" ];then
   sbt compile
+elif [ "$command" == "example-test" ];then
+  export SKINNY_ENV=test
+  sbt example/test
 elif [ "$command" == "test" ];then
+  export SKINNY_ENV=test
   sbt test
-elif [ "$command" == "test-only" ];then
-  sbt "test-only $2"
 elif [ "$command" == "db:migrate" ];then
   sbt "example/run db:migrate $2"
 elif [ "$command" == "package" ];then
@@ -38,7 +40,6 @@ else
   echo "  console   : will run sbt console"
   echo "  compile   : will compile all the classes"
   echo "  test      : will run all the tests"
-  echo "  test-only : will run the specified test"
   echo "  package   : will create *.war file to deploy"
   echo ""
 fi
