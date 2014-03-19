@@ -39,11 +39,10 @@ trait BeforeAfterActionFeature extends ScalatraBase {
     skinnyBeforeActions += (
       () => {
         currentActionName.map { name =>
-          val currentPathShouldBeExcluded = except.exists(_ == name)
-          if (!currentPathShouldBeExcluded) {
-            val allPathShouldBeIncluded = only.isEmpty
-            val currentPathShouldBeIncluded = only.exists(_ == name)
-            if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
+          // current path should not be excluded
+          if (!except.exists(_ == name)) {
+            // all actions should be included or this action should be included
+            if (only.isEmpty || only.exists(_ == name)) {
               action
             }
           }
@@ -69,11 +68,10 @@ trait BeforeAfterActionFeature extends ScalatraBase {
     skinnyAfterActions += (
       () => {
         currentActionName.map { name =>
-          val currentPathShouldBeExcluded = except.exists(_ == name)
-          if (!currentPathShouldBeExcluded) {
-            val allPathShouldBeIncluded = only.isEmpty
-            val currentPathShouldBeIncluded = only.exists(_ == name)
-            if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
+          // current path should not be excluded
+          if (!except.exists(_ == name)) {
+            // all actions should be included or this action should be included
+            if (only.isEmpty || only.exists(_ == name)) {
               action
             }
           }
@@ -84,11 +82,11 @@ trait BeforeAfterActionFeature extends ScalatraBase {
   // executing actions in this controller
 
   before() {
-    skinnyBeforeActions.foreach(_())
+    skinnyBeforeActions.foreach(_.apply())
   }
 
   after() {
-    skinnyAfterActions.foreach(_())
+    skinnyAfterActions.foreach(_.apply())
   }
 
 }

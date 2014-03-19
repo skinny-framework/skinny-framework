@@ -35,16 +35,33 @@ trait SkinnyJoinTableWithId[Id, Entity]
 
   def findAllWithPagination(pagination: Pagination, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
-    findAllWithLimitOffset(pagination.limit, pagination.offset, ordering)
+    if (hasManyAssociations.size > 0) findAllWithLimitOffsetForOneToManyRelations(pagination.limit, pagination.offset, ordering)
+    else findAllWithLimitOffset(pagination.limit, pagination.offset, ordering)
   }
 
   def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
     implicit s: DBSession = autoSession): List[Entity] = {
 
+    if (hasManyAssociations.size > 0) findAllWithLimitOffsetForOneToManyRelations(limit, offset, ordering)
+    else {
+      implicit val repository = IncludesQueryRepository[Entity]()
+      appendIncludedAttributes(extract(withSQL {
+        selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering).limit(limit).offset(offset)
+      }).list.apply())
+    }
+  }
+
+  def limitForOneToManyPagination(limit: Int): Int = 100 * limit
+
+  def findAllWithLimitOffsetForOneToManyRelations(limit: Int = 100, offset: Int = 0, ordering: SQLSyntax = defaultOrdering)(
+    implicit s: DBSession = autoSession): List[Entity] = {
+    logger.debug("Since this operation has hash-many relationships, Skinny ORM will use #findAllWithLimitOffsetForOneToManyRelations. " +
+      "Be aware that it's not an efficient way for pagination.")
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where(defaultScopeWithDefaultAlias).orderBy(ordering).limit(limit).offset(offset)
-    }).list.apply())
+      selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
+        .orderBy(ordering).limit(limitForOneToManyPagination(limit)).offset(0)
+    }).list.apply()).drop(offset).take(limit)
   }
 
   @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")

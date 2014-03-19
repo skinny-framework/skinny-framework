@@ -83,8 +83,8 @@ trait ControllerGenerator extends CodeGenerator {
     val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
     val newCode =
       s"""object Controllers {
-        |  object ${toVariable(name)} extends ${toNamespace("controller", namespaces)}.${controllerClassName} with Routes {
-        |    val indexUrl = get("/${toResourcesBasePath(namespaces)}/${toVariable(name)}/?")(index).as('index)
+        |  object ${toVariable(name)} extends _root_.${toNamespace("controller", namespaces)}.${controllerClassName} with Routes {
+        |    val indexUrl = get("${toResourcesBasePath(namespaces)}/${toVariable(name)}/?")(index).as('index)
         |  }
         |""".stripMargin
     val file = new File("src/main/scala/controller/Controllers.scala")

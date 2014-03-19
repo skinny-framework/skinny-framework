@@ -99,7 +99,10 @@ class AssetsController extends SkinnyController {
    * Returns js or coffee assets.
    */
   def js(): Any = if (path("js") == Some("skinny-framework")) {
-    path("js").flatMap(p => jsFromClassPath(p)).getOrElse(
+    path("js").flatMap { p =>
+      contentType = "application/javascript"
+      jsFromClassPath(p)
+    }.getOrElse(
       throw new IllegalStateException("skinny-framework.js should be found. This is a framework bug.")
     )
   } else {

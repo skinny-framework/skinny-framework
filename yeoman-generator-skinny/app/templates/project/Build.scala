@@ -8,7 +8,11 @@ import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
-  val skinnyVersion = "1.0.0-RC10-2"
+  // -------------------------------------------------------
+  // Common Settings
+  // -------------------------------------------------------
+
+  val skinnyVersion = "1.0.0-RC10-4"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -44,16 +48,69 @@ object SkinnyAppBuild extends Build {
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
+  lazy val scalatePrecomileSettings = baseSettings ++ scalateSettings ++ Seq(
+    scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
+      Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
+      // These imports should be same as src/main/scala/templates/ScalatePackage.scala
+      Seq("import controller._", "import model._"),
+      Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
+      Some("templates")))
+    }
+  )
+
+  lazy val jettyOrbitHack = Seq(ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>)
+
   // -------------------------------------------------------
   // Development
   // -------------------------------------------------------
 
+  lazy val devBaseSettings = baseSettings ++ Seq(
+    unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
+    // Scalatra tests become slower when multiple controller tests are loaded in the same time
+    parallelExecution in Test := false
+  )
   lazy val dev = Project(id = "dev", base = file("."),
-    settings = baseSettings ++ Seq(
-      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
-      // Scalatra tests become slower when multiple controller tests are loaded in the same time
-      parallelExecution in Test := false
+    settings = devBaseSettings ++ Seq(
+      target := baseDirectory.value / "target" / "dev"
     )
+  )
+  lazy val precompileDev = Project(id = "precompileDev", base = file("."),
+    settings = devBaseSettings ++ scalatePrecomileSettings ++ Seq(
+      target := baseDirectory.value / "target" / "precompile-dev"
+    )
+  )
+
+  // -------------------------------------------------------
+  // Task Runner
+  // -------------------------------------------------------
+
+  lazy val task = Project(id = "task", base = file("task"),
+    settings = baseSettings ++ Seq(
+      mainClass := Some("TaskRunner")
+    )
+  )
+
+  // -------------------------------------------------------
+  // Packaging
+  // -------------------------------------------------------
+
+  lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ scalatePrecomileSettings ++ Seq(
+    publishTo <<= version { (v: String) =>
+      val base = "https://oss.sonatype.org/"
+      if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
+      else Some("releases" at base + "service/local/staging/deploy/maven2")
+    }
+  )
+  lazy val build = Project(id = "build", base = file("build"),
+    settings = packagingBaseSettings ++ Seq(
+      name := "skinny-blank-app"
+    )
+  )
+  lazy val standaloneBuild = Project(id = "standalone-build", base = file("standalone-build"),
+    settings = packagingBaseSettings ++ Seq(
+      name := "skinny-standalone-app",
+      libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion
+    ) ++ jettyOrbitHack
   )
 
   // -------------------------------------------------------
@@ -73,53 +130,6 @@ object SkinnyAppBuild extends Build {
     )
   )
 */
-
-  // -------------------------------------------------------
-  // Task Runner
-  // -------------------------------------------------------
-
-  lazy val task = Project(id = "task", base = file("task"),
-    settings = baseSettings ++ Seq(
-      mainClass := Some("TaskRunner")
-    )
-  )
-
-  // -------------------------------------------------------
-  // Packaging
-  // -------------------------------------------------------
-
-  lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ Seq(
-    publishTo <<= version { (v: String) =>
-      val base = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
-      else Some("releases" at base + "service/local/staging/deploy/maven2")
-    },
-    scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
-      Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
-      // These imports should be same as src/main/scala/templates/ScalatePackage.scala
-      Seq("import controller._", "import model._"),
-      Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
-      Some("templates")))
-    }
-  )
-
-  lazy val build = Project(id = "build", base = file("build"),
-    settings = packagingBaseSettings ++ Seq(
-      name := "skinny-blank-app"
-    )
-  )
-
-  lazy val standaloneBuild = Project(id = "standalone-build", base = file("standalone-build"),
-    settings = packagingBaseSettings ++ Seq(
-      name := "skinny-standalone-app",
-      libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion
-    ) ++ _jettyOrbitHack
-  )
-  val _jettyOrbitHack = Seq(
-    ivyXML := <dependencies>
-      <exclude org="org.eclipse.jetty.orbit" />
-    </dependencies>
-  )
 
   // -------------------------------------------------------
   // Deployment on Heroku

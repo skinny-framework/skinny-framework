@@ -7,6 +7,9 @@ chmod +x ${sbt_path}
 function run_app() {
   ${sbt_path} "~;container:stop;container:start"
 }
+function run_precompile_app() {
+  ${sbt_path} "project precompileDev" "~;container:stop;container:start"
+}
 function setup_build() {
   rm -rf build
   mkdir build
@@ -26,10 +29,13 @@ function copry_resources_to_task() {
 }
 
 command="$1"
-if [ "$command" == "run" ];then
-  run_app
-elif [ "$command" == "s" -o "$command" == "server" ];then
-  run_app
+if [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
+  option="$2"
+  if [ "$option" == "-precompile" -o "$option" == "--precompile" ];then
+    run_precompile_app
+  else
+    run_app
+  fi
 elif [ "$command" == "clean" ];then
   ${sbt_path} dev/clean
 elif [ "$command" == "update" ];then
@@ -95,17 +101,18 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
-  echo "  run/server/s   : will run application for local development"
-  echo "  clean          : will clear target directory"
-  echo "  update         : will run sbt update"
-  echo "  console        : will run sbt console"
-  echo "  compile        : will compile all the classes"
-  echo "  db:migrate     : will execute database migration"
-  echo "  db:repair      : will recover when previous migration failed"
-  echo "  test           : will run all the tests"
-  echo "  test-quick     : will run only failed tests"
-  echo "  test-only      : will run the specified test"
-  echo "  test:coverage  : will run all the tests and output coverage reports"
+  echo "  run/server/s    : will run application for local development"
+  echo "  run -precompile : will run application with Scalate precompilation"
+  echo "  clean           : will clear target directory"
+  echo "  update          : will run sbt update"
+  echo "  console         : will run sbt console"
+  echo "  compile         : will compile all the classes"
+  echo "  db:migrate      : will execute database migration"
+  echo "  db:repair       : will recover when previous migration failed"
+  echo "  test            : will run all the tests"
+  echo "  test-quick      : will run only failed tests"
+  echo "  test-only       : will run the specified test"
+  echo "  test:coverage   : will run all the tests and output coverage reports"
   echo "  package            : will create *.war file to deploy"
   echo "  package:standalone : will create *.jar file to run as stand alone app"
   echo "  publish            : will publish *.war file to repository"

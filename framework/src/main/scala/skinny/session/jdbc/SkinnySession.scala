@@ -81,7 +81,12 @@ case class SkinnySession(
         }
       } catch {
         case e: StreamCorruptedException =>
-          logger.info(s"Failed to load attribute for $k because ${e.getMessage}")
+          logger.info(s"Failed to load an attribute for $k because ${e.getMessage}")
+          removeAttribute(k)
+          null
+        case e: InvalidClassException =>
+          logger.info(s"Failed to load a serializable attribute for $k because ${e.getMessage}")
+          removeAttribute(k)
           null
       }
     case v => v

@@ -5,21 +5,40 @@ REM skinny command for Windows
 REM
 
 SET command=%1
+SET option=%2
 
 IF NOT DEFINED command (
   GOTO show_help
 )
 
 IF %command%==run (
-  sbt "~;container:stop;container:start"
+  IF "%option%"=="-precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE IF "%option%"=="--precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE (
+      sbt "~;container:stop;container:start"
+  )
   GOTO script_eof
 )
 IF %command%==server (
-  sbt "~;container:stop;container:start"
+  IF "%option%"=="-precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE IF "%option%"=="--precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE (
+      sbt "~;container:stop;container:start"
+  )
   GOTO script_eof
 )
 IF %command%==s (
-  sbt "~;container:stop;container:start"
+  IF "%option%"=="-precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE IF "%option%"=="--precompile" (
+    sbt "project precompileDev" "~;container:stop;container:start"
+  ) ELSE (
+      sbt "~;container:stop;container:start"
+  )
   GOTO script_eof
 )
 
@@ -218,5 +237,4 @@ ECHO   g/generate reverse-scaffold:scaml : will generate from existing database
 ECHO   g/generate reverse-scaffold:jade  : will generate from existing database
 
 :script_eof
-
 
