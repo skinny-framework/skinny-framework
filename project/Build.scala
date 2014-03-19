@@ -166,7 +166,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val example = Project (id = "example", base = file("example"),
     settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
-      scalaVersion := "2.10.3",
+      scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",

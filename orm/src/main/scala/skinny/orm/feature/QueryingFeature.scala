@@ -254,8 +254,9 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
       implicit val repository = IncludesQueryRepository[Entity]()
+
       extract(withSQL {
-        val query: SQLBuilder[Entity] = {
+        def query(conditions: Seq[SQLSyntax]): SQLBuilder[Entity] = {
           conditions match {
             case Nil => defaultSelectQuery.where(defaultScopeWithDefaultAlias)
             case _ => conditions.tail.foldLeft(defaultSelectQuery.where(conditions.head)) {
@@ -263,16 +264,34 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
             }.and(defaultScopeWithDefaultAlias)
           }
         }
-
         def appendOrderingIfExists(query: SQLBuilder[Entity]) = {
           if (orderings.isEmpty) query
           else query.append(sqls"order by").append(sqls.csv(orderings: _*))
         }
-        def appendPagingIfExists(query: SQLBuilder[Entity]) = {
-          val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
-          paging.foldLeft(query) { case (query, part) => query.append(part) }
+        val pagination = sqls.join(Seq(
+          limit.map(l => sqls.limit(l)),
+          offset.map(o => sqls.offset(o))
+        ).flatten, sqls" ")
+
+        if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
+          // find ids for pagination
+          val queryForIds = (conditions match {
+            case Nil => singleSelectQuery.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(singleSelectQuery.where(conditions.head)) {
+              case (query, condition) => query.and.append(condition)
+            }.and(defaultScopeWithDefaultAlias)
+          })
+          val pagination = sqls.join(Seq(
+            limit.map(l => sqls.limit(l)),
+            offset.map(o => sqls.offset(o))
+          ).flatten, sqls" ")
+          val ids: List[Any] = withSQL(queryForIds.append(pagination))
+            .map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
+
+          appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
+        } else {
+          appendOrderingIfExists(query(conditions)).append(pagination)
         }
-        appendPagingIfExists(appendOrderingIfExists(query))
 
       }).list.apply()
     }
@@ -520,8 +539,6 @@ trait QueryingFeatureWithId[Id, Entity]
     def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
     def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
-    def limitForOneToManyPagination(limit: Int): Int = 100 * limit
-
     /**
      * Actually applies SQL to the DB.
      *
@@ -530,8 +547,10 @@ trait QueryingFeatureWithId[Id, Entity]
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
       implicit val repository = IncludesQueryRepository[Entity]()
-      val entities: List[Entity] = appendIncludedAttributes(extract(withSQL {
-        val query: SQLBuilder[Entity] = {
+
+      appendIncludedAttributes(extract(withSQL {
+
+        def query(conditions: Seq[SQLSyntax]): SQLBuilder[Entity] = {
           conditions match {
             case Nil => selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
             case _ => conditions.tail.foldLeft(selectQueryWithAssociations.where(conditions.head)) {
@@ -539,27 +558,36 @@ trait QueryingFeatureWithId[Id, Entity]
             }.and(defaultScopeWithDefaultAlias)
           }
         }
-
         def appendOrderingIfExists(query: SQLBuilder[Entity]) = {
           if (orderings.isEmpty) query
           else query.append(sqls"order by").append(sqls.csv(orderings: _*))
         }
-        def appendPagingIfExists(query: SQLBuilder[Entity]) = {
-          val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
-          paging.foldLeft(query) { case (query, part) => query.append(part) }
-        }
+        val pagination = sqls.join(Seq(
+          limit.map(l => sqls.limit(l)),
+          offset.map(o => sqls.offset(o))
+        ).flatten, sqls" ")
+
         if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
-          val l = limit.map(limitForOneToManyPagination).getOrElse(2000)
-          appendOrderingIfExists(query).append(sqls.limit(l)).append(sqls.offset(0))
+          // find ids for pagination
+          val queryForIds = (conditions match {
+            case Nil => singleSelectQuery.where(defaultScopeWithDefaultAlias)
+            case _ => conditions.tail.foldLeft(singleSelectQuery.where(conditions.head)) {
+              case (query, condition) => query.and.append(condition)
+            }.and(defaultScopeWithDefaultAlias)
+          })
+          val pagination = sqls.join(Seq(
+            limit.map(l => sqls.limit(l)),
+            offset.map(o => sqls.offset(o))
+          ).flatten, sqls" ")
+          val ids: List[Any] = withSQL(queryForIds.append(pagination))
+            .map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
+
+          appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
         } else {
-          appendPagingIfExists(appendOrderingIfExists(query))
+          appendOrderingIfExists(query(conditions)).append(pagination)
         }
 
       }).list.apply())
-
-      if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
-        entities.drop(offset.getOrElse(0)).take(limit.getOrElse(20))
-      } else entities
     }
 
   }
