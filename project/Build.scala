@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.0-RC10-4"
+  val _version = "1.0.0-RC10-5"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.7"
   val scalikeJDBCVersion = "1.7.4"
@@ -166,7 +166,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val example = Project (id = "example", base = file("example"),
     settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
-      scalaVersion := "2.10.3",
+      scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",

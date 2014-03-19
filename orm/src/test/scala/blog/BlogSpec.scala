@@ -5,6 +5,7 @@ import scalikejdbc.scalatest.AutoRollback
 
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
+import skinny.Pagination
 
 class BlogSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
@@ -39,6 +40,98 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
       val post = Post.limit(1).apply().head
       Post.updateById(post.id).withAttributes('viewCount -> 123)
       Post.findById(post.id).get.viewCount should equal(123)
+    }
+  }
+
+  describe("pagination with one-to-many relationships") {
+    it("should work as expected") { implicit session =>
+
+      // clear fixture data
+      sql"truncate table posts".execute.apply()
+      sql"truncate table tags".execute.apply()
+      sql"truncate table posts_tags".execute.apply()
+
+      // prepare data
+      val tagIds = (1 to 10).map { i =>
+        Tag.createWithAttributes('name -> s"tag$i")
+      }
+      val pt = PostTag.column
+      (1 to 10).map { i =>
+        val id = Post.createWithAttributes('title -> s"entry $i", 'body -> "foo bar baz")
+        tagIds.take(3).foreach { tagId =>
+          withSQL {
+            insert.into(PostTag).namedValues(pt.postId -> id, pt.tagId -> tagId)
+          }.update.apply()
+        }
+      }
+      (11 to 20).map { i =>
+        val id = Post.createWithAttributes('title -> s"entry $i", 'body -> "bulah bulah...")
+        tagIds.take(4).foreach { tagId =>
+          withSQL {
+            insert.into(PostTag).namedValues(pt.postId -> id, pt.tagId -> tagId)
+          }.update.apply()
+        }
+      }
+
+      // #paginate in Querying
+      {
+        val posts = Post.joins(Post.tagsRef).paginate(Pagination.page(1).per(3)).apply()
+        posts.size should equal(3)
+        posts(0).tags.size should equal(3)
+        posts(1).tags.size should equal(3)
+        posts(2).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).paginate(Pagination.page(7).per(3)).apply()
+        posts.size should equal(2)
+        posts(0).tags.size should equal(4)
+        posts(1).tags.size should equal(4)
+      }
+
+      {
+        val posts = Post.joins(Post.tagsRef).where('body -> "foo bar baz").paginate(Pagination.page(1).per(3)).apply()
+        posts.size should equal(3)
+        posts(0).tags.size should equal(3)
+        posts(1).tags.size should equal(3)
+        posts(2).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).where('body -> "foo bar baz").paginate(Pagination.page(4).per(3)).apply()
+        posts.size should equal(1)
+        posts(0).tags.size should equal(3)
+      }
+
+      // #findAllWithPagination in Finder
+      {
+        val posts = Post.joins(Post.tagsRef).findAllWithPagination(Pagination.page(1).per(3))
+        posts.size should equal(3)
+        posts(0).tags.size should equal(3)
+        posts(1).tags.size should equal(3)
+        posts(2).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).findAllWithPagination(Pagination.page(7).per(3))
+        posts.size should equal(2)
+        posts(0).tags.size should equal(4)
+        posts(1).tags.size should equal(4)
+      }
+
+      val p = Post.defaultAlias
+
+      // #findAllByWithPagination in Finder
+      {
+        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(1).per(3))
+        posts.size should equal(3)
+        posts(0).tags.size should equal(3)
+        posts(1).tags.size should equal(3)
+        posts(2).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(4).per(3))
+        posts.size should equal(1)
+        posts(0).tags.size should equal(3)
+      }
+
     }
   }
 }
