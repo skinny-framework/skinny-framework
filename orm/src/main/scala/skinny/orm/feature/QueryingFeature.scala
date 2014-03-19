@@ -520,6 +520,8 @@ trait QueryingFeatureWithId[Id, Entity]
     def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
     def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
+    def limitForOneToManyPagination(limit: Int): Int = 100 * limit
+
     /**
      * Actually applies SQL to the DB.
      *
@@ -528,7 +530,7 @@ trait QueryingFeatureWithId[Id, Entity]
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
       implicit val repository = IncludesQueryRepository[Entity]()
-      appendIncludedAttributes(extract(withSQL {
+      val entities: List[Entity] = appendIncludedAttributes(extract(withSQL {
         val query: SQLBuilder[Entity] = {
           conditions match {
             case Nil => selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
@@ -546,9 +548,18 @@ trait QueryingFeatureWithId[Id, Entity]
           val paging = Seq(limit.map(l => sqls.limit(l)), offset.map(o => sqls.offset(o))).flatten
           paging.foldLeft(query) { case (query, part) => query.append(part) }
         }
-        appendPagingIfExists(appendOrderingIfExists(query))
+        if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
+          val l = limit.map(limitForOneToManyPagination).getOrElse(2000)
+          appendOrderingIfExists(query).append(sqls.limit(l)).append(sqls.offset(0))
+        } else {
+          appendPagingIfExists(appendOrderingIfExists(query))
+        }
 
       }).list.apply())
+
+      if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
+        entities.drop(offset.getOrElse(0)).take(limit.getOrElse(20))
+      } else entities
     }
 
   }
