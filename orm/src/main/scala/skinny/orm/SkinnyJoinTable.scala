@@ -112,7 +112,7 @@ trait SkinnyJoinTableWithId[Id, Entity]
     } else {
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
-        selectQueryWithAssociations.where(where).and(defaultScopeWithDefaultAlias).orderBy(ordering).limit(limit).offset(offset)
+        selectQueryWithAssociations.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias)).orderBy(ordering).limit(limit).offset(offset)
       }).list.apply())
     }
   }
@@ -122,7 +122,7 @@ trait SkinnyJoinTableWithId[Id, Entity]
 
     // find ids for pagination
     val ids: List[Any] = withSQL {
-      singleSelectQuery.where(where).and(defaultScopeWithDefaultAlias).limit(limit).offset(offset)
+      singleSelectQuery.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias)).limit(limit).offset(offset)
     }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
 
     implicit val repository = IncludesQueryRepository[Entity]()
