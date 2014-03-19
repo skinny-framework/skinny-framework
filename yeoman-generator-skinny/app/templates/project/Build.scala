@@ -12,7 +12,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.0-RC10-5-SNAPSHOT"
+  val skinnyVersion = "1.0.0-RC10-5"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -23,7 +23,7 @@ object SkinnyAppBuild extends Build {
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := "org.skinny-framework",
     version      := "0.1.0-SNAPSHOT",
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.10.4",
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"   % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
