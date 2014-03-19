@@ -12,7 +12,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.0-RC10-4-SNAPSHOT"
+  val skinnyVersion = "1.0.0-RC10-4"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
