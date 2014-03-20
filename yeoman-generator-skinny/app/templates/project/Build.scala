@@ -12,7 +12,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.0-RC10-5"
+  val skinnyVersion = "1.0.0-RC11"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -95,6 +95,7 @@ object SkinnyAppBuild extends Build {
   // -------------------------------------------------------
 
   lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ scalatePrecomileSettings ++ Seq(
+    sources in doc in Compile := List(),
     publishTo <<= version { (v: String) =>
       val base = "https://oss.sonatype.org/"
       if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")

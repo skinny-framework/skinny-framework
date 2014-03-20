@@ -16,7 +16,7 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 // scalarifrom for code formatting
 // NOTE: Disabled by default because this is confusing for beginners
 //
-//addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.2.1")
+//addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 
 // --------
 // for IntelliJ IDEA users (./skinny idea)
