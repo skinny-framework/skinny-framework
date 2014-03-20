@@ -108,7 +108,7 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     it("should have #findAll()") { implicit session =>
       Member.findAll().size should be > (0)
       val m = Member.defaultAlias
-      Member.findAll(ordering = sqls"${m.id}, ${m.createdAt} desc").size should be > (0)
+      Member.findAll(orderings = Seq(sqls"${m.id}, ${m.createdAt} desc")).size should be > (0)
     }
 
     it("should have #count()") { implicit session =>
@@ -169,12 +169,12 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1)).size should equal(1)
 
         val ordering = sqls"${m.id}, ${m.createdAt} desc"
-        Member.findAllBy(sqls.eq(m.countryId, countryId), ordering).size should be > (0)
-        Member.findAllByWithLimitOffset(sqls.eq(m.countryId, countryId), 1, 0, ordering).size should equal(1)
-        Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1), ordering).size should equal(1)
+        Member.findAllBy(sqls.eq(m.countryId, countryId), Seq(ordering)).size should be > (0)
+        Member.findAllByWithLimitOffset(sqls.eq(m.countryId, countryId), 1, 0, Seq(ordering)).size should equal(1)
+        Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1), Seq(ordering)).size should equal(1)
         // TODO remove this in 1.1.0
         Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
-        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, ordering).size should equal(1)
+        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, Seq(ordering)).size should equal(1)
       }
     }
 
