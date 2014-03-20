@@ -67,3 +67,5 @@ standalone-build
 # source maps
 *.map
 
+*.swp
+
