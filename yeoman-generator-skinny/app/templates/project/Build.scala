@@ -45,7 +45,8 @@ object SkinnyAppBuild extends Build {
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
-      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      // Only when you use SNAPSHOT versions, activate following resolver
+      ,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
