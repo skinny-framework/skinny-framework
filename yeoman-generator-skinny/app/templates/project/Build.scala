@@ -39,7 +39,9 @@ object SkinnyAppBuild extends Build {
       // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
       "org.eclipse.jetty"       %  "jetty-plus"         % jettyVersion          % "container",
-      "org.eclipse.jetty.orbit" %  "javax.servlet"      % "3.0.0.v201112011016" % "container;provided;test"
+      "org.eclipse.jetty.orbit" %  "javax.servlet"      % "3.0.0.v201112011016" % "container;provided;test",
+      // To fix Scalate runtime evaluation error on Java 8 (https://gist.github.com/seratch/9680709)
+      "org.scala-lang"          %  "scala-compiler"     % "2.10.4"              % "container"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
