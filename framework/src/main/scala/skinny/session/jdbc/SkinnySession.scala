@@ -164,16 +164,23 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
       )
       // easy-upsert
       try {
-        if (update(SkinnySessionAttribute).set(namedValues: _*)
-          .where.eq(c.skinnySessionId, id).and.eq(c.name, name)
-          .toSQL.update.apply() == 0) {
-
+        val updated = withSQL {
+          update(SkinnySessionAttribute).set(namedValues: _*)
+            .where
+            // compilation succeeded in Scala 2.10.0 but higher version on Java8 doesn't accept.
+            // "applyDynamic does not support passing a vararg parameter"
+            .eq(c.field("skinnySessionId"), id).and.eq(c.field("name"), name)
+        }.update.apply()
+        if (updated == 0) {
           insert.into(SkinnySessionAttribute).namedValues(namedValues: _*).toSQL.update.apply()
         }
       } catch {
         case e: Exception =>
           try update(SkinnySessionAttribute).set(namedValues: _*)
-            .where.eq(c.skinnySessionId, id).and.eq(c.name, name)
+            .where
+            // compilation succeeded in Scala 2.10.0 but higher version on Java8 doesn't accept.
+            // "applyDynamic does not support passing a vararg parameter"
+            .eq(c.field("skinnySessionId"), id).and.eq(c.field("name"), name)
             .toSQL.update.apply()
           catch {
             case e: Exception =>
