@@ -12,7 +12,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.0-SNAPSHOT"
+  val skinnyVersion = "1.0.0-RC12"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -46,7 +46,7 @@ object SkinnyAppBuild extends Build {
     resolvers ++= Seq(
       "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
       // Only when you use SNAPSHOT versions, activate following resolver
-      ,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
     ),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
