@@ -1,14 +1,17 @@
-package controller
+package integrationtest
 
 import org.scalatra.test.scalatest._
 import skinny.test._
 import model._
+import controller.SkillsController
 
 class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(SkillsController, "/*")
 
-  def skill = Skill.findAllWithLimitOffset(1, 0).head
+  def skill = Skill.findAllWithLimitOffset(1, 0).headOption.getOrElse {
+    FactoryGirl(Skill).create()
+  }
 
   it should "have correct url" in {
     SkillsController.urlSample should equal("/skills?page=1")

@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator._
 import model._
 
-object CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
+class CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
   protectFromForgery()
 
   implicit override val scalatraParamsIdTypeConverter = new skinny.TypeConverter[String, CompanyId] {

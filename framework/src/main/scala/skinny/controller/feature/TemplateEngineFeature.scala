@@ -45,7 +45,7 @@ trait TemplateEngineFeature
       throw new ViewTemplateNotFoundException(s"View template not found. (expected: one of ${templatePaths(path)})")
     } else {
       // template not found, but try to render JSON or XML body if possible
-      logger.debug(s"Template for ${path} not found.")
+      logger.debug(s"Template for ${path} not found (format: ${format}).")
       val entity = (for {
         resourcesName <- requestScope[String](RequestScopeFeature.ATTR_RESOURCES_NAME)
         resources <- requestScope[Any](resourcesName)

@@ -1,5 +1,6 @@
-package controller
+package integrationtest
 
+import _root_.controller.SnakeCaseKeyExamplesController
 import org.scalatra.test.scalatest._
 import skinny._, test._
 import model._

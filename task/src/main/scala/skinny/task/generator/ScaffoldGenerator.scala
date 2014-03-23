@@ -121,8 +121,9 @@ trait ScaffoldGenerator extends CodeGenerator {
           // Controller
           generateApplicationControllerIfAbsent()
           generateResourceController(namespaces, resources, resource, template, generatorArgs)
-          appendToScalatraBootstrap(namespaces, resources)
-          generateResourceControllerSpec(namespaces, resources, resource, attributePairs)
+          appendToControllers(namespaces, resources)
+          generateControllerSpec(namespaces, resources, resource, attributePairs)
+          generateIntegrationTestSpec(namespaces, resources, resource, attributePairs)
           appendToFactoriesConf(resource, attributePairs)
 
           // Model
@@ -229,7 +230,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import _root_.controller._
         |import ${toNamespace("model", namespaces)}.${modelClassName}
         |
-        |object ${controllerClassName} extends SkinnyResource with ApplicationController {
+        |class ${controllerClassName} extends SkinnyResource with ApplicationController {
         |  protectFromForgery()
         |
         |  override def model = ${modelClassName}
@@ -268,31 +269,158 @@ trait ScaffoldGenerator extends CodeGenerator {
     writeIfAbsent(file, controllerCode(namespaces, resources, resource, template, args))
   }
 
+  private def params(space: String, attributePairs: Seq[(String, String)]) = {
+    attributePairs.map { case (k, t) => toSnakeCase(k) -> toParamType(t) }.map {
+      case (key, paramType) =>
+        space + "\"" + key + "\" -> " + {
+          paramType match {
+            case "Long" => "Long.MaxValue.toString()"
+            case "Int" => "Int.MaxValue.toString()"
+            case "Short" => "Short.MaxValue.toString()"
+            case "Double" => "Double.MaxValue.toString()"
+            case "Float" => "Float.MaxValue.toString()"
+            case "Byte" => "Byte.MaxValue.toString()"
+            case "Boolean" => "\"true\""
+            case "DateTime" => "skinny.util.DateTimeUtil.toString(new DateTime())"
+            case "LocalDate" => "skinny.util.DateTimeUtil.toString(new LocalDate())"
+            case "LocalTime" => "skinny.util.DateTimeUtil.toString(new LocalTime())"
+            case _ => "\"dummy\""
+          }
+        }
+    }.mkString(",\n")
+  }
+
   def controllerSpecCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val namespace = toNamespace("controller", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
-    def params(space: String) = {
-      attributePairs.map { case (k, t) => toSnakeCase(k) -> toParamType(t) }.map {
-        case (key, paramType) =>
-          space + "\"" + key + "\" -> " + {
-            paramType match {
-              case "Long" => "Long.MaxValue.toString()"
-              case "Int" => "Int.MaxValue.toString()"
-              case "Short" => "Short.MaxValue.toString()"
-              case "Double" => "Double.MaxValue.toString()"
-              case "Float" => "Float.MaxValue.toString()"
-              case "Byte" => "Byte.MaxValue.toString()"
-              case "Boolean" => "\"true\""
-              case "DateTime" => "skinny.util.DateTimeUtil.toString(new DateTime())"
-              case "LocalDate" => "skinny.util.DateTimeUtil.toString(new LocalDate())"
-              case "LocalTime" => "skinny.util.DateTimeUtil.toString(new LocalTime())"
-              case _ => "\"dummy\""
-            }
-          }
-      }.mkString(",\n")
-    }
+    val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${resources}"
+    val resourcesInLabel = toSplitName(resources)
+    val resourceInLabel = toSplitName(resource)
+    val newResourceName = s"new${toClassName(resource)}"
+
+    s"""package ${namespace}
+      |
+      |import org.scalatest.FunSpec
+      |import org.scalatest.matchers.ShouldMatchers
+      |import skinny._
+      |import skinny.test._
+      |import org.joda.time._
+      |import ${toNamespace("model", namespaces)}._
+      |
+      |// NOTICE before/after filters won't be executed by default
+      |class ${controllerClassName}Spec extends FunSpec with ShouldMatchers with DBSettings {
+      |
+      |  def createMockController = new ${controllerClassName} with MockController
+      |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
+      |
+      |  describe("${controllerClassName}") {
+      |
+      |    describe("shows ${resourcesInLabel}") {
+      |      it("shows HTML response") {
+      |        val controller = createMockController
+      |        controller.showResources()
+      |        controller.status should equal(200)
+      |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/index"))
+      |        controller.contentType should equal("text/html; charset=utf-8")
+      |      }
+      |
+      |      it("shows JSON response") {
+      |        implicit val format = Format.JSON
+      |        val controller = createMockController
+      |        controller.showResources()
+      |        controller.status should equal(200)
+      |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/index"))
+      |        controller.contentType should equal("application/json; charset=utf-8")
+      |      }
+      |    }
+      |
+      |    describe("shows a ${resourceInLabel}") {
+      |      it("shows HTML response") {
+      |        val ${resource} = ${newResourceName}
+      |        val controller = createMockController
+      |        controller.showResource(${resource}.${primaryKeyName})
+      |        controller.status should equal(200)
+      |        controller.requestScope[${toClassName(resource)}]("item") should equal(Some(${resource}))
+      |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/show"))
+      |      }
+      |    }
+      |
+      |    describe("shows new resource input form") {
+      |      it("shows HTML response") {
+      |        val controller = createMockController
+      |        controller.newResource()
+      |        controller.status should equal(200)
+      |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/new"))
+      |      }
+      |    }
+      |
+      |    describe("creates a ${resourceInLabel}") {
+      |      it("succeeds with valid parameters") {
+      |        val controller = createMockController
+      |        controller.prepareParams(
+      |${params("          ", attributePairs)})
+      |        controller.createResource()
+      |        controller.status should equal(200)
+      |      }
+      |
+      |      it("fails with invalid parameters") {
+      |        val controller = createMockController
+      |        controller.prepareParams() // no parameters
+      |        controller.createResource()
+      |        controller.status should equal(400)
+      |        controller.errorMessages.size should be >(0)
+      |      }
+      |    }
+      |
+      |    it("shows a resource edit input form") {
+      |      val ${resource} = ${newResourceName}
+      |      val controller = createMockController
+      |      controller.editResource(${resource}.${primaryKeyName})
+      |      controller.status should equal(200)
+      |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/edit"))
+      |    }
+      |
+      |    it("updates a ${resourceInLabel}") {
+      |      val ${resource} = ${newResourceName}
+      |      val controller = createMockController
+      |      controller.prepareParams(
+      |${params("        ", attributePairs)})
+      |      controller.updateResource(${resource}.${primaryKeyName})
+      |      controller.status should equal(200)
+      |    }
+      |
+      |    it("destroys a ${resourceInLabel}") {
+      |      val ${resource} = ${newResourceName}
+      |      val controller = createMockController
+      |      controller.destroyResource(${resource}.${primaryKeyName})
+      |      controller.status should equal(200)
+      |    }
+      |
+      |  }
+      |
+      |}
+      |""".stripMargin
+  }
+
+  def generateControllerSpec(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+    val controllerClassName = toClassName(resources) + "Controller"
+    val dir = toDirectoryPath("controller", namespaces)
+    val file = new File(s"src/test/scala/${dir}/${controllerClassName}Spec.scala")
+    writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, attributePairs))
+  }
+
+  def toControllerName(namespaces: Seq[String], resources: String): String = {
+    if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
+    else namespaces.head + namespaces.tail.map { n => n.head.toUpper + n.tail }.mkString + toClassName(resources)
+  }
+
+  def integrationSpecCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+    val namespace = toNamespace("integrationtest", namespaces)
+    val controllerClassName = toClassName(resources) + "Controller"
+    val controllerName = toControllerName(namespaces, resources)
+    val modelClassName = toClassName(resource)
 
     val resourcesInLabel = toSplitName(resources)
     val resourceInLabel = toSplitName(resource)
@@ -305,10 +433,11 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import skinny._
         |import skinny.test._
         |import org.joda.time._
+        |import _root_.controller.Controllers
         |import ${toNamespace("model", namespaces)}._
         |
-        |class ${controllerClassName}Spec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
-        |  addFilter(${controllerClassName}, "/*")
+        |class ${controllerClassName}_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+        |  addFilter(Controllers.${controllerName}, "/*")
         |
         |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
         |
@@ -355,14 +484,14 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  it should "create a ${resourceInLabel}" in {
         |    post(s"${resourceBaseUrl}",
-        |${params("      ")}) {
+        |${params("      ", attributePairs)}) {
         |      logBodyUnless(403)
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "valid_token") {
         |      post(s"${resourceBaseUrl}",
-        |${params("        ")},
+        |${params("        ", attributePairs)},
         |        "csrf-token" -> "valid_token") {
         |        logBodyUnless(302)
         |        status should equal(302)
@@ -381,14 +510,14 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  it should "update a ${resourceInLabel}" in {
         |    put(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}",
-        |${params("      ")}) {
+        |${params("      ", attributePairs)}) {
         |      logBodyUnless(403)
         |      status should equal(403)
         |    }
         |
         |    withSession("csrf-token" -> "valid_token") {
         |      put(s"${resourceBaseUrl}/$${${newResourceName}.${primaryKeyName}}",
-        |${params("        ")},
+        |${params("        ", attributePairs)},
         |        "csrf-token" -> "valid_token") {
         |        logBodyUnless(302)
         |        status should equal(302)
@@ -413,37 +542,52 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateResourceControllerSpec(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
+  def generateIntegrationTestSpec(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath("controller", namespaces)
-    val file = new File(s"src/test/scala/${dir}/${controllerClassName}Spec.scala")
-    writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, attributePairs))
+    val dir = toDirectoryPath("integrationtest", namespaces)
+    val file = new File(s"src/test/scala/${dir}/${controllerClassName}_IntegrationTestSpec.scala")
+    writeIfAbsent(file, integrationSpecCode(namespaces, resources, resource, attributePairs))
   }
 
   // --------------------------
-  // ScalatraBootstrap.scala
+  // controller.Controllers.scala
   // --------------------------
 
-  def appendToScalatraBootstrap(namespaces: Seq[String], resources: String) {
-    val namespace = toNamespace("_root_.controller", namespaces)
-    val controllerClassName = toClassName(resources) + "Controller"
-    val newCode =
-      s"""override def initSkinnyApp(ctx: ServletContext) {
-        |    ${namespace}.${controllerClassName}.mount(ctx)""".stripMargin
-    val file = new File("src/main/scala/ScalatraBootstrap.scala")
+  def appendToControllers(namespaces: Seq[String], resources: String) {
+    val controllerName = toControllerName(namespaces, resources)
+    val controllerClassName = toNamespace("_root_.controller", namespaces) + "." + toControllerClassName(resources)
+    val newMountCode =
+      s"""def mount(ctx: ServletContext): Unit = {
+        |    ${controllerName}.mount(ctx)""".stripMargin
+    val newControllerDefCode = {
+      s"""  object ${controllerName} extends ${controllerClassName} {
+        |  }
+        |
+        |}
+        |""".stripMargin
+    }
+
+    val file = new File("src/main/scala/controller/Controllers.scala")
     if (file.exists()) {
-      val code = Source.fromFile(file).mkString.replaceFirst(
-        "(override\\s+def\\s+initSkinnyApp\\s*\\(ctx:\\s+ServletContext\\)\\s*\\{)", newCode)
+      val code = Source.fromFile(file).mkString
+        .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
+        .replaceFirst("(}[\\s\\r\\n]+)$", newControllerDefCode)
       forceWrite(file, code)
     } else {
       val fullNewCode =
-        """import _root_.controller._
-          |import skinny._
+        s"""package controller
           |
-          |class ScalatraBootstrap extends SkinnyLifeCycle {
-          |  ${newCode}
+          |import _root_.controller._
+          |import skinny._
+          |import skinny.controller.AssetsController
+          |
+          |object Controllers {
+          |
+          |  ${newMountCode}
+          |    AssetsController.mount(ctx)
           |  }
-          |}
+          |
+          |${newControllerDefCode}
           |""".stripMargin
       forceWrite(file, fullNewCode)
     }

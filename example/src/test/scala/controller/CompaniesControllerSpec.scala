@@ -1,105 +1,105 @@
 package controller
 
-import org.scalatra.test.scalatest._
-import skinny.test._
-import model._
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.FunSpec
+import skinny.test.{ MockController, FactoryGirl }
+import model.Company
+import skinny.Format
+import unit.DBSettings
 
-class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSettings {
 
-  addFilter(CompaniesController, "/*")
+  describe("CompaniesController") {
 
-  def company = Company.findAllWithLimitOffset(1, 0).head
+    def newCompany = FactoryGirl(Company).create()
+    def createMockController = new CompaniesController with MockController
 
-  it should "show companies" in {
-    get("/companies") {
-      status should equal(200)
-    }
-    get("/companies/") {
-      status should equal(200)
-    }
-    get("/companies.json") {
-      logger.debug(body)
-      status should equal(200)
-    }
-    get("/companies.xml") {
-      logger.debug(body)
-      status should equal(200)
-      body should include("<companies><company>")
-    }
-  }
+    describe("shows resources") {
+      it("shows HTML response") {
+        val controller = createMockController
+        controller.showResources()
 
-  it should "show a company in detail" in {
-    get(s"/companies/${company.id}") {
-      status should equal(200)
-    }
-    get(s"/companies/${company.id}.xml") {
-      logger.debug(body)
-      status should equal(200)
-    }
-    get(s"/companies/${company.id}.json") {
-      logger.debug(body)
-      status should equal(200)
-    }
-  }
-
-  it should "show new entry form" in {
-    get(s"/companies/new") {
-      status should equal(200)
-    }
-  }
-
-  it should "create a company" in {
-    val newName = s"Created at ${System.currentTimeMillis}"
-    post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/") {
-      status should equal(403)
-    }
-
-    withSession("csrf-token" -> "12345") {
-      post(s"/companies", "csrf-token" -> "12345") {
-        status should equal(400)
+        controller.status should equal(200)
+        controller.renderCall.map(_.path) should equal(Some("/companies/index"))
+        controller.contentType should equal("text/html; charset=utf-8")
       }
-      post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/", "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
-        status should equal(302)
-        val id = header("Location").split("/").last.toLong
-        Company.findById(CompanyId(id)).isDefined should equal(true)
+
+      it("shows JSON response") {
+        val controller = createMockController
+        implicit val format = Format.JSON
+        controller.showResources()
+
+        controller.status should equal(200)
+        controller.contentType should equal("application/json; charset=utf-8")
       }
     }
-  }
 
-  it should "show the edit form" in {
-    get(s"/companies/${company.id}/edit") {
-      status should equal(200)
-    }
-  }
+    describe("shows a resource") {
+      it("shows HTML response") {
+        val company = newCompany
+        val controller = createMockController
+        controller.showResource(company.id)
 
-  it should "update a company" in {
-    val newName = s"Updated at ${System.currentTimeMillis}"
-    put(s"/companies/${company.id}", "name" -> newName) {
-      status should equal(403)
-    }
-    Company.findById(company.id).get.name should not equal (newName)
-
-    withSession("csrf-token" -> "12345") {
-      put(s"/companies/${company.id}", "name" -> newName, "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
-        status should equal(302)
-      }
-      put(s"/companies/${company.id}", "csrf-token" -> "12345") {
-        status should equal(400)
+        controller.status should equal(200)
+        controller.requestScope[Company]("item") should equal(Some(company))
+        controller.renderCall.map(_.path) should equal(Some("/companies/show"))
       }
     }
-    Company.findById(company.id).get.name should equal(newName)
-  }
 
-  it should "delete a company" in {
-    val company = FactoryGirl(Company).create()
-    delete(s"/companies/${company.id}") {
-      status should equal(403)
-    }
-    withSession("csrf-token" -> "aaaaaa") {
-      delete(s"/companies/${company.id}?csrf-token=aaaaaa") {
-        status should equal(200)
+    describe("shows new resource form") {
+      it("shows HTML response") {
+        val controller = createMockController
+        controller.newResource()
+        controller.status should equal(200)
       }
     }
-  }
 
+    describe("creates a resource") {
+      it("succeeds with valid parameters") {
+        val controller = createMockController
+        val newName = s"Created at ${System.currentTimeMillis}"
+        controller.prepareParams(
+          "name" -> newName,
+          "url" -> "http://www.example.com/",
+          "updatedAt" -> "2013-01-02 12:34:56"
+        )
+        controller.createResource()
+        controller.status should equal(200)
+      }
+
+      it("fails with invalid parameters") {
+        val controller = createMockController
+        controller.prepareParams("url" -> "http://www.example.com/")
+        controller.createResource()
+        controller.status should equal(400)
+        controller.errorMessages.size should equal(2)
+      }
+    }
+
+    it("shows edit form") {
+      val company = newCompany
+      val controller = createMockController
+      controller.editResource(company.id)
+      controller.status should equal(200)
+    }
+
+    it("updates a resource") {
+      val company = newCompany
+      val controller = createMockController
+      controller.prepareParams(
+        "id" -> company.id.value.toString,
+        "name" -> s"Updated at ${System.currentTimeMillis}",
+        "updatedAt" -> "2013-01-02 12:34:56")
+      controller.updateResource(company.id)
+      controller.status should equal(200)
+    }
+
+    it("destroys a resource") {
+      val company = newCompany
+      val controller = createMockController
+      controller.destroyResource(company.id)
+      controller.status should equal(200)
+    }
+
+  }
 }

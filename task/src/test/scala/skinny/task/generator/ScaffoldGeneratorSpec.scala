@@ -32,7 +32,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |import _root_.controller._
           |import model.admin.Member
           |
-          |object MembersController extends SkinnyResource with ApplicationController {
+          |class MembersController extends SkinnyResource with ApplicationController {
           |  protectFromForgery()
           |
           |  override def model = Member
@@ -107,8 +107,146 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
   }
 
   describe("Spec for Controller (SkinnyResource)") {
-    it("should be created as expected") {
+    it("should be created as expected with namespaces") {
       val code = generator.controllerSpecCode(Seq("admin"), "members", "member", Seq(
+        "name" -> "String",
+        "favoriteIntNumber" -> "Int",
+        "favoriteLongNumber" -> "Long",
+        "favoriteShortNumber" -> "Short",
+        "favoriteDoubleNumber" -> "Double",
+        "favoriteFloatNumber" -> "Float",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      // TODO
+      println(code)
+    }
+  }
+
+  describe("Integration Test Spec for Controller (SkinnyResource)") {
+    it("should be created as expected without namespaces") {
+      val code = generator.integrationSpecCode(Nil, "members", "member", Seq(
+        "name" -> "String"))
+
+      val expected =
+        """package integrationtest
+          |
+          |import org.scalatra.test.scalatest._
+          |import skinny._
+          |import skinny.test._
+          |import org.joda.time._
+          |import _root_.controller.Controllers
+          |import model._
+          |
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(Controllers.members, "/*")
+          |
+          |  def newMember = FactoryGirl(Member).create()
+          |
+          |  it should "show members" in {
+          |    get("/members") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/members/") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/members.json") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get("/members.xml") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show a member in detail" in {
+          |    get(s"/members/${newMember.id}") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get(s"/members/${newMember.id}.xml") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |    get(s"/members/${newMember.id}.json") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "show new entry form" in {
+          |    get(s"/members/new") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "create a member" in {
+          |    post(s"/members",
+          |      "name" -> "dummy") {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "valid_token") {
+          |      post(s"/members",
+          |        "name" -> "dummy",
+          |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
+          |        status should equal(302)
+          |        val id = header("Location").split("/").last.toLong
+          |        Member.findById(id).isDefined should equal(true)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "show the edit form" in {
+          |    get(s"/members/${newMember.id}/edit") {
+          |      logBodyUnless(200)
+          |      status should equal(200)
+          |    }
+          |  }
+          |
+          |  it should "update a member" in {
+          |    put(s"/members/${newMember.id}",
+          |      "name" -> "dummy") {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |
+          |    withSession("csrf-token" -> "valid_token") {
+          |      put(s"/members/${newMember.id}",
+          |        "name" -> "dummy",
+          |        "csrf-token" -> "valid_token") {
+          |        logBodyUnless(302)
+          |        status should equal(302)
+          |      }
+          |    }
+          |  }
+          |
+          |  it should "delete a member" in {
+          |    delete(s"/members/${newMember.id}") {
+          |      logBodyUnless(403)
+          |      status should equal(403)
+          |    }
+          |    withSession("csrf-token" -> "valid_token") {
+          |      delete(s"/members/${newMember.id}?csrf-token=valid_token") {
+          |        logBodyUnless(200)
+          |        status should equal(200)
+          |      }
+          |    }
+          |  }
+          |
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected") {
+      val code = generator.integrationSpecCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "favoriteIntNumber" -> "Int",
         "favoriteLongNumber" -> "Long",
@@ -120,16 +258,17 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
 
       val expected =
-        """package controller.admin
+        """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
+          |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
-          |  addFilter(MembersController, "/*")
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(Controllers.adminMembers, "/*")
           |
           |  def newMember = FactoryGirl(Member).create()
           |
@@ -264,7 +403,7 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created for groupMembers") {
-      val code = generator.controllerSpecCode(Seq("admin"), "groupMembers", "groupMember", Seq(
+      val code = generator.integrationSpecCode(Seq("admin"), "groupMembers", "groupMember", Seq(
         "name" -> "String",
         "favoriteIntNumber" -> "Int",
         "isActivated" -> "Boolean",
@@ -272,16 +411,17 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
       ))
 
       val expected =
-        """package controller.admin
+        """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
+          |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class GroupMembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
-          |  addFilter(GroupMembersController, "/*")
+          |class GroupMembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(Controllers.adminGroupMembers, "/*")
           |
           |  def newGroupMember = FactoryGirl(GroupMember).create()
           |
@@ -400,23 +540,24 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
     }
 
     it("should be created with ByteArray") {
-      val code = generator.controllerSpecCode(Seq("admin"), "members", "member", Seq(
+      val code = generator.integrationSpecCode(Seq("admin"), "members", "member", Seq(
         "name" -> "String",
         "bytes" -> "ByteArray",
         "bytesOpt" -> "Option[ByteArray]"
       ))
 
       val expected =
-        """package controller.admin
+        """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
+          |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
-          |  addFilter(MembersController, "/*")
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |  addFilter(Controllers.adminMembers, "/*")
           |
           |  def newMember = FactoryGirl(Member).create()
           |
@@ -584,6 +725,17 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
           |)
           |""".stripMargin
       code should equal(expected)
+    }
+  }
+
+  describe("toControllerName") {
+    it("should work as expected without namespaces") {
+      val name = generator.toControllerName(Nil, "projectMembers")
+      name should equal("projectMembers")
+    }
+    it("should work as expected with namespaces") {
+      val name = generator.toControllerName(Seq("admin", "foo", "barBaz"), "projectMembers")
+      name should equal("adminFooBarBazProjectMembers")
     }
   }
 

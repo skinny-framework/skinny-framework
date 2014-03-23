@@ -147,6 +147,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-test",
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
+        "org.mockito"     %  "mockito-core"       % "1.9.5"            % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
         "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
       )
@@ -160,6 +161,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= Seq(
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
+        "org.mockito"        %  "mockito-core"       % "1.9.5"         % "test",
         "com.h2database"     %  "h2"                 % h2Version,
         "ch.qos.logback"     % "logback-classic"     % "1.1.1",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",

@@ -1,16 +1,23 @@
-package controller
+package integrationtest
 
 import org.scalatra.test.scalatest._
 import skinny.test._
 import model._
+import controller.Controllers
 
 class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.programmers, "/*")
 
-  def skill = Skill.findAllWithLimitOffset(1, 0).head
-  def company = Company.findAllWithLimitOffset(1, 0).head
-  def programmer = Programmer.findAllWithLimitOffset(1, 0).head
+  def skill = Skill.findAllWithLimitOffset(1, 0).headOption.getOrElse {
+    FactoryGirl(Skill).create()
+  }
+  def company = Company.findAllWithLimitOffset(1, 0).headOption.getOrElse {
+    FactoryGirl(Company).create()
+  }
+  def programmer = Programmer.findAllWithLimitOffset(1, 0).headOption.getOrElse {
+    FactoryGirl(Programmer).create()
+  }
 
   it should "show programmers" in {
     get("/programmers") {
