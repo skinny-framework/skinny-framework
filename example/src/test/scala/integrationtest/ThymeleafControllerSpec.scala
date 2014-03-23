@@ -1,7 +1,8 @@
-package controller
+package integrationtest
 
 import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
+import controller.Controllers
 
 class ThymeleafControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
 

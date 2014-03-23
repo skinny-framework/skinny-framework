@@ -260,7 +260,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
       format match {
         case Format.HTML =>
           setCreateCompletionFlash()
-          redirect(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
+          redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
         case _ =>
           status = 201
           response.setHeader("Location", s"${contextPath}/${resourcesName}/${model.idToRawValue(id)}")
@@ -355,7 +355,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
           case Format.HTML =>
             setUpdateCompletionFlash()
             set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
-            redirect(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
+            redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
           case _ =>
         }
       } else {

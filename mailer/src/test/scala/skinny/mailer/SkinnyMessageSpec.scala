@@ -84,14 +84,4 @@ class SkinnyMessageSpec extends FlatSpec with ShouldMatchers with SkinnyMailerIm
     msg.mimeVersion should be("1.0")
   }
 
-  it should "not override content" in {
-    val msg = new SkinnyMessage(session)
-    msg.attachments ++= ("dummy.txt", getClass.getResource("/dummy.txt").toURI.getPath)
-
-    msg.attachments.length should be(1)
-    msg.body = "hello"
-    msg.attachments.length should be(1)
-    msg.body should be(Some("hello"))
-  }
-
 }

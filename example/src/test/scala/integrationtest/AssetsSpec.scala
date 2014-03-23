@@ -1,4 +1,4 @@
-package controller
+package integrationtest
 
 import org.scalatra.test.scalatest._
 import skinny._

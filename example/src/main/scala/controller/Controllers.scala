@@ -1,8 +1,32 @@
 package controller
 
+import _root_.controller._
 import skinny._
+import skinny.controller.AssetsController
 
 object Controllers {
+
+  def mount(ctx: ServletContext): Unit = {
+
+    ErrorController.mount(ctx)
+
+    root.mount(ctx)
+    companies.mount(ctx)
+    customLayout.mount(ctx)
+    mail.mount(ctx)
+    mustache.mount(ctx)
+    programmers.mount(ctx)
+    thymeleaf.mount(ctx)
+
+    SkillsController.mount(ctx)
+    CommentsController.mount(ctx)
+    SnakeCaseKeyExamplesController.mount(ctx)
+
+    AssetsController.mount(ctx)
+  }
+
+  object companies extends CompaniesController {
+  }
 
   object root extends RootController with Routes {
     val indexUrl = get("/")(index).as('index)

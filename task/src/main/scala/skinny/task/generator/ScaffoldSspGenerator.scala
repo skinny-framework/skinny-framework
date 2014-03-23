@@ -19,7 +19,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |--%>""".stripMargin
 
   override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val controllerClassName = toControllerClassName(resources)
+    val controllerName = "Controllers." + toControllerName(namespaces, resources)
     "<%@val s: skinny.Skinny %>\n<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
       packageImportsWarning + "\n\n" +
       attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
@@ -150,14 +150,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
       s"""<div class="form-actions">
         |  $${unescape(s.csrfHiddenInputTag)}
         |  <input type="submit" class="btn btn-primary" value="$${s.i18n.get("submit")}">
-        |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("cancel")}</a>
+        |  <a class="btn btn-default" href="$${url(${controllerName}.indexUrl)}">$${s.i18n.get("cancel")}</a>
         |</div>
         |</form>
         |""".stripMargin
   }
 
   override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val controllerClassName = toControllerClassName(resources)
+    val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""<%@val s: skinny.Skinny %>
         |
         |${packageImportsWarning}
@@ -171,13 +171,13 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#end
         |--%>
         |
-        |<form method="post" action="$${url(${controllerClassName}.createUrl)}" class="form">
+        |<form method="post" action="$${url(${controllerName}.createUrl)}" class="form">
         | $${include("_form.html.ssp")}
         |""".stripMargin
   }
 
   override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val controllerClassName = toControllerClassName(resources)
+    val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""<%@val s: skinny.Skinny %>
         |
         |${packageImportsWarning}
@@ -191,13 +191,13 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#end
         |--%>
         |
-        |<form method="post" action="$${url(${controllerClassName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName}.get.toString)}" class="form">
+        |<form method="post" action="$${url(${controllerName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName}.get.toString)}" class="form">
         | $${include("_form.html.ssp")}
         |""".stripMargin
   }
 
   override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val controllerClassName = toControllerClassName(resources)
+    val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
         |<%@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}] %>
@@ -214,15 +214,15 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |#if (totalPages > 1)
         |  <ul class="pagination">
         |    <li>
-        |      <a href="$${url(${controllerClassName}.indexUrl, "page" -> 1.toString)}">&laquo;</a>
+        |      <a href="$${url(${controllerName}.indexUrl, "page" -> 1.toString)}">&laquo;</a>
         |    </li>
         |    #for (i <- (1 to totalPages))
         |      <li>
-        |        <a href="$${url(${controllerClassName}.indexUrl, "page" -> i.toString)}">$${i}</a>
+        |        <a href="$${url(${controllerName}.indexUrl, "page" -> i.toString)}">$${i}</a>
         |      </li>
         |    #end
         |    <li>
-        |      <a href="$${url(${controllerClassName}.indexUrl, "page" -> totalPages.toString)}">&raquo;</a>
+        |      <a href="$${url(${controllerName}.indexUrl, "page" -> totalPages.toString)}">&raquo;</a>
         |    </li>
         |  </ul>
         |#end
@@ -239,22 +239,22 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <tr>
         |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => s"    <td>$${item.${k}}</td>" }.mkString("\n")}
         |    <td>
-        |      <a href="$${url(${controllerClassName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
-        |      <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |      <a href="$${url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-default">$${s.i18n.get("detail")}</a>
+        |      <a href="$${url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |      <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |        href="$${url(${controllerClassName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |        href="$${url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |    </td>
         |  </tr>
         |  #end
         |</tbody>
         |</table>
         |
-        |<a href="$${url(${controllerClassName}.newUrl)}" class="btn btn-primary">$${s.i18n.get("new")}</a>
+        |<a href="$${url(${controllerName}.newUrl)}" class="btn btn-primary">$${s.i18n.get("new")}</a>
         |""".stripMargin
   }
 
   override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
-    val controllerClassName = toControllerClassName(resources)
+    val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     val modelNamespace = toNamespace("model", namespaces)
     val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
@@ -284,10 +284,10 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<hr/>
         |<div class="form-actions">
-        |  <a class="btn btn-default" href="$${url(${controllerClassName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
-        |  <a href="$${url(${controllerClassName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
+        |  <a class="btn btn-default" href="$${url(${controllerName}.indexUrl)}">$${s.i18n.get("backToList")}</a>
+        |  <a href="$${url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" class="btn btn-info">$${s.i18n.get("edit")}</a>
         |  <a data-method="delete" data-confirm="$${s.i18n.get("${resource}.delete.confirm")}"
-        |    href="$${url(${controllerClassName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
+        |    href="$${url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)}" rel="nofollow" class="btn btn-danger">$${s.i18n.get("delete")}</a>
         |</div>
         |""".stripMargin
   }

@@ -19,6 +19,7 @@ class StringUtilTest extends FlatSpec with ShouldMatchers {
 
   it should "have #toCamelCase" in {
     toCamelCase(null) should be(null)
+    toCamelCase("FirstName") should equal("firstName")
     toCamelCase("firstName") should equal("firstName")
     toCamelCase("first_name") should equal("firstName")
     toCamelCase("_first_name") should equal("firstName")

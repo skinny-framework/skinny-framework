@@ -2,12 +2,13 @@ package skinny.controller
 
 import org.scalatra.test.scalatest._
 
+// on Scala 2.10.0 ScalaTest #equal matcher with inner case classes works but it fails on higher version
+case class Sample(id: Long, firstName: String)
+case class Person(name: Option[String] = None, parent: Person, children: Seq[Person] = Nil)
+
 class JSONFeatureSpec extends ScalatraFlatSpec {
 
   behavior of "JSONFeature"
-
-  case class Sample(id: Long, firstName: String)
-  case class Person(name: Option[String] = None, parent: Person, children: Seq[Person] = Nil)
 
   // SkinnyController has JSONFeature
   object SampleController extends SkinnyController {

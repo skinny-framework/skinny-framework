@@ -1,5 +1,6 @@
-package controller
+package integrationtest
 
+import _root_.controller._
 import service._
 import org.scalatra.test.scalatest._
 import skinny._
