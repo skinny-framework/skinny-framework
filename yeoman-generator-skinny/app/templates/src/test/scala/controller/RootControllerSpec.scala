@@ -1,15 +1,17 @@
 package controller
 
-import org.scalatra.test.scalatest._
-import skinny.test.SkinnyTestSupport
+import org.scalatest._
+import org.scalatest.matchers.ShouldMatchers
+import skinny.test.MockController
 
-class RootControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class RootControllerSpec extends FunSpec with ShouldMatchers {
 
-  addFilter(Controllers.root, "/*")
-
-  it should "show top page" in {
-    get("/") {
-      status should equal(200)
+  describe("RootController") {
+    it("shows top page") {
+      val controller = new RootController with MockController
+      controller.index
+      controller.contentType should equal("text/html; charset=utf-8")
+      controller.renderCall.map(_.path) should equal(Some("/root/index"))
     }
   }
 
