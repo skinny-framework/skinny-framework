@@ -47,12 +47,21 @@ elif [ "$command" == "compile" ];then
 elif [ "$command" == "test" ];then
   export SKINNY_ENV="test"
   ${sbt_path} dev/test
+elif [ "$command" == "~test" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;test"
 elif [ "$command" == "test-quick" -o "$command" == "testQuick" ];then
   export SKINNY_ENV="test"
-  ${sbt_path} dev/test-quick
+  ${sbt_path} dev/testQuick
+elif [ "$command" == "~test-quick" -o "$command" == "~testQuick" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;testQuick"
 elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
   export SKINNY_ENV="test"
-  ${sbt_path} "dev/test-only $2"
+  ${sbt_path} "dev/testOnly $2"
+elif [ "$command" == "~test-only" -o "$command" == "~testOnly" ];then
+  export SKINNY_ENV="test"
+  ${sbt_path} "project dev" "~;testOnly $2"
 elif [ "$command" == "test:coverage" ];then
   export SKINNY_ENV="test"
   ${sbt_path} "dev/scoverage:test"
@@ -110,8 +119,11 @@ else
   echo "  db:migrate      : will execute database migration"
   echo "  db:repair       : will recover when previous migration failed"
   echo "  test            : will run all the tests"
-  echo "  test-quick      : will run only failed tests"
-  echo "  test-only       : will run the specified test"
+  echo "  ~test           : will run all the tests when changes are detected"
+  echo "  testQuick       : will run only failed tests"
+  echo "  ~testQuick      : will run only failed tests when changes are detected"
+  echo "  testOnly        : will run the specified test"
+  echo "  ~testOnly       : will run the specified test when changes are detected"
   echo "  test:coverage   : will run all the tests and output coverage reports"
   echo "  package            : will create *.war file to deploy"
   echo "  package:standalone : will create *.jar file to run as stand alone app"

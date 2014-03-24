@@ -67,16 +67,32 @@ IF %command%==test (
   sbt "dev/test"
   GOTO script_eof
 )
+IF "%command%"=="~test" (
+  SET SKINNY_ENV=test
+  sbt "project dev" "~;test"
+  GOTO script_eof
+)
 IF %command%==test-quick (
   SET SKINNY_ENV=test
-  sbt "dev/test-quick"
+  sbt "dev/testQuick"
   GOTO script_eof
 )
 IF %command%==testQuick (
   SET SKINNY_ENV=test
-  sbt "dev/test-quick"
+  sbt "dev/testQuick"
   GOTO script_eof
 )
+IF "%command%"=="~test-quick" (
+  SET SKINNY_ENV=test
+  sbt "project dev" "~;testQuick"
+  GOTO script_eof
+)
+IF "%command%"=="~testQuick" (
+  SET SKINNY_ENV=test
+  sbt "project dev" "~;testQuick"
+  GOTO script_eof
+)
+
 IF %command%==test-only (
   SET SKINNY_ENV=test
   sbt "dev/test-only %2"
@@ -87,6 +103,17 @@ IF %command%==testOnly (
   sbt "dev/test-only %2"
   GOTO script_eof
 )
+IF "%command%"=="~test-only" (
+  SET SKINNY_ENV=test
+  sbt "project dev" "~;testOnly %2"
+  GOTO script_eof
+)
+IF "%command%"=="~testOnly" (
+  SET SKINNY_ENV=test
+  sbt "project dev" "~;testOnly %2"
+  GOTO script_eof
+)
+
 IF %command%=="test:coverage" (
   SET SKINNY_ENV=test
   sbt "dev/scoverage:test"
@@ -209,8 +236,11 @@ ECHO   compile        : will compile all the classes
 ECHO   db:migrate     : will execute database migration
 ECHO   db:repair      : will recover when previous migration failed
 ECHO   test           : will run all the tests
-ECHO   test-quick     : will run only failed tests
-ECHO   test-only      : will run the specified test
+ECHO   ~test          : will run all the tests when changes are detected
+ECHO   testQuick      : will run only failed tests
+ECHO   ~testQuick     : will run only failed tests when changes are detected
+ECHO   testOnly       : will run the specified test
+ECHO   ~testOnly      : will run the specified test when changes are detected
 ECHO   test:coverage  : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
