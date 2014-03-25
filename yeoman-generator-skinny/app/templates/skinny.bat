@@ -191,7 +191,7 @@ IF %command%==package (
   RMDIR build /s /q
   MKDIR build
   XCOPY src\* build\src\* /E /D /q
-  XCOPY build.sbt build\build.sbt /E /D /q
+  xcopy build.sbt build\ /q
   RMDIR task\src\main\resources /s /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
@@ -203,7 +203,7 @@ IF "%command%"=="package:standalone" (
   RMDIR standalone-build /s /q
   MKDIR standalone-build
   XCOPY src\* standalone-build\src\* /E /D /q
-  XCOPY build.sbt standalone-build\build.sbt /E /D /q
+  XCOPY build.sbt standalone-build\ /q
   RMDIR task\src\main\resources /s /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
@@ -215,7 +215,7 @@ IF %command%==publish (
   rmdir build /s /q
   mkdir build
   xcopy src\* build\src\* /E /D /q
-  xcopy build.sbt build\build.sbt /E /D /q
+  xcopy build.sbt build\ /q
   RMDIR task\src\main\resources /s /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
