@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sbt clean \
-  ++2.10.2 \
+  ++2.10.4 \
   common/publishLocal \
   assets/publishLocal \
   orm/publishLocal \

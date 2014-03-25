@@ -481,6 +481,13 @@ trait CRUDFeatureWithId[Id, Entity]
   }
 
   /**
+   * Deletes all entities.
+   */
+  def deleteAll()(implicit s: DBSession = autoSession): Int = {
+    withSQL { delete.from(this) }.update.apply()
+  }
+
+  /**
    * #deleteBy pre-execution.
    *
    * @param where condition
