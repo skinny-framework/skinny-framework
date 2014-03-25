@@ -61,6 +61,10 @@ IF %command%==compile (
   sbt "dev/compile"
   GOTO script_eof
 )
+IF "%command%"=="~compile" (
+  sbt "project dev" "~;compile"
+  GOTO script_eof
+)
 
 IF %command%==test (
   SET SKINNY_ENV=test
@@ -233,6 +237,7 @@ ECHO   clean          : will clear target directory
 ECHO   update         : will run sbt update
 ECHO   console        : will run sbt console
 ECHO   compile        : will compile all the classes
+ECHO   ~compile       : will compile all the classes when changes are detected
 ECHO   db:migrate     : will execute database migration
 ECHO   db:repair      : will recover when previous migration failed
 ECHO   test           : will run all the tests

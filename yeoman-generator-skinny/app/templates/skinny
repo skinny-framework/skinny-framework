@@ -42,6 +42,8 @@ elif [ "$command" == "update" ];then
   ${sbt_path} update
 elif [ "$command" == "console" ];then
   ${sbt_path} dev/console
+elif [ "$command" == "~compile" ];then
+  ${sbt_path} "project dev" "~;compile"
 elif [ "$command" == "compile" ];then
   ${sbt_path} dev/compile
 elif [ "$command" == "test" ];then
@@ -116,6 +118,7 @@ else
   echo "  update          : will run sbt update"
   echo "  console         : will run sbt console"
   echo "  compile         : will compile all the classes"
+  echo "  ~compile        : will compile all the classes when changes are detected"
   echo "  db:migrate      : will execute database migration"
   echo "  db:repair       : will recover when previous migration failed"
   echo "  test            : will run all the tests"
