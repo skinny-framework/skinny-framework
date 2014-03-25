@@ -177,4 +177,22 @@ trait SkinnyJoinTableWithId[Id, Entity]
     }: _*)
   }
 
+  /**
+   * Deletes entities by condition.
+   *
+   * @param where condition
+   * @param s db session
+   * @return deleted count
+   */
+  def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
+    withSQL { delete.from(this).where(where) }.update.apply()
+  }
+
+  /**
+   * Deletes all entities.
+   */
+  def deleteAll()(implicit s: DBSession = autoSession): Int = {
+    withSQL { delete.from(this) }.update.apply()
+  }
+
 }

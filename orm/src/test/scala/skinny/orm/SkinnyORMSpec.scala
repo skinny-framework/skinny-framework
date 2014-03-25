@@ -494,6 +494,11 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       scalaTag.description should equal(Some(TagDescription("Scala", "Programming Language")))
     }
 
+    it("should have #deleteAll") { implicit s =>
+      Product.deleteAll()
+      MemberSkill.deleteAll()
+    }
+
   }
 
 }
