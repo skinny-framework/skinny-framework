@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
+import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import com.mojolly.scalate.ScalatePlugin._
 import ScalateKeys._
 import scala.language.postfixOps
@@ -48,6 +49,7 @@ object SkinnyAppBuild extends Build {
       // Only when you use SNAPSHOT versions, activate following resolver
       //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
     ),
+    EclipseKeys.withSource := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
