@@ -27,12 +27,13 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
    */
   def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
-    conditions = conditions.map {
+    conditions = conditions.flatMap {
       case (key, value) =>
         value match {
-          case None => sqls.isNull(defaultAlias.field(key.name))
-          case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-          case value => sqls.eq(defaultAlias.field(key.name), value)
+          case None => Some(sqls.isNull(defaultAlias.field(key.name)))
+          case Nil => None
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+          case value => Some(sqls.eq(defaultAlias.field(key.name), value))
         }
     }
   )
@@ -107,11 +108,12 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
      */
     def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
       mapper = this.mapper,
-      conditions = conditions ++ additionalConditions.map {
+      conditions = conditions ++ additionalConditions.flatMap {
         case (key, value) =>
           value match {
-            case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-            case value => sqls.eq(defaultAlias.field(key.name), value)
+            case Nil => None
+            case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+            case value => Some(sqls.eq(defaultAlias.field(key.name), value))
           }
       },
       limit = limit,
@@ -285,8 +287,10 @@ trait QueryingFeature[Entity] extends SkinnyMapperBase[Entity]
               .orderBy(orderings.headOption.getOrElse(primaryKeyField))
               .append(pagination)
           }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
-
-          appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
+          if (ids.isEmpty) return Nil
+          else {
+            appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
+          }
         } else {
           appendOrderingIfExists(query(conditions)).append(pagination)
         }
@@ -319,12 +323,13 @@ trait QueryingFeatureWithId[Id, Entity]
    */
   def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
-    conditions = conditions.map {
+    conditions = conditions.flatMap {
       case (key, value) =>
         value match {
-          case None => sqls.isNull(defaultAlias.field(key.name))
-          case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-          case value => sqls.eq(defaultAlias.field(key.name), value)
+          case None => Some(sqls.isNull(defaultAlias.field(key.name)))
+          case Nil => None
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+          case value => Some(sqls.eq(defaultAlias.field(key.name), value))
         }
     }
   )
@@ -389,11 +394,12 @@ trait QueryingFeatureWithId[Id, Entity]
      */
     def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
       mapper = this.mapper,
-      conditions = conditions ++ additionalConditions.map {
+      conditions = conditions ++ additionalConditions.flatMap {
         case (key, value) =>
           value match {
-            case values: Seq[_] => sqls.in(defaultAlias.field(key.name), values)
-            case value => sqls.eq(defaultAlias.field(key.name), value)
+            case Nil => None
+            case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+            case value => Some(sqls.eq(defaultAlias.field(key.name), value))
           }
       },
       orderings = orderings,
@@ -578,7 +584,10 @@ trait QueryingFeatureWithId[Id, Entity]
               .append(pagination)
           }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
 
-          appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
+          if (ids.isEmpty) return Nil
+          else {
+            appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
+          }
         } else {
           appendOrderingIfExists(query(conditions)).append(pagination)
         }

@@ -87,6 +87,10 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
         posts(0).tags.size should equal(4)
         posts(1).tags.size should equal(4)
       }
+      {
+        val posts = Post.joins(Post.tagsRef).paginate(Pagination.page(8).per(3)).apply()
+        posts.size should equal(0)
+      }
 
       {
         val posts = Post.joins(Post.tagsRef).where('body -> "foo bar baz").paginate(Pagination.page(1).per(3)).apply()
@@ -99,6 +103,10 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
         val posts = Post.joins(Post.tagsRef).where('body -> "foo bar baz").paginate(Pagination.page(4).per(3)).apply()
         posts.size should equal(1)
         posts(0).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).where('body -> "foo bar baz").paginate(Pagination.page(5).per(3)).apply()
+        posts.size should equal(0)
       }
 
       // #findAllWithPagination in Finder
@@ -115,6 +123,10 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
         posts(0).tags.size should equal(4)
         posts(1).tags.size should equal(4)
       }
+      {
+        val posts = Post.joins(Post.tagsRef).findAllWithPagination(Pagination.page(8).per(3))
+        posts.size should equal(0)
+      }
 
       val p = Post.defaultAlias
 
@@ -130,6 +142,10 @@ class BlogSpec extends fixture.FunSpec with ShouldMatchers
         val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(4).per(3))
         posts.size should equal(1)
         posts(0).tags.size should equal(3)
+      }
+      {
+        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(5).per(3))
+        posts.size should equal(0)
       }
 
     }

@@ -108,14 +108,18 @@ trait FinderFeatureWithId[Id, Entity]
         .limit(limit).offset(offset)
     }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
 
-    implicit val repository = IncludesQueryRepository[Entity]()
-    appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations
-        .where(sqls.toAndConditionOpt(
-          defaultScopeWithDefaultAlias,
-          Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
-        )).orderBy(sqls.csv(orderings: _*))
-    }).list.apply())
+    if (ids.isEmpty) {
+      Nil
+    } else {
+      implicit val repository = IncludesQueryRepository[Entity]()
+      appendIncludedAttributes(extract(withSQL {
+        selectQueryWithAssociations
+          .where(sqls.toAndConditionOpt(
+            defaultScopeWithDefaultAlias,
+            Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
+          )).orderBy(sqls.csv(orderings: _*))
+      }).list.apply())
+    }
   }
 
   @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
@@ -259,15 +263,19 @@ trait FinderFeatureWithId[Id, Entity]
         .limit(limit).offset(offset)
     }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
 
-    implicit val repository = IncludesQueryRepository[Entity]()
-    appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations
-        .where(sqls.toAndConditionOpt(
-          Option(where),
-          defaultScopeWithDefaultAlias,
-          Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
-        )).orderBy(sqls.csv(orderings: _*))
-    }).list.apply())
+    if (ids.isEmpty) {
+      Nil
+    } else {
+      implicit val repository = IncludesQueryRepository[Entity]()
+      appendIncludedAttributes(extract(withSQL {
+        selectQueryWithAssociations
+          .where(sqls.toAndConditionOpt(
+            Option(where),
+            defaultScopeWithDefaultAlias,
+            Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
+          )).orderBy(sqls.csv(orderings: _*))
+      }).list.apply())
+    }
   }
 
   @deprecated("Use #findAllByWithLimitOffset or #findAllByWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
