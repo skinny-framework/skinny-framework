@@ -112,18 +112,27 @@ trait IncludesFeatureWithId[Id, Entity]
     try {
       val withBelongsTo = includedBelongsToAssociations.foldLeft(entities) { (entities, assoc) =>
         val ids: Seq[Id] = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
-        assoc.extractor.includesMerge(entities,
-          toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        if (ids.isEmpty) Nil
+        else {
+          assoc.extractor.includesMerge(entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        }
       }
       val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) { (entities, assoc) =>
         val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
-        assoc.extractor.includesMerge(entities,
-          toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        if (ids.isEmpty) Nil
+        else {
+          assoc.extractor.includesMerge(entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        }
       }
       includedHasManyAssociations.foldLeft(withHasOne) { (entities, assoc) =>
         val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
-        assoc.extractor.includesMerge(entities,
-          toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        if (ids.isEmpty) Nil
+        else {
+          assoc.extractor.includesMerge(entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+        }
       }
 
     } catch {
