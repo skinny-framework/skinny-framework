@@ -5,6 +5,8 @@ import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templateresolver._
 import org.thymeleaf.context.WebContext
 import scala.collection.JavaConverters._
+import org.thymeleaf.dialect.IDialect
+//import nz.net.ultraq.thymeleaf.LayoutDialect
 
 /**
  * Thymeleaf template engine support.
@@ -42,6 +44,12 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   lazy val thymeleafResolverCacheTTLMs: Long = 3600000L
 
   /**
+   * Dialects for this Thymeleaf Template Engine.
+   */
+  //  lazy val thymeleafDialects: Set[_ <: IDialect] = Set(new LayoutDialect)
+  lazy val thymeleafDialects: Set[_ <: IDialect] = Set()
+
+  /**
    * Resolver.
    */
   lazy val thymeleafResolver: TemplateResolver = {
@@ -64,6 +72,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   lazy val thymeleafTemplateEngine: TemplateEngine = {
     val engine = new TemplateEngine
     engine.setTemplateResolver(thymeleafResolver)
+    thymeleafDialects.foreach(engine.addDialect)
     engine
   }
 
@@ -72,7 +81,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
-    s"${path}".replaceAll("//", "/")
+    s"${path}".replaceAll("//", "/").replaceFirst("^/", "")
   }
 
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {

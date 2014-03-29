@@ -122,8 +122,9 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"             %  "thymeleaf" % "2.1.2.RELEASE" % "compile",
-        "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.19"        % "compile"
+        "org.thymeleaf"            %  "thymeleaf"                % "2.1.2.RELEASE" % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.2"         % "compile",
+        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.19"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
