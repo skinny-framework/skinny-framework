@@ -1,5 +1,8 @@
 package skinny
 
+import org.scalatra.{ UrlGenerator, Route }
+import javax.servlet.http.HttpServletRequest
+
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.
  */
@@ -55,5 +58,9 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
 
   def i18n: I18n = getAs[I18n](ATTR_I18N).getOrElse(I18n())
   def getI18n = i18n
+
+  def url(route: Route, params: (String, Any)*)(implicit req: HttpServletRequest): String = {
+    UrlGenerator.url(route, params.map { case (k, v) => k -> String.valueOf(v) }.toMap[String, String], Nil)
+  }
 
 }

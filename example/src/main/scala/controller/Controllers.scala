@@ -3,6 +3,7 @@ package controller
 import _root_.controller._
 import skinny._
 import skinny.controller.AssetsController
+import org.scalatra.Route
 
 object Controllers {
 
@@ -17,6 +18,7 @@ object Controllers {
     mustache.mount(ctx)
     programmers.mount(ctx)
     thymeleaf.mount(ctx)
+    freemarker.mount(ctx)
 
     SkillsController.mount(ctx)
     CommentsController.mount(ctx)
@@ -60,6 +62,9 @@ object Controllers {
 
   object thymeleaf extends ThymeleafController with Routes {
     val indexUrl = get("/thymeleaf/?".r)(index).as('index)
+  }
+  object freemarker extends FreeMarkerController with Routes {
+    val indexUrl = get("/freemarker/?".r)(index).as('index)
   }
 
 }

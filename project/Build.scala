@@ -175,7 +175,7 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, factoryGirl, test, task)
+  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task)
 
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="httspan://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="utf-8"/>
+<!--/*
+This code will be removed at thymeleaf parsing time!
+Be aware that Thymeleaf's OGNL getter support and Scala accessor methods.
+(e.g.)
+case class Person(id: Long, @BeanProperty name: String)
+class PersonsController extends ApplicationController {
+  def show = {
+    params.getAs[Long]("id").map { id =>
+      set("person", Person(id, "Alice"))
+    }
+    render("/persons/show")
+  }
+}
+<div th:text="${person.id}">id</div>     // ERROR!
+<div th:text="${person.id()}">id</div>   // OK!
+<div th:text="${person.name}">id</div>   // OK!
+<div th:text="${person.name()}">id</div> // OK!
+*/-->
+<meta content="dummy" name="csrf-token" th:name="${s.csrfKey}" th:content="${s.csrfToken}" />
+<script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container span12">
+    <section layout:fragment="content">
+        <p>Page content goes here</p>
+    </section>
+    <footer>
+        <p>My footer</p>
+        <p layout:fragment="custom-footer">Custom footer here</p>
+    </footer>
+</div>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/js/skinny-framework.js" th:src="@{/assets/js/skinny-framework.js}"></script>
+</body>
+</html>
