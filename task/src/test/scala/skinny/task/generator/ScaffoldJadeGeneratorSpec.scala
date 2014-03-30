@@ -81,7 +81,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |div(class="form-actions")
           |  =unescape(s.csrfHiddenInputTag)
           |  input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
-          |    a(class="btn btn-default" href={url(Controllers.adminMembers.indexUrl)}) #{s.i18n.get("cancel")}
+          |    a(class="btn btn-default" href={s.url(Controllers.adminMembers.indexUrl)}) #{s.i18n.get("cancel")}
           |""".stripMargin
       code should equal(expected)
     }
@@ -110,7 +110,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |-#-for (e <- s.errorMessages)
           |-#  p(class="alert alert-danger") #{e}
           |
-          |form(method="post" action={url(Controllers.adminMembers.createUrl)} class="form")
+          |form(method="post" action={s.url(Controllers.adminMembers.createUrl)} class="form")
           |  =include("_form.html.jade")
           |""".stripMargin
       code should equal(expected)
@@ -140,7 +140,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |-#-for (e <- s.errorMessages)
           |-#  p(class="alert alert-danger") #{e}
           |
-          |form(method="post" action={url(Controllers.adminMembers.updateUrl, "id" -> s.params.id.get.toString)} class="form")
+          |form(method="post" action={s.url(Controllers.adminMembers.updateUrl, "id" -> s.params.id)} class="form")
           |  =include("_form.html.jade")
           |""".stripMargin
       code should equal(expected)
@@ -174,12 +174,12 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |- if (totalPages > 1)
           |  ul.pagination
           |    li
-          |      a(href={url(Controllers.adminMembers.indexUrl, "page" -> 1.toString)}) &laquo;
+          |      a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> 1)}) &laquo;
           |    - for (i <- (1 to totalPages))
           |      li
-          |        a(href={url(Controllers.adminMembers.indexUrl, "page" -> i.toString)}) #{i}
+          |        a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> i)}) #{i}
           |    li
-          |      a(href={url(Controllers.adminMembers.indexUrl, "page" -> totalPages.toString)}) &raquo;
+          |      a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> totalPages)}) &raquo;
           |
           |table(class="table table-bordered")
           |  thead
@@ -201,11 +201,11 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |      td #{item.isActivated}
           |      td #{item.birthday}
           |      td
-          |        a(href={url(Controllers.adminMembers.showUrl, "id" -> item.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
-          |        a(href={url(Controllers.adminMembers.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |        a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(Controllers.adminMembers.destroyUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |        a(href={s.url(Controllers.adminMembers.showUrl, "id" -> item.id)} class="btn btn-default") #{s.i18n.get("detail")}
+          |        a(href={s.url(Controllers.adminMembers.editUrl, "id" -> item.id)} class="btn btn-info") #{s.i18n.get("edit")}
+          |        a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |
-          |a(href={url(Controllers.adminMembers.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
+          |a(href={s.url(Controllers.adminMembers.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
           |""".stripMargin
       code should equal(expected)
     }
@@ -256,9 +256,9 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |hr
           |div(class="form-actions")
-          |  a(class="btn btn-default" href={url(Controllers.adminMembers.indexUrl)}) #{s.i18n.get("backToList")}
-          |  a(href={url(Controllers.adminMembers.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-          |  a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={url(Controllers.adminMembers.destroyUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+          |  a(class="btn btn-default" href={s.url(Controllers.adminMembers.indexUrl)}) #{s.i18n.get("backToList")}
+          |  a(href={s.url(Controllers.adminMembers.editUrl, "id" -> item.id)} class="btn btn-info") #{s.i18n.get("edit")}
+          |  a(data-method="delete" data-confirm={s.i18n.get("member.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
           |""".stripMargin
       code should equal(expected)
     }

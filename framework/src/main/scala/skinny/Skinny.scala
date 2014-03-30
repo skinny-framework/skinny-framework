@@ -2,6 +2,7 @@ package skinny
 
 import org.scalatra.{ UrlGenerator, Route }
 import javax.servlet.http.HttpServletRequest
+import skinny.controller.ThreadLocalRequest
 
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.
@@ -59,8 +60,25 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
   def i18n: I18n = getAs[I18n](ATTR_I18N).getOrElse(I18n())
   def getI18n = i18n
 
-  def url(route: Route, params: (String, Any)*)(implicit req: HttpServletRequest): String = {
-    UrlGenerator.url(route, params.map { case (k, v) => k -> String.valueOf(v) }.toMap[String, String], Nil)
+  /**
+   * Skinny's utility for Scalatra reverse routing.
+   * This method will make your view template simpler because
+   * - no need to call #toString for params
+   * - extract value from Option automatically
+   */
+  def url(route: Route, params: (String, Any)*)(implicit req: HttpServletRequest = ThreadLocalRequest.get()): String = {
+    // extract Option's raw value (basically Scalatra params returns Option value)
+    def convertOptionalValue(v: Any): String = v match {
+      case null => null
+      case None => null
+      case Some(v) => convertOptionalValue(v)
+      case _ => v.toString
+    }
+    UrlGenerator.url(
+      route,
+      params.map { case (k, v) => k -> convertOptionalValue(v) }.toMap[String, String],
+      Nil
+    )
   }
 
 }
