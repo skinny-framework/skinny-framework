@@ -1,12 +1,11 @@
 package skinny.controller.feature
 
 import skinny._
-import org.thymeleaf.TemplateEngine
-import org.thymeleaf.templateresolver._
+import org.thymeleaf._
 import org.thymeleaf.context.WebContext
-import scala.collection.JavaConverters._
 import org.thymeleaf.dialect.IDialect
-//import nz.net.ultraq.thymeleaf.LayoutDialect
+import org.thymeleaf.templateresolver._
+import nz.net.ultraq.thymeleaf.LayoutDialect
 
 /**
  * Thymeleaf template engine support.
@@ -46,8 +45,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   /**
    * Dialects for this Thymeleaf Template Engine.
    */
-  //  lazy val thymeleafDialects: Set[_ <: IDialect] = Set(new LayoutDialect)
-  lazy val thymeleafDialects: Set[_ <: IDialect] = Set()
+  lazy val thymeleafDialects: Set[_ <: IDialect] = Set(new LayoutDialect)
 
   /**
    * Resolver.
@@ -92,8 +90,6 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
     val context = new WebContext(request, response, servletContext)
     requestScope().foreach {
-      case (key, value: Map[_, _]) => context.setVariable(key, value.asJava)
-      case (key, value: Iterable[_]) => context.setVariable(key, value.asJava)
       case (key, value) => context.setVariable(key, value)
     }
     thymeleafTemplateEngine.process(templatePath(path), context)

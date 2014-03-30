@@ -1,33 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="httspan://www.thymeleaf.org">
+<html xmlns:th="httspan://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="../layouts/layout">
 <head>
 <title>Thymeleaf Example</title>
 </head>
 <body>
+<section layout:fragment="content">
+    <h3>numbers</h3>
+    <div th:each="n : ${numbers}">
+        <span th:text="${n}">number</span>
+    </div>
 
-<h3>numbers</h3>
-<div th:each="n : ${numbers}">
-    <span th:text="${n}">number</span>
-</div>
+    <h3>nestedNumbers</h3>
+    <div th:each="nn : ${nestedNumbers}">
+        <div th:each="n : ${nn}">
+            nested-<span th:text="${n}">nested</span>
+        </div>
+    </div>
 
-<h3>nestedNumbers</h3>
-<div th:each="nn : ${nestedNumbers}">
-  <div th:each="n : ${nn}">
-    nested-<span th:text="${n}">nested</span>
-  </div>
-</div>
+    <h3>map</h3>
+    <div th:each="e : ${map}">
+        <span th:text="${e._1 + '->' + e._2}">key -> value</span>
+    </div>
 
-<h3>map</h3>
-<div th:each="e : ${map}">
-  <span th:text="${e.key + '->' + e.value}">key -> value</span>
-</div>
+    <h3>persons</h3>
+    <div th:each="p : ${persons}">
+        <span th:text="${p.id()}">id</span>
+        <span th:text="${p.name}">value</span>
+    </div>
 
-<h3>persons</h3>
-<div th:each="p : ${persons}">
-    <span th:text="${p.id()}">id</span>
-    <span th:text="${p.name}">value</span>
-</div>
-
-<span th:text="${'Hello, ' + name + '!'}">Hello World!</span>
+    <span th:text="${'Hello, ' + name + '!'}">Hello World!</span>
+</section>
+<footer>
+    <p layout:fragment="custom-footer">This is some footer content from content page 1</p>
+</footer>
 </body>
 </html>
