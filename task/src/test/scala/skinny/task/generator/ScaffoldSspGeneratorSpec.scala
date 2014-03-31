@@ -121,7 +121,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |<div class="form-actions">
           |  ${unescape(s.csrfHiddenInputTag)}
           |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
-          |  <a class="btn btn-default" href="${url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("cancel")}</a>
+          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("cancel")}</a>
           |</div>
           |</form>
           |""".stripMargin
@@ -155,7 +155,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |#end
           |--%>
           |
-          |<form method="post" action="${url(Controllers.adminMembers.createUrl)}" class="form">
+          |<form method="post" action="${s.url(Controllers.adminMembers.createUrl)}" class="form">
           | ${include("_form.html.ssp")}
           |""".stripMargin
       code should equal(expected)
@@ -188,7 +188,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |#end
           |--%>
           |
-          |<form method="post" action="${url(Controllers.adminMembers.updateUrl, "id" -> s.params.id.get.toString)}" class="form">
+          |<form method="post" action="${s.url(Controllers.adminMembers.updateUrl, "id" -> s.params.id)}" class="form">
           | ${include("_form.html.ssp")}
           |""".stripMargin
       code should equal(expected)
@@ -223,15 +223,15 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |#if (totalPages > 1)
           |  <ul class="pagination">
           |    <li>
-          |      <a href="${url(Controllers.adminMembers.indexUrl, "page" -> 1.toString)}">&laquo;</a>
+          |      <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> 1)}">&laquo;</a>
           |    </li>
           |    #for (i <- (1 to totalPages))
           |      <li>
-          |        <a href="${url(Controllers.adminMembers.indexUrl, "page" -> i.toString)}">${i}</a>
+          |        <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> i)}">${i}</a>
           |      </li>
           |    #end
           |    <li>
-          |      <a href="${url(Controllers.adminMembers.indexUrl, "page" -> totalPages.toString)}">&raquo;</a>
+          |      <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> totalPages)}">&raquo;</a>
           |    </li>
           |  </ul>
           |#end
@@ -258,17 +258,17 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |    <td>${item.isActivated}</td>
           |    <td>${item.birthday}</td>
           |    <td>
-          |      <a href="${url(Controllers.adminMembers.showUrl, "id" -> item.id.toString)}" class="btn btn-default">${s.i18n.get("detail")}</a>
-          |      <a href="${url(Controllers.adminMembers.editUrl, "id" -> item.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
+          |      <a href="${s.url(Controllers.adminMembers.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.get("detail")}</a>
+          |      <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.get("edit")}</a>
           |      <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |        href="${url(Controllers.adminMembers.destroyUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |        href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
           |    </td>
           |  </tr>
           |  #end
           |</tbody>
           |</table>
           |
-          |<a href="${url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.get("new")}</a>
+          |<a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.get("new")}</a>
           |""".stripMargin
       code should equal(expected)
     }
@@ -329,10 +329,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |<hr/>
           |<div class="form-actions">
-          |  <a class="btn btn-default" href="${url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("backToList")}</a>
-          |  <a href="${url(Controllers.adminMembers.editUrl, "id" -> item.id.toString)}" class="btn btn-info">${s.i18n.get("edit")}</a>
+          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("backToList")}</a>
+          |  <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.get("edit")}</a>
           |  <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |    href="${url(Controllers.adminMembers.destroyUrl, "id" -> item.id.toString)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |    href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
           |</div>
           |""".stripMargin
       code should equal(expected)

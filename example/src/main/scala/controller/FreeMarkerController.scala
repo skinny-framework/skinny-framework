@@ -4,7 +4,9 @@ import skinny.controller.SkinnyController
 import skinny.controller.feature._
 import scala.beans.BeanProperty
 
-class ThymeleafController extends SkinnyController with ThymeleafTemplateEngineFeature {
+class FreeMarkerController extends SkinnyController with FreeMarkerTemplateEngineFeature {
+
+  override lazy val sbtProjectPath = Some("example")
 
   case class Person(id: Long, @BeanProperty name: String)
 
@@ -14,7 +16,7 @@ class ThymeleafController extends SkinnyController with ThymeleafTemplateEngineF
     set("nestedNumbers", Seq(Seq(1, 2), Seq("ONE", "TWO")))
     set("map", Map("one" -> 1, "two" -> 2))
     set("persons", Seq(Person(1, "Alice"), Person(2, "Bob")))
-    render("/thymeleaf/index")
+    render("/freemarker/index")
   }
 
 }

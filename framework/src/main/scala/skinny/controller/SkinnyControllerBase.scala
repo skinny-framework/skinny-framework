@@ -23,6 +23,7 @@ trait SkinnyControllerBase
     with FlashFeature
     with ValidationFeature
     with JSONFeature
+    with ThreadLocalRequestFeature
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature

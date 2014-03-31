@@ -106,7 +106,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
       s"""%div(class="form-actions")
         |  =unescape(s.csrfHiddenInputTag)
         |  %input(type="submit" class="btn btn-primary" value={s.i18n.get("submit")})
-        |    %a(class="btn btn-default" href={url(${controllerName}.indexUrl)}) #{s.i18n.get("cancel")}
+        |    %a(class="btn btn-default" href={s.url(${controllerName}.indexUrl)}) #{s.i18n.get("cancel")}
         |""".stripMargin
   }
 
@@ -122,7 +122,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |-#-for (e <- s.errorMessages)
         |-#  %p(class="alert alert-danger") #{e}
         |
-        |%form(method="post" action={url(${controllerName}.createUrl)} class="form")
+        |%form(method="post" action={s.url(${controllerName}.createUrl)} class="form")
         |  =include("_form.html.scaml")
         |""".stripMargin
   }
@@ -139,7 +139,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |-#-for (e <- s.errorMessages)
         |-#  %p(class="alert alert-danger") #{e}
         |
-        |%form(method="post" action={url(${controllerName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName}.get.toString)} class="form")
+        |%form(method="post" action={s.url(${controllerName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName})} class="form")
         |  =include("_form.html.scaml")
         |""".stripMargin
   }
@@ -161,12 +161,12 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |- if (totalPages > 1)
         |  %ul.pagination
         |    %li
-        |      %a(href={url(${controllerName}.indexUrl, "page" -> 1.toString)}) &laquo;
+        |      %a(href={s.url(${controllerName}.indexUrl, "page" -> 1)}) &laquo;
         |    - for (i <- (1 to totalPages))
         |      %li
-        |        %a(href={url(${controllerName}.indexUrl, "page" -> i.toString)}) #{i}
+        |        %a(href={s.url(${controllerName}.indexUrl, "page" -> i)}) #{i}
         |    %li
-        |      %a(href={url(${controllerName}.indexUrl, "page" -> totalPages.toString)}) &raquo;
+        |      %a(href={s.url(${controllerName}.indexUrl, "page" -> totalPages)}) &raquo;
         |
         |%table(class="table table-bordered")
         |  %thead
@@ -178,11 +178,11 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |    %tr
         |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => "      %td #{item." + k + "}" }.mkString("\n")}
         |      %td
-        |        %a(href={url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)} class="btn btn-default") #{s.i18n.get("detail")}
-        |        %a(href={url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-        |        %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        |        %a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.get("detail")}
+        |        %a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.get("edit")}
+        |        %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |
-        |%a(href={url(${controllerName}.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
+        |%a(href={s.url(${controllerName}.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}
         |""".stripMargin
   }
 
@@ -212,9 +212,9 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |${attributesPart}
         |%hr
         |%div(class="form-actions")
-        |  %a(class="btn btn-default" href={url(${controllerName}.indexUrl)}) #{s.i18n.get("backToList")}
-        |  %a(href={url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-        |  %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName}.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        |  %a(class="btn btn-default" href={s.url(${controllerName}.indexUrl)}) #{s.i18n.get("backToList")}
+        |  %a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.get("edit")}
+        |  %a(data-method="delete" data-confirm={s.i18n.get("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
         |""".stripMargin
   }
 
