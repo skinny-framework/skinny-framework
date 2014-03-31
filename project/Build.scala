@@ -8,9 +8,9 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.2-SNAPSHOT"
+  val _version = "1.0.2"
   val scalatraVersion = "2.2.2"
-  val json4SVersion = "3.2.7"
+  val json4SVersion = "3.2.8"
   val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.3.175"
@@ -94,7 +94,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.1.Final"  % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.4.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -123,8 +123,8 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.2.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.2"         % "compile",
-        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.19"        % "compile"
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.3"         % "compile",
+        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.20"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
