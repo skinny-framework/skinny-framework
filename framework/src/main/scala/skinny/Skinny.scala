@@ -69,14 +69,17 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
   def url(route: Route, params: (String, Any)*)(implicit req: HttpServletRequest = ThreadLocalRequest.get()): String = {
     // extract Option's raw value (basically Scalatra params returns Option value)
     def convertOptionalValue(v: Any): String = v match {
-      case null => null
-      case None => null
+      case null => "" // Scalatra's UrlGenerator doesn't expect null value at least in Scalatra 2.2
+      case None => ""
       case Some(v) => convertOptionalValue(v)
       case _ => v.toString
     }
     UrlGenerator.url(
       route,
-      params.map { case (k, v) => k -> convertOptionalValue(v) }.toMap[String, String],
+      params
+        .map { case (k, v) => k -> convertOptionalValue(v) }
+        .filter { case (k, v) => k != null && v != null }
+        .toMap[String, String],
       Nil
     )
   }

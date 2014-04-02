@@ -24,7 +24,7 @@ table(class="table table-bordered")
      a(href={uri("/companies/" + item.id + "/edit")} class="btn btn-info") #{s.i18n.get("edit")}
      a(data-method="delete" data-confirm={s.i18n.get("company.delete.confirm")} href={uri("/companies/" + item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
 
-a(href={uri("/companies/new")} class="btn btn-primary") #{s.i18n.get("new")}
+a(href={s.url(Controllers.companies.newUrl, "foo" -> "bar", "baz" -> null)} class="btn btn-primary") #{s.i18n.get("new")}
 
 hr
 :markdown
