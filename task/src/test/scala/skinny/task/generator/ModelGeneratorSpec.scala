@@ -170,13 +170,14 @@ class ModelGeneratorSpec extends FunSpec with ShouldMatchers {
       val expected =
         """package model.admin
           |
+          |import skinny.DBSettings
           |import skinny.test._
           |import org.scalatest.fixture.FlatSpec
           |import scalikejdbc._, SQLInterpolation._
           |import scalikejdbc.scalatest._
           |import org.joda.time._
           |
-          |class ProjectMemberSpec extends FlatSpec with AutoRollback {
+          |class ProjectMemberSpec extends FlatSpec with DBSettings with AutoRollback {
           |}
           |""".stripMargin
       code should equal(expected)

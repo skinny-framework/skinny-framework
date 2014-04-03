@@ -113,13 +113,14 @@ trait ModelGenerator extends CodeGenerator {
   def spec(namespaces: Seq[String], name: String): String = {
     s"""package ${toNamespace("model", namespaces)}
         |
+        |import skinny.DBSettings
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
         |import scalikejdbc._, SQLInterpolation._
         |import scalikejdbc.scalatest._
         |import org.joda.time._
         |
-        |class ${toClassName(name)}Spec extends FlatSpec with AutoRollback {
+        |class ${toClassName(name)}Spec extends FlatSpec with DBSettings with AutoRollback {
         |}
         |""".stripMargin
   }
