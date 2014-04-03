@@ -10,9 +10,9 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
 
-// scoverage 0.95 doesn't work with Skinny (https://github.com/skinny-framework/skinny-framework/issues/97)
+// scoverage 0.98 doesn't work with Skinny (https://github.com/skinny-framework/skinny-framework/issues/97)
 //resolvers += Classpaths.sbtPluginReleases
-//addSbtPlugin("com.sksamuel.scoverage" % "sbt-scoverage" % "0.95.9")
+//addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.98.0")
 
 // TODO java.lang.ArrayIndexOutOfBoundsException: -1 with 0.13.2-MX
 //scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")

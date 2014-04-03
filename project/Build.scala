@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.3"
+  val _version = "1.0.4"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.8"
   val scalikeJDBCVersion = "1.7.4"
@@ -94,7 +94,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.4.Final"  % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.5.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -103,7 +103,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.12.1"
+        "com.twitter"           %% "util-eval"        % "6.13.2"
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -164,7 +164,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "org.mockito"        %  "mockito-core"       % "1.9.5"         % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.1.1",
+        "ch.qos.logback"     % "logback-classic"     % "1.1.2",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
