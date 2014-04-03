@@ -45,9 +45,9 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"          %  "scala-compiler"     % "2.10.4"              % "container"
     ),
     resolvers ++= Seq(
-      "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       // Only when you use SNAPSHOT versions, activate following resolver
-      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     EclipseKeys.withSource := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")

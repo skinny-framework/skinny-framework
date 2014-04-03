@@ -26,8 +26,8 @@ object SkinnyFrameworkBuild extends Build {
     version := _version,
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
-      "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-      "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
+      "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
