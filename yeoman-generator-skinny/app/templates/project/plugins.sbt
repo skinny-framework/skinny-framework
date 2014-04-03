@@ -33,15 +33,15 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
 // --------
 // scoverage for test coverage (./skinny test:coverage)
 // NOTE: 
-//   Disabled by default because scoverage 0.95 doesn't work with Skinny ORM
+//   Disabled by default because scoverage 0.98 doesn't work with Skinny ORM
 //   (https://github.com/skinny-framework/skinny-framework/issues/97)
 //resolvers += Classpaths.sbtPluginReleases
-//addSbtPlugin("com.sksamuel.scoverage" %% "sbt-scoverage" % "0.95.9")
+//addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.98.0")
 
 // --------
 // Scala.js
 // http://www.scala-js.org/
-//addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.4.0")
+//addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.4.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
