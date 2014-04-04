@@ -41,6 +41,8 @@ package object skinny {
   type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
 
   type TypeConverter[A, B] = org.scalatra.util.conversion.TypeConverter[A, B]
+  type TypeConverterSupport = org.scalatra.util.conversion.TypeConverterSupport
+  val TypeConverterSupport = org.scalatra.util.conversion.TypeConverterSupport
 
   type Logging = skinny.logging.Logging
 

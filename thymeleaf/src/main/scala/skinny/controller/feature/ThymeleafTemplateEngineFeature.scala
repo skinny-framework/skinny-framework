@@ -1,10 +1,11 @@
 package skinny.controller.feature
 
 import skinny._
-import org.thymeleaf.TemplateEngine
-import org.thymeleaf.templateresolver._
+import org.thymeleaf._
 import org.thymeleaf.context.WebContext
-import scala.collection.JavaConverters._
+import org.thymeleaf.dialect.IDialect
+import org.thymeleaf.templateresolver._
+import nz.net.ultraq.thymeleaf.LayoutDialect
 
 /**
  * Thymeleaf template engine support.
@@ -42,6 +43,11 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   lazy val thymeleafResolverCacheTTLMs: Long = 3600000L
 
   /**
+   * Dialects for this Thymeleaf Template Engine.
+   */
+  lazy val thymeleafDialects: Set[_ <: IDialect] = Set(new LayoutDialect)
+
+  /**
    * Resolver.
    */
   lazy val thymeleafResolver: TemplateResolver = {
@@ -64,6 +70,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   lazy val thymeleafTemplateEngine: TemplateEngine = {
     val engine = new TemplateEngine
     engine.setTemplateResolver(thymeleafResolver)
+    thymeleafDialects.foreach(engine.addDialect)
     engine
   }
 
@@ -72,7 +79,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
-    s"${path}".replaceAll("//", "/")
+    s"${path}".replaceAll("//", "/").replaceFirst("^/", "")
   }
 
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {
@@ -83,8 +90,6 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
     val context = new WebContext(request, response, servletContext)
     requestScope().foreach {
-      case (key, value: Map[_, _]) => context.setVariable(key, value.asJava)
-      case (key, value: Iterable[_]) => context.setVariable(key, value.asJava)
       case (key, value) => context.setVariable(key, value)
     }
     thymeleafTemplateEngine.process(templatePath(path), context)

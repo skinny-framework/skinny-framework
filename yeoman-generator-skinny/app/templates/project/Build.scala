@@ -13,7 +13,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.1"
+  val skinnyVersion = "1.0.5-SNAPSHOT"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -30,7 +30,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
       "com.h2database"          %  "h2"                 % "1.3.175",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"    % "1.1.1",
+      "ch.qos.logback"          %  "logback-classic"    % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"       % "2.10.4"              % "test",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion         % "test",
@@ -45,9 +45,9 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"          %  "scala-compiler"     % "2.10.4"              % "container"
     ),
     resolvers ++= Seq(
-      "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       // Only when you use SNAPSHOT versions, activate following resolver
-      //,"sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     EclipseKeys.withSource := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")

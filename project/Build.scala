@@ -8,9 +8,9 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.1"
+  val _version = "1.0.5-SNAPSHOT"
   val scalatraVersion = "2.2.2"
-  val json4SVersion = "3.2.7"
+  val json4SVersion = "3.2.8"
   val scalikeJDBCVersion = "1.7.4"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.3.175"
@@ -26,8 +26,8 @@ object SkinnyFrameworkBuild extends Build {
     version := _version,
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
-      "sonatype releases"  at "http://oss.sonatype.org/content/repositories/releases",
-      "sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
+      "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
@@ -94,7 +94,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.1.Final"  % "test"
+        "org.hibernate"         %  "hibernate-core"    % "4.3.5.Final"  % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
@@ -103,7 +103,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.12.1"
+        "com.twitter"           %% "util-eval"        % "6.13.2"
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -122,8 +122,9 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"             %  "thymeleaf" % "2.1.2.RELEASE" % "compile",
-        "net.sourceforge.nekohtml"  %  "nekohtml"  % "1.9.19"        % "compile"
+        "org.thymeleaf"            %  "thymeleaf"                % "2.1.2.RELEASE" % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.3"         % "compile",
+        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.20"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
@@ -163,7 +164,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
         "org.mockito"        %  "mockito-core"       % "1.9.5"         % "test",
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.1.1",
+        "ch.qos.logback"     % "logback-classic"     % "1.1.2",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
@@ -174,7 +175,7 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, factoryGirl, test, task)
+  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task)
 
   val servletApiDependencies = Seq(
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"

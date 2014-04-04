@@ -5,5 +5,5 @@ hr
 -for (e <- s.errorMessages)
  p(class="alert alert-danger") #{e}
 
-form(method="post" action={uri("/companies/" + s.params.id.get)} class="form")
+form(method="post" action={s.url(Controllers.companies.showUrl, "id" -> s.params.id)} class="form")
  =include("_form.html.jade")
