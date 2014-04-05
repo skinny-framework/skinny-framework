@@ -1,5 +1,6 @@
 package skinny.task.generator
 
+import skinny.ParamType
 import java.io.File
 import org.apache.commons.io.FileUtils
 
@@ -18,6 +19,8 @@ trait ModelGenerator extends CodeGenerator {
   def withTimestamps: Boolean = true
 
   def primaryKeyName: String = "id"
+
+  def primaryKeyType: ParamType = ParamType.Long
 
   private[this] def showUsage = {
     showSkinnyGenerator()
@@ -66,7 +69,7 @@ trait ModelGenerator extends CodeGenerator {
     }
 
     val classFields =
-      s"""  ${primaryKeyName}: Long${
+      s"""  ${primaryKeyName}: ${primaryKeyType}${
         if (attributePairs.isEmpty) ""
         else attributePairs.map {
           case (k, t) =>
@@ -85,6 +88,13 @@ trait ModelGenerator extends CodeGenerator {
       }${timestampsExtraction}
         |""".stripMargin
 
+    val primaryKeyTypeIfNotLong = if (primaryKeyType == ParamType.Long) "" else
+      s"""
+         |  override def idToRawValue(id: String): Any = id
+         |  override def rawValueToId(value: Any): String = value.toString
+         |  override def useExternalIdGenerator = true
+         |  override def generateId = java.util.UUID.randomUUID.toString""".stripMargin
+
     s"""package ${namespace}
         |
         |import skinny.orm._, feature._
@@ -95,9 +105,9 @@ trait ModelGenerator extends CodeGenerator {
         |case class ${modelClassName}(
         |${classFields})
         |
-        |object ${modelClassName} extends SkinnyCRUDMapper[${modelClassName}] ${timestampsTraitIfExists}{
+        |object ${modelClassName} extends SkinnyCRUDMapper${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
-        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}
+        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
         |
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
