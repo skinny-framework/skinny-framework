@@ -152,7 +152,6 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <input type="submit" class="btn btn-primary" value="$${s.i18n.get("submit")}">
         |  <a class="btn btn-default" href="$${s.url(${controllerName}.indexUrl)}">$${s.i18n.get("cancel")}</a>
         |</div>
-        |</form>
         |""".stripMargin
   }
 
@@ -173,6 +172,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<form method="post" action="$${s.url(${controllerName}.createUrl)}" class="form">
         | $${include("_form.html.ssp")}
+        |</form>
         |""".stripMargin
   }
 
@@ -193,6 +193,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |<form method="post" action="$${s.url(${controllerName}.updateUrl, "${snakeCasedPrimaryKeyName}" -> s.params.${snakeCasedPrimaryKeyName})}" class="form">
         | $${include("_form.html.ssp")}
+        |</form>
         |""".stripMargin
   }
 
