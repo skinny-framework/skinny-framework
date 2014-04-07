@@ -123,7 +123,6 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
           |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("cancel")}</a>
           |</div>
-          |</form>
           |""".stripMargin
       code should equal(expected)
     }
@@ -157,6 +156,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |<form method="post" action="${s.url(Controllers.adminMembers.createUrl)}" class="form">
           | ${include("_form.html.ssp")}
+          |</form>
           |""".stripMargin
       code should equal(expected)
     }
@@ -190,6 +190,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with ShouldMatchers {
           |
           |<form method="post" action="${s.url(Controllers.adminMembers.updateUrl, "id" -> s.params.id)}" class="form">
           | ${include("_form.html.ssp")}
+          |</form>
           |""".stripMargin
       code should equal(expected)
     }
