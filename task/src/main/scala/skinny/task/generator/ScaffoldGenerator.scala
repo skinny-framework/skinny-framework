@@ -4,6 +4,7 @@ import java.io.File
 import scala.io.Source
 import org.joda.time._
 import org.apache.commons.io.FileUtils
+import skinny.ParamType
 
 /**
  * Skinny Generator Task.
@@ -15,6 +16,8 @@ trait ScaffoldGenerator extends CodeGenerator {
   protected def withTimestamps: Boolean = true
 
   protected def primaryKeyName: String = "id"
+
+  protected def primaryKeyType: ParamType = ParamType.Long
 
   // for reverse-scaffold
   protected def skipDBMigration: Boolean = false
@@ -130,6 +133,7 @@ trait ScaffoldGenerator extends CodeGenerator {
           val self = this
           val modelGenerator = new ModelGenerator {
             override def primaryKeyName = self.primaryKeyName
+            override def primaryKeyType = self.primaryKeyType
             override def withTimestamps = self.withTimestamps
           }
           modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
@@ -189,6 +193,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val modelClassName = toClassName(resource)
 
     val primaryKeyNameIfNotId = customPrimaryKeyName.map(name => "\n  override def idName = \"" + name + "\"").getOrElse("")
+    val primaryKeyTypeIfNotLong = if (primaryKeyType != ParamType.Long) s"WithId[${primaryKeyType}]" else ""
     val validations = args
       .filterNot { case arg => toParamType(arg.typeName) == "Boolean" } // boolean param doesn't need required validation.
       .flatMap { arg =>
@@ -230,7 +235,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import _root_.controller._
         |import ${toNamespace("model", namespaces)}.${modelClassName}
         |
-        |class ${controllerClassName} extends SkinnyResource with ApplicationController {
+        |class ${controllerClassName} extends SkinnyResource${primaryKeyTypeIfNotLong} with ApplicationController {
         |  protectFromForgery()
         |
         |  override def model = ${modelClassName}
@@ -495,7 +500,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |        "csrf-token" -> "valid_token") {
         |        logBodyUnless(302)
         |        status should equal(302)
-        |        val id = header("Location").split("/").last.toLong
+        |        val id = header("Location").split("/").last${if (primaryKeyType == ParamType.Long) ".toLong" else ""}
         |        ${modelClassName}.findById(id).isDefined should equal(true)
         |      }
         |    }
