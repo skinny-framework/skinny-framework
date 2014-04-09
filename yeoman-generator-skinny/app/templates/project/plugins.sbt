@@ -7,7 +7,7 @@
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5")
 
 // scalatra-sbt depends on xsbt-web-plugin
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.8.0")
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0")
 
 // for Scalate template compilaion
 addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
