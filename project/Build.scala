@@ -11,9 +11,9 @@ object SkinnyFrameworkBuild extends Build {
   val _version = "1.0.6-SNAPSHOT"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.8"
-  val scalikeJDBCVersion = "1.7.4"
+  val scalikeJDBCVersion = "1.7.5"
   val scalateVeresion = "1.6.1"
-  val h2Version = "1.3.175"
+  val h2Version = "1.3.176"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
   //val jettyVersion = "9.1.0.v20131115"
@@ -181,7 +181,7 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
   )
   val slf4jApiDependencies = Seq(
-    "org.slf4j"   %  "slf4j-api"      % "1.7.6" % "compile"
+    "org.slf4j"   %  "slf4j-api"      % "1.7.7" % "compile"
   )
   val scalatraDependencies = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
@@ -210,7 +210,7 @@ object SkinnyFrameworkBuild extends Build {
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
     "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
-    "ch.qos.logback"          %  "logback-classic" % "1.1.1"   % "test",
+    "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
   )
