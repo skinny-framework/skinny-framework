@@ -5,10 +5,10 @@ sbt_path=${current_dir}/sbt
 chmod +x ${sbt_path}
 
 function run_app() {
-  ${sbt_path} "~;container:stop;container:start"
+  ${sbt_path} "~;container:restart"
 }
 function run_precompile_app() {
-  ${sbt_path} "project precompileDev" "~;container:stop;container:start"
+  ${sbt_path} "project precompileDev" "~;container:restart"
 }
 function setup_build() {
   rm -rf build

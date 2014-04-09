@@ -13,31 +13,31 @@ IF NOT DEFINED command (
 
 IF %command%==run (
   IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE (
-      sbt "~;container:stop;container:start"
+      sbt "~;container:restart"
   )
   GOTO script_eof
 )
 IF %command%==server (
   IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE (
-      sbt "~;container:stop;container:start"
+      sbt "~;container:restart"
   )
   GOTO script_eof
 )
 IF %command%==s (
   IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
+    sbt "project precompileDev" "~;container:restart"
   ) ELSE (
-      sbt "~;container:stop;container:start"
+      sbt "~;container:restart"
   )
   GOTO script_eof
 )
