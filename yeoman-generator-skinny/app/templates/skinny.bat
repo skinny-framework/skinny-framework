@@ -140,7 +140,7 @@ IF "%is_generator%"=="true" (
     REM Delete the head whitespace character
     SET generator_params=%generator_params:~1%
 
-    RMDIR task\src\main\resources /s /q
+    RMDIR task\src\main\resources /S /q
     MKDIR task\src\main\resources
     XCOPY src\main\resources task\src\main\resources /E /D /q
     sbt "task/run generate:%generator_params%"
@@ -149,7 +149,7 @@ IF "%is_generator%"=="true" (
 )
 
 IF "%command%"=="db:migrate" (
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:migrate %2"
@@ -157,7 +157,7 @@ IF "%command%"=="db:migrate" (
 )
 
 IF "%command%"=="db:repair" (
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:repair %2"
@@ -178,11 +178,11 @@ IF "%is_gen_idea%"=="true" (
 )
 
 IF %command%==package (
-  RMDIR build /s /q
+  RMDIR build /S /q
   MKDIR build
   XCOPY src\* build\src\* /E /D /q
   xcopy build.sbt build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/package"
@@ -190,11 +190,11 @@ IF %command%==package (
 )
 
 IF "%command%"=="package:standalone" (
-  RMDIR standalone-build /s /q
+  RMDIR standalone-build /S /q
   MKDIR standalone-build
   XCOPY src\* standalone-build\src\* /E /D /q
   XCOPY build.sbt standalone-build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "standalone-build/assembly"
@@ -202,11 +202,11 @@ IF "%command%"=="package:standalone" (
 )
 
 IF %command%==publish (
-  rmdir build /s /q
+  rmdir build /S /q
   mkdir build
   xcopy src\* build\src\* /E /D /q
   xcopy build.sbt build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/publish"
