@@ -24,12 +24,6 @@ IF %command%==s (
 IF %command%==debug (
   GOTO debug
 )
-IF "%command%"=="debug-run" (
-  GOTO debug
-)
-IF "%command%"=="debugRun" (
-  GOTO debug
-)
 IF %command%==d (
   GOTO debug
 )
@@ -227,7 +221,7 @@ ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
 ECHO   run/server/s       : will run application for local development
-ECHO   debug/debug-run/d  : will run application with JDWP. default port 5005
+ECHO   debug/d            : will run application with JDWP. default port 5005
 ECHO   clean              : will clear target directory
 ECHO   update             : will run sbt update
 ECHO   console            : will run sbt console
