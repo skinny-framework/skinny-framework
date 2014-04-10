@@ -12,34 +12,26 @@ IF NOT DEFINED command (
 )
 
 IF %command%==run (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE (
-      sbt "~;container:restart"
-  )
-  GOTO script_eof
+  GOTO run
 )
 IF %command%==server (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE (
-      sbt "~;container:restart"
-  )
-  GOTO script_eof
+  GOTO run
 )
 IF %command%==s (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:restart"
-  ) ELSE (
-      sbt "~;container:restart"
-  )
-  GOTO script_eof
+  GOTO run
+)
+
+IF %command%==debug (
+  GOTO debug
+)
+IF "%command%"=="debug-run" (
+  GOTO debug
+)
+IF "%command%"=="debugRun" (
+  GOTO debug
+)
+IF %command%==d (
+  GOTO debug
 )
 
 IF %command%==clean (
@@ -227,26 +219,29 @@ IF %command%==publish (
   GOTO script_eof
 )
 
+REM ***************************************************************************
 REM Didn't select command.
+REM ***************************************************************************
 :show_help
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run/server/s   : will run application for local development
-ECHO   clean          : will clear target directory
-ECHO   update         : will run sbt update
-ECHO   console        : will run sbt console
-ECHO   compile        : will compile all the classes
-ECHO   ~compile       : will compile all the classes when changes are detected
-ECHO   db:migrate     : will execute database migration
-ECHO   db:repair      : will recover when previous migration failed
-ECHO   test           : will run all the tests
-ECHO   ~test          : will run all the tests when changes are detected
-ECHO   testQuick      : will run only failed tests
-ECHO   ~testQuick     : will run only failed tests when changes are detected
-ECHO   testOnly       : will run the specified test
-ECHO   ~testOnly      : will run the specified test when changes are detected
-ECHO   test:coverage  : will run all the tests and output coverage reports
+ECHO   run/server/s       : will run application for local development
+ECHO   debug/debug-run/d  : will run application with JDWP. default port 5005
+ECHO   clean              : will clear target directory
+ECHO   update             : will run sbt update
+ECHO   console            : will run sbt console
+ECHO   compile            : will compile all the classes
+ECHO   ~compile           : will compile all the classes when changes are detected
+ECHO   db:migrate         : will execute database migration
+ECHO   db:repair          : will recover when previous migration failed
+ECHO   test               : will run all the tests
+ECHO   ~test              : will run all the tests when changes are detected
+ECHO   testQuick          : will run only failed tests
+ECHO   ~testQuick         : will run only failed tests when changes are detected
+ECHO   testOnly           : will run the specified test
+ECHO   ~testOnly          : will run the specified test when changes are detected
+ECHO   test:coverage      : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
@@ -270,6 +265,46 @@ ECHO.
 ECHO   g/generate reverse-scaffold       : will generate from existing database
 ECHO   g/generate reverse-scaffold:scaml : will generate from existing database
 ECHO   g/generate reverse-scaffold:jade  : will generate from existing database
+GOTO script_eof
+
+REM ***************************************************************************
+REM run command
+REM ***************************************************************************
+:run
+IF "%option%"=="-precompile" (
+  sbt "project precompileDev" "~;container:restart"
+) ELSE IF "%option%"=="--precompile" (
+  sbt "project precompileDev" "~;container:restart"
+) ELSE (
+  sbt "~;container:restart"
+)
+GOTO script_eof
+
+REM ***************************************************************************
+REM debug command
+REM ***************************************************************************
+:debug
+IF "%option%"=="-precompile" (
+  IF "%3"=="" (
+    sbt-debug 5005 "project precompileDev" "~;container:restart"
+  ) ELSE (
+    sbt-debug %3 "project precompileDev" "~;container:restart"
+  )
+) ELSE IF "%option%"=="--precompile" (
+  IF "%3"=="" (
+    sbt-debug 5005 "project precompileDev" "~;container:restart"
+  ) ELSE (
+    sbt-debug %3 "project precompileDev" "~;container:restart"
+  )
+) ELSE (
+  IF "%2"=="" (
+    sbt-debug 5005 "~;container:restart"
+  ) ELSE (
+    sbt-debug %2 "~;container:restart"
+  )
+)
+GOTO script_eof
+
 
 :script_eof
 
