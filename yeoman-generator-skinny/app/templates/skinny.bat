@@ -12,34 +12,20 @@ IF NOT DEFINED command (
 )
 
 IF %command%==run (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE (
-      sbt "~;container:stop;container:start"
-  )
-  GOTO script_eof
+  GOTO run
 )
 IF %command%==server (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE (
-      sbt "~;container:stop;container:start"
-  )
-  GOTO script_eof
+  GOTO run
 )
 IF %command%==s (
-  IF "%option%"=="-precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE IF "%option%"=="--precompile" (
-    sbt "project precompileDev" "~;container:stop;container:start"
-  ) ELSE (
-      sbt "~;container:stop;container:start"
-  )
-  GOTO script_eof
+  GOTO run
+)
+
+IF %command%==debug (
+  GOTO debug
+)
+IF %command%==d (
+  GOTO debug
 )
 
 IF %command%==clean (
@@ -154,7 +140,7 @@ IF "%is_generator%"=="true" (
     REM Delete the head whitespace character
     SET generator_params=%generator_params:~1%
 
-    RMDIR task\src\main\resources /s /q
+    RMDIR task\src\main\resources /S /q
     MKDIR task\src\main\resources
     XCOPY src\main\resources task\src\main\resources /E /D /q
     sbt "task/run generate:%generator_params%"
@@ -163,7 +149,7 @@ IF "%is_generator%"=="true" (
 )
 
 IF "%command%"=="db:migrate" (
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:migrate %2"
@@ -171,7 +157,7 @@ IF "%command%"=="db:migrate" (
 )
 
 IF "%command%"=="db:repair" (
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:repair %2"
@@ -192,11 +178,11 @@ IF "%is_gen_idea%"=="true" (
 )
 
 IF %command%==package (
-  RMDIR build /s /q
+  RMDIR build /S /q
   MKDIR build
   XCOPY src\* build\src\* /E /D /q
   xcopy build.sbt build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/package"
@@ -204,11 +190,11 @@ IF %command%==package (
 )
 
 IF "%command%"=="package:standalone" (
-  RMDIR standalone-build /s /q
+  RMDIR standalone-build /S /q
   MKDIR standalone-build
   XCOPY src\* standalone-build\src\* /E /D /q
   XCOPY build.sbt standalone-build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "standalone-build/assembly"
@@ -216,37 +202,40 @@ IF "%command%"=="package:standalone" (
 )
 
 IF %command%==publish (
-  rmdir build /s /q
+  rmdir build /S /q
   mkdir build
   xcopy src\* build\src\* /E /D /q
   xcopy build.sbt build\ /q
-  RMDIR task\src\main\resources /s /q
+  RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/publish"
   GOTO script_eof
 )
 
+REM ***************************************************************************
 REM Didn't select command.
+REM ***************************************************************************
 :show_help
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
-ECHO   run/server/s   : will run application for local development
-ECHO   clean          : will clear target directory
-ECHO   update         : will run sbt update
-ECHO   console        : will run sbt console
-ECHO   compile        : will compile all the classes
-ECHO   ~compile       : will compile all the classes when changes are detected
-ECHO   db:migrate     : will execute database migration
-ECHO   db:repair      : will recover when previous migration failed
-ECHO   test           : will run all the tests
-ECHO   ~test          : will run all the tests when changes are detected
-ECHO   testQuick      : will run only failed tests
-ECHO   ~testQuick     : will run only failed tests when changes are detected
-ECHO   testOnly       : will run the specified test
-ECHO   ~testOnly      : will run the specified test when changes are detected
-ECHO   test:coverage  : will run all the tests and output coverage reports
+ECHO   run/server/s       : will run application for local development
+ECHO   debug/d            : will run application with JDWP. default port 5005
+ECHO   clean              : will clear target directory
+ECHO   update             : will run sbt update
+ECHO   console            : will run sbt console
+ECHO   compile            : will compile all the classes
+ECHO   ~compile           : will compile all the classes when changes are detected
+ECHO   db:migrate         : will execute database migration
+ECHO   db:repair          : will recover when previous migration failed
+ECHO   test               : will run all the tests
+ECHO   ~test              : will run all the tests when changes are detected
+ECHO   testQuick          : will run only failed tests
+ECHO   ~testQuick         : will run only failed tests when changes are detected
+ECHO   testOnly           : will run the specified test
+ECHO   ~testOnly          : will run the specified test when changes are detected
+ECHO   test:coverage      : will run all the tests and output coverage reports
 ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
@@ -270,6 +259,46 @@ ECHO.
 ECHO   g/generate reverse-scaffold       : will generate from existing database
 ECHO   g/generate reverse-scaffold:scaml : will generate from existing database
 ECHO   g/generate reverse-scaffold:jade  : will generate from existing database
+GOTO script_eof
+
+REM ***************************************************************************
+REM run command
+REM ***************************************************************************
+:run
+IF "%option%"=="-precompile" (
+  sbt "project precompileDev" "~;container:restart"
+) ELSE IF "%option%"=="--precompile" (
+  sbt "project precompileDev" "~;container:restart"
+) ELSE (
+  sbt "~;container:restart"
+)
+GOTO script_eof
+
+REM ***************************************************************************
+REM debug command
+REM ***************************************************************************
+:debug
+IF "%option%"=="-precompile" (
+  IF "%3"=="" (
+    sbt-debug 5005 "project precompileDev" "~;container:restart"
+  ) ELSE (
+    sbt-debug %3 "project precompileDev" "~;container:restart"
+  )
+) ELSE IF "%option%"=="--precompile" (
+  IF "%3"=="" (
+    sbt-debug 5005 "project precompileDev" "~;container:restart"
+  ) ELSE (
+    sbt-debug %3 "project precompileDev" "~;container:restart"
+  )
+) ELSE (
+  IF "%2"=="" (
+    sbt-debug 5005 "~;container:restart"
+  ) ELSE (
+    sbt-debug %2 "~;container:restart"
+  )
+)
+GOTO script_eof
+
 
 :script_eof
 

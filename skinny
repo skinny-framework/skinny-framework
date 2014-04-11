@@ -6,7 +6,7 @@ if [ "`which sbt`" == "" ]; then
 fi
 
 function run_app() {
-  sbt "project example" "~;container:stop;container:start"
+  sbt "project example" "~;container:restart"
 }
 
 command="$1"

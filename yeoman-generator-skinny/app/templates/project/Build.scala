@@ -4,6 +4,8 @@ import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import com.mojolly.scalate.ScalatePlugin._
+import com.earldouglas.xsbtwebplugin.PluginKeys._
+import com.earldouglas.xsbtwebplugin.WebPlugin._
 import ScalateKeys._
 import scala.language.postfixOps
 
@@ -13,7 +15,7 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
-  val skinnyVersion = "1.0.4"
+  val skinnyVersion = "1.0.6"
   val scalatraVersion = "2.2.2"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
@@ -29,7 +31,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"   % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
-      "com.h2database"          %  "h2"                 % "1.3.175",      // your own JDBC driver
+      "com.h2database"          %  "h2"                 % "1.3.176",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"    % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"       % "2.10.4"              % "test",
@@ -72,7 +74,8 @@ object SkinnyAppBuild extends Build {
   lazy val devBaseSettings = baseSettings ++ Seq(
     unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
     // Scalatra tests become slower when multiple controller tests are loaded in the same time
-    parallelExecution in Test := false
+    parallelExecution in Test := false,
+    port in container.Configuration := 8080
   )
   lazy val dev = Project(id = "dev", base = file("."),
     settings = devBaseSettings ++ Seq(

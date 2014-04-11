@@ -2,13 +2,18 @@
 
 current_dir=`dirname $0`
 sbt_path=${current_dir}/sbt
+sbt_debug_path=${current_dir}/sbt-debug
 chmod +x ${sbt_path}
+chmod +x ${sbt_debug_path}
 
 function run_app() {
-  ${sbt_path} "~;container:stop;container:start"
+  ${sbt_path} "~;container:restart"
 }
 function run_precompile_app() {
-  ${sbt_path} "project precompileDev" "~;container:stop;container:start"
+  ${sbt_path} "project precompileDev" "~;container:restart"
+}
+function run_debuggable_app() {
+  ${sbt_debug_path} $1 "~;container:restart"
 }
 function setup_build() {
   rm -rf build
@@ -36,6 +41,10 @@ if [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
   else
     run_app
   fi
+elif [ "$command" == "debug" -o "$command" == "d" ];then
+  port="$2"
+  [ -z "${port}" ] && port=5005
+  run_debuggable_app ${port}
 elif [ "$command" == "clean" ];then
   ${sbt_path} dev/clean
 elif [ "$command" == "update" ];then
@@ -114,6 +123,7 @@ else
   echo ""
   echo "  run/server/s    : will run application for local development"
   echo "  run -precompile : will run application with Scalate precompilation"
+  echo "  debug/d         : will run application with JDWP. default port 5005"
   echo "  clean           : will clear target directory"
   echo "  update          : will run sbt update"
   echo "  console         : will run sbt console"

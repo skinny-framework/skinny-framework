@@ -50,6 +50,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
           s"Since this table (${tableName}}) has composite primary keys, generator couldn't create scaffold files")
       }
       val pkName = toCamelCase(columns.find(_.isPrimaryKey).get.name.toLowerCase(Locale.ENGLISH))
+      val pkType = convertJdbcSqlTypeToParamType(columns.find(_.isPrimaryKey).get.typeCode)
       val fields = columns
         .map(column => toScaffoldFieldDef(column))
         .filter(param => param != "id:Long" && param != "id:Option[Long]")
@@ -60,7 +61,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
               | *** Skinny Reverse Engineering Task ***
               |
               |  Table     : ${tableName}
-              |  ID        : ${pkName}
+              |  ID        : ${pkName}:${pkType}
               |  Resources : ${resources}
               |  Resource  : ${resource}
               |
@@ -71,18 +72,21 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       val generator = templateType match {
         case "ssp" => new ScaffoldSspGenerator {
           override def primaryKeyName = pkName
+          override def primaryKeyType = pkType
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)
         }
         case "scaml" => new ScaffoldScamlGenerator {
           override def primaryKeyName = pkName
+          override def primaryKeyType = pkType
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)
         }
         case "jade" => new ScaffoldJadeGenerator {
           override def primaryKeyName = pkName
+          override def primaryKeyType = pkType
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)
