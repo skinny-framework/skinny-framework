@@ -4,6 +4,8 @@ import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import com.mojolly.scalate.ScalatePlugin._
+import com.earldouglas.xsbtwebplugin.PluginKeys._
+import com.earldouglas.xsbtwebplugin.WebPlugin._
 import ScalateKeys._
 import scala.language.postfixOps
 
@@ -72,7 +74,8 @@ object SkinnyAppBuild extends Build {
   lazy val devBaseSettings = baseSettings ++ Seq(
     unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
     // Scalatra tests become slower when multiple controller tests are loaded in the same time
-    parallelExecution in Test := false
+    parallelExecution in Test := false,
+    port in container.Configuration := 8080
   )
   lazy val dev = Project(id = "dev", base = file("."),
     settings = devBaseSettings ++ Seq(
