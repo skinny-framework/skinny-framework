@@ -32,9 +32,9 @@ syntax: glob
 .manager
 .scala_dependencies
 
-# idea
-.idea
-*.iml
+# IntelliJ IDEA settings
+#.idea
+#*.iml
 
 # building
 target
@@ -60,4 +60,8 @@ derby.log
 *.db
 .lib
 logs
+
+# Skinny's default ivy.home
+ivy2
+
 

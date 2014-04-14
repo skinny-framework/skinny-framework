@@ -1,14 +1,4 @@
 // ------------------------------
-// for ./skinnny package:standalone
-import AssemblyKeys._
-
-assemblySettings
-
-mainClass in assembly := Some("skinny.standalone.JettyLauncher")
-
-_root_.sbt.Keys.test in assembly := {}
-
-// ------------------------------
 // Automated code formatter before compilaion
 // Disabled by default because this is confusing for beginners
 //scalariformSettings

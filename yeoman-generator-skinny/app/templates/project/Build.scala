@@ -2,7 +2,6 @@ import sbt._
 import Keys._
 import org.scalatra.sbt._
 import org.scalatra.sbt.PluginKeys._
-import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import com.mojolly.scalate.ScalatePlugin._
 import com.earldouglas.xsbtwebplugin.PluginKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
@@ -15,8 +14,13 @@ object SkinnyAppBuild extends Build {
   // Common Settings
   // -------------------------------------------------------
 
+  val appOrganization = "org.skinny-framework"
+  val appName = "skinny-blank-app"
+  val appVersion = "0.1.0-SNAPSHOT"
+
   val skinnyVersion = "1.0.7-SNAPSHOT"
   val scalatraVersion = "2.2.2"
+  val theScalaVersion = "2.10.4"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
   // Jetty 9 is preferred but 9.1 looks very slow in some cases.
@@ -24,34 +28,37 @@ object SkinnyAppBuild extends Build {
   val jettyVersion = "8.1.14.v20131031"
 
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
-    organization := "org.skinny-framework",
-    version      := "0.1.0-SNAPSHOT",
-    scalaVersion := "2.10.4",
+    organization := appOrganization,
+    name         := appName,
+    version      := appVersion,
+    scalaVersion := theScalaVersion,
     libraryDependencies := Seq(
-      "org.skinny-framework"    %% "skinny-framework"   % skinnyVersion,
-      "org.skinny-framework"    %% "skinny-assets"      % skinnyVersion,
-      "org.skinny-framework"    %% "skinny-task"        % skinnyVersion,
-      "com.h2database"          %  "h2"                 % "1.3.176",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"    % "1.1.2",
+      "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
+      "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
+      "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
+      "com.h2database"          %  "h2"                  % "1.3.176",      // your own JDBC driver
+      "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
-      "org.scala-lang"          %  "scala-library"       % "2.10.4"              % "test",
-      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion         % "test",
-      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion         % "test",
-      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion       % "test",
+      "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
       // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
-      // "org.scalatra"            %% "scalatra-specs2"    % scalatraVersion       % "test",
-      "org.eclipse.jetty"       %  "jetty-webapp"       % jettyVersion          % "container",
-      "org.eclipse.jetty"       %  "jetty-plus"         % jettyVersion          % "container",
-      "org.eclipse.jetty.orbit" %  "javax.servlet"      % "3.0.0.v201112011016" % "container;provided;test",
+      //"org.scalatra"            %% "scalatra-specs2"     % scalatraVersion       % "test",
+      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
+      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
+      "org.eclipse.jetty.orbit" %  "javax.servlet"       % "3.0.0.v201112011016" % "container;provided;test",
       // To fix Scalate runtime evaluation error on Java 8 (https://gist.github.com/seratch/9680709)
-      "org.scala-lang"          %  "scala-compiler"     % "2.10.4"              % "container"
+      "org.scala-lang"          %  "scala-compiler"      % theScalaVersion       % "container"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       // Only when you use SNAPSHOT versions, activate following resolver
       //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
-    EclipseKeys.withSource := true,
+    // Faster "./skinny idea" 
+    // If you need source code, specify Seq(Artifact.SourceClassifier) instead
+    transitiveClassifiers in Global := Seq(""),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
@@ -112,33 +119,15 @@ object SkinnyAppBuild extends Build {
   )
   lazy val build = Project(id = "build", base = file("build"),
     settings = packagingBaseSettings ++ Seq(
-      name := "skinny-blank-app"
+      name := appName
     )
   )
   lazy val standaloneBuild = Project(id = "standalone-build", base = file("standalone-build"),
     settings = packagingBaseSettings ++ Seq(
-      name := "skinny-standalone-app",
+      name := appName + "-standalone",
       libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion
     ) ++ jettyOrbitHack
   )
-
-  // -------------------------------------------------------
-  // Scala.JS Trial
-  // -------------------------------------------------------
-/*
-  lazy val scalaJS = Project(id = "scalajs", base = file("src/main/webapp/WEB-INF/assets"),
-    settings = Defaults.defaultSettings ++ Seq(
-      name := "application", // JavaScript file name
-      unmanagedSourceDirectories in Compile <+= baseDirectory(_ / "scala"),
-      libraryDependencies ++= Seq(
-        "org.scala-lang.modules.scalajs" %% "scalajs-dom"                    % "0.3",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jquery"                 % "0.3",
-        "org.scala-lang.modules.scalajs" %% "scalajs-jasmine-test-framework" % "0.4.0" % "test"
-      ),
-      crossTarget in Compile <<= baseDirectory(_ / ".." / ".." / "assets" / "js")
-    )
-  )
-*/
 
   // -------------------------------------------------------
   // Deployment on Heroku
