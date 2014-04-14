@@ -8,7 +8,7 @@ chmod +x ${sbt_debug_path}
 
 # prepared deps
 if [ -d "${current_dir}/ivy2" ]; then
-  mv ${current_dir}/ivy2/* $HOME/.ivy2/.
+  cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
   rm -rf ${current_dir}/ivy2
 fi
 
