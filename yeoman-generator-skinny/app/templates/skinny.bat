@@ -11,6 +11,11 @@ IF NOT DEFINED command (
   GOTO show_help
 )
 
+IF EXIST "ivy2" (
+  XCOPY ivy2\* %HOMEPATH%\.ivy2\. /E /D /q
+  RMDIR ivy2 /s /q
+)
+
 IF %command%==run (
   GOTO run
 )
@@ -104,23 +109,23 @@ IF "%command%"=="~testOnly" (
   GOTO script_eof
 )
 
-IF %command%=="test:coverage" (
+IF "%command%"=="test:coverage" (
   SET SKINNY_ENV=test
   sbt "dev/scoverage:test"
   GOTO script_eof
 )
 
-IF %command%=="scalajs:watch" (
-  sbt "project scalajs" "~;packageJS"
-  GOTO script_eof
+IF "%command%"=="scalajs:watch" (
+  SET SUB_COMMAND="~;packageJS"
+  GOTO scalajs_task
 )
-IF %command%=="scalajs:package" (
-  sbt "project scalajs" packageJS
-  GOTO script_eof
+IF "%command%"=="scalajs:package" (
+  SET SUB_COMMAND="packageJS"
+  GOTO scalajs_task
 )
-IF %command%=="scalajs:optimize" (
-  sbt "project scalajs" optimizeJS
-  GOTO script_eof
+IF "%command%"=="scalajs:optimize" (
+  SET SUB_COMMAND="optimizeJS"
+  GOTO scalajs_task
 )
 
 SET is_generator=false
@@ -165,6 +170,9 @@ IF "%command%"=="db:repair" (
 )
 
 IF %command%==eclipse (
+  IF NOT EXIST "project\_skinny_eclipse.sbt" (
+    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"2.4.0^"^) > "project\_skinny_eclipse.sbt"
+  )
   sbt eclipse
   GOTO script_eof
 )
@@ -173,6 +181,9 @@ SET is_gen_idea=false
 IF "%command%"=="idea"     SET is_gen_idea=true
 IF "%command%"=="gen-idea" SET is_gen_idea=true
 IF "%is_gen_idea%"=="true" (
+  IF NOT EXIST "project\_skinny_idea.sbt" (
+    ECHO addSbtPlugin^(^"com.github.mpeltonen^" %% ^"sbt-idea^" %% ^"1.6.0^"^) > "project\_skinny_idea.sbt"
+  )
   sbt gen-idea
   GOTO script_eof
 )
@@ -181,7 +192,7 @@ IF %command%==package (
   RMDIR build /S /q
   MKDIR build
   XCOPY src\* build\src\* /E /D /q
-  xcopy build.sbt build\ /q
+  xcopy build.sbt build\ /S /q
   RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
@@ -190,10 +201,23 @@ IF %command%==package (
 )
 
 IF "%command%"=="package:standalone" (
+  IF NOT EXIST "project\_skinny_assembly.sbt" (
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.11.2^"^) > "project\_skinny_assembly.sbt"
+
+    SET SETTINGS_FILE="_skinny_assembly_settings.sbt"
+    ECHO import AssemblyKeys._ > "_skinny_assembly_settings.sbt"
+    ECHO. >> "_skinny_assembly_settings.sbt"
+    ECHO assemblySettings >> "_skinny_assembly_settings.sbt"
+    ECHO. >> "_skinny_assembly_settings.sbt"
+    ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^) >> "_skinny_assembly_settings.sbt"
+    ECHO. >> "_skinny_assembly_settings.sbt"
+    ECHO _root_.sbt.Keys.test in assembly := {} >> "_skinny_assembly_settings.sbt"
+  )
   RMDIR standalone-build /S /q
   MKDIR standalone-build
   XCOPY src\* standalone-build\src\* /E /D /q
   XCOPY build.sbt standalone-build\ /q
+  xcopy _skinny_assembly_settings.sbt standalone-build\ /q
   RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
@@ -240,7 +264,6 @@ ECHO   package            : will create *.war file to deploy
 ECHO   package:standalone : will create *.jar file to run as stand alone app
 ECHO   publish            : will publish *.war file to repository
 ECHO.
-ECHO   # Scala.js trial is disabled by default
 ECHO   scalajs:watch    : will watch Scala.js Scala code change and convert to JS
 ECHO   scalajs:package  : will convert Scala.js Scala code to JS file
 ECHO   scalajs:optimize : will optimize the huge JS file to optimized small JS
@@ -299,6 +322,27 @@ IF "%option%"=="-precompile" (
 )
 GOTO script_eof
 
+:scalajs_task
+IF NOT EXIST "project\_skinny_scalajs.sbt" (
+  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.4.0"^) > "project\_skinny_scalajs.sbt"
+
+  ECHO lazy val scalaJS = Project^(id = "scalajs", base = file^("src/main/webapp/WEB-INF/assets"^),  > "_skinny_scalajs_settings.sbt"
+  ECHO   settings = Defaults.defaultSettings ++ Seq^(      >> "_skinny_scalajs_settings.sbt"
+  ECHO     name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
+  ECHO     unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
+  ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-dom"                    %% "0.3", >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-jquery"                 %% "0.3", >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-jasmine-test-framework" %% "0.4.0" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO     ^), >> "_skinny_scalajs_settings.sbt"
+  ECHO     crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
+  ECHO   ^) >> "_skinny_scalajs_settings.sbt"
+  ECHO ^) >> "_skinny_scalajs_settings.sbt"
+)
+sbt "project scalajs" %SUB_COMMAND%
+GOTO script_eof
+
 
 :script_eof
+
 

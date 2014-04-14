@@ -6,6 +6,12 @@ sbt_debug_path=${current_dir}/sbt-debug
 chmod +x ${sbt_path}
 chmod +x ${sbt_debug_path}
 
+# prepared deps
+if [ -d "${current_dir}/ivy2" ]; then
+  mv ${current_dir}/ivy2/* $HOME/.ivy2/.
+  rm -rf ${current_dir}/ivy2
+fi
+
 function run_app() {
   ${sbt_path} "~;container:restart"
 }
@@ -26,11 +32,30 @@ function setup_standalone_build() {
   mkdir standalone-build
   cp -pr src standalone-build/src
   cp -pr build.sbt standalone-build/build.sbt
+  cp -pr _skinny_assembly_settings.sbt standalone-build/build.sbt
 }
 function copry_resources_to_task() {
   rm -rf task/src/main/resources
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
+}
+function setup_scalajs() {
+  setting_file="${current_dir}/project/_skinny_scalajs.sbt"
+  if [ ! -f "${setting_file}" ]; then
+    echo "addSbtPlugin(\"org.scala-lang.modules.scalajs\" % \"scalajs-sbt-plugin\" % \"0.4.0\")" > ${setting_file}
+    echo "lazy val scalaJS = Project(id = \"scalajs\", base = file(\"src/main/webapp/WEB-INF/assets\"),
+  settings = Defaults.defaultSettings ++ Seq(
+    name := \"application\", // JavaScript file name
+    unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
+    libraryDependencies ++= Seq(
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-dom\"                    % \"0.3\",
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jquery\"                 % \"0.3\",
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jasmine-test-framework\" % \"0.4.0\" % \"test\"
+    ),
+    crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
+  )
+)" > ${current_dir}/_skinny_scalajs_settings.sbt
+  fi
 }
 
 command="$1"
@@ -77,10 +102,13 @@ elif [ "$command" == "test:coverage" ];then
   export SKINNY_ENV="test"
   ${sbt_path} "dev/scoverage:test"
 elif [ "$command" == "scalajs:watch" ];then
+  setup_scalajs
   ${sbt_path} "project scalajs" "~;packageJS"
 elif [ "$command" == "scalajs:package" ];then
+  setup_scalajs
   ${sbt_path} "project scalajs" packageJS
 elif [ "$command" == "scalajs:optimize" ];then
+  setup_scalajs
   ${sbt_path} "project scalajs" optimizeJS
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
@@ -102,14 +130,35 @@ elif [ "$command" == "db:repair" ];then
   shift
   ${sbt_path} "task/run db:repair $@"
 elif [ "$command" == "eclipse" ];then
+  setting_file="${current_dir}/project/_skinny_eclipse.sbt"
+  if [ ! -f "${setting_file}" ]; then
+    echo "addSbtPlugin(\"com.typesafe.sbteclipse\" % \"sbteclipse-plugin\" % \"2.4.0\")" > ${setting_file} 
+  fi
   ${sbt_path} eclipse
 elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
+  setting_file="${current_dir}/project/_skinny_idea.sbt"
+  if [ ! -f "${setting_file}" ]; then
+    echo "addSbtPlugin(\"com.github.mpeltonen\" % \"sbt-idea\" % \"1.6.0\")" > ${setting_file} 
+  fi
   ${sbt_path} gen-idea
 elif [ "$command" == "package" ];then
   setup_build
   copry_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "package:standalone" ];then
+  setting_file="${current_dir}/project/_skinny_assembly.sbt"
+  if [ ! -f "${setting_file}" ]; then
+    echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.11.2\")" > ${setting_file} 
+    echo "import AssemblyKeys._
+
+assemblySettings
+
+mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
+
+_root_.sbt.Keys.test in assembly := {}
+" > "${current_dir}/_skinny_assembly_settings.sbt"
+  fi
+
   setup_standalone_build
   copry_resources_to_task
   ${sbt_path} "task/run assets:precompile" standalone-build/assembly
@@ -142,7 +191,6 @@ else
   echo "  package:standalone : will create *.jar file to run as stand alone app"
   echo "  publish            : will publish *.war file to repository"
   echo ""
-  echo "  # Scala.js trial is disabled by default"
   echo "  scalajs:watch    : will watch Scala.js Scala code change and convert to JS"
   echo "  scalajs:package  : will convert Scala.js Scala code to JS file"
   echo "  scalajs:optimize : will optimize the huge JS file to optimized small JS"

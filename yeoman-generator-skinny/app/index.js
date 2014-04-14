@@ -27,6 +27,7 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('skinny.bat', 'skinny.bat');
   this.copy('sbt', 'sbt');
   this.copy('sbt.bat', 'sbt.bat');
+  this.copy('prepare_deps', 'prepare_deps');
   this.copy('sbt-debug', 'sbt-debug');
   this.copy('sbt-debug.bat', 'sbt-debug.bat');
   this.copy('Procfile', 'Procfile');

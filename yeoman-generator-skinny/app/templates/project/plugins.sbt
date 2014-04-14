@@ -19,23 +19,10 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 //addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 
 // --------
-// for IntelliJ IDEA users (./skinny idea)
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
-
-// --------
-// for Eclise (Scala IDE) users (./skinny eclipse)
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "2.4.0")
-
-// --------
 // dependencies investigation
 
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
-
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
-
-// --------
-// for standalone jar packaging (./skinny package:standalone)
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
+//addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
+//addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
@@ -44,11 +31,6 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
 //   (https://github.com/skinny-framework/skinny-framework/issues/97)
 //resolvers += Classpaths.sbtPluginReleases
 //addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.98.0")
-
-// --------
-// Scala.js
-// http://www.scala-js.org/
-//addSbtPlugin("org.scala-lang.modules.scalajs" % "scalajs-sbt-plugin" % "0.4.0")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
