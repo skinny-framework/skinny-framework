@@ -17,5 +17,5 @@ fi
 
 source ${sbt_config}
 export SBT_OPTS="-Dsbt.ivy.home=${current_dir}/ivy2 -XX:+CMSClassUnloadingEnabled ${PERM_OPT}"
-exec java -Xmx1024M ${SBT_OPTS} -jar ${current_dir}/bin/sbt-launch.jar "$@"
+exec java -Xmx1024M ${SBT_OPTS} -jar ${current_dir}/bin/sbt-launch.jar compile
 

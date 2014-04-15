@@ -21,13 +21,13 @@ if [ "$1" != "test" ]; then
     cp -p $HOME/ivy2.tar.gz .
     tar xvfzp ivy2.tar.gz
     rm -f ivy2.tar.gz
-  else
-    ./prepare_deps
   fi
+  ./create_local_ivy2
 fi
 rm -rf target
 rm -rf project/project
 rm -rf */target
+rm -f  create_local_ivy2
 cd ..
 zip -r skinny-blank-app-with-deps.zip ./skinny-blank-app
 rm -rf skinny-blank-app/ivy2

@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.6"
+  val _version = "1.0.7"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.8"
   val scalikeJDBCVersion = "1.7.5"
@@ -20,11 +20,11 @@ object SkinnyFrameworkBuild extends Build {
   val jettyVersion = "9.0.7.v20131107"
 
   // sbt 0.13.2-M3 deprecates Defaults.defaultSettings
-  //lazy val baseSettings = Defaults.defaultSettings ++ Seq(
-  lazy val baseSettings = Seq(
+  lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  //lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.10.3",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
       "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -61,7 +61,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-standalone",
       libraryDependencies ++= Seq(
-        "javax.servlet"     %  "javax.servlet-api" % "3.0.1"       % "compile",
+        "javax.servlet"     %  "javax.servlet-api" % "3.1.0"       % "compile",
         "org.eclipse.jetty" %  "jetty-webapp"      % jettyVersion  % "compile",
         "org.eclipse.jetty" %  "jetty-servlet"     % jettyVersion  % "compile",
         "org.eclipse.jetty" %  "jetty-server"      % jettyVersion  % "compile"
@@ -84,7 +84,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-task",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-io"             %  "commons-io" % "2.4",
-        "org.fusesource.scalamd" %% "scalamd"    % "1.6"
+        "org.fusesource.scalamd" %% "scalamd"    % "1.6" 
       ) ++ testDependencies
     )
   ) dependsOn(assets, orm)
@@ -103,7 +103,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.13.2"
+        "com.twitter"           %% "util-eval"        % "6.13.2" 
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -147,8 +147,8 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-test",
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
-        "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
         "org.mockito"     %  "mockito-core"       % "1.9.5"            % "compile",
+        "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
         "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
       )
@@ -160,11 +160,11 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
-        "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion % "test",
-        "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion % "test",
-        "org.mockito"        %  "mockito-core"       % "1.9.5"         % "test",
         "com.h2database"     %  "h2"                 % h2Version,
         "ch.qos.logback"     % "logback-classic"     % "1.1.2",
+        "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion       % "test",
+        "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",
+        "org.mockito"        %  "mockito-core"       % "1.9.5"               % "test",
         "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
         "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
         "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
@@ -177,26 +177,22 @@ object SkinnyFrameworkBuild extends Build {
     ) 
   ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task)
 
-  val servletApiDependencies = Seq(
-    "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
-  )
-  val slf4jApiDependencies = Seq(
-    "org.slf4j"   %  "slf4j-api"      % "1.7.7" % "compile"
-  )
-  val scalatraDependencies = Seq(
+  val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided")
+  val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.7" % "compile")
+  val scalatraDependencies   = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile",
     "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile",
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile",
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile",
-    "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"
+    "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"    
   ) ++ servletApiDependencies ++ slf4jApiDependencies
 
   val scalikejdbcDependencies = Seq(
-    "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile",
-    "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"
+    "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
+    "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
+    "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"    
   )
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.3"   % "compile",
@@ -209,7 +205,7 @@ object SkinnyFrameworkBuild extends Build {
   // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
   // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test", // java.lang.IncompatibleClassChangeError in 1.9.2 
+    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
