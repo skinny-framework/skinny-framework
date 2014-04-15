@@ -20,12 +20,12 @@ object SkinnyAppBuild extends Build {
 
   val skinnyVersion = "1.0.7-SNAPSHOT"
   val scalatraVersion = "2.2.2"
-  val theScalaVersion = "2.10.4"
+  val theScalaVersion = "2.10.3"
 
   // We choose Jetty 8 as default for Java 6(!) users. 
   // Jetty 9 is preferred but 9.1 looks very slow in some cases.
   //val jettyVersion = "9.0.7.v20131107"
-  val jettyVersion = "8.1.14.v20131031"
+  val jettyVersion = "8.1.10.v20130312"
 
   lazy val baseSettings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := appOrganization,
@@ -59,6 +59,8 @@ object SkinnyAppBuild extends Build {
     // Faster "./skinny idea" 
     // If you need source code, specify Seq(Artifact.SourceClassifier) instead
     transitiveClassifiers in Global := Seq(""),
+    // the name-hashing algorithm for the incremental compiler.
+    //incOptions := incOptions.value.withNameHashing(true),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
