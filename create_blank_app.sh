@@ -21,9 +21,8 @@ if [ "$1" != "test" ]; then
     cp -p $HOME/ivy2.tar.gz .
     tar xvfzp ivy2.tar.gz
     rm -f ivy2.tar.gz
-  else
-    ./create_local_ivy2
   fi
+  ./create_local_ivy2
 fi
 rm -rf target
 rm -rf project/project
