@@ -324,15 +324,12 @@ GOTO script_eof
 
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
-  ECHO resolvers += Resolver.url^("scala-js-releases", url^("http://dl.bintray.com/content/scala-js/scala-js-releases"^)^)^(Resolver.ivyStylePatterns^)
-  ECHO.
   ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.4.3"^) > "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalaJS = Project^(id = "scalajs", base = file^("src/main/webapp/WEB-INF/assets"^),  > "_skinny_scalajs_settings.sbt"
   ECHO   settings = Defaults.defaultSettings ++ Seq^(      >> "_skinny_scalajs_settings.sbt"
   ECHO     name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
   ECHO     unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
-  ECHO     resolvers += Resolver.url^("scala-js-releases", url^("http://dl.bintray.com/content/scala-js/scala-js-releases"^)^)^(Resolver.ivyStylePatterns^),
   ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-dom"                    %% "0.3", >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-jquery"                 %% "0.3", >> "_skinny_scalajs_settings.sbt"
