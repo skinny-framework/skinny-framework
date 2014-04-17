@@ -4,10 +4,16 @@
 
 // --------
 // Scalatra sbt plugin
-addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5")
+addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
+  ExclusionRule(organization = "org.mortbay.jetty"),
+  ExclusionRule(organization = "org.apache.tomcat.embed")
+))
 
 // scalatra-sbt depends on xsbt-web-plugin
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0")
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0" excludeAll(
+  ExclusionRule(organization = "org.mortbay.jetty"),
+  ExclusionRule(organization = "org.apache.tomcat.embed")
+))
 
 // for Scalate template compilaion
 addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
@@ -17,7 +23,6 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 // NOTE: Disabled by default because this is confusing for beginners
 //
 //addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
-
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
