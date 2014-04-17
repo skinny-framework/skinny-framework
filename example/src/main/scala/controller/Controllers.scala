@@ -69,6 +69,7 @@ object Controllers {
   }
 
   object sampleApi extends SampleApiController with Routes {
+    val createCompanyUrl = post("/api/companies")(createCompany).as('createCompany)
     val companiesUrl = get("/api/companies")(companiesJson).as('companies)
   }
 

@@ -8,5 +8,5 @@ import org.scalatra.ScalatraFilter
  * NOTICE: If you'd like to disable Set-Cookie header for session id, configure in web.xml
  */
 trait SkinnyApiController
-    extends SkinnyControllerBase
-    with ScalatraFilter
+  extends SkinnyControllerBase
+  with ScalatraFilter
