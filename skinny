@@ -23,6 +23,9 @@ elif [ "$command" == "compile" ];then
 elif [ "$command" == "example-test" ];then
   export SKINNY_ENV=test
   sbt example/test
+elif [ "$command" == "~test" ];then
+  export SKINNY_ENV=test
+  sbt "~;test"
 elif [ "$command" == "test" ];then
   export SKINNY_ENV=test
   sbt test

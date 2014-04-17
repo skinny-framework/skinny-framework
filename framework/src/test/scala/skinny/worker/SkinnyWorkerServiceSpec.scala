@@ -19,7 +19,7 @@ class SkinnyWorkerServiceSpec extends FunSpec with ShouldMatchers with Logging {
     it("should run") {
       val service = new SkinnyWorkerService()
       service.everyFixedMilliseconds(worker, 10)
-      Thread.sleep(500L)
+      Thread.sleep(1000L)
       service.shutdownNow()
       counter should be > (5)
     }

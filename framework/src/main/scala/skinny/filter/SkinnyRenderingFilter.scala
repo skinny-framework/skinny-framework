@@ -1,6 +1,7 @@
 package skinny.filter
 
 import org.scalatra.ErrorHandler
+import skinny.controller.SkinnyWebPageControllerFeatures
 
 /**
  * Skinny Filter.
@@ -28,7 +29,7 @@ import org.scalatra.ErrorHandler
  * If you use Scatatra's filter (before/after not beforeAction/afterAction), be careful. It's pretty tricky.
  * Because Scalatra's filters would be applied for all the controllers difined below in ScalatraBootstrap.
  */
-trait SkinnyRenderingFilter extends SkinnyFilter {
+trait SkinnyRenderingFilter extends SkinnyFilter with SkinnyWebPageControllerFeatures {
 
   /**
    * Adds error handler which renders body to SkinnyController.

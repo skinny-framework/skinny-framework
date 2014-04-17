@@ -19,6 +19,7 @@ object Controllers {
     programmers.mount(ctx)
     thymeleaf.mount(ctx)
     freemarker.mount(ctx)
+    sampleApi.mount(ctx)
 
     SkillsController.mount(ctx)
     CommentsController.mount(ctx)
@@ -65,6 +66,10 @@ object Controllers {
   }
   object freemarker extends FreeMarkerController with Routes {
     val indexUrl = get("/freemarker/?".r)(index).as('index)
+  }
+
+  object sampleApi extends SampleApiController with Routes {
+    val companiesUrl = get("/api/companies")(companiesJson).as('companies)
   }
 
 }
