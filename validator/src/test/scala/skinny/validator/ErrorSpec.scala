@@ -8,7 +8,7 @@ class ErrorSpec extends FlatSpec with ShouldMatchers {
   behavior of "Error"
 
   it should "be available" in {
-    val mixedin = new Object with Error {
+    val mixedin = new Object with ErrorLike {
       def name = "xxx"
     }
     mixedin should not be null

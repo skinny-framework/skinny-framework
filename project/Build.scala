@@ -24,7 +24,7 @@ object SkinnyFrameworkBuild extends Build {
   //lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
-    scalaVersion := "2.10.3",
+    scalaVersion := "2.10.4",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
       "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -36,6 +36,8 @@ object SkinnyFrameworkBuild extends Build {
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := { x => false },
+    transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
+    incOptions := incOptions.value.withNameHashing(true),
     pomExtra := _pomExtra
   )
 
@@ -158,7 +160,6 @@ object SkinnyFrameworkBuild extends Build {
   lazy val example = Project (id = "example", base = file("example"),
     settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
-      scalaVersion := "2.10.4",
       libraryDependencies ++= Seq(
         "com.h2database"     %  "h2"                 % h2Version,
         "ch.qos.logback"     % "logback-classic"     % "1.1.2",

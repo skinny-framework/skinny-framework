@@ -11,11 +11,13 @@ package object skinny {
 
   type SkinnyControllerBase = skinny.controller.SkinnyControllerBase
   type SkinnyController = skinny.controller.SkinnyController
+  type SkinnyApiController = skinny.controller.SkinnyApiController
 
   type SkinnyResource = skinny.controller.SkinnyResource
   type SkinnyResourceWithId[Id] = skinny.controller.SkinnyResourceWithId[Id]
 
   type SkinnyServlet = skinny.controller.SkinnyServlet
+  type SkinnyApiServlet = skinny.controller.SkinnyApiServlet
 
   type Params = skinny.controller.Params
   val Params = skinny.controller.Params
