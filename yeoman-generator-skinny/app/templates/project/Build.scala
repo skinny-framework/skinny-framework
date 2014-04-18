@@ -18,7 +18,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.0.8-SNAPSHOT"
+  val skinnyVersion = "1.0.8"
   val scalatraVersion = "2.2.2"
   val theScalaVersion = "2.10.3"
 
@@ -60,7 +60,7 @@ object SkinnyAppBuild extends Build {
     // If you need source code, specify Seq(Artifact.SourceClassifier) instead
     transitiveClassifiers in Global := Seq(""),
     // the name-hashing algorithm for the incremental compiler.
-    //incOptions := incOptions.value.withNameHashing(true),
+    incOptions := incOptions.value.withNameHashing(true),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
