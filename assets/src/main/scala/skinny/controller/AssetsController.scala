@@ -71,6 +71,8 @@ class AssetsController extends SkinnyController {
   // registered compilers by default
   registerJsCompiler(CoffeeScriptAssetCompiler)
   registerJsCompiler(ReactJSXAssetCompiler)
+  registerJsCompiler(ScalaJSAssetCompiler) // just provides Scala source code
+
   registerCssCompiler(LessAssetCompiler)
   registerCssCompiler(ScssAssetCompiler)
   registerCssCompiler(SassAssetCompiler)
@@ -116,11 +118,11 @@ class AssetsController extends SkinnyController {
             contentType = "application/javascript"
             js
           }.getOrElse(pass())
-      }.orElse(jsSourceMaps()).getOrElse(pass())
+      }.orElse(jsSourceMapsFile()).getOrElse(pass())
     } else pass()
   }
 
-  private def jsSourceMaps(): Option[Any] = {
+  private def jsSourceMapsFile(): Option[Any] = {
     if (sourceMapsEnabled) {
       sourceMapsPath.flatMap { path =>
         contentType = "application/octet-stream"
@@ -186,10 +188,10 @@ class AssetsController extends SkinnyController {
           contentType = "text/css"
           css
         }.getOrElse(pass())
-    }.orElse(cssSourceMaps()).getOrElse(pass())
+    }.orElse(cssSourceMapsFile()).getOrElse(pass())
   } else pass()
 
-  private def cssSourceMaps(): Option[Any] = {
+  private def cssSourceMapsFile(): Option[Any] = {
     if (sourceMapsEnabled) {
       sourceMapsPath.flatMap { path =>
         contentType = "application/octet-stream"

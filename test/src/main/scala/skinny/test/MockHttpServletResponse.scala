@@ -106,10 +106,10 @@ class MockHttpServletResponse extends HttpServletResponse {
     this.status = sc
   }
 
-  private def addHeader(name: String, value: Any): Unit = {
-    Option(headers.get(name).getValues()).map(_.add(value)).getOrElse(setHeader(name, value))
+  private def _addHeader(name: String, value: Any): Unit = {
+    Option(headers.get(name).getValues()).map(_.add(value)).getOrElse(_setHeader(name, value))
   }
-  private def setHeader(name: String, value: Any): Unit = {
+  private def _setHeader(name: String, value: Any): Unit = {
     headers.put(name, HeaderValueHolder(value))
   }
 
@@ -117,12 +117,12 @@ class MockHttpServletResponse extends HttpServletResponse {
   override def getHeaders(name: String): Collection[String] = headers.get(name).getStringValues
   override def getHeader(name: String): String = headers.get(name).getStringValue
 
-  override def addHeader(name: String, value: String): Unit = addHeader(name, value)
-  override def setHeader(name: String, value: String): Unit = setHeader(name, value)
-  override def addIntHeader(name: String, value: Int): Unit = addHeader(name, value)
-  override def setIntHeader(name: String, value: Int): Unit = setHeader(name, value)
-  override def addDateHeader(name: String, date: Long): Unit = addHeader(name, date)
-  override def setDateHeader(name: String, date: Long): Unit = setHeader(name, date)
+  override def addHeader(name: String, value: String): Unit = _addHeader(name, value)
+  override def setHeader(name: String, value: String): Unit = _setHeader(name, value)
+  override def addIntHeader(name: String, value: Int): Unit = _addHeader(name, value)
+  override def setIntHeader(name: String, value: Int): Unit = _setHeader(name, value)
+  override def addDateHeader(name: String, date: Long): Unit = _addHeader(name, date)
+  override def setDateHeader(name: String, date: Long): Unit = _setHeader(name, date)
   override def containsHeader(name: String): Boolean = headers.keySet.contains(name)
 
   override def sendRedirect(location: String): Unit = {

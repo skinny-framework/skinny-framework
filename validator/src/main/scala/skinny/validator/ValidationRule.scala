@@ -5,7 +5,7 @@ import scala.language.reflectiveCalls
 /**
  * Validation rule.
  */
-trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with Error {
+trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with ErrorLike {
 
   /**
    * Validation itself.
@@ -23,7 +23,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
    */
   def apply(paramDef: KeyValueParamDefinition): ValidationState = {
     if (isValid(paramDef.value)) ValidationSuccess(paramDef)
-    else ValidationFailure(paramDef, Seq(this))
+    else ValidationFailure(paramDef, Seq(Error(this.name, this.messageParams)))
   }
 
   /**
