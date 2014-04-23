@@ -6,7 +6,7 @@ import org.scalatra.servlet._
 /**
  * File upload feature.
  *
- * When using file upload feature, we cannot SkinnyController due to Servlet restriction.
+ * When using file upload feature, we cannot use SkinnyController(= serlvet Filter) due to Servlet restriction.
  *
  * {{{
  *   // src/main/scala/controller/FileUploadController.scala
