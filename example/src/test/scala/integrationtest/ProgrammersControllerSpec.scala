@@ -63,7 +63,7 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
     }
 
     withSession("csrf-token" -> "12345") {
-      post(s"/programmers", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "plainPassword" -> "1234567890", "csrf-token" -> "12345") {
+      post(s"/programmers", "name" -> newName, "favoriteNumber" -> "123", "companyId" -> company.id.toString, "plainTextPassword" -> "1234567890", "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
         val created = Programmer.findById(id)

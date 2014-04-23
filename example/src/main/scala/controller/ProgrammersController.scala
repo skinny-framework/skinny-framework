@@ -19,12 +19,12 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
     set("skills", Skill.findAll())
   }
 
-  override def createParams = Params(params + ("hashedPassword" -> params.as[PlainPassword]("plainPassword").hash("dummy salt")))
+  override def createParams = Params(params + ("hashedPassword" -> params.as[PlainPassword]("plainTextPassword").hash("dummy salt")))
   override def createForm = validation(createParams,
     paramKey("name") is required & maxLength(64),
     paramKey("favoriteNumber") is required & numeric,
     paramKey("companyId") is numeric,
-    paramKey("plainPassword") is required & minLength(8)
+    paramKey("plainTextPassword") is required & minLength(8)
   )
   override def createFormStrongParameters = Seq(
     "name" -> ParamType.String,

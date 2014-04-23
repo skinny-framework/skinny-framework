@@ -1,15 +1,15 @@
 package controller
 
-import _root_.controller._
 import skinny._
 import skinny.controller.AssetsController
-import org.scalatra.Route
 
 object Controllers {
 
   def mount(ctx: ServletContext): Unit = {
 
     ErrorController.mount(ctx)
+
+    fileUpload.mount(ctx)
 
     root.mount(ctx)
     companies.mount(ctx)
@@ -71,6 +71,11 @@ object Controllers {
   object sampleApi extends SampleApiController with Routes {
     val createCompanyUrl = post("/api/companies")(createCompany).as('createCompany)
     val companiesUrl = get("/api/companies")(companiesJson).as('companies)
+  }
+
+  object fileUpload extends FileUploadController with Routes {
+    val formUrl = get("/fileupload")(form).as('form)
+    val submitUrl = post("/fileupload/submit")(submit).as('submit)
   }
 
 }
