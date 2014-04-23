@@ -1,5 +1,7 @@
 package skinny.controller
 
+import skinny.controller.feature.FileUploadFeature
+
 /**
  * SkinnyController as a Servlet.
  */

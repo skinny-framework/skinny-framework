@@ -26,6 +26,7 @@ if [ "$1" != "test" ]; then
 fi
 rm -rf target
 rm -rf project/project
+rm -rf src/main/webapp/WEB-INF/assets/target
 rm -rf */target
 rm -f  create_local_ivy2
 cd ..

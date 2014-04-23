@@ -36,18 +36,17 @@ trait RichRouteFeature extends ScalatraBase { self: SkinnyControllerBase =>
   }
 
   def mount(ctx: ServletContext): Unit = {
-    allRoutePaths.foreach { path =>
-      this match {
-        case filter: Filter =>
+    this match {
+      case filter: Filter =>
+        allRoutePaths.foreach { path =>
           val name = this.getClass.getName
           val registration = {
-            Option(ctx.getFilterRegistration(name))
-              .getOrElse(ctx.addFilter(name, this.asInstanceOf[Filter]))
+            Option(ctx.getFilterRegistration(name)).getOrElse(ctx.addFilter(name, this.asInstanceOf[Filter]))
           }
           registration.addMappingForUrlPatterns(
             java.util.EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, toNormalizedRoutePath(path))
-        case _ => ctx.mount(this, path)
-      }
+        }
+      case _ => ctx.mount(this, "/")
     }
   }
 
