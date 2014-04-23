@@ -17,9 +17,9 @@ object LTSV {
     LTSVParser.parse(lines, lenient)
   }
 
-  def dump(value: Map[String, String]): String = {
-    value.map { case (k, v) => k + ":" + v }.mkString("\t")
-  }
+  def dump(value: Map[String, String]): String = dump(value.toSeq: _*)
+
+  def dump(value: (String, String)*): String = value.map { case (k, v) => k + ":" + v }.mkString("\t")
 
   def dump(values: List[Map[String, String]]): List[String] = values.map(dump)
 
