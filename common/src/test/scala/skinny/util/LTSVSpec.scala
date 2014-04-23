@@ -57,4 +57,19 @@ class LTSVSpec extends FlatSpec with ShouldMatchers {
     ltsv("name") should equal("クリス")
   }
 
+  behavior of "LTSV.dump"
+
+  it should "dump the contents of a Map in some order" in {
+    val string = LTSV.dump(Map("a" -> "b", "c" -> "d", "e" -> "f", "g" -> "h"))
+    string should include("a:b")
+    string should include("c:d")
+    string should include("e:f")
+    string should include("g:h")
+  }
+
+  it should "dump varargs in the order they were supplied" in {
+    val string = LTSV.dump("a" -> "b", "c" -> "d", "e" -> "f", "g" -> "h")
+    string should be("a:b\tc:d\te:f\tg:h")
+  }
+
 }
