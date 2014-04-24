@@ -62,6 +62,7 @@ object SkinnyAppBuild extends Build {
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
+    javaOptions in Test ++= Seq("-Dskinny.env=test"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
