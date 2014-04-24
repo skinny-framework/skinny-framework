@@ -43,9 +43,9 @@ case class RequestBody(request: Request) {
         {
           val sb = new StringBuilder
           sb.append("--").append(boundary).append(CRLF)
-          sb.append("Content-Disposition: form-data; name=\"").append(data.name).append("\"")
+          sb.append("Content-Disposition: form-data; name=").append('"').append(data.name).append('"')
           data.filename.foreach { name =>
-            sb.append("; filename=\"").append(name).append("\"")
+            sb.append("; filename=").append('"').append(name).append('"')
           }
           sb.append(CRLF)
           data.contentType.foreach { contentType =>
