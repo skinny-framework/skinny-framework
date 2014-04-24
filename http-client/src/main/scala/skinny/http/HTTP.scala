@@ -1,0 +1,240 @@
+/*
+ * Copyright 2011-2012 M3, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+package skinny.http
+
+import java.io._
+import java.net.{ URLEncoder, HttpURLConnection }
+import scala.collection.JavaConverters._
+import scala.concurrent.{ Future, ExecutionContext }
+import skinny.logging.Logging
+import skinny.util.LoanPattern.using
+
+/**
+ * HTTP/1.1
+ */
+object HTTP extends Logging {
+
+  val DEFAULT_CHARSET = "UTF-8"
+
+  var defaultConnectTimeoutMillis: Int = 1000
+  var defaultReadTimeoutMillis: Int = 5000
+
+  // -----
+  // GET
+
+  def get(req: Request): Response = request(Method.GET, req)
+  def get(url: String, charset: String = DEFAULT_CHARSET): Response = get(Request(url).charset(charset))
+  def get(url: String, queryParams: (String, Any)*): Response = get(Request(url).queryParams(queryParams: _*))
+
+  def asyncGet(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(get(req))
+  def asyncGet(url: String, charset: String = DEFAULT_CHARSET)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(get(Request(url).charset(charset)))
+  }
+  def asyncGet(url: String, queryParams: (String, Any)*)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(get(Request(url).queryParams(queryParams: _*)))
+  }
+
+  // -----
+  // POST
+
+  def post(req: Request): Response = request(Method.POST, req)
+  def post(url: String, data: String): Response = post(Request(url).body(data.getBytes))
+  def post(url: String, formParams: (String, Any)*): Response = post(Request(url).formParams(formParams: _*))
+  def postMultipart(url: String, multipartFormData: FormData*): Response = post(Request(url).multipartFormData(multipartFormData))
+
+  def asyncPost(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(post(req))
+  def asyncPost(url: String, data: String)(implicit ctx: ExecutionContext): Future[Response] = Future(post(Request(url).body(data.getBytes)))
+  def asyncPost(url: String, formParams: (String, Any)*)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(post(Request(url).formParams(formParams: _*)))
+  }
+  def asyncPostMultipart(url: String, multipartFormData: FormData*)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(post(Request(url).multipartFormData(multipartFormData.toList)))
+  }
+
+  // -----
+  // PUT
+
+  def put(req: Request): Response = request(Method.PUT, req)
+  def put(url: String, data: String): Response = put(Request(url).body(data.getBytes))
+  def put(url: String, formParams: (String, Any)*): Response = put(Request(url).formParams(formParams: _*))
+  def putMultipart(url: String, multipartFormData: FormData*): Response = put(Request(url).multipartFormData(multipartFormData))
+
+  def asyncPut(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(put(req))
+  def asyncPut(url: String, data: String)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(put(Request(url).body(data.getBytes)))
+  }
+  def asyncPut(url: String, formParams: (String, Any)*)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(put(Request(url).formParams(formParams: _*)))
+  }
+  def asyncPutMultipart(url: String, multipartFormData: FormData*)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(put(Request(url).multipartFormData(multipartFormData)))
+  }
+
+  // -----
+  // DELETE
+
+  def delete(req: Request): Response = request(Method.DELETE, req)
+  def delete(url: String): Response = delete(Request(url))
+
+  def asyncDelete(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(delete(req))
+  def asyncDelete(url: String)(implicit ctx: ExecutionContext): Future[Response] = Future(delete(Request(url)))
+
+  // -----
+  // HEAD
+
+  def head(req: Request): Response = request(Method.HEAD, req)
+  def head(url: String): Response = head(Request(url))
+
+  def asyncHead(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(head(req))
+  def asyncHead(url: String)(implicit ctx: ExecutionContext): Future[Response] = Future(head(Request(url)))
+
+  // -----
+  // OPTIONS
+
+  def options(req: Request): Response = request(Method.OPTIONS, req)
+  def options(url: String): Response = options(Request(url))
+
+  def asyncOptions(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(options(req))
+  def asyncOptions(url: String)(implicit ctx: ExecutionContext): Future[Response] = Future(options(Request(url)))
+
+  // -----
+  // TRACE
+
+  def trace(req: Request): Response = request(Method.TRACE, req)
+  def trace(url: String): Response = trace(Request(url))
+
+  def asyncTrace(req: Request)(implicit ctx: ExecutionContext): Future[Response] = Future(trace(req))
+  def asyncTrace(url: String)(implicit ctx: ExecutionContext): Future[Response] = Future(trace(Request(url)))
+
+  // -----
+  // General request
+
+  def asyncRequest(method: Method, req: Request)(implicit ctx: ExecutionContext): Future[Response] = {
+    Future(request(method, req))
+  }
+
+  def request(method: Method, request: Request): Response = {
+    logger.debug {
+      s"""
+          |- HTTP Request started. -
+          |
+          |${method.name} ${request.url}
+          | Charset: ${request.charset.getOrElse("")}
+          | Content-Type: ${request.contentType.getOrElse("")}
+          | Referer: ${request.referer.getOrElse("")}
+          | User-Agent: ${request.userAgent.getOrElse("")}
+          |
+          |${request.headerNames.map(name => s" ${name}: ${request.header(name).getOrElse("")}").mkString("\n")}
+          |---------
+          |""".stripMargin
+    }
+
+    val conn: HttpURLConnection = request.toHttpURLConnection(method)
+    conn.setRequestProperty("Connection", "close")
+    request.charset.foreach(c => conn.setRequestProperty("Accept-Charset", c))
+
+    var needToThrowException: Boolean = false
+    var exceptionMessage: Option[String] = None
+    var inputStream: Option[InputStream] = None
+    try {
+      try {
+        if (request.bodyBytes.isDefined) {
+          conn.setDoOutput(true)
+          request.contentType.foreach(ct => conn.setRequestProperty("Content-Type", ct))
+          using(conn.getOutputStream) { out => request.requestBody.asBytes.foreach(b => out.write(b)) }
+        } else if (!request.formParams.isEmpty) {
+          conn.setDoOutput(true)
+          conn.setRequestProperty("Content-Type", Request.X_WWW_FORM_URLENCODED)
+          using(conn.getOutputStream)(_.write(request.requestBody.asApplicationXWwwFormUrlencoded))
+        } else if (!request.multipartFormData.isEmpty) {
+          conn.setDoOutput(true)
+          val boundary = "----SkinnyHTTPClientBoundary_" + System.currentTimeMillis
+          conn.setRequestProperty("Content-Type", s"multipart/form-data; boundary=${boundary}")
+          using(conn.getOutputStream) { out => out.write(request.requestBody.asMultipart(boundary)) }
+        }
+        conn.connect()
+        inputStream = Option(conn.getInputStream)
+
+      } catch {
+        case e: IOException =>
+          val message = s"${method} ${request.url} failed because ${e.getMessage}"
+          logger.warn(message)
+          logger.debug(message, e)
+          if (request.enableThrowingIOException) {
+            needToThrowException = true
+            exceptionMessage = Option(e.getMessage)
+          }
+          inputStream = Option(conn.getErrorStream)
+      }
+
+      val response: Response = new Response(conn.getResponseCode)
+      response.charset = request.charset
+      response.headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }
+      response.headers ++= conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap
+      Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
+        response.rawCookies ++= setCookies.asScala.flatMap { setCookie =>
+          setCookie.split("=") match {
+            case Array(name, _) => Some(name -> setCookie)
+            case _ => None
+          }
+        }
+      }
+      inputStream.foreach { is =>
+        using(is) { input =>
+          using(new ByteArrayOutputStream) { out =>
+            var c: Int = 0
+            while ({ c = input.read(); c } != -1) {
+              out.write(c)
+            }
+            response.body = out.toByteArray
+          }
+        }
+      }
+
+      logger.debug {
+        s"""
+          |- HTTP Request finished. -
+          |
+          |${method.name} ${request.url}
+          | Status: ${response.status}
+          | Charset: ${response.charset.getOrElse("")}
+          | Referer: ${request.referer.getOrElse("")}
+          | User-Agent: ${request.userAgent.getOrElse("")}
+          |
+          |${response.headers.map { case (k, v) => s" ${k}: ${v}" }.mkString("\n")}
+          |---------
+          |""".stripMargin
+      }
+
+      if (needToThrowException) throw new HTTPException(exceptionMessage, response)
+      else response
+
+    } finally {
+      conn.disconnect
+    }
+  }
+
+  def urlEncode(rawValue: String): String = urlEncode(rawValue, DEFAULT_CHARSET)
+
+  def urlEncode(rawValue: String, charset: String): String = {
+    try URLEncoder.encode(rawValue, charset)
+    catch {
+      case e: UnsupportedEncodingException =>
+        throw new IllegalStateException(e.getMessage, e)
+    }
+  }
+
+}

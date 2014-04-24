@@ -4,6 +4,7 @@ sbt clean \
   ++2.10.3 \
   common/publishSigned \
   assets/publishSigned \
+  httpClient/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
