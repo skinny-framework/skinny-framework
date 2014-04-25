@@ -4,6 +4,7 @@ sbt clean \
   ++2.10.3 \
   common/publishLocal \
   assets/publishLocal \
+  httpClient/publishLocal \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
