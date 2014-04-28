@@ -113,20 +113,6 @@ object HTTP extends Logging {
   def asyncRequest(method: Method, req: Request)(implicit ctx: EC): Future[Response] = Future(request(method, req))
 
   def request(method: Method, request: Request): Response = {
-    logger.debug {
-      s"""
-          |- HTTP Request started. -
-          |
-          |${method.name} ${request.url}
-          | Charset: ${request.charset.getOrElse("")}
-          | Content-Type: ${request.contentType.getOrElse("")}
-          | Referer: ${request.referer.getOrElse("")}
-          | User-Agent: ${request.userAgent.getOrElse("")}
-          |
-          |${request.headerNames.map(name => s" ${name}: ${request.header(name).getOrElse("")}").mkString("\n")}
-          |---------
-          |""".stripMargin
-    }
 
     val conn: HttpURLConnection = request.toHttpURLConnection(method)
     conn.setRequestProperty("Connection", "close")
@@ -151,6 +137,22 @@ object HTTP extends Logging {
           conn.setRequestProperty("Content-Type", s"multipart/form-data; boundary=${boundary}")
           using(conn.getOutputStream) { out => out.write(request.requestBody.asMultipart(boundary)) }
         }
+
+        logger.debug {
+          s"""
+          |- HTTP Request started. -
+          |
+          | ${method.name} ${request.url}
+          |
+          | Charset: ${request.charset.getOrElse("")}
+          | Content-Type: ${request.contentType.getOrElse("")}
+          | Referer: ${request.referer.getOrElse("")}
+          | User-Agent: ${request.userAgent.getOrElse("")}
+          |${request.headerNames.map(name => s" ${name}: ${request.header(name).getOrElse("")}").mkString("\n")}
+          |---------
+          |""".stripMargin
+        }
+
         conn.connect()
         inputStream = Option(conn.getInputStream)
 
@@ -194,13 +196,11 @@ object HTTP extends Logging {
         s"""
           |- HTTP Request finished. -
           |
-          |${method.name} ${request.url}
+          | ${method.name} ${request.url}
+          |
           | Status: ${response.status}
           | Charset: ${response.charset.getOrElse("")}
-          | Referer: ${request.referer.getOrElse("")}
-          | User-Agent: ${request.userAgent.getOrElse("")}
-          |
-          |${response.headers.map { case (k, v) => s" ${k}: ${v}" }.mkString("\n")}
+          |${response.headers.filter(_._1 != null).map { case (k, v) => s" ${k}: ${v}" }.mkString("\n")}
           |---------
           |""".stripMargin
       }
