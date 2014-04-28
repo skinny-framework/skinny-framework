@@ -1,8 +1,6 @@
 package skinny.orm.feature
 
-import org.joda.time._
 import skinny.ParamType
-import skinny.util.DateTimeUtil
 
 /**
  * Strong parameters support.
@@ -21,7 +19,7 @@ trait StrongParametersFeature {
     val ParamTypeExtractor = paramType
     Option(value).map { value =>
       value match {
-        case Some(v) => getTypedValueFromStrongParameter(fieldName, v, paramType)
+        case Some(v) => recFlattenOption(getTypedValueFromStrongParameter(fieldName, v, paramType))
         case None => null
         case ParamTypeExtractor(v) => v
         case v: String if v == "" => null
@@ -29,6 +27,17 @@ trait StrongParametersFeature {
         case v => throw new IllegalArgumentException(s"Cannot convert '${v}' to ${paramType} value.")
       }
     }
+  }
+
+  /**
+   * Returns a recursively flattened version of the passed in argument if it is an Option
+   *
+   * @param maybeOption an Any that you suspect may be an Option
+   * @return recursively flattened version of the passed in argument
+   */
+  private def recFlattenOption(maybeOption: Any): Any = maybeOption match {
+    case Some(x) => recFlattenOption(x)
+    case _ => maybeOption // is not something that needs flattening
   }
 
 }
