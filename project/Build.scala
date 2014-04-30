@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.9"
+  val _version = "1.0.10"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.9"
   val scalikeJDBCVersion = "1.7.5"
@@ -38,6 +38,7 @@ object SkinnyFrameworkBuild extends Build {
     pomIncludeRepository := { x => false },
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     incOptions := incOptions.value.withNameHashing(true),
+    javaOptions in Test ++= Seq("-Dskinny.env=test"),
     pomExtra := _pomExtra
   )
 
@@ -50,6 +51,21 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) 
 
+  lazy val httpClient = Project (id = "httpClient", base = file("http-client"),
+   settings = baseSettings ++ Seq(
+      name := "skinny-http-client",
+      libraryDependencies ++= Seq(
+        "org.specs2"         %% "specs2"             % "2.3.11"           % "test",
+        "commons-fileupload" %  "commons-fileupload" % "1.3"              % "test",
+        "commons-io"         %  "commons-io"         % "2.4"              % "test",
+        "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
+        "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % "test",
+        "org.eclipse.jetty"  %  "jetty-server"       % jettyVersion       % "test",
+        "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion       % "test"
+      ) ++ slf4jApiDependencies
+    ) ++ _jettyOrbitHack
+  ) dependsOn(common)
+
   lazy val framework = Project (id = "framework", base = file("framework"),
    settings = baseSettings ++ Seq(
       name := "skinny-framework",
@@ -57,7 +73,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-io"    %  "commons-io" % "2.4"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm, mailer)
+  ) dependsOn(common, validator, orm, mailer, httpClient)
 
   lazy val standalone = Project (id = "standalone", base = file("standalone"),
     settings = baseSettings ++ Seq(

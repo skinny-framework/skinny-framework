@@ -74,14 +74,22 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
       case Some(v) => convertOptionalValue(v)
       case _ => v.toString
     }
-    UrlGenerator.url(
-      route,
-      params
-        .map { case (k, v) => k -> convertOptionalValue(v) }
-        .filter { case (k, v) => k != null && v != null }
-        .toMap[String, String],
-      Nil
-    )
+    try {
+      UrlGenerator.url(
+        route,
+        params
+          .map { case (k, v) => k -> convertOptionalValue(v) }
+          .filter { case (k, v) => k != null && v != null }
+          .toMap[String, String],
+        Nil
+      )
+    } catch {
+      case e: NullPointerException =>
+        // work around for Scalatra issue 
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
+    }
   }
 
 }
+
