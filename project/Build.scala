@@ -11,7 +11,7 @@ object SkinnyFrameworkBuild extends Build {
   val _version = "1.0.11"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.9"
-  val scalikeJDBCVersion = "1.7.6"
+  val scalikeJDBCVersion = "1.7.7"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.4.177"
 
@@ -121,7 +121,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.14.0"
+        "com.twitter"           %% "util-eval"        % "6.15.0"
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
