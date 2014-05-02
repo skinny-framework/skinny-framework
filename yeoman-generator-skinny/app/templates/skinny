@@ -34,7 +34,7 @@ function setup_standalone_build() {
   cp -pr build.sbt standalone-build/build.sbt
   cp -pr _skinny_assembly_settings.sbt standalone-build/build.sbt
 }
-function copry_resources_to_task() {
+function copy_resources_to_task() {
   rm -rf task/src/main/resources
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
@@ -118,16 +118,16 @@ elif [ "$command" == "g" -o "$command" == "generate" ];then
   if [ "$generator_type" == "" ]; then
     echo "Usage: ./skinny g/generate [type] [options...]"
   else
-    copry_resources_to_task
+    copy_resources_to_task
     command="task/run generate:$generator_type $@"
     ${sbt_path} "${command}"
   fi
 elif [ "$command" == "db:migrate" ];then
-  copry_resources_to_task
+  copy_resources_to_task
   shift
   ${sbt_path} "task/run db:migrate $@"
 elif [ "$command" == "db:repair" ];then
-  copry_resources_to_task
+  copy_resources_to_task
   shift
   ${sbt_path} "task/run db:repair $@"
 elif [ "$command" == "eclipse" ];then
@@ -144,7 +144,7 @@ elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
   ${sbt_path} gen-idea
 elif [ "$command" == "package" ];then
   setup_build
-  copry_resources_to_task
+  copy_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/package
 elif [ "$command" == "package:standalone" ];then
   setting_file="${current_dir}/project/_skinny_assembly.sbt"
@@ -161,11 +161,11 @@ _root_.sbt.Keys.test in assembly := {}
   fi
 
   setup_standalone_build
-  copry_resources_to_task
+  copy_resources_to_task
   ${sbt_path} "task/run assets:precompile" standalone-build/assembly
 elif [ "$command" == "publish" ];then
   setup_build
-  copry_resources_to_task
+  copy_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/publish
 else
   echo ""
