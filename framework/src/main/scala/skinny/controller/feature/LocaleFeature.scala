@@ -32,7 +32,8 @@ trait LocaleFeature extends ScalatraBase {
    * @return current locale
    */
   protected def currentLocale: Option[Locale] = {
-    session.get(sessionLocaleKey).map(l => new Locale(l.toString)).orElse(defaultLocale)
+    // avoid creating a session
+    sessionOption.flatMap(_.get(sessionLocaleKey)).map(l => new Locale(l.toString)).orElse(defaultLocale)
   }
 
 }
