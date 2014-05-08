@@ -25,17 +25,18 @@ trait TxPerRequestFilter extends SkinnyFilter with Logging {
 
   def rollbackTxPerRequest = {
     Option(ThreadLocalDB.load()).map { db =>
-      val info = db.toString
-      if (db != null && !db.isTxNotActive) {
-        logger.debug(s"Thread local db session is loaded. (db: ${info})")
+      if (!db.isTxNotActive) {
+        logger.debug(s"Thread local db session is loaded. (db: ${db})")
         try {
           db.rollbackIfActive()
-          logger.debug(s"Thread local db session is rolled back. (db: ${info})")
+          logger.debug(s"Thread local db session is rolled back. (db: ${db})")
         } finally {
           try db.close()
           catch { case e: Exception => }
-          logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
+          logger.debug(s"Thread local db session is returned to the pool. (db: ${db})")
         }
+      } else {
+        logger.debug("Thread local session is already inactive. (db: ${db})")
       }
     }.getOrElse {
       logger.debug("Thread local db session is not found.")
@@ -43,18 +44,22 @@ trait TxPerRequestFilter extends SkinnyFilter with Logging {
   }
 
   def commitTxPerRequest = {
-    val db = ThreadLocalDB.load()
-    if (db != null && !db.isTxNotActive) {
-      val info = db.toString
-      logger.debug(s"Thread local db session is loaded. (db: ${info})")
-      try {
-        db.commit()
-        logger.debug(s"Thread local db session is committed. (db: ${info})")
-      } finally {
-        try db.close()
-        catch { case e: Exception => }
-        logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
+    Option(ThreadLocalDB.load()).map { db =>
+      if (!db.isTxNotActive) {
+        logger.debug(s"Thread local db session is loaded. (db: ${db})")
+        try {
+          db.commit()
+          logger.debug(s"Thread local db session is committed. (db: ${db})")
+        } finally {
+          try db.close()
+          catch { case e: Exception => }
+          logger.debug(s"Thread local db session is returned to the pool. (db: ${db})")
+        }
+      } else {
+        logger.debug("Thread local session is already inactive. (db: ${db})")
       }
+    }.getOrElse {
+      logger.debug("Thread local db session is not found.")
     }
   }
 
