@@ -1,6 +1,10 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
+import org.scalatra.{ FutureSupport, AsyncResult }
+import scala.concurrent.{ Await, Future, ExecutionContext }
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 // on Scala 2.10.0 ScalaTest #equal matcher with inner case classes works but it fails on higher version
 case class Sample(id: Long, firstName: String)
@@ -10,8 +14,20 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
   behavior of "JSONFeature"
 
-  // SkinnyController has JSONFeature
-  object SampleController extends SkinnyController {
+  object SampleController extends SkinnyServlet with FutureSupport {
+
+    implicit val executor = ExecutionContext.Implicits.global
+
+    get("/sync") {
+      responseAsJSON(Sample(1, "Alice"))
+    }
+
+    get("/async") {
+      val fSample = Future { Sample(1, "Alice") }
+      new AsyncResult() {
+        override val is: Future[_] = fSample.map(responseAsJSON(_))
+      }
+    }
 
     def toJSONString1 = toJSONString(Sample(1, "Alice"))
     def toJSONString2 = toJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")))
@@ -63,6 +79,18 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
     SampleController.toJSONString7 should equal(
       """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
+
+    // Normal synced responseAsJson should work
+    addServlet(SampleController, "/*")
+    get("/sync") {
+      body should equal("""{"id":1,"first_name":"Alice"}""")
+    }
+
+    // Test the async version
+    implicit val ec = ExecutionContext.Implicits.global
+    val listOfFutureBodies = (1 to 5).map(_ => Future { get("/async") { body } })
+    val fListOfBodies = Future.sequence(listOfFutureBodies)
+    Await.result(fListOfBodies, atMost = Duration.Inf).foreach(_ should equal("""{"id":1,"first_name":"Alice"}"""))
   }
 
   it should "have fromJSON" in {
