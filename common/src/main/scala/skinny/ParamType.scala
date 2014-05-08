@@ -26,6 +26,10 @@ abstract class AbstractParamType(matcher: PartialFunction[Any, Any]) extends Par
  */
 object ParamType {
 
+  // The reason for "case v: String if v == null || v.trim.isEmpty => null" is that
+  // these ParamType will be used for nullable values,
+  // so we must consider what to do when the actual value is empty or null.
+
   def apply(f: PartialFunction[Any, Any]): ParamType = new AbstractParamType(f) {}
 
   case object Boolean extends ParamType {
@@ -36,30 +40,36 @@ object ParamType {
     }
   }
   case object Double extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toDouble
     case v: Double => v
   })
   case object Float extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toFloat
     case v: Float => v
   })
   case object Long extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toLong
     case v: Long => v
     case v: Int => v.toLong
   })
   case object Int extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toInt
     case v: Int => v
     case v: Long if v >= scala.Int.MinValue && v <= scala.Int.MaxValue => v
   })
   case object Short extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toShort
     case v: Short => v
     case v: Int if v >= scala.Short.MinValue && v <= scala.Short.MaxValue => v.toShort
     case v: Long if v >= scala.Short.MinValue && v <= scala.Short.MaxValue => v.toShort
   })
   case object BigDecimal extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => scala.math.BigDecimal(v)
     case v: scala.math.BigDecimal => v
     case v: Long => scala.math.BigDecimal(v)
@@ -73,10 +83,12 @@ object ParamType {
     case v => v.toString
   })
   case object Byte extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.toByte
     case v: Byte => v
   })
   case object ByteArray extends AbstractParamType({
+    case v: String if v == null || v.trim.isEmpty => null
     case v: String => v.getBytes
     case v: Array[Byte] => v
   })
