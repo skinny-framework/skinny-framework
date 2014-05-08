@@ -18,10 +18,10 @@ trait JSONFeature extends JacksonJsonSupport with JSONStringOps {
    * @param prettify prettify if true
    * @return body
    */
-  def responseAsJSON(entity: Any, charset: Option[String] = Some("utf-8"), prettify: Boolean = false)(implicit servletContext: ScalatraContext): String = {
+  def responseAsJSON(entity: Any, charset: Option[String] = Some("utf-8"), prettify: Boolean = false)(implicit scalatraContext: ScalatraContext): String = {
     // If Content-Type is already set, never overwrite it.
-    if (servletContext.contentType == null) {
-      servletContext.contentType = Format.JSON.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
+    if (scalatraContext.contentType == null) {
+      scalatraContext.contentType = Format.JSON.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
     }
     if (prettify) toPrettyJSONString(entity) else toJSONString(entity)
   }
