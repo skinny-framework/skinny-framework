@@ -8,12 +8,12 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.12"
+  val _version = "1.0.13"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.9"
   val scalikeJDBCVersion = "1.7.7"
   val scalateVeresion = "1.6.1"
-  val h2Version = "1.4.177"
+  val h2Version = "1.4.178"
 
   // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
   //val jettyVersion = "9.1.0.v20131115"
@@ -46,7 +46,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-common",
       libraryDependencies ++= Seq(
-        "com.typesafe" %  "config" % "1.2.0" % "compile"
+        "com.typesafe" %  "config" % "1.2.1" % "compile"
       ) ++ jodaDependencies ++ slf4jApiDependencies ++ testDependencies
     ) ++ _jettyOrbitHack
   ) 
@@ -56,7 +56,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
         "org.specs2"         %% "specs2"             % "2.3.11"           % "test",
-        "commons-fileupload" %  "commons-fileupload" % "1.3"              % "test",
+        "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
         "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % "test",
