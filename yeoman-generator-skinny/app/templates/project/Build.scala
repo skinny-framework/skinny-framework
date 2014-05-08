@@ -18,7 +18,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.0.11"
+  val skinnyVersion = "1.0.13"
   val scalatraVersion = "2.2.2"
   val theScalaVersion = "2.10.3"
 
@@ -36,7 +36,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
-      "com.h2database"          %  "h2"                  % "1.4.177",      // your own JDBC driver
+      "com.h2database"          %  "h2"                  % "1.4.178",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
