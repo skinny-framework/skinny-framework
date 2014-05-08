@@ -25,18 +25,3 @@ import scalikejdbc._, SQLInterpolation._
  */
 trait SkinnyRecord[Entity]
   extends SkinnyRecordWithId[Long, Entity]
-
-trait SkinnyRecordWithId[Id, Entity]
-    extends SkinnyRecordBaseWithId[Id, Entity] {
-
-  /**
-   * Id as the primary key.
-   *
-   * If your entity's primary key is not single numeric value,
-   * implement this method as a dummy(e.g. UnsupportedOperationException) override #primaryKeyCondition.
-   *
-   * @return id
-   */
-  def id: Id
-
-}

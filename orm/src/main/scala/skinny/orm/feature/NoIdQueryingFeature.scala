@@ -2,25 +2,16 @@ package skinny.orm.feature
 
 import scalikejdbc._, SQLInterpolation._
 import skinny.Pagination
-import skinny.orm.SkinnyMapperBase
-import skinny.orm.feature.includes.IncludesQueryRepository
+import skinny.orm.{ Alias, SkinnyMapperBase }
 
 /**
  * Querying APIs feature.
  */
-trait QueryingFeature[Entity]
-    extends QueryingFeatureWithId[Long, Entity] {
-
-  override def rawValueToId(value: Any) = value.toString.toLong
-  override def idToRawValue(id: Long) = id
-}
-
-trait QueryingFeatureWithId[Id, Entity]
+trait NoIdQueryingFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
-    with AssociationsFeature[Entity]
-    with IncludesFeatureWithId[Id, Entity] {
+    with NoIdAssociationsFeature[Entity] {
 
   /**
    * Appends where conditions.
@@ -54,7 +45,7 @@ trait QueryingFeatureWithId[Id, Entity]
    * Appends pagination settings as limit/offset.
    *
    * @param pagination  pagination
-   * @return query builder
+   * @return query buildder
    */
   def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
     new EntitiesSelectOperationBuilder(
@@ -86,7 +77,7 @@ trait QueryingFeatureWithId[Id, Entity]
    * @param offset offset
    */
   abstract class SelectOperationBuilder(
-      mapper: QueryingFeatureWithId[Id, Entity],
+      mapper: NoIdQueryingFeature[Entity],
       conditions: Seq[SQLSyntax] = Nil,
       orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
@@ -138,17 +129,40 @@ trait QueryingFeatureWithId[Id, Entity]
    * @param offset offset
    */
   case class EntitiesSelectOperationBuilder(
-      mapper: QueryingFeatureWithId[Id, Entity],
-      conditions: Seq[SQLSyntax] = Nil,
-      orderings: Seq[SQLSyntax] = Nil,
-      limit: Option[Int] = None,
-      offset: Option[Int] = None) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
+    mapper: NoIdQueryingFeature[Entity],
+    conditions: Seq[SQLSyntax] = Nil,
+    orderings: Seq[SQLSyntax] = Nil,
+    limit: Option[Int] = None,
+    offset: Option[Int] = None)
+      extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false)
+      with CalculationFeature[Entity] {
+
+    override def tableName = mapper.tableName
+    override def defaultAlias: Alias[Entity] = mapper.defaultAlias
+    override def extract(rs: WrappedResultSet, n: ResultName[Entity]): Entity = mapper.extract(rs, n)
+    override def singleSelectQuery = mapper.singleSelectQuery
+    override def defaultScopeWithDefaultAlias = mapper.defaultScopeWithDefaultAlias
+
+    /**
+     * Calculates rows.
+     */
+    override def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
+      withSQL {
+        val q: SelectSQLBuilder[Entity] = select(sql).from(as(defaultAlias))
+        conditions match {
+          case Nil => q.where(defaultScopeWithDefaultAlias)
+          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
+            case (query, condition) => query.and.append(condition)
+          }.and(defaultScopeWithDefaultAlias)
+        }
+      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
+    }
 
     /**
      * Appends pagination settings as limit/offset.
      *
      * @param pagination  pagination
-     * @return query builder
+     * @return query buildder
      */
     def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
       this.copy(limit = Some(pagination.limit), offset = Some(pagination.offset))
@@ -179,87 +193,10 @@ trait QueryingFeatureWithId[Id, Entity]
     def orderBy(orderings: SQLSyntax*): EntitiesSelectOperationBuilder = this.copy(orderings = orderings)
 
     /**
-     * Calculates rows.
-     */
-    def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
-      withSQL {
-        val q: SelectSQLBuilder[Entity] = select(sql).from(as(defaultAlias))
-        conditions match {
-          case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
-        }
-      }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
-    }
-
-    /**
-     * Count only.
-     */
-    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession = autoSession): Long = {
-      calculate {
-        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-        else sqls.count(defaultAlias.field(fieldName.name))
-      }.toLong
-    }
-
-    /**
-     * Counts distinct rows.
-     */
-    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = count(fieldName, true)
-
-    /**
-     * Calculates sum of a column.
-     */
-    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.sum(defaultAlias.field(fieldName.name)))
-
-    /**
-     * Calculates average of a column.
-     */
-    def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
-      calculate(decimals match {
-        case Some(dcml) =>
-          val decimalsValue = dcml match {
-            case 1 => sqls"1"
-            case 2 => sqls"2"
-            case 3 => sqls"3"
-            case 4 => sqls"4"
-            case 5 => sqls"5"
-            case 6 => sqls"6"
-            case 7 => sqls"7"
-            case 8 => sqls"8"
-            case 9 => sqls"9"
-            case _ => sqls"10"
-          }
-          sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
-        case _ =>
-          sqls.avg(defaultAlias.field(fieldName.name))
-      })
-    }
-    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = average(fieldName, decimals)
-
-    /**
-     * Calculates minimum value of a column.
-     */
-    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.min(defaultAlias.field(fieldName.name)))
-    def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
-
-    /**
-     * Calculates minimum value of a column.
-     */
-    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
-    def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
-
-    /**
      * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
-      implicit val repository = IncludesQueryRepository[Entity]()
-
-      appendIncludedAttributes(extract(withSQL {
+      mapper.extract(withSQL {
 
         def query(conditions: Seq[SQLSyntax]): SQLBuilder[Entity] = {
           conditions match {
@@ -299,9 +236,10 @@ trait QueryingFeatureWithId[Id, Entity]
           appendOrderingIfExists(query(conditions)).append(pagination)
         }
 
-      }).list.apply())
+      }).list.apply()
     }
 
   }
 
 }
+
