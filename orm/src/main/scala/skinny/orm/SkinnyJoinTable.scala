@@ -87,7 +87,10 @@ trait SkinnyJoinTableWithId[Id, Entity]
     findAllWithLimitOffset(limit, offset, orderings)
   }
 
-  def countAll()(implicit s: DBSession = autoSession): Long = {
+  @deprecated("Use #count instead. This method will be removed since version 1.1.0.", since = "1.0.14")
+  def countAll()(implicit s: DBSession = autoSession): Long = count()
+
+  def count()(implicit s: DBSession = autoSession): Long = {
     withSQL {
       select(sqls.count).from(as(syntax))
     }.map(_.long(1)).single.apply().getOrElse(0L)
@@ -157,7 +160,10 @@ trait SkinnyJoinTableWithId[Id, Entity]
     findAllByWithLimitOffset(where, limit, offset, orderings)
   }
 
-  def countAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {
+  @deprecated("Use #countBy instead. This method will be removed since version 1.1.0.", since = "1.0.14")
+  def countAllBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = countBy(where)
+
+  def countBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {
     withSQL {
       select(sqls.count).from(as(syntax)).where.append(where)
     }.map(_.long(1)).single.apply().getOrElse(0L)
