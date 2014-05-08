@@ -1,7 +1,6 @@
 package skinny.filter
 
 import scalikejdbc._
-import javax.servlet.http.HttpServletRequest
 import skinny.logging.Logging
 
 /**
@@ -9,36 +8,41 @@ import skinny.logging.Logging
  */
 trait TxPerRequestFilter extends SkinnyFilter with Logging {
 
-  def dbConnectionPool: ConnectionPool = ConnectionPool.get()
+  beforeAction()(beginTxPerRequest)
 
-  def beginDBConnection = {
-    val db = ThreadLocalDB.create(dbConnectionPool.borrow())
+  afterAction()(commitTxPerRequest)
+
+  addErrorFilter { case e: Throwable => rollbackTxPerRequest }
+
+  def connectionPoolForTxPerRequestFilter: ConnectionPool = ConnectionPool.get()
+
+  def beginTxPerRequest = {
+    val db = ThreadLocalDB.create(connectionPoolForTxPerRequestFilter.borrow())
     logger.debug(s"Thread local db session is borrowed from the pool. (db: ${db})")
     db.begin()
     logger.debug(s"Thread local db session begun. (db: ${db})")
   }
 
-  addErrorFilter {
-    case e: Throwable =>
-      Option(ThreadLocalDB.load()).map { db =>
-        val info = db.toString
-        if (db != null && !db.isTxNotActive) {
-          logger.debug(s"Thread local db session is loaded. (db: ${info})")
-          try {
-            db.rollbackIfActive()
-            logger.debug(s"Thread local db session is rolled back. (db: ${info})")
-          } finally {
-            try db.close()
-            catch { case e: Exception => }
-            logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
-          }
+  def rollbackTxPerRequest = {
+    Option(ThreadLocalDB.load()).map { db =>
+      val info = db.toString
+      if (db != null && !db.isTxNotActive) {
+        logger.debug(s"Thread local db session is loaded. (db: ${info})")
+        try {
+          db.rollbackIfActive()
+          logger.debug(s"Thread local db session is rolled back. (db: ${info})")
+        } finally {
+          try db.close()
+          catch { case e: Exception => }
+          logger.debug(s"Thread local db session is returned to the pool. (db: ${info})")
         }
-      }.getOrElse {
-        logger.debug("Thread local db session is not found.")
       }
+    }.getOrElse {
+      logger.debug("Thread local db session is not found.")
+    }
   }
 
-  def commitDBConnection = {
+  def commitTxPerRequest = {
     val db = ThreadLocalDB.load()
     if (db != null && !db.isTxNotActive) {
       val info = db.toString
@@ -53,9 +57,5 @@ trait TxPerRequestFilter extends SkinnyFilter with Logging {
       }
     }
   }
-
-  beforeAction()(beginDBConnection)
-
-  afterAction()(commitDBConnection)
 
 }
