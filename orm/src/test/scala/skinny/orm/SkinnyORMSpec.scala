@@ -5,10 +5,9 @@ import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
 import org.scalatest.fixture
 import org.scalatest.matchers.ShouldMatchers
-import skinny.Pagination
+import skinny.{ PermittedStrongParameters, Pagination, ParamType, StrongParameters }
 import skinny.test.LightFactoryGirl
 import skinny.orm.exception.OptimisticLockException
-import skinny.{ ParamType, StrongParameters }
 
 class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     with Connection
@@ -497,6 +496,35 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
     it("should have #deleteAll") { implicit s =>
       Product.deleteAll()
       MemberSkill.deleteAll()
+    }
+
+    it("should accept empty string as nullable number") { implicit s =>
+
+      def permit(params: StrongParameters): PermittedStrongParameters = {
+        params.permit(
+          "countryId" -> ParamType.Int,
+          "mentorId" -> ParamType.Int,
+          "createdAt" -> ParamType.DateTime)
+      }
+
+      // empty string is often passed from controllers
+      Member.createWithPermittedAttributes(permit(StrongParameters(Map(
+        "countryId" -> Country.findAll().head.id,
+        "mentorId" -> "",
+        "createdAt" -> DateTime.now
+      ))))
+
+      Member.createWithPermittedAttributes(permit(StrongParameters(Map(
+        "countryId" -> Country.findAll().head.id,
+        "mentorId" -> null,
+        "createdAt" -> DateTime.now
+      ))))
+
+      Member.createWithPermittedAttributes(permit(StrongParameters(Map(
+        "countryId" -> Country.findAll().head.id,
+        "mentorId" -> None,
+        "createdAt" -> DateTime.now
+      ))))
     }
 
   }
