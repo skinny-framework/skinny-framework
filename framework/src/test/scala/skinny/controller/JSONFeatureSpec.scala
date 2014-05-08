@@ -1,6 +1,7 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
+import skinny.Routes
 
 // on Scala 2.10.0 ScalaTest #equal matcher with inner case classes works but it fails on higher version
 case class Sample(id: Long, firstName: String)
@@ -11,7 +12,11 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
   behavior of "JSONFeature"
 
   // SkinnyController has JSONFeature
-  object SampleController extends SkinnyController {
+  object SampleController extends SkinnyController with Routes {
+
+    get("/responseAsJson") {
+      responseAsJSON(Sample(1, "Alice"))
+    }
 
     def toJSONString1 = toJSONString(Sample(1, "Alice"))
     def toJSONString2 = toJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")))
@@ -63,6 +68,11 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
     SampleController.toJSONString7 should equal(
       """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
+
+    addFilter(SampleController, "/*")
+    get("/responseAsJson") {
+      body should equal("""{"id":1,"first_name":"Alice"}""")
+    }
   }
 
   it should "have fromJSON" in {
