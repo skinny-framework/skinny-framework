@@ -7,10 +7,11 @@ import skinny.orm.feature._
  *
  * @tparam Entity entity
  */
+@deprecated("Use SkinnyNoIdMapper or SkinnyMapper instead.", since = "1.0.14")
 trait SkinnyTable[Entity] extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
-    with AssociationsFeature[Entity]
+    with AssociationsWithIdFeature[Long, Entity]
     with QueryingFeature[Entity]
     with StrongParametersFeature {
 

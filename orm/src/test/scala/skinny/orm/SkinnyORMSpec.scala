@@ -474,7 +474,8 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       Product.findById(productId2).map(_.priceYen) should equal(Some(1950))
     }
 
-    it("should deal with tables simply by using SkinnyTable") { implicit s =>
+    // deprecated
+    it("should deal with tables by using SkinnyTable") { implicit s =>
       val (td, c) = (TagDescription.defaultAlias, TagDescription.column)
       val td1 = insert.into(TagDescription).namedValues(c.tag -> "Scala", c.description -> "Programming Language").toSQL.update.apply()
       val td2 = insert.into(TagDescription).namedValues(c.tag -> "ScalikeJDBC", c.description -> "Database Access Library").toSQL.update.apply()
@@ -491,6 +492,25 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
       val scalaTag = Tag.where(sqls.eq(t.tag, "Scala")).apply().head
       scalaTag.tag should equal("Scala")
       scalaTag.description should equal(Some(TagDescription("Scala", "Programming Language")))
+    }
+
+    it("should deal with tables by using SkinnyNoIdMapper") { implicit s =>
+      val (td, c) = (TagDescription2.defaultAlias, TagDescription2.column)
+      val td1 = insert.into(TagDescription2).namedValues(c.tag -> "Scala", c.description -> "Programming Language").toSQL.update.apply()
+      val td2 = insert.into(TagDescription2).namedValues(c.tag -> "ScalikeJDBC", c.description -> "Database Access Library").toSQL.update.apply()
+      (td1, td2) should equal((1, 1))
+
+      TagDescription2.where(sqls.eq(td.tag, "Scala")).apply().head.description should equal("Programming Language")
+      val tds = TagDescription2.limit(10).apply()
+      tds.size should equal(2)
+
+      val (t, tc) = (Tag2.defaultAlias, Tag2.column)
+      val t1 = insert.into(Tag2).namedValues(tc.tag -> "Scala").toSQL.update.apply()
+      t1 should equal(1)
+
+      val scalaTag = Tag2.where(sqls.eq(t.tag, "Scala")).apply().head
+      scalaTag.tag should equal("Scala")
+      scalaTag.description should equal(Some(TagDescription2("Scala", "Programming Language")))
     }
 
     it("should have #deleteAll") { implicit s =>
@@ -525,6 +545,83 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         "mentorId" -> None,
         "createdAt" -> DateTime.now
       ))))
+    }
+
+    it("should work with SkinnyNoIdMapper/SkinnyNoIdCRUDMapper") { implicit s =>
+      val l = LegacyAccount.defaultAlias
+      val c = LegacyAccount.column
+
+      {
+        val before = LegacyAccount.count()
+        val before2 = LegacyAccount2.count()
+        LegacyAccount.createWithAttributes(
+          'accountCode -> "foo",
+          'userId -> None,
+          'name -> "Alice"
+        )
+        val after = LegacyAccount.count()
+        val after2 = LegacyAccount2.count()
+        after should equal(before + 1)
+        after2 should equal(before2 + 1)
+        before should equal(before2)
+        after should equal(after2)
+      }
+
+      LegacyAccount.createWithAttributes(
+        'accountCode -> "sera",
+        'userId -> Some(123),
+        'name -> "Sera"
+      )
+      LegacyAccount.createWithAttributes(
+        'accountCode -> "kaz",
+        'userId -> Some(333),
+        'name -> "Kaz"
+      )
+
+      val accounts = LegacyAccount.findAll()
+      val accounts2 = LegacyAccount2.findAll()
+      accounts.size should equal(accounts2.size)
+      accounts.size should equal(3)
+
+      {
+        LegacyAccount.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("foo")
+        LegacyAccount2.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("foo")
+        LegacyAccount.updateBy(sqls.eq(c.name, "Alice")).withAttributes('accountCode -> "bar")
+        LegacyAccount.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("bar")
+        LegacyAccount2.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("bar")
+      }
+
+      {
+        LegacyAccount.deleteBy(sqls.eq(c.accountCode, "sera").and.eq(c.userId, 123))
+        LegacyAccount.count() should equal(2)
+        LegacyAccount2.count() should equal(2)
+
+        LegacyAccount.deleteAll()
+        LegacyAccount.count() should equal(0)
+        LegacyAccount2.count() should equal(0)
+      }
+
+    }
+
+    it("should have associations for SkinnyNoIdCRUDMapper") { implicit s =>
+      val (t1, t2) = (Table1.defaultAlias, Table2.defaultAlias)
+
+      Table1.createWithAttributes('num -> 1, 'name -> "Java")
+      Table1.createWithAttributes('num -> 2, 'name -> "Scala")
+
+      Table2.createWithAttributes('label -> "Java")
+
+      {
+        val java = Table2.findBy(sqls.eq(t2.label, "Java"))
+        java.isDefined should equal(true)
+        java.get.table1 should equal(Some(Table1(1, "Java")))
+      }
+
+      {
+        val java = Table1.joins(Table1.table2).findBy(sqls.eq(t1.name, "Java"))
+        java.isDefined should equal(true)
+        java.get.table2 should equal(Some(Table2("Java")))
+      }
     }
 
   }

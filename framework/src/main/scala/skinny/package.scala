@@ -33,6 +33,8 @@ package object skinny {
 
   type Routes = skinny.routing.Routes
 
+  type SkinnyNoIdMapper[A] = skinny.orm.SkinnyNoIdMapper[A]
+
   type SkinnyCRUDMapper[A] = skinny.orm.SkinnyCRUDMapper[A]
   type SkinnyCRUDMapperWithId[Id, A] = skinny.orm.SkinnyCRUDMapperWithId[Id, A]
 
@@ -40,6 +42,8 @@ package object skinny {
   type SkinnyMapperWithId[Id, A] = skinny.orm.SkinnyMapperWithId[Id, A]
 
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
+
+  @deprecated("Use SkinnyMapper or SkinnyCRUDMapper instead because this mapper has ID.", since = "1.0.14")
   type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
 
   type TypeConverter[A, B] = org.scalatra.util.conversion.TypeConverter[A, B]

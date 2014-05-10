@@ -106,7 +106,37 @@ create table tag_description (
   tag varchar(255) primary key not null,
   description varchar(1024) not null
 )
+""",
+    sql"""
+create table tag2 (
+  tag varchar(255) primary key not null
+)
+""",
+    sql"""
+create table tag_description2 (
+  tag varchar(255) primary key not null,
+  description varchar(1024) not null
+)
+""",
+    sql"""
+create table legacy_accounts (
+  account_code varchar(12) not null,
+  user_id int,
+  name varchar(255)
+)
+""",
+    sql"""
+create table table1 (
+  num int not null,
+  name varchar(128) not null
+)
+""",
+    sql"""
+create table table2 (
+  label varchar(128) not null
+)
 """
+
   )
 
   runIfFailed(sql"select * from members")

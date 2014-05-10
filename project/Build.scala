@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.13"
+  val _version = "1.0.14-SNAPSHOT"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.9"
   val scalikeJDBCVersion = "1.7.7"
@@ -26,8 +26,8 @@ object SkinnyFrameworkBuild extends Build {
     version := _version,
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
-      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
-      "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
