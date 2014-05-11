@@ -8,26 +8,21 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.13"
+  val _version = "1.0.14"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.9"
   val scalikeJDBCVersion = "1.7.7"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.4.178"
+  val jettyVersion = "9.1.5.v20140505"
 
-  // In some cases, Jety 9.1 looks very slow (didn't investigate the reason)
-  //val jettyVersion = "9.1.0.v20131115"
-  val jettyVersion = "9.0.7.v20131107"
-
-  // sbt 0.13.2-M3 deprecates Defaults.defaultSettings
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
-  //lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
-      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases",
-      "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
@@ -38,6 +33,7 @@ object SkinnyFrameworkBuild extends Build {
     pomIncludeRepository := { x => false },
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     incOptions := incOptions.value.withNameHashing(true),
+    logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     pomExtra := _pomExtra
   )
@@ -141,7 +137,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.2.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.3"         % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.4"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.20"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack

@@ -1,8 +1,6 @@
 package skinny.orm
 
-import scalikejdbc._, SQLInterpolation._
-import skinny.util.JavaReflectAPI
-import skinny.orm.feature.CRUDFeatureWithId
+import scalikejdbc._
 
 /**
  * ActiveRecord::Base-like entity object base.
@@ -11,7 +9,7 @@ import skinny.orm.feature.CRUDFeatureWithId
  *   case class Company(id: Long, name: String) extends SkinnyResource[Company] {
  *     def skinnyCRUDMapper = Company
  *   }
- *   object Company extends SkinnyCRUDMapper[Company] {
+ *   object Company extends SkinnyCRUDMapper[Long, Company] {
  *     def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
  *       id = rs.longOpt(s.id),
  *       name = rs.string(s.name)
@@ -23,8 +21,20 @@ import skinny.orm.feature.CRUDFeatureWithId
  *   company.destroy()
  * }}}
  *
+ * @tparam Id id
  * @tparam Entity entity
  */
-trait SkinnyRecordBase[Entity]
-  extends SkinnyRecordBaseWithId[Long, Entity]
+trait SkinnyRecordWithId[Id, Entity]
+    extends SkinnyRecordBaseWithId[Id, Entity] {
 
+  /**
+   * Id as the primary key.
+   *
+   * If your entity's primary key is not single numeric value,
+   * implement this method as a dummy(e.g. UnsupportedOperationException) override #primaryKeyCondition.
+   *
+   * @return id
+   */
+  def id: Id
+
+}

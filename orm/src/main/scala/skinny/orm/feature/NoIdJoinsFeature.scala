@@ -10,7 +10,7 @@ import scalikejdbc._, SQLInterpolation._
  *
  * NOTE: CRUDFeature has copy implementation from this trait.
  */
-trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] { self: IdFeature[_] =>
+trait NoIdJoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] {
 
   /**
    * Appends join definition on runtime.
@@ -18,16 +18,13 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
    * @param associations associations
    * @return self
    */
-  def joins[Id](associations: Association[_]*): JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] = {
+  def joins(associations: Association[_]*): NoIdJoinsFeature[Entity] with NoIdFinderFeature[Entity] with NoIdQueryingFeature[Entity] = {
     val _self = this
     val _associations = associations
 
-    new JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] {
+    new NoIdJoinsFeature[Entity] with NoIdFinderFeature[Entity] with NoIdQueryingFeature[Entity] {
       override protected val underlying = _self
       override def defaultAlias = _self.defaultAlias
-
-      override def rawValueToId(value: Any) = _self.rawValueToId(value).asInstanceOf[Id]
-      override def idToRawValue(id: Id) = id
 
       override def associations = _self.associations ++ _associations
 

@@ -13,13 +13,3 @@ trait SkinnyCRUDMapper[Entity]
   override def rawValueToId(value: Any) = value.toString.toLong
   override def idToRawValue(id: Long) = id
 }
-
-/**
- * Out-of-the-box Skinny-ORM CRUD mapper.
- *
- * @tparam Id id
- * @tparam Entity entity
- */
-trait SkinnyCRUDMapperWithId[Id, Entity]
-  extends SkinnyMapperWithId[Id, Entity]
-  with CRUDFeatureWithId[Id, Entity]

@@ -33,6 +33,13 @@ object AssociationsFeature {
 }
 
 /**
+ * Associations support feature which has Id.
+ * @tparam Id id
+ * @tparam Entity entity
+ */
+trait AssociationsWithIdFeature[Id, Entity] extends AssociationsFeature[Entity] with IdFeature[Id]
+
+/**
  * Associations support feature.
  *
  * @tparam Entity entity
@@ -178,18 +185,18 @@ trait AssociationsFeature[Entity]
     defaultBelongsToExtractors.add(extractor)
   }
 
-  def belongsTo[A](right: AssociationsFeature[A], merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
+  def belongsTo[A](right: AssociationsWithIdFeature[_, A], merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val fk = toDefaultForeignKeyName[A](right)
     belongsToWithJoinCondition[A](right, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyFieldName)), merge)
   }
 
-  def belongsToWithJoinCondition[A](right: AssociationsFeature[A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
+  def belongsToWithJoinCondition[A](right: AssociationsWithIdFeature[_, A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = leftJoinWithDefaults(right, on)
     val extractor = extractBelongsTo[A](right, toDefaultForeignKeyName[A](right), right.defaultAlias, merge)
     new BelongsToAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
-  def belongsToWithFk[A](right: AssociationsFeature[A], fk: String, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
+  def belongsToWithFk[A](right: AssociationsWithIdFeature[_, A], fk: String, merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     belongsToWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right.defaultAlias.field(right.primaryKeyFieldName)), merge)
   }
 
@@ -199,7 +206,7 @@ trait AssociationsFeature[Entity]
     new BelongsToAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
-  def belongsToWithAlias[A](right: (AssociationsFeature[A], Alias[A]), merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
+  def belongsToWithAlias[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val fk = if (right._1.defaultAlias != right._2) {
       right._2.tableAliasName + "Id"
     } else {
@@ -208,12 +215,12 @@ trait AssociationsFeature[Entity]
     belongsToWithAliasAndFk(right, fk, merge)
   }
 
-  def belongsToWithAliasAndFk[A](right: (AssociationsFeature[A], Alias[A]), fk: String,
+  def belongsToWithAliasAndFk[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), fk: String,
     merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     belongsToWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right._2.field(right._1.primaryKeyFieldName)), merge)
   }
 
-  def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax,
+  def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), fk: String, on: SQLSyntax,
     merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = createJoinDefinition(LeftOuterJoin, this -> this.defaultAlias, right, on)
     val extractor = extractBelongsTo[A](right._1, fk, right._2, merge)
@@ -227,15 +234,15 @@ trait AssociationsFeature[Entity]
     defaultHasOneExtractors.add(extractor)
   }
 
-  def hasOne[A](right: AssociationsFeature[A], merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOne[A](right: AssociationsWithIdFeature[_, A], merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithFk[A](right, toDefaultForeignKeyName[Entity](this), merge)
   }
 
-  def hasOneWithJoinCondition[A](right: AssociationsFeature[A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOneWithJoinCondition[A](right: AssociationsWithIdFeature[_, A], on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithFkAndJoinCondition(right, toDefaultForeignKeyName[Entity](this), on, merge)
   }
 
-  def hasOneWithFk[A](right: AssociationsFeature[A], fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOneWithFk[A](right: AssociationsWithIdFeature[_, A], fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyFieldName), right.defaultAlias.field(fk)), merge)
   }
 
@@ -245,15 +252,15 @@ trait AssociationsFeature[Entity]
     new HasOneAssociation[Entity](this, unshiftJoinDefinition(joinDef, right.defaultJoinDefinitions.filter(_.enabledEvenIfAssociated)), extractor)
   }
 
-  def hasOneWithAlias[A](right: (AssociationsFeature[A], Alias[A]), merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOneWithAlias[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithAliasAndFk(right, toDefaultForeignKeyName[Entity](this), merge)
   }
 
-  def hasOneWithAliasAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOneWithAliasAndJoinCondition[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), on: SQLSyntax, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithAliasAndFkAndJoinCondition(right, toDefaultForeignKeyName[Entity](this), on, merge)
   }
 
-  def hasOneWithAliasAndFk[A](right: (AssociationsFeature[A], Alias[A]), fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+  def hasOneWithAliasAndFk[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), fk: String, merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
     hasOneWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(this.primaryKeyFieldName), right._2.field(fk)), merge)
   }
 
@@ -274,14 +281,14 @@ trait AssociationsFeature[Entity]
     defaultOneToManyExtractors.add(extractor)
   }
 
-  def hasMany[M](many: (AssociationsFeature[M], Alias[M]), on: (Alias[Entity], Alias[M]) => SQLSyntax, merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
+  def hasMany[M](many: (AssociationsWithIdFeature[_, M], Alias[M]), on: (Alias[Entity], Alias[M]) => SQLSyntax, merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
     val joinDef = leftJoin(this -> this.defaultAlias, many, on.asInstanceOf[(Alias[_], Alias[_]) => SQLSyntax])
     val extractor = extractOneToMany[M](many._1, many._2, merge)
     val definitions = new mutable.LinkedHashSet().+=(joinDef).++(many._1.defaultJoinDefinitions)
     new HasManyAssociation[Entity](this, definitions, extractor)
   }
 
-  def hasManyThrough[M2](through: AssociationsFeature[_], many: AssociationsFeature[M2], merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+  def hasManyThrough[M2](through: AssociationsFeature[_], many: AssociationsWithIdFeature[_, M2], merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
     val throughFk = toDefaultForeignKeyName[Entity](this)
     val manyFk = toDefaultForeignKeyName[M2](many)
     hasManyThrough(
@@ -292,7 +299,7 @@ trait AssociationsFeature[Entity]
       merge = merge)
   }
 
-  def hasManyThroughWithFk[M2](through: AssociationsFeature[_], many: AssociationsFeature[M2], throughFk: String, manyFk: String, merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+  def hasManyThroughWithFk[M2](through: AssociationsFeature[_], many: AssociationsWithIdFeature[_, M2], throughFk: String, manyFk: String, merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
     hasManyThrough(
       through = through.asInstanceOf[AssociationsFeature[Any]] -> through.defaultAlias.asInstanceOf[Alias[Any]],
       throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyFieldName), m1.field(throughFk)),
@@ -304,7 +311,7 @@ trait AssociationsFeature[Entity]
   def hasManyThrough[M1, M2](
     through: (AssociationsFeature[M1], Alias[M1]),
     throughOn: (Alias[Entity], Alias[M1]) => SQLSyntax,
-    many: (AssociationsFeature[M2], Alias[M2]),
+    many: (AssociationsWithIdFeature[_, M2], Alias[M2]),
     on: (Alias[M1], Alias[M2]) => SQLSyntax,
     merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
 
@@ -657,6 +664,14 @@ trait AssociationsFeature[Entity]
   protected def toDefaultForeignKeyName[A](mapper: AssociationsFeature[A]): String = {
     val name = JavaReflectAPI.classSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
     name.head.toString.toLowerCase + name.tail
+  }
+
+  def selectQueryWithAssociations: SelectSQLBuilder[Entity] = {
+    selectQueryWithAdditionalAssociations(
+      defaultSelectQuery,
+      belongsToAssociations,
+      hasOneAssociations,
+      hasManyAssociations)
   }
 
 }

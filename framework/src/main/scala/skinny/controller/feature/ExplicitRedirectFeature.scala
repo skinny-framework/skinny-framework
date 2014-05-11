@@ -1,11 +1,12 @@
 package skinny.controller.feature
 
 import org.scalatra._
+import skinny.SkinnyEnv
 
 /**
  * Explicit redirect method support.
  */
-trait ExplicitRedirectFeature extends ScalatraBase {
+trait ExplicitRedirectFeature extends SkinnyScalatraBase {
 
   /**
    * Responds as "301 Moved Permanently"
@@ -13,7 +14,8 @@ trait ExplicitRedirectFeature extends ScalatraBase {
    * @return ActionResult
    */
   def redirect301(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
-    MovedPermanently(location, headers, reason)
+    val result = MovedPermanently(fullUrl(location, includeServletPath = false), headers, reason)
+    if (SkinnyEnv.isTest()) result else halt(result)
   }
 
   /**
@@ -22,7 +24,8 @@ trait ExplicitRedirectFeature extends ScalatraBase {
    * @return ActionResult
    */
   def redirect302(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
-    Found(location, headers, reason)
+    val result = Found(fullUrl(location, includeServletPath = false), headers, reason)
+    if (SkinnyEnv.isTest()) result else halt(result)
   }
 
   /**
@@ -31,7 +34,8 @@ trait ExplicitRedirectFeature extends ScalatraBase {
    * @return ActionResult
    */
   def redirect303(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
-    SeeOther(location, headers, reason)
+    val result = SeeOther(fullUrl(location, includeServletPath = false), headers, reason)
+    if (SkinnyEnv.isTest()) result else halt(result)
   }
 
 }

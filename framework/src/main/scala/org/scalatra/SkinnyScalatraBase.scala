@@ -2,8 +2,9 @@ package org.scalatra
 
 import org.scalatra.ScalatraBase._
 import javax.servlet.Filter
-import javax.servlet.http.HttpServlet
+import javax.servlet.http.{ HttpServletResponse, HttpServletRequest, HttpServlet }
 import scala.util.Failure
+import skinny.SkinnyEnv
 
 /**
  * Partially patched ScalatraBase for Skinny Framework.
@@ -94,5 +95,23 @@ trait SkinnyScalatraBase extends ScalatraBase {
     } catch {
       case e: PassException => None
     }
+
+  override def url(
+    path: String,
+    params: Iterable[(String, Any)] = Iterable.empty,
+    includeContextPath: Boolean = true,
+    includeServletPath: Boolean = true,
+    absolutize: Boolean = true)(
+      implicit request: HttpServletRequest, response: HttpServletResponse): String = {
+
+    try {
+      super.url(path, params, includeContextPath, includeServletPath, absolutize)
+    } catch {
+      case e: NullPointerException =>
+        // work around for Scalatra issue
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
+    }
+  }
 
 }

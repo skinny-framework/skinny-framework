@@ -14,18 +14,22 @@ trait DBSettings {
  */
 object DBSettings {
 
+  private[this] case class State(var alreadyInitialized: Boolean = false)
+  private[this] val state: State = State()
+
   /**
    * Initializes DB settings.
    */
-  def initialize(): Unit = {
-
-    SkinnyEnv.get().map(env => DBsWithEnv(env).setupAll()).getOrElse {
-      if (!TypesafeConfigReaderWithEnv(SkinnyEnv.Development).dbNames.isEmpty) {
-        DBsWithEnv(SkinnyEnv.Development).setupAll()
-      } else if (!TypesafeConfigReader.dbNames.isEmpty) {
-        DBs.setupAll()
-      } else {
-        throw new DBSettingsException(s"""
+  def initialize(force: Boolean = false): Unit = {
+    state.synchronized {
+      if (force || !state.alreadyInitialized) {
+        SkinnyEnv.get().map(env => DBsWithEnv(env).setupAll()).getOrElse {
+          if (!TypesafeConfigReaderWithEnv(SkinnyEnv.Development).dbNames.isEmpty) {
+            DBsWithEnv(SkinnyEnv.Development).setupAll()
+          } else if (!TypesafeConfigReader.dbNames.isEmpty) {
+            DBs.setupAll()
+          } else {
+            throw new DBSettingsException(s"""
         | ---------------------------------------------
         |
         |  !!! Skinny Configuration Error !!!
@@ -52,6 +56,9 @@ object DBSettings {
         |
         | ---------------------------------------------
         |""".stripMargin)
+          }
+        }
+        state.alreadyInitialized = true
       }
     }
   }

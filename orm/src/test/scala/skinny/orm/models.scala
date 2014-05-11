@@ -168,7 +168,7 @@ object Skill extends SkinnyCRUDMapper[Skill]
 
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
-  def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
+  override def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
     id = rs.long(s.id),
     name = rs.string(s.name),
     createdAt = rs.dateTime(s.createdAt),
@@ -208,7 +208,7 @@ object Book extends SkinnyCRUDMapperWithId[ISBN, Book] {
     merge = (b, im) => b.copy(isbnMaster = im)
   ).byDefault
 
-  def extract(rs: WrappedResultSet, b: ResultName[Book]) = new Book(
+  override def extract(rs: WrappedResultSet, b: ResultName[Book]) = new Book(
     isbn = ISBN(rs.get(b.isbn)),
     title = rs.get(b.title),
     description = rs.get(b.description)
@@ -228,7 +228,7 @@ object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
   override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
   override def idToRawValue(id: ISBN): String = id.value
 
-  def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
+  override def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
     isbn = ISBN(rs.get(b.isbn)),
     publisher = rs.get(b.publisher)
   )
@@ -241,28 +241,110 @@ object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
   override def tableName = "products"
   override def defaultAlias = createAlias("prd")
 
-  def idToRawValue(id: ProductId) = id.value
-  def rawValueToId(value: Any) = ProductId(value.toString.toLong)
+  override def idToRawValue(id: ProductId) = id.value
+  override def rawValueToId(value: Any) = ProductId(value.toString.toLong)
 
-  def extract(rs: WrappedResultSet, p: SQLInterpolation.ResultName[Product]) = new Product(
+  override def extract(rs: WrappedResultSet, p: SQLInterpolation.ResultName[Product]) = new Product(
     id = ProductId(rs.get(p.id)),
     name = rs.get(p.name),
     priceYen = rs.get(p.priceYen)
   )
 }
 
+// -----------------------------------
+// SkinnyTable is deprecated
+
 case class Tag(tag: String, description: Option[TagDescription] = None)
 object Tag extends SkinnyTable[Tag] {
-  def defaultAlias = createAlias("tag")
-  def defaultJoinColumnFieldName = "tag"
-  def extract(rs: WrappedResultSet, n: ResultName[Tag]): Tag = new Tag(tag = rs.get(n.tag))
+  override def defaultAlias = createAlias("tag")
+  override def defaultJoinColumnFieldName = "tag"
+  override def extract(rs: WrappedResultSet, n: ResultName[Tag]): Tag = new Tag(tag = rs.get(n.tag))
 
   hasOne[TagDescription](TagDescription, (t, td) => t.copy(description = td)).byDefault
 }
 case class TagDescription(tag: String, description: String)
 object TagDescription extends SkinnyTable[TagDescription] {
-  def defaultAlias = createAlias("td")
-  def defaultJoinColumnFieldName = "tag"
-  def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription =
+  override def defaultAlias = createAlias("td")
+  override def defaultJoinColumnFieldName = "tag"
+  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription =
     new TagDescription(tag = rs.get(n.tag), description = rs.get(n.description))
+}
+
+// -----------------------------------
+// Use SkinnyNoIdMapper instead of SkinnyTable
+
+case class Tag2(tag: String, description: Option[TagDescription2] = None)
+object Tag2 extends SkinnyNoIdMapper[Tag2] {
+  override def tableName = "tag2"
+  override def defaultAlias = createAlias("t")
+  override def extract(rs: WrappedResultSet, n: ResultName[Tag2]): Tag2 = new Tag2(tag = rs.get(n.tag))
+
+  hasOneWithFkAndJoinCondition[TagDescription2](
+    right = TagDescription2,
+    fk = "tag",
+    on = sqls.eq(defaultAlias.tag, TagDescription2.defaultAlias.tag),
+    merge = (t, td) => t.copy(description = td)
+  ).byDefault
+}
+case class TagDescription2(tag: String, description: String)
+object TagDescription2 extends SkinnyNoIdMapper[TagDescription2] {
+  override def tableName = "tag_description2"
+  override def defaultAlias = createAlias("td")
+  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription2]): TagDescription2 =
+    new TagDescription2(tag = rs.get(n.tag), description = rs.get(n.description))
+}
+
+// -----------------------------------
+// simple SkinnyNoIdMapper example
+
+case class LegacyAccount(accountCode: String, userId: Option[Int], name: Option[String])
+object LegacyAccount extends SkinnyNoIdCRUDMapper[LegacyAccount] {
+  override def defaultAlias = createAlias("la")
+  override def tableName = "legacy_accounts"
+  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = {
+    new LegacyAccount(rs.get(n.accountCode), rs.get(n.userId), rs.get(n.name))
+  }
+}
+
+case class LegacyAccount2(accountCode: String, userId: Option[Int], name: Option[String])
+object LegacyAccount2 extends SkinnyNoIdMapper[LegacyAccount] {
+  override def defaultAlias = createAlias("la")
+  override def tableName = "legacy_accounts"
+  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = {
+    new LegacyAccount(rs.get(n.accountCode), rs.get(n.userId), rs.get(n.name))
+  }
+}
+
+// -----------------------------------
+// SkinnyNoIdMapper with associations
+
+case class Table1(num: Long, name: String, table2: Option[Table2] = None)
+case class Table2(label: String, table1: Option[Table1] = None)
+
+object Table1 extends SkinnyNoIdCRUDMapper[Table1] {
+  override def defaultAlias = createAlias("t1")
+  override def extract(rs: WrappedResultSet, n: ResultName[Table1]): Table1 = Table1(rs.get(n.num), rs.get(n.name))
+
+  private[this] val t2 = Table2.defaultAlias
+
+  val table2 = hasOneWithFkAndJoinCondition[Table2](
+    right = Table2,
+    fk = "label",
+    on = sqls.eq(defaultAlias.name, t2.label),
+    merge = (t1, table2) => t1.copy(table2 = table2)
+  )
+}
+
+object Table2 extends SkinnyNoIdCRUDMapper[Table2] {
+  override def defaultAlias = createAlias("t2")
+  override def extract(rs: WrappedResultSet, n: ResultName[Table2]): Table2 = new Table2(rs.get(n.label))
+
+  private[this] val t1 = Table1.defaultAlias
+
+  hasOneWithFkAndJoinCondition[Table1](
+    right = Table1,
+    fk = "name",
+    on = sqls.eq(defaultAlias.label, t1.name),
+    merge = (t2, table1) => t2.copy(table1 = table1)
+  ).byDefault
 }

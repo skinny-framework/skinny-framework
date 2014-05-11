@@ -30,7 +30,7 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   /**
    * Returns select query builder object to simply fetch rows without other joined tables.
    */
-  protected def singleSelectQuery: SelectSQLBuilder[Entity] = select.from(as(defaultAlias))
+  def singleSelectQuery: SelectSQLBuilder[Entity] = select.from(as(defaultAlias))
 
   /**
    * Returns select query builder.
