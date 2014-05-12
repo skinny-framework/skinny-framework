@@ -50,7 +50,15 @@ object Member extends SkinnyCRUDMapper[Member] {
   //hasManyThrough[Group](GroupMember, Group, (member, groups) => member.copy(groups = groups)).byDefault
 
   // skills
-  val skills = hasManyThrough[Skill](MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
+  val skillsSimpleRef = hasManyThrough[Skill](MemberSkill, Skill, (member, ss) => member.copy(skills = ss))
+  // full definition example
+  val skillsVerboseRef = hasManyThrough[MemberSkill, Skill](
+    through = MemberSkill -> MemberSkill.createAlias("ms2"),
+    throughOn = (m: Alias[Member], ms: Alias[MemberSkill]) => sqls.eq(m.id, ms.memberId),
+    many = Skill -> Skill.createAlias("s2"),
+    on = (ms: Alias[MemberSkill], s: Alias[Skill]) => sqls.eq(ms.skillId, s.id),
+    merge = (member, ss) => member.copy(skills = ss)
+  )
 
   // mentorees
   val mentorees = hasMany[Member](
