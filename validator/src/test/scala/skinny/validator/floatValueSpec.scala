@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class floatValueSpec extends FlatSpec with ShouldMatchers {
+class floatValueSpec extends FlatSpec with Matchers {
 
   behavior of "floatValue"
 

@@ -1,12 +1,11 @@
 package service
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.fixture
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class ServiceSpec extends fixture.FunSpec with ShouldMatchers
+class ServiceSpec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

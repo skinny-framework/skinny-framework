@@ -1,7 +1,7 @@
 package test001
 
 import skinny.orm._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 /* with defaultAliases
 SELECT t1_default.id   AS i_on_t1_default,

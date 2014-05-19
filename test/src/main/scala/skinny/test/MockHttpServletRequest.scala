@@ -280,4 +280,10 @@ class MockHttpServletRequest extends HttpServletRequest {
 
   override def getAuthType: String = authType
 
+  // TODO
+  override def changeSessionId(): String = ???
+
+  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = ???
+
+  override def getContentLengthLong: Long = ???
 }

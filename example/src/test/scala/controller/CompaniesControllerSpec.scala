@@ -1,13 +1,12 @@
 package controller
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FunSpec
+import org.scalatest._
 import skinny.test.{ MockController, FactoryGirl }
 import model.Company
 import skinny.Format
 import unit.DBSettings
 
-class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSettings {
+class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
 
   describe("CompaniesController") {
 

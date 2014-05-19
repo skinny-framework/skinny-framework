@@ -1,7 +1,5 @@
 package skinny.orm
 
-import scalikejdbc._
-
 /**
  * ActiveRecord::Base-like entity object base.
  *

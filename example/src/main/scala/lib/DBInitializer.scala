@@ -1,6 +1,6 @@
 package lib
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.dbmigration.DBSeeds
 
 object DBInitializer extends DBSeeds {

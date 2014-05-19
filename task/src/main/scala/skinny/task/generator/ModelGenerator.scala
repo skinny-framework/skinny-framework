@@ -98,7 +98,7 @@ trait ModelGenerator extends CodeGenerator {
     s"""package ${namespace}
         |
         |import skinny.orm._, feature._
-        |import scalikejdbc._, SQLInterpolation._
+        |import scalikejdbc._
         |import org.joda.time._
         |
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
@@ -126,7 +126,7 @@ trait ModelGenerator extends CodeGenerator {
         |import skinny.DBSettings
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
-        |import scalikejdbc._, SQLInterpolation._
+        |import scalikejdbc._
         |import scalikejdbc.scalatest._
         |import org.joda.time._
         |

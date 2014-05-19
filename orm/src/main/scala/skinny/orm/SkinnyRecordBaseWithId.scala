@@ -1,7 +1,7 @@
 package skinny.orm
 
 import skinny.orm.feature.CRUDFeatureWithId
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.util.JavaReflectAPI
 
 /**

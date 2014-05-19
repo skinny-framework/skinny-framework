@@ -1,10 +1,8 @@
 package skinny.util
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import skinny.ParamType
+import org.scalatest._
 
-class StringUtilTest extends FlatSpec with ShouldMatchers {
+class StringUtilTest extends FlatSpec with Matchers {
   import StringUtil._
 
   behavior of "StringUtil"

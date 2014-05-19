@@ -1,12 +1,10 @@
 package skinny.mailer
 
-import org.scalatest.{ BeforeAndAfter, FlatSpec }
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import skinny.mailer.test.SkinnyMailTestSupport
-import skinny.mailer.example.MyMailer
 import skinny.logging.Logging
 
-class SkinnyMailerSpec extends FlatSpec with ShouldMatchers with SkinnyMailTestSupport with BeforeAndAfter with Logging {
+class SkinnyMailerSpec extends FlatSpec with Matchers with SkinnyMailTestSupport with BeforeAndAfter with Logging {
 
   behavior of "SkinnyMailer"
 

@@ -1,9 +1,8 @@
 package skinny.assets
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class CoffeeScriptCompilerSpec extends FlatSpec with ShouldMatchers {
+class CoffeeScriptCompilerSpec extends FlatSpec with Matchers {
 
   behavior of "CoffeeScriptCompiler"
 

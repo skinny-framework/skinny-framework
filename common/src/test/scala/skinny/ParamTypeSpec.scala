@@ -1,9 +1,8 @@
 package skinny
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class ParamTypeSpec extends FlatSpec with ShouldMatchers {
+class ParamTypeSpec extends FlatSpec with Matchers {
 
   behavior of "ParamType.Boolean"
 

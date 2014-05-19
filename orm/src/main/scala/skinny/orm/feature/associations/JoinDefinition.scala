@@ -1,7 +1,7 @@
 package skinny.orm.feature.associations
 
 import skinny.orm._
-import scalikejdbc.SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature.AssociationsFeature
 import org.slf4j.LoggerFactory
 

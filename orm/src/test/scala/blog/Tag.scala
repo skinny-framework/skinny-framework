@@ -1,7 +1,7 @@
 package blog
 
 import skinny.orm._, feature._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time._
 
 case class Tag(

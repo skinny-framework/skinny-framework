@@ -3,7 +3,7 @@ package skinny.test
 import com.typesafe.config.ConfigFactory
 import com.twitter.util.Eval
 import scala.collection.JavaConverters._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
 import skinny.util.JavaReflectAPI

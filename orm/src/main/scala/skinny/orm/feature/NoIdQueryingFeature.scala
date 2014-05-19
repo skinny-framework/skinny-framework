@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.Pagination
 import skinny.orm.{ Alias, SkinnyMapperBase }
 

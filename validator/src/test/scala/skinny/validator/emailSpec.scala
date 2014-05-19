@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class emailSpec extends FlatSpec with ShouldMatchers {
+class emailSpec extends FlatSpec with Matchers {
 
   behavior of "email"
 

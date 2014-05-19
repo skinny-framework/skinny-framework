@@ -1,6 +1,6 @@
 package model
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }

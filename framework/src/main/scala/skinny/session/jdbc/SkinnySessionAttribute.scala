@@ -2,7 +2,7 @@ package skinny.session.jdbc
 
 import skinny.orm._
 import skinny.logging.Logging
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 case class SkinnySessionAttribute(skinnySessionId: Long, name: String, value: Option[Any], session: Option[SkinnySession] = None)
     extends EntityEquality {

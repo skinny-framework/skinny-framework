@@ -1,8 +1,7 @@
 import org.scalatest._
-import org.scalatest.matchers.ShouldMatchers
 import skinny.validator._
 
-class UsageSpec extends FunSpec with ShouldMatchers {
+class UsageSpec extends FunSpec with Matchers {
 
   describe("Validator") {
 

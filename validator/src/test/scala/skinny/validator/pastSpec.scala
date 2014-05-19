@@ -1,11 +1,10 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
 import org.joda.time._
 
-class pastSpec extends FlatSpec with ShouldMatchers {
+class pastSpec extends FlatSpec with Matchers {
 
   behavior of "past"
 

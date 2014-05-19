@@ -1,10 +1,9 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.Routes
-import org.scalatra.Created
 
 class SkinnyApiServletSpec extends ScalatraFlatSpec {
 

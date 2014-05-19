@@ -8,11 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.14"
-  val scalatraVersion = "2.2.2"
+  val _version = "1.1.0-SNPSHOT"
+  val scalatraVersion = "2.3.0.RC3"
   val json4SVersion = "3.2.9"
-  val scalikeJDBCVersion = "1.7.7"
-  val scalateVeresion = "1.6.1"
+  val scalikeJDBCVersion = "2.0.0"
   val h2Version = "1.4.178"
   val jettyVersion = "9.1.5.v20140505"
 
@@ -22,7 +21,7 @@ object SkinnyFrameworkBuild extends Build {
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
@@ -41,9 +40,13 @@ object SkinnyFrameworkBuild extends Build {
   lazy val common = Project (id = "common", base = file("common"),
    settings = baseSettings ++ Seq(
       name := "skinny-common",
-      libraryDependencies ++= Seq(
-        "com.typesafe" %  "config" % "1.2.1" % "compile"
-      ) ++ jodaDependencies ++ slf4jApiDependencies ++ testDependencies
+      libraryDependencies  <++= (scalaVersion) { scalaVersion => 
+        Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
+        jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (scalaVersion match {
+          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" % "compile")
+          case _ => Nil
+        })
+      }
     ) ++ _jettyOrbitHack
   ) 
 
@@ -96,10 +99,15 @@ object SkinnyFrameworkBuild extends Build {
   lazy val task = Project (id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
       name := "skinny-task",
-      libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-io"             %  "commons-io" % "2.4",
-        "org.fusesource.scalamd" %% "scalamd"    % "1.6" 
-      ) ++ testDependencies
+      libraryDependencies <++= (scalaVersion) { scalaVersion => 
+        scalatraDependencies ++ Seq(
+          "commons-io"             %  "commons-io" % "2.4",
+          scalaVersion match { 
+            case v if v.startsWith("2.11.") => "org.scalatra.scalate" %% "scalamd"    % "1.6.1" 
+            case _ => "org.fusesource.scalamd" %% "scalamd"    % "1.6" 
+          }
+        ) ++ testDependencies
+      }
     )
   ) dependsOn(assets, orm)
 
@@ -117,7 +125,8 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.15.0"
+        // TODO Scala 2.11 https://github.com/twitter/util/issues/95
+        "com.twitter"           %% "util-eval_2.10"      % "6.15.0"
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -215,10 +224,8 @@ object SkinnyFrameworkBuild extends Build {
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
-  // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
-  // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test",
+    "org.scalatest"           %% "scalatest"       % "2.1.7"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"

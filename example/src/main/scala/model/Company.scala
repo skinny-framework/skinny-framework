@@ -1,6 +1,6 @@
 package model
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import skinny.orm.SkinnyCRUDMapperWithId
 import skinny.orm.feature._

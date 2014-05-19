@@ -1,10 +1,8 @@
 package skinny
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
-import java.util.Locale
+import org.scalatest._
 
-class SkinnyEnvSpec extends FlatSpec with ShouldMatchers {
+class SkinnyEnvSpec extends FlatSpec with Matchers {
 
   behavior of "SkinnyEnv"
 
