@@ -10,12 +10,14 @@ object SkinnyFrameworkBuild extends Build {
   val _organization = "org.skinny-framework"
   val _version = "1.1.0-SNPSHOT"
   val scalatraVersion = "2.3.0.RC3"
-  val json4SVersion = "3.2.9"
+  val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.0"
   val h2Version = "1.4.178"
-  val jettyVersion = "9.1.5.v20140505"
+  val jettyVersion = "9.2.0.v20140526"
 
-  lazy val baseSettings = Defaults.defaultSettings ++ Seq(
+  lazy val baseSettings = Seq(
+    // Defaults.defaultSettings is deprecated since sbt 0.13.5
+    // Defaults.defaultSettings ++ Seq(
     organization := _organization,
     version := _version,
     scalaVersion := "2.10.4",
@@ -126,7 +128,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
         // TODO Scala 2.11 https://github.com/twitter/util/issues/95
-        "com.twitter"           %% "util-eval_2.10"      % "6.15.0"
+        "com.twitter"           %% "util-eval_2.10"      % "6.16.0"
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -145,7 +147,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"            %  "thymeleaf"                % "2.1.2.RELEASE" % "compile",
+        "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
         "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.4"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.20"        % "compile"
       ) ++ testDependencies

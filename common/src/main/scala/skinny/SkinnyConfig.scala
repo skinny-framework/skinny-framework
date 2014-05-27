@@ -3,6 +3,8 @@ package skinny
 import skinny.util.TypesafeConfigReader
 import com.typesafe.config.ConfigValue
 
+object SkinnyConfig extends SkinnyConfig
+
 /**
  * Skinny's configuration value loader.
  */
