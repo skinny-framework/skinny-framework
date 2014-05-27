@@ -315,8 +315,9 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
           withoutSkills.skills.size should equal(0)
         }
 
+        // simple hasManyThrough definition
         {
-          val membersWithSkills = Member.joins(Member.skills).findAll()
+          val membersWithSkills = Member.joins(Member.skillsSimpleRef).findAll()
           val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
           withSkills.skills.size should equal(1)
           val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
@@ -324,7 +325,24 @@ class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
         }
 
         {
-          val membersWithSkills = Member.joins(Member.skills).where('id -> Member.findAll().map(_.id)).apply()
+          val membersWithSkills = Member.joins(Member.skillsSimpleRef).where('id -> Member.findAll().map(_.id)).apply()
+          val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
+          withSkills.skills.size should equal(1)
+          val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
+          withoutSkills.skills.size should equal(0)
+        }
+
+        // verbose hasManyThrough definition
+        {
+          val membersWithSkills = Member.joins(Member.skillsVerboseRef).findAll()
+          val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
+          withSkills.skills.size should equal(1)
+          val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
+          withoutSkills.skills.size should equal(0)
+        }
+
+        {
+          val membersWithSkills = Member.joins(Member.skillsVerboseRef).where('id -> Member.findAll().map(_.id)).apply()
           val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
           withSkills.skills.size should equal(1)
           val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head

@@ -54,6 +54,15 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
       """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
   }
 
+  object Sample2Controller extends SkinnyController {
+
+    override def useUnderscoreKeysForJSON = false
+    override def useJSONVulnerabilityProtection = true
+
+    def toJSONString1 = toJSONString(Sample(1, "Alice"))
+    def toJSONString2 = toJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")))
+  }
+
   it should "have toJSON" in {
     SampleController.toJSONString1 should equal("""{"id":1,"first_name":"Alice"}""")
     SampleController.toJSONString2 should equal("""[{"id":1,"first_name":"Alice"},{"id":2,"first_name":"Bob"}]""")
@@ -100,6 +109,15 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     SampleController.fromJSON3.get should equal(Sample(1, "Alice"))
     SampleController.fromJSON4.get should equal(List(Sample(1, "Alice"), Sample(2, "Bob")))
     SampleController.fromJSON5.get should equal(SampleController.dennis)
+  }
+
+  it should "have toJSON for camelCase" in {
+    Sample2Controller.toJSONString1 should equal(
+      """)]}',
+        |{"id":1,"firstName":"Alice"}""".stripMargin)
+    Sample2Controller.toJSONString2 should equal(
+      """)]}',
+        |[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""".stripMargin)
   }
 
 }

@@ -15,7 +15,7 @@ object JavaMailOps extends Logging {
     new Transport(session, null) {
       def sendMessage(msg: Message, addresses: Array[Address]): Unit = {
         val mimeMsg = msg.asInstanceOf[MimeMessage]
-        val content = try Source.fromInputStream(mimeMsg.getInputStream).mkString
+        val content = try mimeMsg.getContent
         catch { case e: MessagingException => "" }
         logger.info {
           s"""
