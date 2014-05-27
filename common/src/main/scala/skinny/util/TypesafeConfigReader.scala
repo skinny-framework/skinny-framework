@@ -2,6 +2,7 @@ package skinny.util
 
 import com.typesafe.config._
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 object TypesafeConfigReader {
 
@@ -45,5 +46,17 @@ object TypesafeConfigReader {
       }
     }.map { case (k, v) => k -> v.toString }.toMap
   }
+
+  def boolean(path: String): Option[Boolean] = Try(ConfigFactory.load().getBoolean(path)).toOption
+  def booleanSeq(path: String): Option[Seq[Boolean]] = Try(ConfigFactory.load().getBooleanList(path).asScala.map(_.asInstanceOf[Boolean])).toOption
+  def double(path: String): Option[Double] = Try(ConfigFactory.load().getDouble(path)).toOption
+  def doubleSeq(path: String): Option[Seq[Double]] = Try(ConfigFactory.load().getDoubleList(path).asScala.map(_.asInstanceOf[Double])).toOption
+  def int(path: String): Option[Int] = Try(ConfigFactory.load().getInt(path)).toOption
+  def intSeq(path: String): Option[Seq[Int]] = Try(ConfigFactory.load().getIntList(path).asScala.map(_.asInstanceOf[Int])).toOption
+  def long(path: String): Option[Long] = Try(ConfigFactory.load().getLong(path)).toOption
+  def longSeq(path: String): Option[Seq[Long]] = Try(ConfigFactory.load().getLongList(path).asScala.map(_.asInstanceOf[Long])).toOption
+  def string(path: String): Option[String] = Try(ConfigFactory.load().getString(path)).toOption
+  def stringSeq(path: String): Option[Seq[String]] = Try(ConfigFactory.load().getStringList(path).asScala).toOption
+  def get(path: String): Option[ConfigValue] = Try(ConfigFactory.load().getValue(path)).toOption
 
 }

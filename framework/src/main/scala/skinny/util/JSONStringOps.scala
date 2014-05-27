@@ -10,9 +10,37 @@ object JSONStringOps extends JSONStringOps
 trait JSONStringOps extends jackson.JsonMethods {
 
   /**
+   * Use the prefix for JSON Vulnerability Protection.
+   * see: https://docs.angularjs.org/api/ng/service/$http
+   */
+  protected def useJSONVulnerabilityProtection: Boolean = false
+
+  /**
+   * the prefix for JSON Vulnerability Protection.
+   * see: https://docs.angularjs.org/api/ng/service/$http
+   */
+  protected def prefixForJSONVulnerabilityProtection: String = ")]}',\n"
+
+  /**
+   * Default key policy.
+   */
+  protected def useUnderscoreKeysForJSON: Boolean = true
+
+  /**
    * JSON format support implicitly.
    */
   protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
+
+  /**
+   * Returns JSON string value.
+   *
+   * @param value value
+   */
+  override def compact(value: JValue): String = {
+    val json = super.compact(value)
+    if (useJSONVulnerabilityProtection) prefixForJSONVulnerabilityProtection + json
+    else json
+  }
 
   /**
    * Converts a value to JSON value.
@@ -28,7 +56,7 @@ trait JSONStringOps extends jackson.JsonMethods {
    * @param v value
    * @return json string
    */
-  def toJSONString(v: Any, underscoreKeys: Boolean = true): String = {
+  def toJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
     if (underscoreKeys) compact(parse(compact(toJSON(v))).underscoreKeys)
     else compact(toJSON(v))
   }
@@ -39,7 +67,7 @@ trait JSONStringOps extends jackson.JsonMethods {
    * @param v value
    * @return json string
    */
-  def toPrettyJSONString(v: Any, underscoreKeys: Boolean = true): String = {
+  def toPrettyJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
     if (underscoreKeys) pretty(parse(compact(toJSON(v))).underscoreKeys)
     else pretty(toJSON(v))
   }

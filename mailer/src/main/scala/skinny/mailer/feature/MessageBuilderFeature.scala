@@ -56,7 +56,7 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
     }
 
     def subject(subject: String): SkinnyMessageBuilder = {
-      message.subject = subject
+      message.setSubject(subject, config.charset)
       this
     }
 

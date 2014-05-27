@@ -34,7 +34,10 @@ class SkinnyApiControllerSpec extends ScalatraFlatSpec {
       )
       if (count == 1) status = 201 else status = 400
     }
-    def list = toPrettyJSONString(Company.findAll())
+    def list = warnElapsedTimeWithRequest(1) {
+      Thread.sleep(10)
+      toPrettyJSONString(Company.findAll())
+    }
   }
   val controller = new CompaniesController with Routes {
     val creationUrl = post("/companies")(create).as('list)
@@ -50,7 +53,7 @@ class SkinnyApiControllerSpec extends ScalatraFlatSpec {
   }
 
   it should "have list API" in {
-    get("/companies.json") {
+    get("/companies.json?foo=bar&baz=123&password=foo") {
       status should equal(200)
     }
     get("/companies.xml") {
