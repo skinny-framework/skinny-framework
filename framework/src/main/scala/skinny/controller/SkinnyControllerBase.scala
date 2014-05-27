@@ -28,6 +28,7 @@ trait SkinnyControllerBase
     with LocaleFeature
     with ValidationFeature
     with JSONFeature
+    with TimeLoggingFeature
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature
     with RoutesAsImplicits
