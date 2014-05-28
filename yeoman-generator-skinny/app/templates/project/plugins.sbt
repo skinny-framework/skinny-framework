@@ -36,6 +36,6 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
 // addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
