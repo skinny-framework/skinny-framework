@@ -6,10 +6,10 @@ import javax.mail.internet._
 /**
  * Skinny Message which wraps and extends javax.mail.internet.MimeMessage.
  *
- * @param session session
+ * @param currentSession session
  */
-class SkinnyMessage(session: Session, auth: Option[SmtpAuthentication] = None, transportProtocol: String = "smtp")
-    extends MimeMessage(session) with RichMimeMessage {
+class SkinnyMessage(val currentSession: Session, val auth: Option[SmtpAuthentication] = None, val transportProtocol: String = "smtp")
+    extends MimeMessage(currentSession) with RichMimeMessage {
 
   def underlying: MimeMessage = this
 
