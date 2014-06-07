@@ -1,7 +1,6 @@
 package skinny.test
 
 import com.typesafe.config.ConfigFactory
-import com.twitter.util.Eval
 import scala.collection.JavaConverters._
 import scalikejdbc._, SQLInterpolation._
 import skinny.orm.feature.CRUDFeatureWithId
@@ -66,8 +65,14 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
   }
 
   private def eval(v: String): String = {
+    import scala.reflect.runtime.currentMirror
+    import scala.tools.reflect.ToolBox
     if (v == null) null
-    else new Eval(None).apply("s\"\"\"" + v + "\"\"\"")
+    else {
+      val toolbox = currentMirror.mkToolBox()
+      val tree = toolbox.parse("s\"\"\"" + v + "\"\"\"")
+      toolbox.eval(tree).asInstanceOf[String]
+    }
   }
 
   /**

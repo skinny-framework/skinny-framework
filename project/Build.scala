@@ -119,7 +119,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        "com.twitter"           %% "util-eval"        % "6.16.0"
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
