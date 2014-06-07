@@ -31,8 +31,8 @@ function setup_standalone_build() {
   rm -rf standalone-build
   mkdir standalone-build
   cp -pr src standalone-build/src
-  cp -pr build.sbt standalone-build/build.sbt
-  cp -pr _skinny_assembly_settings.sbt standalone-build/build.sbt
+  cp -p build.sbt standalone-build/
+  cp -p _skinny_assembly_settings.sbt standalone-build/
 }
 function copy_resources_to_task() {
   rm -rf task/src/main/resources
@@ -157,12 +157,24 @@ assemblySettings
 mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
 
 _root_.sbt.Keys.test in assembly := {}
+
+resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (managedBase, base) =>
+  val webappBase = base / \"src\" / \"main\" / \"webapp\"
+  for ( (from, to) <- webappBase ** \"*\" \`pair\` rebase(webappBase, managedBase / \"main/\") )
+  yield {
+    Sync.copy(from, to)
+    to
+  }
+}
 " > "${current_dir}/_skinny_assembly_settings.sbt"
   fi
 
   setup_standalone_build
   copy_resources_to_task
-  ${sbt_path} "task/run assets:precompile" standalone-build/assembly
+  ${sbt_path} "task/run assets:precompile standalone-build"
+  rm -fr standalone-build/src/main/webapp/WEB-INF/assets
+  mv standalone-build/src/main/webapp/assets standalone-build/src/main/webapp/WEB-INF/
+  ${sbt_path} standalone-build/assembly
 elif [ "$command" == "publish" ];then
   setup_build
   copy_resources_to_task
