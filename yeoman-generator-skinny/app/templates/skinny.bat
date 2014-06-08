@@ -203,15 +203,24 @@ IF %command%==package (
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
     ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.11.2^"^) > "project\_skinny_assembly.sbt"
-
-    SET SETTINGS_FILE="_skinny_assembly_settings.sbt"
-    ECHO import AssemblyKeys._ > "_skinny_assembly_settings.sbt"
-    ECHO. >> "_skinny_assembly_settings.sbt"
-    ECHO assemblySettings >> "_skinny_assembly_settings.sbt"
-    ECHO. >> "_skinny_assembly_settings.sbt"
-    ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^) >> "_skinny_assembly_settings.sbt"
-    ECHO. >> "_skinny_assembly_settings.sbt"
-    ECHO _root_.sbt.Keys.test in assembly := {} >> "_skinny_assembly_settings.sbt"
+    (
+      ECHO import AssemblyKeys._
+      ECHO.
+      ECHO assemblySettings
+      ECHO.
+      ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
+      ECHO.
+      ECHO _root_.sbt.Keys.test in assembly := {}
+      ECHO.
+      ECHO.resourceGenerators in Compile ^<+= ^(resourceManaged, baseDirectory^) ^map { ^(managedBase, base^) =^>
+      ECHO.  val webappBase = base / "src" / "main" / "webapp"
+      ECHO.  for ^( ^(from, to^) ^<- ^webappBase ** "*" `pair` rebase(webappBase, managedBase / "main/"^) ^)
+      ECHO.  yield {
+      ECHO.    Sync.copy^(from, to^)
+      ECHO.    to
+      ECHO.  }
+      ECHO.}
+    )> "_skinny_assembly_settings.sbt"
   )
   RMDIR standalone-build /S /q
   MKDIR standalone-build
