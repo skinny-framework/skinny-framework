@@ -18,7 +18,7 @@ addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0" excludeAll(
 ))
 
 // for Scalate template compilaion
-addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
+addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
 
 // --------
 // scalarifrom for code formatting
@@ -36,6 +36,6 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.4.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
 // addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 

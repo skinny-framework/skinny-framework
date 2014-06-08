@@ -12,7 +12,6 @@ object SkinnyFrameworkBuild extends Build {
   val scalatraVersion = "2.3.0.RC3"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.0"
-  val h2Version = "1.4.178"
   val jettyVersion = "9.2.0.v20140526"
 
   lazy val baseSettings = Seq(
@@ -56,7 +55,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2"             % "2.3.11"           % "test",
+        "org.specs2"         %% "specs2"             % "2.3.12"           % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -127,8 +126,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-factory-girl",
       libraryDependencies ++= scalikejdbcDependencies ++ Seq(
-        // TODO Scala 2.11 https://github.com/twitter/util/issues/95
-        "com.twitter"           %% "util-eval_2.10"      % "6.16.0"
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value
       ) ++ testDependencies
     )
   ) dependsOn(common, orm)
@@ -149,7 +147,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
         "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.4"         % "compile",
-        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.20"        % "compile"
+        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)

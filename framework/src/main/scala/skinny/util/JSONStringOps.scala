@@ -11,13 +11,13 @@ trait JSONStringOps extends jackson.JsonMethods {
 
   /**
    * Use the prefix for JSON Vulnerability Protection.
-   * see: https://docs.angularjs.org/api/ng/service/$http
+   * see: "https://docs.angularjs.org/api/ng/service/$http"
    */
   protected def useJSONVulnerabilityProtection: Boolean = false
 
   /**
    * the prefix for JSON Vulnerability Protection.
-   * see: https://docs.angularjs.org/api/ng/service/$http
+   * see: "https://docs.angularjs.org/api/ng/service/$http"
    */
   protected def prefixForJSONVulnerabilityProtection: String = ")]}',\n"
 
