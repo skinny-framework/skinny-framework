@@ -16,6 +16,8 @@ object ModelWithoutTimestampsGenerator extends ModelGenerator {
 
 trait ModelGenerator extends CodeGenerator {
 
+  def withId: Boolean = true
+
   def withTimestamps: Boolean = true
 
   def primaryKeyName: String = "id"
@@ -52,39 +54,47 @@ trait ModelGenerator extends CodeGenerator {
     val namespace = toNamespace("model", namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
+    val (timestampPrefix, classFieldsPrimaryKeyRow, extractorsPrimaryKeyRow, attributePrefix, mapperClassName) = if (withId) {
+      (",\n",
+        s"""  ${primaryKeyName}: ${primaryKeyType}""",
+        s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""",
+        ",\n",
+        "SkinnyCRUDMapper")
+    } else {
+      (if (attributePairs.isEmpty) { "" } else { ",\n" }, "", "", "", "SkinnyNoIdCRUDMapper")
+    }
+
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
     val timestamps = if (withTimestamps) {
-      s""",
-         |  createdAt: DateTime,
+      s"""${timestampPrefix}  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
     } else ""
     val timestampsExtraction = if (withTimestamps) {
-      s""",
-         |    createdAt = rs.get(rn.createdAt),
+      s"""${timestampPrefix}    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
+
     val customPkName = {
       if (primaryKeyName != "id") "\n  override lazy val primaryKeyFieldName = \"" + primaryKeyName + "\""
       else ""
     }
 
-    val classFields =
-      s"""  ${primaryKeyName}: ${primaryKeyType}${
-        if (attributePairs.isEmpty) ""
-        else attributePairs.map {
-          case (k, t) =>
-            s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
-        }.mkString(",\n", ",\n", "")
-      }${timestamps}
+    val classFields = s"""${classFieldsPrimaryKeyRow}${
+      if (attributePairs.isEmpty) ""
+      else attributePairs.map {
+        case (k, t) =>
+          s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
+      }.mkString(attributePrefix, ",\n", "")
+    }${timestamps}
         |""".stripMargin
 
     val extractors =
-      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${
+      s"""${extractorsPrimaryKeyRow}${
         if (attributePairs.isEmpty) ""
         else attributePairs.map {
           case (k, t) =>
             "    " + k + " = rs.get(rn." + k + ")"
-        }.mkString(",\n", ",\n", "")
+        }.mkString(attributePrefix, ",\n", "")
       }${timestampsExtraction}
         |""".stripMargin
 
@@ -105,7 +115,7 @@ trait ModelGenerator extends CodeGenerator {
         |case class ${modelClassName}(
         |${classFields})
         |
-        |object ${modelClassName} extends SkinnyCRUDMapper${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
+        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
         |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
         |
