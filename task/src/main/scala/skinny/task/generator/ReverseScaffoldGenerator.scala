@@ -45,30 +45,18 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       val hasId = if (columns.find(_.isPrimaryKey).isEmpty) {
         println(
           s"""
-            |Since this table (${tableName}) has no primary key, a NoIdCRUDMapper model is created.
-            |A controller and a view are not created.
-            |""".stripMargin)
+            |Since this table (${tableName}}) has no primary key, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
         false
       } else if (columns.filter(_.isPrimaryKey).size > 1) {
         println(
           s"""
-            |Since this table (${tableName}) has composite primary key, a NoIdCRUDMapper model is created.
-            |A controller and a view are not created.
-            |""".stripMargin)
+            |Since this table (${tableName}) has compound primary keys, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
         false
       } else {
         true
       }
-      val pkName = if (hasId) {
-        Some(toCamelCase(columns.find(_.isPrimaryKey).get.name.toLowerCase(Locale.ENGLISH)))
-      } else {
-        None
-      }
-      val pkType = if (hasId) {
-        Some(convertJdbcSqlTypeToParamType(columns.find(_.isPrimaryKey).get.typeCode))
-      } else {
-        None
-      }
+      val pkName = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
+      val pkType = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
       val fields = if (hasId) {
         columns
           .map(column => toScaffoldFieldDef(column))
@@ -96,7 +84,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
         s"""
         | *** Skinny Reverse Engineering Task ***
         |
-        |  Table     : ${tableName}
+        |  Table  : ${tableName}
         |
         |  Columns:
         |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin

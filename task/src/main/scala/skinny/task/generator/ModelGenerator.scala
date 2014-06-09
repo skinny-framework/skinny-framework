@@ -54,21 +54,18 @@ trait ModelGenerator extends CodeGenerator {
     val namespace = toNamespace("model", namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
-    val (timestampPrefix, classFieldsPrimaryKeyRow, extractorsPrimaryKeyRow, attributePrefix, mapperClassName) = if (withId) {
-      (",\n",
-        s"""  ${primaryKeyName}: ${primaryKeyType}""",
-        s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""",
-        ",\n",
-        "SkinnyCRUDMapper")
-    } else {
-      (if (attributePairs.isEmpty) { "" } else { ",\n" }, "", "", "", "SkinnyNoIdCRUDMapper")
-    }
-
+    val timestampPrefix = if (withId) ",\n" else { if (attributePairs.isEmpty) "" else ",\n" }
+    val classFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
+    val extractorsPrimaryKeyRow = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""
+    val attributePrefix = if (withId) ",\n" else ""
+    val mapperClassName = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
+
     val timestamps = if (withTimestamps) {
       s"""${timestampPrefix}  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
     } else ""
+
     val timestampsExtraction = if (withTimestamps) {
       s"""${timestampPrefix}    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
