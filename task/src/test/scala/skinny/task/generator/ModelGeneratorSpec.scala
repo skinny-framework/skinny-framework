@@ -198,7 +198,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val expected = """package model.admin
                        |
                        |import skinny.orm._, feature._
-                       |import scalikejdbc._, SQLInterpolation._
+                       |import scalikejdbc._
                        |import org.joda.time._
                        |
                        |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
@@ -244,7 +244,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
         """package model
           |
           |import skinny.orm._, feature._
-          |import scalikejdbc._, SQLInterpolation._
+          |import scalikejdbc._
           |import org.joda.time._
           |
           |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
@@ -281,7 +281,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
         """package model.admin
           |
           |import skinny.orm._, feature._
-          |import scalikejdbc._, SQLInterpolation._
+          |import scalikejdbc._
           |import org.joda.time._
           |
           |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
@@ -318,7 +318,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
         """package model.admin
           |
           |import skinny.orm._, feature._
-          |import scalikejdbc._, SQLInterpolation._
+          |import scalikejdbc._
           |import org.joda.time._
           |
           |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
