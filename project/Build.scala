@@ -8,22 +8,20 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.1.0-SNPSHOT"
+  val _version = "1.1.0.RC1"
   val scalatraVersion = "2.3.0.RC3"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.0.0"
+  val scalikeJDBCVersion = "2.0.2"
   val h2Version = "1.4.178"
-  val jettyVersion = "9.2.0.v20140526"
+  val jettyVersion = "9.2.1.v20140609"
 
   lazy val baseSettings = Seq(
-    // Defaults.defaultSettings is deprecated since sbt 0.13.5
-    // Defaults.defaultSettings ++ Seq(
     organization := _organization,
     version := _version,
     scalaVersion := "2.10.4",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
@@ -56,8 +54,8 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2"             % "2.3.12"           % "test",
-        "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
+        "org.specs2"         %% "specs2"             % "2.3.+"           % "test",
+        "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
         "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % "test",
@@ -226,7 +224,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.1.7"   % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.0"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"

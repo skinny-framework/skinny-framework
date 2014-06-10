@@ -183,4 +183,162 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("NoIdModel") {
+    it("should be created as expected with tableName") {
+      val generator = new ModelGenerator {
+        override def withId = false
+      }
+      val code = generator.code(Seq("admin"), "noIdMember", Some("no_id_members"), Seq(
+        "name" -> "String",
+        "isActivated" -> "Boolean",
+        "bytes" -> "ByteArray",
+        "bytesOpt" -> "Option[ByteArray]",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      val expected = """package model.admin
+                       |
+                       |import skinny.orm._, feature._
+                       |import scalikejdbc._, SQLInterpolation._
+                       |import org.joda.time._
+                       |
+                       |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+                       |case class NoIdMember(
+                       |  name: String,
+                       |  isActivated: Boolean,
+                       |  bytes: Array[Byte],
+                       |  bytesOpt: Option[Array[Byte]] = None,
+                       |  birthday: Option[LocalDate] = None,
+                       |  createdAt: DateTime,
+                       |  updatedAt: DateTime
+                       |)
+                       |
+                       |object NoIdMember extends SkinnyNoIdCRUDMapper[NoIdMember] with TimestampsFeature[NoIdMember] {
+                       |  override lazy val tableName = "no_id_members"
+                       |  override lazy val defaultAlias = createAlias("nim")
+                       |
+                       |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]): NoIdMember = new NoIdMember(
+                       |    name = rs.get(rn.name),
+                       |    isActivated = rs.get(rn.isActivated),
+                       |    bytes = rs.get(rn.bytes),
+                       |    bytesOpt = rs.get(rn.bytesOpt),
+                       |    birthday = rs.get(rn.birthday),
+                       |    createdAt = rs.get(rn.createdAt),
+                       |    updatedAt = rs.get(rn.updatedAt)
+                       |  )
+                       |}
+                       |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected without tableName") {
+      val generator = new ModelGenerator {
+        override def withId = false
+        override def withTimestamps = false
+      }
+      val code = generator.code(Nil, "noIdProjectMember", None, Seq(
+        "name" -> "String",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      val expected =
+        """package model
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class NoIdProjectMember(
+          |  name: String,
+          |  isActivated: Boolean,
+          |  birthday: Option[LocalDate] = None
+          |)
+          |
+          |object NoIdProjectMember extends SkinnyNoIdCRUDMapper[NoIdProjectMember] {
+          |
+          |  override lazy val defaultAlias = createAlias("nipm")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]): NoIdProjectMember = new NoIdProjectMember(
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected without timestamps") {
+      val generator = new ModelGenerator {
+        override def withId = false
+      }
+      val code = generator.code(Seq("admin"), "noIdProjectMember", None, Seq(
+        "name" -> "String",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      val expected =
+        """package model.admin
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class NoIdProjectMember(
+          |  name: String,
+          |  isActivated: Boolean,
+          |  birthday: Option[LocalDate] = None,
+          |  createdAt: DateTime,
+          |  updatedAt: DateTime
+          |)
+          |
+          |object NoIdProjectMember extends SkinnyNoIdCRUDMapper[NoIdProjectMember] with TimestampsFeature[NoIdProjectMember] {
+          |
+          |  override lazy val defaultAlias = createAlias("nipm")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]): NoIdProjectMember = new NoIdProjectMember(
+          |    name = rs.get(rn.name),
+          |    isActivated = rs.get(rn.isActivated),
+          |    birthday = rs.get(rn.birthday),
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+
+    it("should be created as expected without attributes") {
+      val generator = new ModelGenerator {
+        override def withId = false
+      }
+      val code = generator.code(Seq("admin"), "noIdMember", None, Seq())
+      val expected =
+        """package model.admin
+          |
+          |import skinny.orm._, feature._
+          |import scalikejdbc._, SQLInterpolation._
+          |import org.joda.time._
+          |
+          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+          |case class NoIdMember(
+          |  createdAt: DateTime,
+          |  updatedAt: DateTime
+          |)
+          |
+          |object NoIdMember extends SkinnyNoIdCRUDMapper[NoIdMember] with TimestampsFeature[NoIdMember] {
+          |
+          |  override lazy val defaultAlias = createAlias("nim")
+          |
+          |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]): NoIdMember = new NoIdMember(
+          |    createdAt = rs.get(rn.createdAt),
+          |    updatedAt = rs.get(rn.updatedAt)
+          |  )
+          |}
+          |""".stripMargin
+      code should equal(expected)
+    }
+  }
+
 }

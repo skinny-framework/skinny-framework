@@ -42,51 +42,76 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       DBSettings.initialize()
 
       val columns = extractColumns(tableName)
-      if (columns.find(_.isPrimaryKey).isEmpty) {
-        throw new IllegalStateException(
-          s"Since this table (${tableName}}) has no primary key, generator couldn't create scaffold files")
+      val hasId = if (columns.find(_.isPrimaryKey).isEmpty) {
+        println(
+          s"""
+            |Since this table (${tableName}) has no primary key, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
+        false
       } else if (columns.filter(_.isPrimaryKey).size > 1) {
-        throw new IllegalStateException(
-          s"Since this table (${tableName}}) has composite primary keys, generator couldn't create scaffold files")
+        println(
+          s"""
+            |Since this table (${tableName}) has compound primary keys, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
+        false
+      } else {
+        true
       }
-      val pkName = toCamelCase(columns.find(_.isPrimaryKey).get.name.toLowerCase(Locale.ENGLISH))
-      val pkType = convertJdbcSqlTypeToParamType(columns.find(_.isPrimaryKey).get.typeCode)
-      val fields = columns
-        .map(column => toScaffoldFieldDef(column))
-        .filter(param => param != "id:Long" && param != "id:Option[Long]")
-        .filter(param => !param.startsWith(pkName + ":"))
-        .map(param => toCamelCase(param))
+      val pkName = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
+      val pkType = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
+      val fields = if (hasId) {
+        columns
+          .map(column => toScaffoldFieldDef(column))
+          .filter(param => param != "id:Long" && param != "id:Option[Long]")
+          .filter(param => !param.startsWith(pkName.get + ":"))
+          .map(param => toCamelCase(param))
+      } else {
+        columns
+          .map(column => toScaffoldFieldDef(column))
+          .map(param => toCamelCase(param))
+      }
 
-      println(s"""
-              | *** Skinny Reverse Engineering Task ***
-              |
-              |  Table     : ${tableName}
-              |  ID        : ${pkName}:${pkType}
-              |  Resources : ${resources}
-              |  Resource  : ${resource}
-              |
-              |  Columns:
-              |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin)
+      println(if (hasId) {
+        s"""
+        | *** Skinny Reverse Engineering Task ***
+        |
+        |  Table     : ${tableName}
+        |  ID        : ${pkName}:${pkType}
+        |  Resources : ${resources}
+        |  Resource  : ${resource}
+        |
+        |  Columns:
+        |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin
+      } else {
+        s"""
+        | *** Skinny Reverse Engineering Task ***
+        |
+        |  Table  : ${tableName}
+        |
+        |  Columns:
+        |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin
+      })
 
       val table = tableName
       val generator = templateType match {
         case "ssp" => new ScaffoldSspGenerator {
-          override def primaryKeyName = pkName
-          override def primaryKeyType = pkType
+          override def withId = hasId
+          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
+          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)
         }
         case "scaml" => new ScaffoldScamlGenerator {
-          override def primaryKeyName = pkName
-          override def primaryKeyType = pkType
+          override def withId = hasId
+          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
+          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)
         }
         case "jade" => new ScaffoldJadeGenerator {
-          override def primaryKeyName = pkName
-          override def primaryKeyType = pkType
+          override def withId = hasId
+          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
+          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
           override def skipDBMigration = true
           override def tableName = Some(table)

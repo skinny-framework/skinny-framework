@@ -13,6 +13,8 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def template: String = "ssp"
 
+  protected def withId: Boolean = true
+
   protected def withTimestamps: Boolean = true
 
   protected def primaryKeyName: String = "id"
@@ -121,36 +123,41 @@ trait ScaffoldGenerator extends CodeGenerator {
           }
           val attributePairs: Seq[(String, String)] = generatorArgs.map(a => (a.name, a.typeName))
 
-          // Controller
-          generateApplicationControllerIfAbsent()
-          generateResourceController(namespaces, resources, resource, template, generatorArgs)
-          appendToControllers(namespaces, resources)
-          generateControllerSpec(namespaces, resources, resource, attributePairs)
-          generateIntegrationTestSpec(namespaces, resources, resource, attributePairs)
-          appendToFactoriesConf(resource, attributePairs)
+          if (withId) {
+            // Controller
+            generateApplicationControllerIfAbsent()
+            generateResourceController(namespaces, resources, resource, template, generatorArgs)
+            appendToControllers(namespaces, resources)
+            generateControllerSpec(namespaces, resources, resource, attributePairs)
+            generateIntegrationTestSpec(namespaces, resources, resource, attributePairs)
+            appendToFactoriesConf(resource, attributePairs)
+          }
 
           // Model
           val self = this
           val modelGenerator = new ModelGenerator {
             override def primaryKeyName = self.primaryKeyName
             override def primaryKeyType = self.primaryKeyType
+            override def withId = self.withId
             override def withTimestamps = self.withTimestamps
           }
           modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), attributePairs)
           modelGenerator.generateSpec(namespaces, resource, attributePairs)
 
-          // Views
-          generateFormView(namespaces, resources, resource, attributePairs)
-          generateNewView(namespaces, resources, resource, attributePairs)
-          generateEditView(namespaces, resources, resource, attributePairs)
-          generateIndexView(namespaces, resources, resource, attributePairs)
-          generateShowView(namespaces, resources, resource, attributePairs)
+          if (withId) {
+            // Views
+            generateFormView(namespaces, resources, resource, attributePairs)
+            generateNewView(namespaces, resources, resource, attributePairs)
+            generateEditView(namespaces, resources, resource, attributePairs)
+            generateIndexView(namespaces, resources, resource, attributePairs)
+            generateShowView(namespaces, resources, resource, attributePairs)
 
-          // messages.conf
-          generateMessages(resources, resource, attributePairs)
+            // messages.conf
+            generateMessages(resources, resource, attributePairs)
+          }
 
           // migration SQL
-          generateMigrationSQL(resources, resource, generatorArgs, skipDBMigration)
+          generateMigrationSQL(resources, resource, generatorArgs, skipDBMigration, withId)
 
           println("")
 
@@ -228,6 +235,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         }
     }.mkString
 
+    val resourceNameLine = s"""override def resourceName = "${resource}"${primaryKeyNameIfNotId}"""
     s"""package ${namespace}
         |
         |import skinny._
@@ -240,7 +248,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |
         |  override def model = ${modelClassName}
         |  override def resourcesName = "${resources}"
-        |  override def resourceName = "${resource}"${primaryKeyNameIfNotId}
+        |  ${resourceNameLine}
         |
         |  override def resourcesBasePath = s"${toResourcesBasePath(namespaces)}/$${toSnakeCase(resourcesName)}"
         |  override def useSnakeCasedParamKeys = true
@@ -662,7 +670,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Flyway migration SQL
   // --------------------------
 
-  def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg]): String = {
+  def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], withId: Boolean = true): String = {
     val name = tableName.getOrElse(toSnakeCase(resources))
     val columns = generatorArgs.map { a =>
       s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
@@ -674,18 +682,26 @@ trait ScaffoldGenerator extends CodeGenerator {
       |  updated_at timestamp not null""".stripMargin
     } else ""
 
-    s"""-- For H2 Database
-        |create table ${name} (
-        |  ${toSnakeCase(primaryKeyName)} bigserial not null primary key,
-        |${columns}${timestamps}
-        |)
-        |""".stripMargin
+    if (withId) {
+      s"""-- For H2 Database
+          |create table ${name} (
+          |  ${toSnakeCase(primaryKeyName)} bigserial not null primary key,
+          |${columns}${timestamps}
+          |)
+          |""".stripMargin
+    } else {
+      s"""-- For H2 Database : Please add suitable restrictions if needed.
+          |create table ${name} (
+          |${columns}${timestamps}
+          |)
+          |""".stripMargin
+    }
   }
 
-  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean) {
+  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean, withId: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file = new File(s"src/main/resources/db/migration/V${version}__Create_${resources}_table.sql")
-    val sql = migrationSQL(resources, resource, generatorArgs)
+    val sql = migrationSQL(resources, resource, generatorArgs, withId)
     writeIfAbsent(file, if (skip) s"/*\n${sql}\n*/" else sql)
   }
 
