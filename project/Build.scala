@@ -8,13 +8,13 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.18-SNAPSHOT"
+  val _version = "1.0.18"
   val scalatraVersion = "2.2.2"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "1.8.0"
+  val scalikeJDBCVersion = "1.8.1"
   val scalateVeresion = "1.6.1"
   val h2Version = "1.4.178"
-  val jettyVersion = "9.2.0.v20140526"
+  val jettyVersion = "9.2.1.v20140609"
 
   lazy val baseSettings = Seq(
     // Defaults.defaultSettings is deprecated since sbt 0.13.5
