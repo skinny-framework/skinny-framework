@@ -1,11 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-import org.joda.time._
-
-class dateTimeFormatSpec extends FlatSpec with ShouldMatchers {
+class dateTimeFormatSpec extends FlatSpec with Matchers {
 
   behavior of "dateTimeFormat"
 

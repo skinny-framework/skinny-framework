@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import skinny.orm.Alias
 

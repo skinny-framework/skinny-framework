@@ -4,7 +4,7 @@ import skinny.orm._
 import skinny.orm.feature.associations._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.exception.AssociationSettingsException
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.util.JavaReflectAPI
 
 /**
@@ -64,7 +64,7 @@ trait IncludesFeatureWithId[Id, Entity]
 
       override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
 
-      def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
+      def extract(rs: WrappedResultSet, n: ResultName[Entity]) = underlying.extract(rs, n)
     }
   }
 

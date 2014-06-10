@@ -1,9 +1,8 @@
 package skinny.assets
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class SassCompilerSpec extends FlatSpec with ShouldMatchers {
+class SassCompilerSpec extends FlatSpec with Matchers {
 
   behavior of "SassCompiler"
 

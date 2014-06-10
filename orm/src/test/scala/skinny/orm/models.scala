@@ -2,7 +2,7 @@ package skinny.orm
 
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature._
 
 case class Member(
@@ -252,7 +252,7 @@ object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
   override def idToRawValue(id: ProductId) = id.value
   override def rawValueToId(value: Any) = ProductId(value.toString.toLong)
 
-  override def extract(rs: WrappedResultSet, p: SQLInterpolation.ResultName[Product]) = new Product(
+  override def extract(rs: WrappedResultSet, p: ResultName[Product]) = new Product(
     id = ProductId(rs.get(p.id)),
     name = rs.get(p.name),
     priceYen = rs.get(p.priceYen)

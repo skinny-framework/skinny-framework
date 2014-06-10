@@ -8,17 +8,14 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.0.18"
-  val scalatraVersion = "2.2.2"
+  val _version = "1.1.0.RC1"
+  val scalatraVersion = "2.3.0.RC3"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "1.8.1"
-  val scalateVeresion = "1.6.1"
+  val scalikeJDBCVersion = "2.0.2"
   val h2Version = "1.4.178"
   val jettyVersion = "9.2.1.v20140609"
 
   lazy val baseSettings = Seq(
-    // Defaults.defaultSettings is deprecated since sbt 0.13.5
-    // Defaults.defaultSettings ++ Seq(
     organization := _organization,
     version := _version,
     scalaVersion := "2.10.4",
@@ -43,9 +40,13 @@ object SkinnyFrameworkBuild extends Build {
   lazy val common = Project (id = "common", base = file("common"),
    settings = baseSettings ++ Seq(
       name := "skinny-common",
-      libraryDependencies ++= Seq(
-        "com.typesafe" %  "config" % "1.2.1" % "compile"
-      ) ++ jodaDependencies ++ slf4jApiDependencies ++ testDependencies
+      libraryDependencies  <++= (scalaVersion) { scalaVersion => 
+        Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
+        jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (scalaVersion match {
+          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" % "compile")
+          case _ => Nil
+        })
+      }
     ) ++ _jettyOrbitHack
   ) 
 
@@ -53,8 +54,8 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2"             % "2.3.12"           % "test",
-        "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
+        "org.specs2"         %% "specs2"             % "2.3.+"           % "test",
+        "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
         "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % "test",
@@ -98,10 +99,15 @@ object SkinnyFrameworkBuild extends Build {
   lazy val task = Project (id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
       name := "skinny-task",
-      libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-io"             %  "commons-io" % "2.4",
-        "org.fusesource.scalamd" %% "scalamd"    % "1.6" 
-      ) ++ testDependencies
+      libraryDependencies <++= (scalaVersion) { scalaVersion => 
+        scalatraDependencies ++ Seq(
+          "commons-io"             %  "commons-io" % "2.4",
+          scalaVersion match { 
+            case v if v.startsWith("2.11.") => "org.scalatra.scalate" %% "scalamd"    % "1.6.1" 
+            case _ => "org.fusesource.scalamd" %% "scalamd"    % "1.6" 
+          }
+        ) ++ testDependencies
+      }
     )
   ) dependsOn(assets, orm)
 
@@ -217,10 +223,8 @@ object SkinnyFrameworkBuild extends Build {
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
-  // WARNIG: Sufferred strange errors with ScalaTest 1.9.2
-  // Could not run test skinny.controller.ParamsSpec: java.lang.IncompatibleClassChangeError: Implementing class
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "1.9.1"   % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.0"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"

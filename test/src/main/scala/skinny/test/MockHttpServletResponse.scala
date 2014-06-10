@@ -149,4 +149,6 @@ class MockHttpServletResponse extends HttpServletResponse {
 
   override def addCookie(cookie: Cookie): Unit = cookies.add(cookie)
 
+  // TODO
+  override def setContentLengthLong(len: Long): Unit = ???
 }

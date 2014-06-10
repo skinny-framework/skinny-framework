@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class ValidatorLikeSpec extends FlatSpec with ShouldMatchers {
+class ValidatorLikeSpec extends FlatSpec with Matchers {
 
   behavior of "ValidatorLike"
 

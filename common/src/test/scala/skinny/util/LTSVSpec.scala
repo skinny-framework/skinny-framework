@@ -1,9 +1,8 @@
 package skinny.util
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class LTSVSpec extends FlatSpec with ShouldMatchers {
+class LTSVSpec extends FlatSpec with Matchers {
 
   behavior of "LTSV.parseLines"
 

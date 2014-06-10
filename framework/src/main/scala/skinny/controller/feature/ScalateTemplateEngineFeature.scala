@@ -6,7 +6,7 @@ import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 import scala.annotation.tailrec
-import java.io.PrintWriter
+import java.io.{ StringWriter, PrintWriter }
 import java.text.DecimalFormat
 
 /**
@@ -29,8 +29,8 @@ import java.text.DecimalFormat
  * And then, Skinny expects "src/main/webapp/WEB-INF/views/members/index.html.scaml"
  */
 trait ScalateTemplateEngineFeature extends TemplateEngineFeature
-    with ScalateSupport
-    with ScalateUrlGeneratorSupport {
+    with ScalateSupport {
+  //with ScalateUrlGeneratorSupport {
 
   /**
    * To deal with exceptions.
@@ -64,14 +64,14 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    */
   override protected def createRenderContext(req: HttpServletRequest = request, resp: HttpServletResponse = response, out: PrintWriter = response.getWriter): RenderContext = {
     val context = super.createRenderContext(req, resp, out)
-    context.numberFormat = numberFormat
+    context.numberFormat = scalateRenderContextNumberFormat
     context
   }
 
   /**
    * Creates a DecimalFormat instance to be use by default.
    */
-  def numberFormat: DecimalFormat = {
+  def scalateRenderContextNumberFormat: DecimalFormat = {
     val df = new DecimalFormat
     df.setGroupingUsed(false) // prevent commas from being inserted into numbers
     df

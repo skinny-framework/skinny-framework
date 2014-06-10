@@ -2,7 +2,7 @@ package service
 
 import org.joda.time.DateTime
 import skinny.orm.SkinnyCRUDMapper
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature.{ SoftDeleteWithTimestampFeature, TimestampsFeature }
 
 case class Application(

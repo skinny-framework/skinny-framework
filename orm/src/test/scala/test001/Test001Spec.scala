@@ -1,15 +1,14 @@
 package test001
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.fixture
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{ Matchers, fixture }
 
 /**
  * This spec demonstrates that using hasManyThrough.byDefault each other is impossible.
  */
-class Test001Spec extends fixture.FunSpec with ShouldMatchers
+class Test001Spec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

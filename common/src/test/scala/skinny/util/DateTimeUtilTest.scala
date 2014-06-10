@@ -1,10 +1,9 @@
 package skinny.util
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import skinny.ParamType
 
-class DateTimeUtilTest extends FlatSpec with ShouldMatchers {
+class DateTimeUtilTest extends FlatSpec with Matchers {
 
   behavior of "DateTimeUtil"
 

@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class numericSpec extends FlatSpec with ShouldMatchers {
+class numericSpec extends FlatSpec with Matchers {
 
   behavior of "numeric"
 

@@ -1,15 +1,14 @@
 package skinny.orm
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
-import org.scalatest.fixture
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import skinny.{ PermittedStrongParameters, Pagination, ParamType, StrongParameters }
 import skinny.test.LightFactoryGirl
 import skinny.orm.exception.OptimisticLockException
 
-class SkinnyORMSpec extends fixture.FunSpec with ShouldMatchers
+class SkinnyORMSpec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with Formatter

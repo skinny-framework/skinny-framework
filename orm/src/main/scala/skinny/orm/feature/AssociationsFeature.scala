@@ -6,7 +6,7 @@ import skinny.logging.Logging
 import skinny.orm._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.feature.associations._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scala.collection.mutable
 import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException

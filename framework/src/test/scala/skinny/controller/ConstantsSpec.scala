@@ -1,9 +1,8 @@
 package skinny.controller
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class ConstantsSpec extends FlatSpec with ShouldMatchers {
+class ConstantsSpec extends FlatSpec with Matchers {
 
   behavior of "Constants"
 

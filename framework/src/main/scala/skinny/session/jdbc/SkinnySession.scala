@@ -1,7 +1,7 @@
 package skinny.session.jdbc
 
 import skinny.orm._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import java.io._
 import skinny.logging.Logging

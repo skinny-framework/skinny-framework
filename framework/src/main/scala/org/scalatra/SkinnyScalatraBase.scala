@@ -19,7 +19,7 @@ import skinny.SkinnyEnv
  */
 trait SkinnyScalatraBase extends ScalatraBase {
 
-  protected override def executeRoutes() {
+  override protected def executeRoutes() {
     var result: Any = null
     var rendered = true
 
@@ -60,8 +60,11 @@ trait SkinnyScalatraBase extends ScalatraBase {
         rendered = false
       }, e => {
         runCallbacks(Failure(e))
-        renderUncaughtException(e)
-        runRenderCallbacks(Failure(e))
+        try {
+          renderUncaughtException(e)
+        } finally {
+          runRenderCallbacks(Failure(e))
+        }
       })
     })
 
@@ -96,12 +99,14 @@ trait SkinnyScalatraBase extends ScalatraBase {
       case e: PassException => None
     }
 
+  // TODO fixed?
   override def url(
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,
     includeContextPath: Boolean = true,
     includeServletPath: Boolean = true,
-    absolutize: Boolean = true)(
+    absolutize: Boolean = true,
+    withSessionId: Boolean = true)(
       implicit request: HttpServletRequest, response: HttpServletResponse): String = {
 
     try {

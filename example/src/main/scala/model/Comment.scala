@@ -1,6 +1,6 @@
 package model
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.SkinnyCRUDMapper
 
 case class Comment(id: Long, author: String, text: String)

@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.exception.OptimisticLockException
 import org.slf4j.LoggerFactory
 

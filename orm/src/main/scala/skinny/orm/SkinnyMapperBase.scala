@@ -1,6 +1,6 @@
 package skinny.orm
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 /**
  * SkinnyMapper base.
@@ -17,7 +17,7 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
     override def defaultAlias = _self.defaultAlias
     override val tableName = _tableName
     override val columnNames = _columnNames
-    def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = _self.extract(rs, n)
+    def extract(rs: WrappedResultSet, n: ResultName[Entity]) = _self.extract(rs, n)
   }
 
   /**

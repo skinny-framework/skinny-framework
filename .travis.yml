@@ -1,5 +1,6 @@
 language: scala
 scala:
   - 2.10.4
+  - 2.11.0
 script: "gem install sass && sbt \"example/run db:migrate test\" && sbt test && yes|./run_skinny-blank-app_test.sh"
 

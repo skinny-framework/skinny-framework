@@ -1,9 +1,8 @@
 package skinny.task.generator
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class ControllerGeneratorSpec extends FunSpec with ShouldMatchers {
+class ControllerGeneratorSpec extends FunSpec with Matchers {
 
   val generator = ControllerGenerator
 

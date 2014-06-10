@@ -1,12 +1,11 @@
 package blog2
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.fixture
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class BlogSpec extends fixture.FunSpec with ShouldMatchers
+class BlogSpec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 /**
  * Provides AutoSession for this mapper.
