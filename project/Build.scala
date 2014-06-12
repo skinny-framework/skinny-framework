@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.1.0"
+  val _version = "1.1.0.RC2"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.2"
@@ -186,10 +186,9 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion       % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",
         "org.mockito"        %  "mockito-core"       % "1.9.5"               % "test",
-        "org.eclipse.jetty"  % "jetty-webapp"        % jettyVersion          % "container",
-        "org.eclipse.jetty"  % "jetty-plus"          % jettyVersion          % "container",
-        "org.eclipse.jetty.orbit" % "javax.servlet"  % "3.0.0.v201112011016" % "container;provided;test"
-           artifacts (Artifact("javax.servlet", "jar", "jar"))
+        "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion          % "container",
+        "org.eclipse.jetty"  %  "jetty-plus"         % jettyVersion          % "container",
+        "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"               % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
       // Scalatra tests become slower when multiple controller tests are loaded in the same time

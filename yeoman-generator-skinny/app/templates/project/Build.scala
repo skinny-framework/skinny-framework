@@ -18,12 +18,10 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.1.0.RC1"
-  val scalatraVersion = "2.3.0.RC3"
+  val skinnyVersion = "1.1.0.RC2"
+  val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.1"
   val jettyVersion = "9.2.1.v20140609"
-  // Your project runs on Java 6, choose Jetty 8 instead.
-  //val jettyVersion = "8.1.10.v20130312"
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := appOrganization,
@@ -45,7 +43,7 @@ object SkinnyAppBuild extends Build {
       //"org.scalatra"            %% "scalatra-specs2"     % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
       "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
-      "org.eclipse.jetty.orbit" %  "javax.servlet"       % "3.0.0.v201112011016" % "container;provided;test",
+      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test",
       // To fix Scalate runtime evaluation error on Java 8 (https://gist.github.com/seratch/9680709)
       "org.scala-lang"          %  "scala-compiler"      % theScalaVersion       % "container"
     ),
