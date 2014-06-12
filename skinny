@@ -31,6 +31,8 @@ elif [ "$command" == "test" ];then
   sbt test
 elif [ "$command" == "db:migrate" ];then
   sbt "example/run db:migrate $2"
+elif [ "$command" == "db:repair" ];then
+  sbt "example/run db:repair $2"
 elif [ "$command" == "package" ];then
   sbt package
 else

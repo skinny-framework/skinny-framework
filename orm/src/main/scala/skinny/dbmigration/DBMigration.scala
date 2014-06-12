@@ -1,6 +1,6 @@
 package skinny.dbmigration
 
-import com.googlecode.flyway.core.Flyway
+import org.flywaydb.core.Flyway
 import skinny.{ SkinnyEnv, DBSettings }
 import scalikejdbc.ConnectionPool
 import com.typesafe.config.ConfigFactory

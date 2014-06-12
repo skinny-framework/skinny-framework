@@ -8,8 +8,8 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.1.0.RC1"
-  val scalatraVersion = "2.3.0.RC3"
+  val _version = "1.1.0"
+  val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.2"
   val h2Version = "1.4.178"
@@ -18,7 +18,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.11.1",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -54,7 +54,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2"             % "2.3.+"           % "test",
+        "org.specs2"         %% "specs2"             % "2.3.+"            % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -115,8 +115,8 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "com.googlecode.flyway" %  "flyway-core"       % "2.3.1"        % "compile",
-        "org.hibernate"         %  "hibernate-core"    % "4.3.5.Final"  % "test"
+        "org.flywaydb"    %  "flyway-core"    % "3.0"         % "compile",
+        "org.hibernate"   %  "hibernate-core" % "4.3.5.Final" % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
