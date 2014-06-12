@@ -1,9 +1,8 @@
 package skinny
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class SkinnyConfigSpec extends FunSpec with ShouldMatchers with SkinnyConfig {
+class SkinnyConfigSpec extends FunSpec with Matchers with SkinnyConfig {
 
   describe("SkinnyConfing#values") {
 

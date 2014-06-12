@@ -1,9 +1,8 @@
 package skinny.util
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class TimeLoggingSpec extends FlatSpec with ShouldMatchers with TimeLogging {
+class TimeLoggingSpec extends FlatSpec with Matchers with TimeLogging {
 
   behavior of "TimeLogging"
 
