@@ -315,15 +315,14 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     s"""package ${namespace}
       |
-      |import org.scalatest.FunSpec
-      |import org.scalatest.matchers.ShouldMatchers
+      |import org.scalatest._
       |import skinny._
       |import skinny.test._
       |import org.joda.time._
       |import ${toNamespace("model", namespaces)}._
       |
       |// NOTICE before/after filters won't be executed by default
-      |class ${controllerClassName}Spec extends FunSpec with ShouldMatchers with DBSettings {
+      |class ${controllerClassName}Spec extends FunSpec with Matchers with DBSettings {
       |
       |  def createMockController = new ${controllerClassName} with MockController
       |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
