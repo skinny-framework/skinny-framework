@@ -107,7 +107,7 @@ object SkinnyAppBuild extends Build {
   // Packaging
   // -------------------------------------------------------
 
-  lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ scalatePrecompileSettings ++ Seq(
+  lazy val packagingBaseSettings = baseSettings ++ scalatePrecompileSettings ++ Seq(
     sources in doc in Compile := List(),
     publishTo <<= version { (v: String) =>
       val base = "https://oss.sonatype.org/"
