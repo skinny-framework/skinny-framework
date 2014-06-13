@@ -60,7 +60,7 @@ object SkinnyAppBuild extends Build {
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
   )
 
-  lazy val scalatePrecomileSettings = baseSettings ++ scalateSettings ++ Seq(
+  lazy val scalatePrecompileSettings = baseSettings ++ scalateSettings ++ Seq(
     scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
@@ -88,7 +88,7 @@ object SkinnyAppBuild extends Build {
     )
   )
   lazy val precompileDev = Project(id = "precompileDev", base = file("."),
-    settings = devBaseSettings ++ scalatePrecomileSettings ++ Seq(
+    settings = devBaseSettings ++ scalatePrecompileSettings ++ Seq(
       target := baseDirectory.value / "target" / "precompile-dev"
     )
   )
@@ -107,7 +107,7 @@ object SkinnyAppBuild extends Build {
   // Packaging
   // -------------------------------------------------------
 
-  lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ scalatePrecomileSettings ++ Seq(
+  lazy val packagingBaseSettings = baseSettings ++ scalateSettings ++ scalatePrecompileSettings ++ Seq(
     sources in doc in Compile := List(),
     publishTo <<= version { (v: String) =>
       val base = "https://oss.sonatype.org/"
