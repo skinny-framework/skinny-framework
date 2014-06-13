@@ -12,5 +12,7 @@ cd release/skinny-blank-app
 ./skinny db:migrate
 ./skinny db:migrate test
 ./skinny test
+./skinny package
+./skinny package:standalone
 
 
