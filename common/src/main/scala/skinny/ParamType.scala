@@ -68,7 +68,6 @@ object ParamType {
     case v: Int if v >= scala.Short.MinValue && v <= scala.Short.MaxValue => v.toShort
     case v: Long if v >= scala.Short.MinValue && v <= scala.Short.MaxValue => v.toShort
   })
-  // TODO BigDecial.apply is deprecated since Scala 2.11
   case object BigDecimal extends AbstractParamType({
     case v: String if v == null || v.trim.isEmpty => null
     case v: String => scala.math.BigDecimal(v)
@@ -76,7 +75,7 @@ object ParamType {
     case v: Long => scala.math.BigDecimal(v)
     case v: Int => scala.math.BigDecimal(v)
     case v: Double => scala.math.BigDecimal(v)
-    case v: Float => scala.math.BigDecimal(v)
+    case v: Float => scala.math.BigDecimal(v.toDouble)
     case v: Short => scala.math.BigDecimal(v)
   })
   case object String extends AbstractParamType({
