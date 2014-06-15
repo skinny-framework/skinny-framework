@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.1.0.RC2"
+  val _version = "1.1.0-SNAPSHOT"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.2"
@@ -134,7 +134,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-freemarker",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-beanutils" %  "commons-beanutils"  % "1.9.1"   % "compile",
+        "commons-beanutils" %  "commons-beanutils"  % "1.9.2"   % "compile",
         "org.freemarker"    %  "freemarker"         % "2.3.20"  % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -197,7 +197,7 @@ object SkinnyFrameworkBuild extends Build {
     ) 
   ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task)
 
-  val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided")
+  val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
   val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.7" % "compile")
   val scalatraDependencies   = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile",
