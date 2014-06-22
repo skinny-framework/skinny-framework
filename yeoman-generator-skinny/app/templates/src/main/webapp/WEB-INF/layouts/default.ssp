@@ -16,6 +16,8 @@
     </div>
     <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
+    <!-- Scala.js default JS filename -->
+    <!--<script type="text/javascript" src="${uri("/assets/js/application-fastopt.js")}"></script>-->
   </body>
 </html>
 

@@ -116,15 +116,11 @@ IF "%command%"=="test:coverage" (
 )
 
 IF "%command%"=="scalajs:watch" (
-  SET SUB_COMMAND="~;packageJS"
+  SET SUB_COMMAND="~;fastOptJS"
   GOTO scalajs_task
 )
 IF "%command%"=="scalajs:package" (
-  SET SUB_COMMAND="packageJS"
-  GOTO scalajs_task
-)
-IF "%command%"=="scalajs:optimize" (
-  SET SUB_COMMAND="optimizeJS"
+  SET SUB_COMMAND="fastOptJS"
   GOTO scalajs_task
 )
 
@@ -275,7 +271,6 @@ ECHO   publish            : will publish *.war file to repository
 ECHO.
 ECHO   scalajs:watch    : will watch Scala.js Scala code change and convert to JS
 ECHO   scalajs:package  : will convert Scala.js Scala code to JS file
-ECHO   scalajs:optimize : will optimize the huge JS file to optimized small JS
 ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
@@ -340,9 +335,9 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO     name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
   ECHO     unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
   ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-dom"                    %% "0.4", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-jquery"                 %% "0.4", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%% "scalajs-jasmine-test-framework" %% "0.5.0" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-dom"                    %% "0.6", >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-jquery"                 %% "0.6", >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.0" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO     ^), >> "_skinny_scalajs_settings.sbt"
   ECHO     crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
   ECHO   ^) >> "_skinny_scalajs_settings.sbt"

@@ -49,9 +49,9 @@ function setup_scalajs() {
     name := \"application\", // JavaScript file name
     unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
     libraryDependencies ++= Seq(
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-dom\"                    % \"0.4\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jquery\"                 % \"0.4\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jasmine-test-framework\" % \"0.5.0\" % \"test\"
+      \"org.scala-lang.modules.scalajs\" %%% \"scalajs-dom\"                    % \"0.6\",
+      \"org.scala-lang.modules.scalajs\" %%% \"scalajs-jquery\"                 % \"0.6\",
+      \"org.scala-lang.modules.scalajs\" %%  \"scalajs-jasmine-test-framework\" % \"0.5.0\" % \"test\"
     ),
     crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
   )
@@ -104,13 +104,10 @@ elif [ "$command" == "test:coverage" ];then
   ${sbt_path} "dev/scoverage:test"
 elif [ "$command" == "scalajs:watch" ];then
   setup_scalajs
-  ${sbt_path} "project scalajs" "~;packageJS"
+  ${sbt_path} "project scalajs" "~;fastOptJS"
 elif [ "$command" == "scalajs:package" ];then
   setup_scalajs
-  ${sbt_path} "project scalajs" packageJS
-elif [ "$command" == "scalajs:optimize" ];then
-  setup_scalajs
-  ${sbt_path} "project scalajs" optimizeJS
+  ${sbt_path} "project scalajs" fastOptJS
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
   shift
@@ -206,7 +203,6 @@ else
   echo ""
   echo "  scalajs:watch    : will watch Scala.js Scala code change and convert to JS"
   echo "  scalajs:package  : will convert Scala.js Scala code to JS file"
-  echo "  scalajs:optimize : will optimize the huge JS file to optimized small JS"
   echo ""
   echo "  eclipse       : will setup Scala IDE settings"
   echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
