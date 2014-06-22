@@ -42,16 +42,16 @@ function copy_resources_to_task() {
 function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"org.scala-lang.modules.scalajs\" % \"scalajs-sbt-plugin\" % \"0.4.3\")" > ${setting_file}
+    echo "addSbtPlugin(\"org.scala-lang.modules.scalajs\" % \"scalajs-sbt-plugin\" % \"0.5.0\")" > ${setting_file}
 
     echo "lazy val scalaJS = Project(id = \"scalajs\", base = file(\"src/main/webapp/WEB-INF/assets\"),
-  settings = Defaults.defaultSettings ++ Seq(
+  settings = Seq(
     name := \"application\", // JavaScript file name
     unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
     libraryDependencies ++= Seq(
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-dom\"                    % \"0.3\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jquery\"                 % \"0.3\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jasmine-test-framework\" % \"0.4.3\" % \"test\"
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-dom\"                    % \"0.4\",
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jquery\"                 % \"0.4\",
+      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jasmine-test-framework\" % \"0.5.0\" % \"test\"
     ),
     crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
   )
