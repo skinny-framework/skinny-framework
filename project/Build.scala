@@ -11,8 +11,8 @@ object SkinnyFrameworkBuild extends Build {
   val _version = "1.1.0"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.0.2"
-  val h2Version = "1.4.178"
+  val scalikeJDBCVersion = "2.0.3"
+  val h2Version = "1.4.179"
   val jettyVersion = "9.2.1.v20140609"
 
   lazy val baseSettings = Seq(
@@ -145,7 +145,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.4"         % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.5"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack

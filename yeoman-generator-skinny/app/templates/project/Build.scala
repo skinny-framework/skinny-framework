@@ -32,7 +32,8 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
-      "com.h2database"          %  "h2"                  % "1.4.178",      // your own JDBC driver
+      "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
+      "com.h2database"          %  "h2"                  % "1.4.179",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
