@@ -1,5 +1,5 @@
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.FileAppender">
+    <appender name="default" class="ch.qos.logback.core.FileAppender">
         <file>logs/console.log</file>
         <encoder>
             <pattern>%date %level [%thread] %logger{64} %msg%n</pattern>
@@ -9,10 +9,10 @@
     <logger name="skinny" level="debug"/>
     <logger name="org.eclipse.jetty" level="warn"/>
     <logger name="org.fusesource.scalate" level="warn"/>
-    <logger name="org.scalatra.scalate.ScalateSupport##anon#1.SourceMap" level="warn"/>
-    <logger name="org.scalatra.scalate.ScalateSupport##anon#2.SourceMap" level="warn"/>
+    <logger name="org.scalatra.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#1.SourceMap" level="warn"/>
+    <logger name="org.scalatra.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#2.SourceMap" level="warn"/>
 
     <root level="debug">
-        <appender-ref ref="console"/>
+        <appender-ref ref="default"/>
     </root>
 </configuration>
