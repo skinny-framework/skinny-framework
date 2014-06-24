@@ -19,7 +19,7 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
   /**
    * Lock version field name.
    */
-  val lockVersionFieldName = "lockVersion"
+  def lockVersionFieldName = "lockVersion"
 
   // add default lockVersion value to creation query
   addAttributeForCreation(column.field(lockVersionFieldName), 1L)

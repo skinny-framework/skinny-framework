@@ -17,12 +17,12 @@ trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] 
   /**
    * createdAt field name.
    */
-  val createdAtFieldName = "createdAt"
+  def createdAtFieldName = "createdAt"
 
   /**
    * updatedAt field name.
    */
-  val updatedAtFieldName = "updatedAt"
+  def updatedAtFieldName = "updatedAt"
 
   override protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
     val (params, column, now) = (strongParameters.params, defaultAlias.support.column, DateTime.now)

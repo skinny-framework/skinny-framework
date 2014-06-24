@@ -20,7 +20,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   /**
    * Lock timestamp field name.
    */
-  val lockTimestampFieldName = "lockTimestamp"
+  def lockTimestampFieldName = "lockTimestamp"
 
   /**
    * Returns where condition part which search by primary key and lock timestamp.

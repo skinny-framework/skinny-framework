@@ -17,7 +17,7 @@ trait SoftDeleteWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId
   /**
    * deleted_at timestamp field name.
    */
-  val deletedAtFieldName = "deletedAt"
+  def deletedAtFieldName = "deletedAt"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
     val c = defaultAlias.support.column
