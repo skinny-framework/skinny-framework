@@ -1,5 +1,5 @@
 <configuration>
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="default" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
           <pattern>%date %level [%thread] %logger{64} %msg%n</pattern>
         </encoder>
@@ -11,6 +11,6 @@
     <logger name="org.scalatra.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#2.SourceMap" level="warn"/>
 
     <root level="debug">
-        <appender-ref ref="console"/>
+        <appender-ref ref="default"/>
     </root>
 </configuration>
