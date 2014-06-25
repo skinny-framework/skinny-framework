@@ -298,7 +298,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |  <p class="alert alert-info">${notice}</p>
           |#end
           |<table class="table table-bordered">
-          |<thead>
+          |<tbody>
           |  <tr>
           |    <th>${s.i18n.get("member.id")}</th>
           |    <td>${item.id}</td>
