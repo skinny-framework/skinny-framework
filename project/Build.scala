@@ -11,7 +11,7 @@ object SkinnyFrameworkBuild extends Build {
   val _version = "1.1.0"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.0.3"
+  val scalikeJDBCVersion = "2.0.4"
   val h2Version = "1.4.179"
   val jettyVersion = "9.2.1.v20140609"
 
