@@ -278,7 +278,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  <p class="alert alert-info">$${notice}</p>
         |#end
         |<table class="table table-bordered">
-        |<thead>
+        |<tbody>
         |${attributesPart}
         |</tbody>
         |</table>
