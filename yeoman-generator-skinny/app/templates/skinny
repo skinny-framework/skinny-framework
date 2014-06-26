@@ -36,6 +36,7 @@ function setup_standalone_build() {
 }
 function copy_resources_to_task() {
   rm -rf task/src/main/resources
+  rm -rf task/target/
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
 }

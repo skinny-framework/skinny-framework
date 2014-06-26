@@ -142,6 +142,7 @@ IF "%is_generator%"=="true" (
     SET generator_params=%generator_params:~1%
 
     RMDIR task\src\main\resources /S /q
+    RMDIR task\target /S /q
     MKDIR task\src\main\resources
     XCOPY src\main\resources task\src\main\resources /E /D /q
     sbt "task/run generate:%generator_params%"
@@ -151,6 +152,7 @@ IF "%is_generator%"=="true" (
 
 IF "%command%"=="db:migrate" (
   RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:migrate %2"
@@ -159,6 +161,7 @@ IF "%command%"=="db:migrate" (
 
 IF "%command%"=="db:repair" (
   RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run db:repair %2"
@@ -190,6 +193,7 @@ IF %command%==package (
   XCOPY src\* build\src\* /E /D /q
   xcopy build.sbt build\ /S /q
   RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/package"
@@ -224,6 +228,7 @@ IF "%command%"=="package:standalone" (
   XCOPY build.sbt standalone-build\ /q
   xcopy _skinny_assembly_settings.sbt standalone-build\ /q
   RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "standalone-build/assembly"
@@ -236,6 +241,7 @@ IF %command%==publish (
   xcopy src\* build\src\* /E /D /q
   xcopy build.sbt build\ /q
   RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run assets:precompile" "build/publish"
