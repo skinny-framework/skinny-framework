@@ -1,7 +1,7 @@
 #!/bin/sh
 
-sbt clean \
-  ++2.10.4 \
+sbt ++2.11.1 \
+  clean \
   common/publishSigned \
   assets/publishSigned \
   httpClient/publishSigned \
@@ -15,7 +15,8 @@ sbt clean \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  ++2.11.1 \
+  ++2.10.4 \
+  clean \
   common/publishSigned \
   assets/publishSigned \
   httpClient/publishSigned \
