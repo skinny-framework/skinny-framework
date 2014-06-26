@@ -42,6 +42,7 @@ class DateTimeUtilTest extends FlatSpec with Matchers {
     DateTimeUtil.toISODateTimeFormat("2013-01-2a 03:04:05", ParamType.DateTime) should equal(s"2013-01-2aT03:04:05${zone}")
     DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05", ParamType.DateTime) should equal(s"2013-01-02T03:04:05${zone}")
     DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05+09:00", ParamType.DateTime) should equal("2013-01-02T03:04:05+09:00")
+    DateTimeUtil.toISODateTimeFormat("2014-03-09T16:42:33.816+09:00", ParamType.DateTime) should equal("2014-03-09T16:42:33.816+09:00")
   }
 
   it should "have #toString" in {

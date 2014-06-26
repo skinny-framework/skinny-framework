@@ -5,8 +5,10 @@ import scala.collection.JavaConverters._
 import scalikejdbc._
 import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
-import skinny.util.JavaReflectAPI
+import skinny.util.{ DateTimeUtil, JavaReflectAPI }
 import skinny.logging.Logging
+
+import scala.util.Try
 
 /**
  * Test data generator highly inspired by thoughtbot/factory_girl
@@ -64,14 +66,23 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
-  private def eval(v: String): String = {
+  private def toTypedValue(value: Any): Any = value match {
+    case str: String if Try(str.toBoolean).isSuccess => str.toBoolean
+    case str: String if Try(str.toLong).isSuccess => str.toLong
+    case str: String if Try(str.toDouble).isSuccess => str.toDouble
+    case str: String if DateTimeUtil.isDateTimeFormat(str) => DateTimeUtil.parseDateTime(str)
+    case str: String if DateTimeUtil.isLocalDateFormat(str) => DateTimeUtil.parseLocalDate(str)
+    case value => value
+  }
+
+  private def eval(v: String): Any = {
     import scala.reflect.runtime.currentMirror
     import scala.tools.reflect.ToolBox
     if (v == null) null
     else {
       val toolbox = currentMirror.mkToolBox()
       val tree = toolbox.parse("s\"\"\"" + v + "\"\"\"")
-      toolbox.eval(tree).asInstanceOf[String]
+      toTypedValue(toolbox.eval(tree))
     }
   }
 
