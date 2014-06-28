@@ -28,6 +28,10 @@ addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
 //addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 
 // --------
+// IntelliJ IDEA
+addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
+
+// --------
 // scoverage for test coverage (./skinny test:coverage)
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.5.1")
 

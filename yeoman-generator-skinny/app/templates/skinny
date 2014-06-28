@@ -135,10 +135,6 @@ elif [ "$command" == "eclipse" ];then
   fi
   ${sbt_path} eclipse
 elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
-  setting_file="${current_dir}/project/_skinny_idea.sbt"
-  if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"com.github.mpeltonen\" % \"sbt-idea\" % \"1.6.0\")" > ${setting_file} 
-  fi
   ${sbt_path} gen-idea
 elif [ "$command" == "package" ];then
   setup_build

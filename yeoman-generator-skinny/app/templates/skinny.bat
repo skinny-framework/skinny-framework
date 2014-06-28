@@ -180,9 +180,6 @@ SET is_gen_idea=false
 IF "%command%"=="idea"     SET is_gen_idea=true
 IF "%command%"=="gen-idea" SET is_gen_idea=true
 IF "%is_gen_idea%"=="true" (
-  IF NOT EXIST "project\_skinny_idea.sbt" (
-    ECHO addSbtPlugin^(^"com.github.mpeltonen^" %% ^"sbt-idea^" %% ^"1.6.0^"^) > "project\_skinny_idea.sbt"
-  )
   sbt gen-idea
   GOTO script_eof
 )

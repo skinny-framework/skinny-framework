@@ -7,6 +7,7 @@ import com.earldouglas.xsbtwebplugin.PluginKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
 import ScalateKeys._
 import scala.language.postfixOps
+import org.sbtidea.SbtIdeaPlugin._
 
 object SkinnyAppBuild extends Build {
 
@@ -58,7 +59,11 @@ object SkinnyAppBuild extends Build {
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
-    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+    scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
+    ideaExcludeFolders := Seq(
+      ".idea", ".idea_modules",
+      "db", "target", "task/target", "build", "standalone-build"
+    )
   )
 
   lazy val scalatePrecompileSettings = baseSettings ++ scalateSettings ++ Seq(
@@ -90,7 +95,8 @@ object SkinnyAppBuild extends Build {
   )
   lazy val precompileDev = Project(id = "precompileDev", base = file("."),
     settings = devBaseSettings ++ scalatePrecompileSettings ++ Seq(
-      target := baseDirectory.value / "target" / "precompile-dev"
+      target := baseDirectory.value / "target" / "precompile-dev",
+      ideaIgnoreModule := true
     )
   )
 
@@ -118,13 +124,15 @@ object SkinnyAppBuild extends Build {
   )
   lazy val build = Project(id = "build", base = file("build"),
     settings = packagingBaseSettings ++ Seq(
-      name := appName
+      name := appName,
+      ideaIgnoreModule := true
     )
   )
   lazy val standaloneBuild = Project(id = "standalone-build", base = file("standalone-build"),
     settings = packagingBaseSettings ++ Seq(
       name := appName + "-standalone",
-      libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion
+      libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion,
+      ideaIgnoreModule := true
     ) ++ jettyOrbitHack
   )
 
