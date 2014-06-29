@@ -83,7 +83,8 @@ trait NoIdFinderFeature[Entity]
   def findAllBy(where: SQLSyntax, orderings: Seq[SQLSyntax] = defaultOrderings)(
     implicit s: DBSession = autoSession): List[Entity] = {
     extract(withSQL {
-      selectQueryWithAssociations.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias)).orderBy(sqls.csv(orderings: _*))
+      val sql = selectQueryWithAssociations.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
+      if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))
     }).list.apply()
   }
 
@@ -93,10 +94,9 @@ trait NoIdFinderFeature[Entity]
   def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
     implicit s: DBSession = autoSession): List[Entity] = {
     extract(withSQL {
-      selectQueryWithAssociations
+      val sql = selectQueryWithAssociations
         .where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
-        .orderBy(sqls.csv(orderings: _*))
-        .limit(limit).offset(offset)
+      (if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))).limit(limit).offset(offset)
     }).list.apply()
   }
 
