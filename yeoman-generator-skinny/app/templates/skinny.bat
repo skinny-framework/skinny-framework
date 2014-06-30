@@ -331,7 +331,7 @@ GOTO script_eof
 
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
-  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.5.0"^) > "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.5.1"^) > "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalaJS = Project^(id = "scalajs", base = file^("src/main/webapp/WEB-INF/assets"^),  > "_skinny_scalajs_settings.sbt"
   ECHO   settings = Seq^(                                  >> "_skinny_scalajs_settings.sbt"
@@ -340,7 +340,7 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-dom"                    %% "0.6", >> "_skinny_scalajs_settings.sbt"
   ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-jquery"                 %% "0.6", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.0" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.1" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO     ^), >> "_skinny_scalajs_settings.sbt"
   ECHO     crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
   ECHO   ^) >> "_skinny_scalajs_settings.sbt"
