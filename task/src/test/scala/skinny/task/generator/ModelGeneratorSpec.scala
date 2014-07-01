@@ -172,11 +172,12 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import skinny.DBSettings
           |import skinny.test._
           |import org.scalatest.fixture.FlatSpec
+          |import org.scalatest._
           |import scalikejdbc._
           |import scalikejdbc.scalatest._
           |import org.joda.time._
           |
-          |class ProjectMemberSpec extends FlatSpec with DBSettings with AutoRollback {
+          |class ProjectMemberSpec extends FlatSpec with Matchers with DBSettings with AutoRollback {
           |}
           |""".stripMargin
       code should equal(expected)

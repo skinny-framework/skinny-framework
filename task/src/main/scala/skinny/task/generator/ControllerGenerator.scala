@@ -87,9 +87,10 @@ trait ControllerGenerator extends CodeGenerator {
         |import _root_.controller._
         |import _root_.model._
         |import org.scalatra.test.scalatest._
+        |import org.scalatest._
         |import skinny.test._
         |
-        |class ${toClassName(name)}ControllerSpec extends ScalatraFlatSpec {
+        |class ${toClassName(name)}ControllerSpec extends ScalatraFlatSpec with Matchers {
         |  addFilter(Controllers.${toControllerName(namespaces, name)}, "/*")
         |
         |}

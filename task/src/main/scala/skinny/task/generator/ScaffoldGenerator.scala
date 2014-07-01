@@ -322,7 +322,11 @@ trait ScaffoldGenerator extends CodeGenerator {
       |import ${toNamespace("model", namespaces)}._
       |
       |// NOTICE before/after filters won't be executed by default
-      |class ${controllerClassName}Spec extends FunSpec with Matchers with DBSettings {
+      |class ${controllerClassName}Spec extends FunSpec with Matchers with BeforeAndAfterAll with DBSettings {
+      |
+      |  override def afterAll() {
+      |    ${modelClassName}.deleteAll()
+      |  }
       |
       |  def createMockController = new ${controllerClassName} with MockController
       |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
@@ -437,14 +441,19 @@ trait ScaffoldGenerator extends CodeGenerator {
     s"""package ${namespace}
         |
         |import org.scalatra.test.scalatest._
+        |import org.scalatest._
         |import skinny._
         |import skinny.test._
         |import org.joda.time._
         |import _root_.controller.Controllers
         |import ${toNamespace("model", namespaces)}._
         |
-        |class ${controllerClassName}_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+        |class ${controllerClassName}_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
         |  addFilter(Controllers.${controllerName}, "/*")
+        |
+        |  override def afterAll() {
+        |    ${modelClassName}.deleteAll()
+        |  }
         |
         |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
         |

@@ -12,6 +12,7 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package controller.admin
           |
+          |import _root_.controller._
           |import skinny._
           |import skinny.validator._
           |
@@ -35,10 +36,11 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
           |import _root_.controller._
           |import _root_.model._
           |import org.scalatra.test.scalatest._
+          |import org.scalatest._
           |import skinny.test._
           |
-          |class MembersControllerSpec extends ScalatraFlatSpec {
-          |  addFilter(Controllers.members, "/*")
+          |class MembersControllerSpec extends ScalatraFlatSpec with Matchers {
+          |  addFilter(Controllers.adminMembers, "/*")
           |
           |}
           |""".stripMargin

@@ -133,11 +133,12 @@ trait ModelGenerator extends CodeGenerator {
         |import skinny.DBSettings
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
+        |import org.scalatest._
         |import scalikejdbc._
         |import scalikejdbc.scalatest._
         |import org.joda.time._
         |
-        |class ${toClassName(name)}Spec extends FlatSpec with DBSettings with AutoRollback {
+        |class ${toClassName(name)}Spec extends FlatSpec with Matchers with DBSettings with AutoRollback {
         |}
         |""".stripMargin
   }
