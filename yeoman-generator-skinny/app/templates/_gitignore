@@ -62,4 +62,5 @@ logs
 # Skinny's default ivy.home
 ivy2
 
+node_modules
 

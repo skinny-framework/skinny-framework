@@ -22,6 +22,8 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('_gitignore', '.gitignore');
   this.copy('build.sbt', 'build.sbt');
   this.copy('package.json', 'package.json');
+  this.copy('_package.json', '_package.json');
+  this.copy('Gruntfile.js', 'Gruntfile.js');
   this.copy('README.md', 'README.md');
   this.copy('skinny', 'skinny');
   this.copy('skinny.bat', 'skinny.bat');
