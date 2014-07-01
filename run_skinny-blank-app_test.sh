@@ -7,6 +7,7 @@ cd `dirname $0`
 ./create_blank_app.sh test
 cd release/skinny-blank-app
 npm install
+grunt compile
 ./skinny g scaffold members1 member1 name:String activated:Boolean luckyNumber:Option[Long] birthday:Option[LocalDate]
 ./skinny g scaffold:scaml members2 member2 name:String activated:Boolean luckyNumber:Option[Long] birthday:Option[LocalDate]
 ./skinny g scaffold:jade members3 member3 name:String activated:Boolean luckyNumber:Option[Long] birthday:Option[LocalDate]
