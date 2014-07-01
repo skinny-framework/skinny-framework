@@ -423,11 +423,6 @@ trait ScaffoldGenerator extends CodeGenerator {
     writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, attributePairs))
   }
 
-  def toControllerName(namespaces: Seq[String], resources: String): String = {
-    if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
-    else namespaces.head + namespaces.tail.map { n => n.head.toUpper + n.tail }.mkString + toClassName(resources)
-  }
-
   def integrationSpecCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val namespace = toNamespace("integrationtest", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
@@ -565,45 +560,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // controller.Controllers.scala
   // --------------------------
 
-  def appendToControllers(namespaces: Seq[String], resources: String) {
-    val controllerName = toControllerName(namespaces, resources)
-    val controllerClassName = toNamespace("_root_.controller", namespaces) + "." + toControllerClassName(resources)
-    val newMountCode =
-      s"""def mount(ctx: ServletContext): Unit = {
-        |    ${controllerName}.mount(ctx)""".stripMargin
-    val newControllerDefCode = {
-      s"""  object ${controllerName} extends ${controllerClassName} {
-        |  }
-        |
-        |}
-        |""".stripMargin
-    }
-
-    val file = new File("src/main/scala/controller/Controllers.scala")
-    if (file.exists()) {
-      val code = Source.fromFile(file).mkString
-        .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
-        .replaceFirst("(}[\\s\\r\\n]+)$", newControllerDefCode)
-      forceWrite(file, code)
-    } else {
-      val fullNewCode =
-        s"""package controller
-          |
-          |import _root_.controller._
-          |import skinny._
-          |import skinny.controller.AssetsController
-          |
-          |object Controllers {
-          |
-          |  ${newMountCode}
-          |    AssetsController.mount(ctx)
-          |  }
-          |
-          |${newControllerDefCode}
-          |""".stripMargin
-      forceWrite(file, fullNewCode)
-    }
-  }
+  // CodeGenerator#appendToControllers
 
   // --------------------------
   // factories.conf

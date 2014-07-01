@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sbt clean \
-  ++2.10.4 \
+  ++2.11.1 \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
@@ -15,7 +15,7 @@ sbt clean \
   test/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  ++2.11.1 \
+  ++2.10.4 \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
