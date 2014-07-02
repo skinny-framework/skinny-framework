@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.1.2"
+  val _version = "1.1.3"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.4"
@@ -18,7 +18,6 @@ object SkinnyFrameworkBuild extends Build {
   lazy val baseSettings = Seq(
     organization := _organization,
     version := _version,
-    scalaVersion := "2.11.1",
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -26,6 +25,7 @@ object SkinnyFrameworkBuild extends Build {
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
     sbtPlugin := false,
+    scalaVersion := "2.11.1",
     scalacOptions ++= _scalacOptions,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -154,9 +154,14 @@ object SkinnyFrameworkBuild extends Build {
   lazy val scaldi = Project (id = "scaldi", base = file("scaldi"),
     settings = baseSettings ++ Seq(
       name := "skinny-scaldi",
-      libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.scaldi"    %% "scaldi"   % "0.4" % "compile"
-      ) ++ testDependencies
+      libraryDependencies <++= (scalaVersion) { scalaVersion => scalatraDependencies ++ 
+        Seq(
+          scalaVersion match { 
+            case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
+            case _ =>                          "org.scaldi" %% "scaldi" % "0.4"
+          }
+        ) ++ testDependencies
+      }
     )
   ) dependsOn(framework)
 
@@ -264,6 +269,31 @@ object SkinnyFrameworkBuild extends Build {
           <id>seratch</id>
           <name>Kazuhiro Sera</name>
           <url>http://git.io/sera</url>
+        </developer>
+        <developer>
+          <id>Arakaki</id>
+          <name>Yusuke Arakaki</name>
+          <url>https://github.com/Arakaki</url>
+        </developer>
+        <developer>
+          <id>cb372</id>
+          <name>Chris Birchall</name>
+          <url>https://github.com/cb372</url>
+        </developer>
+        <developer>
+          <id>argius</id>
+          <name>argius</name>
+          <url>https://github.com/argius</url>
+        </developer>
+        <developer>
+          <id>gakuzzzz</id>
+          <name>Manabu Nakamura</name>
+          <url>https://github.com/gakuzzzz</url>
+        </developer>
+        <developer>
+          <id>BlackPrincess</id>
+          <name>BlackPrincess</name>
+          <url>https://github.com/BlackPrincess</url>
         </developer>
       </developers>
   }
