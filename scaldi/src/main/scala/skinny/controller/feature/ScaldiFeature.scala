@@ -1,18 +1,25 @@
 package skinny.controller.feature
 
 import scaldi._
-import skinny.{ SkinnyConfig, SkinnyEnv }
 import skinny.controller.SkinnyControllerBase
+import skinny.injection.SkinnyScaldi
 
-trait ScaldiFeature extends Injectable { self: SkinnyControllerBase =>
+/**
+ * Scaldi support for SkinnyController.
+ */
+trait ScaldiFeature extends Injectable with SkinnyScaldi { self: SkinnyControllerBase =>
 
-  def skinnyModule: Module = new Module {
-    bind[SkinnyEnv] to SkinnyEnv
-    bind[SkinnyConfig] to SkinnyConfig
+  /**
+   * Overriden Scaldi modules.
+   */
+  def scaldiModules: Seq[Module] = Nil
+
+  /**
+   * Implicit value for scaldi.Injector.
+   */
+  implicit lazy val skinnyControllerFeatureScaldiInjector: Injector = {
+    if (scaldiModules.isEmpty) injectorForEnv()
+    else new MutableInjectorAggregation(skinnyModule :: scaldiModules.toList)
   }
-  def scaldiModules: Seq[Module]
-
-  implicit lazy val skinnyControllerFeatureScaldiInjector: Injector =
-    new MutableInjectorAggregation(skinnyModule :: scaldiModules.toList)
 
 }

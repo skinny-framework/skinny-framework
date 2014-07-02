@@ -1,33 +1,28 @@
 package sample
 
+import model.AppName
+import scaldi.Module
+import service.{ EchoService, EchoServiceImpl }
 import skinny._
-import scaldi._
 import skinny.controller.feature.ScaldiFeature
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 
-class ControllerSpec extends ScalatraFlatSpec {
+class OverrideInjectionSpec extends ScalatraFlatSpec {
 
   System.setProperty(SkinnyEnv.PropertyKey, SkinnyEnv.Test)
 
-  behavior of "Controllers with Scaldi"
+  behavior of "Controllers with overriden Scaldi"
 
-  trait EchoService {
-    def echo(msg: String): String
-  }
-  class EchoServiceImpl extends EchoService {
-    override def echo(msg: String) = msg
-  }
-  object ControllerModule extends Module {
+  object ServicesModule extends Module {
     bind[EchoService] to new EchoServiceImpl
   }
 
-  case class AppName(value: String)
-  class ControllerModule2 extends Module {
+  class AppModule extends Module {
     bind[AppName] to AppName("ScaldiExample")
   }
 
   trait ApplicationController extends SkinnyController with ScaldiFeature {
-    def scaldiModules = Seq(ControllerModule, new ControllerModule2)
+    override def scaldiModules = Seq(ServicesModule, new AppModule)
   }
   class ModulesController extends ApplicationController {
     def index = {
@@ -42,14 +37,14 @@ class ControllerSpec extends ScalatraFlatSpec {
     get("/foo/env")(env).as('env)
   }
   object module extends SkinnyController with ScaldiFeature with Routes {
-    def scaldiModules = Seq(new ControllerModule2)
+    override def scaldiModules = Seq(new AppModule)
     def index = inject[AppName].value
     get("/bar/name")(index).as('index)
   }
   addFilter(modules, "/*")
   addFilter(module, "/*")
 
-  "Scaldi injector" should "work" in {
+  "Scaldi injector by method overriding" should "work" in {
     get("/foo/") {
       status should equal(200)
       body should equal("")
