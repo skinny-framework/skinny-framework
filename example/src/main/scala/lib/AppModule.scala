@@ -1,5 +1,7 @@
 package lib
 
-object AppModule extends scaldi.Module {
+object AppModule extends AppModule
+
+class AppModule extends scaldi.Module {
   bind[service.EchoService] to service.EchoService()
 }
