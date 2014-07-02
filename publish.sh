@@ -12,6 +12,7 @@ sbt ++2.11.1 \
   mailer/publishSigned \
   standalone/publishSigned \
   task/publishSigned \
+  scaldi/publishSigned \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
@@ -27,6 +28,7 @@ sbt ++2.11.1 \
   mailer/publishSigned \
   standalone/publishSigned \
   task/publishSigned \
+  scaldi/publishSigned \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned 

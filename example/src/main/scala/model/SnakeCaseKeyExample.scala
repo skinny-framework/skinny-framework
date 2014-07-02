@@ -16,10 +16,10 @@ object SnakeCaseKeyExample extends SkinnyCRUDMapper[SnakeCaseKeyExample] with Ti
   override val defaultAlias = createAlias("s")
 
   override def extract(rs: WrappedResultSet, rn: ResultName[SnakeCaseKeyExample]): SnakeCaseKeyExample = new SnakeCaseKeyExample(
-    id = rs.long(rn.id),
-    firstName = rs.string(rn.firstName),
-    luckeyNumber = rs.int(rn.luckeyNumber),
-    createdAt = rs.dateTime(rn.createdAt),
-    updatedAt = rs.dateTimeOpt(rn.updatedAt)
+    id = rs.get(rn.id),
+    firstName = rs.get(rn.firstName),
+    luckeyNumber = rs.get(rn.luckeyNumber),
+    createdAt = rs.get(rn.createdAt),
+    updatedAt = rs.get(rn.updatedAt)
   )
 }

@@ -41,14 +41,14 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
   override lazy val nameConverters = Map("At$" -> "_timestamp")
 
   override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = new Programmer(
-    id = rs.long(p.id),
-    name = rs.string(p.name),
-    favoriteNumber = rs.long(p.favoriteNumber),
+    id = rs.get(p.id),
+    name = rs.get(p.name),
+    favoriteNumber = rs.get(p.favoriteNumber),
     hashedPassword = rs.get(p.hashedPassword),
-    companyId = rs.longOpt(p.companyId).map(CompanyId),
-    birthday = rs.localDateOpt(p.birthday),
-    createdAt = rs.dateTime(p.createdAt),
-    updatedAt = rs.dateTimeOpt(p.updatedAt)
+    companyId = rs.get(p.companyId).map(CompanyId),
+    birthday = rs.get(p.birthday),
+    createdAt = rs.get(p.createdAt),
+    updatedAt = rs.get(p.updatedAt)
   )
 
   private val c = Company.defaultAlias

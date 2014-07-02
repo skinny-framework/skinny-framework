@@ -23,11 +23,11 @@ object Company extends SkinnyCRUDMapperWithId[CompanyId, Company]
   def rawValueToId(value: Any) = CompanyId(value.toString.toLong)
 
   override def extract(rs: WrappedResultSet, c: ResultName[Company]): Company = new Company(
-    id = CompanyId(rs.long(c.id)),
-    name = rs.string(c.name),
-    url = rs.stringOpt(c.url),
-    createdAt = rs.dateTime(c.createdAt),
-    updatedAt = rs.dateTimeOpt(c.updatedAt)
+    id = CompanyId(rs.get(c.id)),
+    name = rs.get(c.name),
+    url = rs.get(c.url),
+    createdAt = rs.get(c.createdAt),
+    updatedAt = rs.get(c.updatedAt)
   )
 
 }

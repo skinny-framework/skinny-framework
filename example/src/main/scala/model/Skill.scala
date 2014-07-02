@@ -10,7 +10,7 @@ object Skill extends SkinnyCRUDMapper[Skill] {
   override val defaultAlias = createAlias("s")
 
   override def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
-    id = rs.long(s.id), name = rs.string(s.name))
+    id = rs.get(s.id), name = rs.get(s.name))
 
   def deleteByIdCascade(id: Long): Int = DB localTx { implicit s =>
     ProgrammerSkill.withColumns { c =>

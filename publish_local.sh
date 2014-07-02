@@ -12,6 +12,7 @@ sbt clean \
   mailer/publishLocal \
   standalone/publishLocal \
   task/publishLocal \
+  scaldi/publishLocal \
   test/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
@@ -26,6 +27,7 @@ sbt clean \
   mailer/publishLocal \
   standalone/publishLocal \
   task/publishLocal \
+  scaldi/publishLocal \
   test/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal 

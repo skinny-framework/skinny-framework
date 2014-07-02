@@ -1,9 +1,11 @@
 package skinny
 
+object SkinnyEnv extends SkinnyEnv
+
 /**
  * Skinny Env value (key: "skinny.env")
  */
-object SkinnyEnv {
+trait SkinnyEnv {
 
   /**
    * Key for Skinny framework env value.

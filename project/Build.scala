@@ -151,6 +151,15 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
+  lazy val scaldi = Project (id = "scaldi", base = file("scaldi"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-scaldi",
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "org.scaldi"    %% "scaldi"   % "0.4" % "compile"
+      ) ++ testDependencies
+    )
+  ) dependsOn(framework)
+
   lazy val validator = Project (id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
@@ -195,7 +204,7 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task)
+  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task, scaldi)
 
   val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
   val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.7" % "compile")
