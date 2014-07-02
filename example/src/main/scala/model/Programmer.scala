@@ -45,7 +45,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
     name = rs.get(p.name),
     favoriteNumber = rs.get(p.favoriteNumber),
     hashedPassword = rs.get(p.hashedPassword),
-    companyId = rs.get(p.companyId).map(CompanyId),
+    companyId = rs.get[Option[Long]](p.companyId).map(CompanyId),
     birthday = rs.get(p.birthday),
     createdAt = rs.get(p.createdAt),
     updatedAt = rs.get(p.updatedAt)

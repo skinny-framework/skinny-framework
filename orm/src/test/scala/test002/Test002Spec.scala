@@ -39,10 +39,10 @@ class Test002Spec extends fixture.FunSpec with Matchers
   }
 
   /**
-[info] - should work as expected *** FAILED ***
-[info]   org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT A.NAME AS N_ON_A FROM ACCOUNT A  WHERE  A.NAME = ?  ORDER BY  [*]"; expected "=, NOT, EXISTS, INTERSECTS"; SQL statement:
-[info] select a.name as n_on_a from account a  where  a.name = ?  order by  [42001-179]
-[info]   at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+   * [info] - should work as expected *** FAILED ***
+   * [info]   org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT A.NAME AS N_ON_A FROM ACCOUNT A  WHERE  A.NAME = ?  ORDER BY  [*]"; expected "=, NOT, EXISTS, INTERSECTS"; SQL statement:
+   * [info] select a.name as n_on_a from account a  where  a.name = ?  order by  [42001-179]
+   * [info]   at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
    */
   describe("SkinnyNoIdMapper#findAllBy") {
     it("should work as expected") { implicit session =>
