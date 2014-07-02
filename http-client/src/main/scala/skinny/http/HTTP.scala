@@ -170,11 +170,19 @@ object HTTP extends Logging {
           inputStream = Option(conn.getErrorStream)
       }
 
-      val response: Response = new Response(
+      val response: Response = Response(
         status = conn.getResponseCode,
         charset = request.charset,
-        headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala },
-        headers = mutable.HashMap(conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toSeq: _*),
+        headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }.toMap,
+        headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
+        rawCookies = Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
+          setCookies.asScala.flatMap { setCookie =>
+            setCookie.split("=") match {
+              case Array(name, _) => Some(name -> setCookie)
+              case _ => None
+            }
+          }.toMap
+        }.getOrElse(Map()),
         body = inputStream.map { is =>
           using(is) { input =>
             using(new ByteArrayOutputStream) { out =>
@@ -185,14 +193,6 @@ object HTTP extends Logging {
           }
         }.getOrElse(Array())
       )
-      Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
-        response.rawCookies ++= setCookies.asScala.flatMap { setCookie =>
-          setCookie.split("=") match {
-            case Array(name, _) => Some(name -> setCookie)
-            case _ => None
-          }
-        }
-      }
 
       logger.debug {
         s"""

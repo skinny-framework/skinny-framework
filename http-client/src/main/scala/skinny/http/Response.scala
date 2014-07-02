@@ -16,16 +16,14 @@
 */
 package skinny.http
 
-import scala.collection.mutable
-
 /**
  * HTTP/1.1 Response.
  */
 case class Response(
     status: Int,
-    headers: mutable.Map[String, String] = new mutable.HashMap[String, String],
-    headerFields: mutable.Map[String, Seq[String]] = new mutable.HashMap[String, Seq[String]],
-    rawCookies: mutable.Map[String, String] = new mutable.HashMap[String, String],
+    headers: Map[String, String] = Map(),
+    headerFields: Map[String, Seq[String]] = Map(),
+    rawCookies: Map[String, String] = Map(),
     charset: Option[String] = None,
     body: Array[Byte] = Array()) {
 
