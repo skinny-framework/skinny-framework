@@ -10,25 +10,26 @@ import scala.util.control.NonFatal
  */
 object SkinnyScaldi extends SkinnyScaldi with Logging {
 
-  val envAndModules: TrieMap[String, Seq[Module]] = TrieMap()
+  private[this] val scaldiInjectors: TrieMap[String, MutableInjectorAggregation] = TrieMap()
 
   /**
    * Finds modules for this SkinnyEnv.
    */
-  def modulesForEnv(env: String = SkinnyEnv.getOrElse(SkinnyEnv.Development)): Seq[Module] = {
-    envAndModules.getOrElseUpdate(env, {
-      SkinnyConfig.stringSeqConfigValue("scaldi.modules").map { moduleClasses: Seq[String] =>
-        moduleClasses.map { moduleClass: String =>
-          try {
-            val clazz: Class[_] = Class.forName(moduleClass)
-            clazz.newInstance().asInstanceOf[Module]
-          } catch {
-            case NonFatal(e) =>
-              throw new ScaldiConfigException(
-                s"Failed to load a Scaldi module because of ${e.getClass.getCanonicalName} (${e.getMessage})", e)
-          }
-        }.toSeq
-      }.getOrElse(Nil)
+  def modulesForEnv(env: String = SkinnyEnv.getOrElse(SkinnyEnv.Development), defaultModules: Seq[Module] = Nil): MutableInjectorAggregation = {
+    scaldiInjectors.getOrElseUpdate(env, {
+      new MutableInjectorAggregation(
+        defaultModules.toList ::: SkinnyConfig.stringSeqConfigValue("scaldi.modules").map { moduleClasses: Seq[String] =>
+          moduleClasses.map { moduleClass: String =>
+            try {
+              val clazz: Class[_] = Class.forName(moduleClass)
+              clazz.newInstance().asInstanceOf[Module]
+            } catch {
+              case NonFatal(e) =>
+                throw new ScaldiConfigException(
+                  s"Failed to load a Scaldi module because of ${e.getClass.getCanonicalName} (${e.getMessage})", e)
+            }
+          }.toList
+        }.getOrElse(Nil))
     })
   }
 
@@ -45,7 +46,7 @@ trait SkinnyScaldi {
   def skinnyModule: Module = new SkinnyModule
 
   def injectorForEnv(env: String = SkinnyEnv.getOrElse(SkinnyEnv.Development)): Injector = {
-    new MutableInjectorAggregation(skinnyModule :: SkinnyScaldi.modulesForEnv(env).toList)
+    SkinnyScaldi.modulesForEnv(env, Seq(skinnyModule))
   }
 
 }

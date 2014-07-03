@@ -13,7 +13,7 @@ class ScaldiControllerSpec extends FunSpec with Matchers {
       it("works") {
         val controller = createMockController
         controller.prepareParams("value" -> "foo")
-        controller.index should equal("foo")
+        controller.index should equal("FOO")
         controller.status should equal(200)
       }
     }

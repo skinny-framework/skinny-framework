@@ -20,6 +20,7 @@ object Controllers {
     thymeleaf.mount(ctx)
     freemarker.mount(ctx)
     sampleApi.mount(ctx)
+    scaldi.mount(ctx)
 
     SkillsController.mount(ctx)
     CommentsController.mount(ctx)
@@ -76,6 +77,10 @@ object Controllers {
   object fileUpload extends FileUploadController with Routes {
     val formUrl = get("/fileupload")(form).as('form)
     val submitUrl = post("/fileupload/submit")(submit).as('submit)
+  }
+
+  object scaldi extends ScaldiController with Routes {
+    val indexUrl = get("/scaldi/")(index).as('index)
   }
 
 }
