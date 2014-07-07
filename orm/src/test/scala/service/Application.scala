@@ -8,7 +8,7 @@ import skinny.orm.feature.{ SoftDeleteWithTimestampFeature, TimestampsFeature }
 case class Application(
   id: Long,
   name: String,
-  serviceId: Long,
+  serviceNo: Long,
   service: Option[Service] = None,
   createdAt: DateTime,
   updatedAt: DateTime)
@@ -24,7 +24,7 @@ object Application extends SkinnyCRUDMapper[Application]
   override def extract(rs: WrappedResultSet, n: ResultName[Application]) = new Application(
     id = rs.get(n.id),
     name = rs.get(n.name),
-    serviceId = rs.get(n.serviceId),
+    serviceNo = rs.get(n.serviceNo),
     createdAt = rs.get(n.createdAt),
     updatedAt = rs.get(n.updatedAt)
   )

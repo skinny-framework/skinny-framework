@@ -8,7 +8,7 @@ import skinny.orm.feature.TimestampsFeature
 case class ServiceSetting(
   id: Long,
   maximumAccounts: Long,
-  serviceId: Long,
+  serviceNo: Long,
   service: Option[Service] = None,
   createdAt: DateTime,
   updatedAt: DateTime)
@@ -21,7 +21,7 @@ object ServiceSetting extends SkinnyCRUDMapper[ServiceSetting] with TimestampsFe
   override def extract(rs: WrappedResultSet, n: ResultName[ServiceSetting]) = new ServiceSetting(
     id = rs.get(n.id),
     maximumAccounts = rs.get(n.maximumAccounts),
-    serviceId = rs.get(n.serviceId),
+    serviceNo = rs.get(n.serviceNo),
     createdAt = rs.get(n.createdAt),
     updatedAt = rs.get(n.updatedAt)
   )

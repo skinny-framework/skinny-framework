@@ -655,14 +655,15 @@ trait AssociationsFeature[Entity]
   }
 
   /**
-   * Expects mapper's name + "Id" by default.
+   * Expects mapper's name + primary key name by default.
    *
    * @param mapper mapper
    * @tparam A enitty type
    * @return fk name
    */
   protected def toDefaultForeignKeyName[A](mapper: AssociationsFeature[A]): String = {
-    val name = JavaReflectAPI.classSimpleName(mapper).replaceFirst("\\$$", "") + "Id"
+    val name = JavaReflectAPI.classSimpleName(mapper).replaceFirst("\\$$", "") +
+      mapper.primaryKeyFieldName.head.toString.toUpperCase + mapper.primaryKeyFieldName.tail
     name.head.toString.toLowerCase + name.tail
   }
 

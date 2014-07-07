@@ -10,7 +10,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
   addSeedSQL(
     sql"""
 create table services (
-  id bigint auto_increment primary key not null,
+  no bigint auto_increment primary key not null,
   name varchar(128) not null,
   created_at timestamp not null,
   updated_at timestamp not null,
@@ -21,7 +21,7 @@ create table services (
 create table applications (
   id bigint auto_increment primary key not null,
   name varchar(128) not null,
-  service_id bigint not null references services(id),
+  service_no bigint not null references services(no),
   created_at timestamp not null,
   updated_at timestamp not null,
   deleted_at timestamp
@@ -31,7 +31,7 @@ create table applications (
 create table service_settings (
   id bigint auto_increment primary key not null,
   maximum_accounts bigint not null default 10000,
-  service_id bigint not null references services(id),
+  service_no bigint not null references services(no),
   created_at timestamp not null,
   updated_at timestamp not null
 )
