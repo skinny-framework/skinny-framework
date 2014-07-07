@@ -1,8 +1,9 @@
 package skinny.mailer
 
+import com.typesafe.config.Config
 import skinny.SkinnyEnv
-import com.typesafe.config.{ Config, ConfigFactory }
 import skinny.logging.Logging
+import skinny.util.TypesafeConfigReader
 
 /**
  * Basic trait for SkinnyMailer configuration.
@@ -23,7 +24,7 @@ trait SkinnyMailerConfigBase extends Logging {
    * Loaded Typesafe Config object.
    */
   lazy val loadedConfig: Option[Config] = {
-    try Option(ConfigFactory.load().getConfig(s"${skinnyEnv}.mailer.${name}"))
+    try Option(TypesafeConfigReader.config(skinnyEnv).getConfig(s"mailer.${name}"))
     catch {
       case e: Exception =>
         logger.warn(s"Failed to load configuration for SkinnyMailer because ${e.getMessage}")
