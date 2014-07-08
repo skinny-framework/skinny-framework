@@ -11,6 +11,8 @@ import scala.collection.mutable
 import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException
 
+import scala.util.control.NonFatal
+
 object AssociationsFeature {
 
   def defaultIncludesMerge[Entity, A] = (es: Seq[Entity], as: Seq[A]) =>
@@ -208,7 +210,9 @@ trait AssociationsFeature[Entity]
 
   def belongsToWithAlias[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val fk = if (right._1.defaultAlias != right._2) {
-      right._2.tableAliasName + "Id"
+      val fieldName = right._1.primaryKeyFieldName
+      val primaryKeyFieldName = fieldName.head.toString.toUpperCase + fieldName.tail
+      right._2.tableAliasName + primaryKeyFieldName
     } else {
       toDefaultForeignKeyName[A](right._1)
     }
