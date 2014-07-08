@@ -712,7 +712,7 @@ trait AssociationsFeature[Entity]
         sql
 
       } else {
-        throw new IllegalStateException(s"Unsupported one-to-manies settings. (max: 5, actual: ${defaultOneToManyExtractors.size})")
+        throw new IllegalStateException(s"Unsupported one-to-manies settings. (max: 9, actual: ${defaultOneToManyExtractors.size})")
       }
 
     } else {
