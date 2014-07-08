@@ -47,7 +47,7 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
           |
           |    it("shows index page") {
           |      val controller = createMockController
-          |      controller.showResources()
+          |      controller.index
           |      controller.status should equal(200)
           |      controller.renderCall.map(_.path) should equal(Some("/admin/members/index"))
           |      controller.contentType should equal("text/html; charset=utf-8")

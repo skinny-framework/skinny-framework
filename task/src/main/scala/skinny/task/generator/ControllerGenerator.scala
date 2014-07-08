@@ -89,9 +89,14 @@ trait ControllerGenerator extends CodeGenerator {
     val newMountCode =
       s"""def mount(ctx: ServletContext): Unit = {
         |    ${controllerName}.mount(ctx)""".stripMargin
+
+    val path = {
+      val parentPath = toDirectoryPath("", namespaces)
+      if (parentPath.isEmpty) s"/${name}" else s"/${parentPath}/${name}"
+    }
     val newControllerDefCode = {
       s"""  object ${controllerName} extends ${controllerClassName} with Routes {
-      |    val indexUrl = get("${toDirectoryPath("", namespaces)}")(index).as('index)
+      |    val indexUrl = get("${path}")(index).as('index)
       |  }
       |
       |}
@@ -145,7 +150,7 @@ trait ControllerGenerator extends CodeGenerator {
       |
       |    it("shows index page") {
       |      val controller = createMockController
-      |      controller.showResources()
+      |      controller.index
       |      controller.status should equal(200)
       |      controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/index"))
       |      controller.contentType should equal("text/html; charset=utf-8")
@@ -163,6 +168,12 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def integrationSpec(namespaces: Seq[String], name: String): String = {
+    val path = {
+      val parentPath = toDirectoryPath("", namespaces)
+      if (parentPath.isEmpty) s"/${name}"
+      else s"/${parentPath}/${name}"
+    }
+
     s"""package ${toNamespace("integrationtest", namespaces)}
         |
         |import org.scalatra.test.scalatest._
@@ -176,7 +187,7 @@ trait ControllerGenerator extends CodeGenerator {
         |  addFilter(Controllers.${toControllerName(namespaces, name)}, "/*")
         |
         |  it should "show index page" in {
-        |    get("/${toDirectoryPath("", namespaces)}/${name}") {
+        |    get("${path}") {
         |      logBodyUnless(200)
         |      status should equal(200)
         |    }

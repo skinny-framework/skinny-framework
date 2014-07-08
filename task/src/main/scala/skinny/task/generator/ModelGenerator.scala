@@ -24,6 +24,8 @@ trait ModelGenerator extends CodeGenerator {
 
   def primaryKeyType: ParamType = ParamType.Long
 
+  def tableName: Option[String] = None
+
   private[this] def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:model member name:String birthday:Option[LocalDate]""")
@@ -31,19 +33,23 @@ trait ModelGenerator extends CodeGenerator {
     println("")
   }
 
-  def run(args: List[String]) {
-    val completedArgs: Seq[String] = if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
-    else args
-    completedArgs.toList match {
+  def run(args: Seq[String]) {
+    val completedArgs: List[String] = {
+      if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
+      else args
+    }.toList
+    completedArgs match {
       case namespace :: name :: attributes =>
         showSkinnyGenerator()
         val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
+            case Array(k, v, columnDef) => Some(k -> v)
             case Array(k, v) => Some(k -> v)
             case _ => None
           }
         }
-        generate(namespace.split('.'), name, None, attributePairs)
+        generate(namespace.split('.'), name, tableName, attributePairs)
+        generateSpec(namespace.split('.'), name, attributePairs)
         println("")
 
       case _ => showUsage

@@ -17,11 +17,12 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
   protected def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:reverse-scaffold table_name resources resource" """)
+    println("""         sbt "task/run generate:reverse-scaffold table_name namespace.resources resource" """)
     println("""         sbt "task/run generate:reverse-scaffold table_name namespace resources resource" """)
     println()
   }
 
-  protected override def showSkinnyGenerator() = {
+  override def showSkinnyGenerator() = {
     println("""
  *** Skinny Reverse Engineering Task ***
 """)
@@ -34,8 +35,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
     }
     try {
       val (tableName, namespace, resources, resource) = {
-        if (args.size >= 4) (args(0), args(1), args(2), args(3))
-        else (args(0), "", args(1), args(2))
+        if (args.size >= 4) {
+          (args(0), args(1), args(2), args(3))
+        } else if (args.size == 3 && args(1).contains(".")) {
+          val elements = args(1).split("\\.")
+          (args(0), elements.init.mkString("."), elements.last, args(2))
+        } else {
+          (args(0), "", args(1), args(2))
+        }
       }
 
       System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
@@ -55,9 +62,9 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       } else {
         true
       }
-      val pkName = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
-      val pkType = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
-      val fields = if (hasId) {
+      val pkName: Option[String] = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
+      val pkType: Option[ParamType] = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
+      val fields: List[String] = if (hasId) {
         columns
           .map(column => toScaffoldFieldDef(column))
           .filter(param => param != "id:Long" && param != "id:Option[Long]")
@@ -74,7 +81,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
         | *** Skinny Reverse Engineering Task ***
         |
         |  Table     : ${tableName}
-        |  ID        : ${pkName}:${pkType}
+        |  ID        : ${pkName.getOrElse("")}:${pkType.getOrElse("")}
         |  Resources : ${resources}
         |  Resource  : ${resource}
         |
@@ -124,46 +131,6 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       case e: Exception =>
         showErrors(Seq(e.getMessage))
     }
-  }
-
-  def extractColumns(tableName: String): List[Column] = {
-    DB.getTable(tableName).map { table =>
-      table.columns
-    }.getOrElse {
-      throw new IllegalStateException(s"Failed to retrieve meta data about columns for ${tableName}")
-    }
-  }
-
-  private[this] def toScaffoldFieldDef(column: Column): String = {
-    val paramType = toParamType(column)
-    val paramTypeString: String = if (column.isRequired) paramType.toString else s"Option[$paramType]"
-    val columnTypeString: String = {
-      paramType match {
-        case String => s":varchar(${column.size})"
-        case BigDecimal => s":number(${column.size})"
-        case _ => ""
-      }
-    }
-    toCamelCase(column.name.toLowerCase(Locale.ENGLISH)) + ":" + paramTypeString + columnTypeString
-  }
-
-  private[this] def toParamType(column: Column): ParamType = convertJdbcSqlTypeToParamType(column.typeCode)
-
-  private[this] def convertJdbcSqlTypeToParamType(dataType: Int): ParamType = dataType match {
-    case CHAR | VARCHAR | LONGVARCHAR | LONGNVARCHAR | NCHAR | NVARCHAR | CLOB | NCLOB => String
-    case BOOLEAN | BIT => Boolean
-    case TINYINT => Byte
-    case SMALLINT => Short
-    case INTEGER => Int
-    case BIGINT => Long
-    case FLOAT | REAL => Float
-    case DOUBLE => Double
-    case NUMERIC | DECIMAL => BigDecimal
-    case DATE => LocalDate
-    case TIME => LocalTime
-    case TIMESTAMP => DateTime
-    case BINARY | VARBINARY | LONGVARBINARY | BLOB => ByteArray
-    case _ => String
   }
 
 }

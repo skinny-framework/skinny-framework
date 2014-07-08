@@ -22,6 +22,7 @@ trait TaskLauncher {
   register("generate:scaffold:ssp", (params) => ScaffoldSspGenerator.run(params))
   register("generate:scaffold:scaml", (params) => ScaffoldScamlGenerator.run(params))
   register("generate:scaffold:jade", (params) => ScaffoldJadeGenerator.run(params))
+  register("generate:reverse-model", (params) => ReverseModelGenerator.run(params))
   register("generate:reverse-scaffold", (params) => ReverseScaffoldGenerator.run("ssp", params))
   register("generate:reverse-scaffold:ssp", (params) => ReverseScaffoldGenerator.run("ssp", params))
   register("generate:reverse-scaffold:scaml", (params) => ReverseScaffoldGenerator.run("scaml", params))
