@@ -11,8 +11,6 @@ import scala.collection.mutable
 import skinny.util.JavaReflectAPI
 import skinny.orm.exception.AssociationSettingsException
 
-import scala.util.control.NonFatal
-
 object AssociationsFeature {
 
   def defaultIncludesMerge[Entity, A] = (es: Seq[Entity], as: Seq[A]) =>
