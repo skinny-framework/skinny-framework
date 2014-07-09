@@ -263,7 +263,7 @@ trait SkinnyResourceActions[Id] { self: SkinnyController =>
           redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
         case _ =>
           status = 201
-          response.setHeader("Location", s"${contextPath}/${resourcesName}/${model.idToRawValue(id)}")
+          response.setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
       }
     } else {
       status = 400

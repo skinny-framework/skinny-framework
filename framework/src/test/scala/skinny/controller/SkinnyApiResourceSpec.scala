@@ -61,6 +61,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
     }
     post("/api/apis.json", "name" -> "Twitter APi", "url" -> "https://dev.twitter.com/") {
       status should equal(201)
+      header("Location") should equal("/api/apis/1")
     }
   }
 
