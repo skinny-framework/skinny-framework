@@ -12,6 +12,6 @@ trait SkinnyApiResource extends SkinnyApiResourceWithId[Long] {
 }
 
 trait SkinnyApiResourceWithId[Id]
-  extends SkinnyController
-  with SkinnyResourceActions[Id]
+  extends SkinnyApiController
+  with SkinnyApiResourceActions[Id]
   with SkinnyApiResourceRoutes[Id]

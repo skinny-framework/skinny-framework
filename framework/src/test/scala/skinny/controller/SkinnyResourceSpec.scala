@@ -2,35 +2,35 @@ package skinny.controller
 
 import org.scalatra.test.scalatest._
 import scalikejdbc._
+import skinny.ParamType
 import skinny.orm.SkinnyCRUDMapper
 import skinny.validator._
-import skinny.ParamType
 
-class SkinnyApiResourceSpec extends ScalatraFlatSpec {
+class SkinnyResourceSpec extends ScalatraFlatSpec {
 
-  behavior of "SkinnyApiResource"
+  behavior of "SkinnyResource"
 
   Class.forName("org.h2.Driver")
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
-  ConnectionPool.add('SkinnyApiResource, "jdbc:h2:mem:SkinnyApiResource", "", "")
-  NamedDB('SkinnyApiResource).localTx { implicit s =>
+  ConnectionPool.add('SkinnyResource, "jdbc:h2:mem:SkinnyResource", "", "")
+  NamedDB('SkinnyResource).localTx { implicit s =>
     sql"create table api (id serial primary key, name varchar(64) not null, url varchar(128) not null);"
       .execute.apply()
   }
 
   case class Api(id: Long, name: String, url: String)
   object Api extends SkinnyCRUDMapper[Api] {
-    override def connectionPoolName = 'SkinnyApiResource
+    override def connectionPoolName = 'SkinnyResource
     override def defaultAlias = createAlias("api")
     override def extract(rs: WrappedResultSet, n: ResultName[Api]) = new Api(
       id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url))
   }
 
-  object ApisController extends SkinnyApiResource {
+  object ApisController extends SkinnyResource {
     override def resourceName = "api"
     override def resourcesName = "apis"
     override def model = Api
-    override def resourcesBasePath = "/bar/apis"
+    override def resourcesBasePath = "/foo/apis"
 
     override def createForm = validation(createParams,
       paramKey("name") is required & maxLength(64),
@@ -41,46 +41,58 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
       paramKey("name") is required & maxLength(64),
       paramKey("url") is maxLength(128))
     override def updateFormStrongParameters = createFormStrongParameters
+
+    override def deleteApiAction = {
+      params.getAs[Long](idParamName).foreach(model.deleteById)
+      halt(202)
+    }
   }
 
   addFilter(ApisController, "/*")
 
   it should "have list APIs" in {
-    get("/bar/apis.json") {
-      status should equal(200)
+    post("/foo/apis.json", "name" -> "Twitter API", "url" -> "https://dev.twitter.com/") {
+      status should equal(201)
     }
-    get("/bar/apis.xml") {
+    get("/foo/apis.json") {
       status should equal(200)
+      body should equal("""[{"id":1,"name":"Twitter API","url":"https://dev.twitter.com/"}]""")
+    }
+    get("/foo/apis.xml") {
+      status should equal(200)
+      body should startWith("""<?xml version="1.0" encoding="utf-8"?>""")
     }
   }
 
   it should "have create API" in {
-    post("/bar/apis.xml", "name" -> "Twitter API") {
+    post("/foo/apis.xml", "name" -> "Twitter API") {
       status should equal(400)
       body should equal("""<?xml version="1.0" encoding="utf-8"?><apis><url>url is required</url></apis>""")
     }
-    post("/bar/apis.json", "name" -> "Twitter APi") {
+    post("/foo/apis.json", "name" -> "Twitter API") {
       status should equal(400)
       body should equal("""{"name":[],"url":["url is required"]}""")
     }
-    post("/bar/apis.json", "name" -> "Twitter APi", "url" -> "https://dev.twitter.com/") {
+    post("/foo/apis.json", "name" -> "Twitter API", "url" -> "https://dev.twitter.com/") {
       status should equal(201)
-      header("Location") should equal("/bar/apis/1")
+      body should equal("")
+      header("Location") should equal("/foo/apis/2")
     }
   }
 
   it should "have update API" in {
     val id = Api.createWithAttributes('name -> "Twitter", 'url -> "https://dev.twitter.com")
-    put(s"/bar/apis/${id}.xml") {
+    put(s"/foo/apis/${id}.xml") {
       status should equal(400)
       body should equal("""<?xml version="1.0" encoding="utf-8"?><apis><name>name is required</name></apis>""")
     }
-    put(s"/bar/apis/${id}.json") {
+    put(s"/foo/apis/${id}.json") {
       status should equal(400)
       body should equal("""{"name":["name is required"],"url":[]}""")
     }
-    put(s"/bar/apis/${id}.json", "name" -> "Twitter API") {
+    put(s"/foo/apis/${id}.json", "name" -> "Twitter API") {
       status should equal(200)
+      body should equal("")
     }
     Api.findById(id).get.name should equal("Twitter API")
   }
@@ -88,15 +100,23 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
   it should "have delete API" in {
     {
       val id = Api.createWithAttributes('name -> "Twitter", 'url -> "https://dev.twitter.com")
-      delete(s"/bar/apis/${id}.xml") {
-        status should equal(200)
+      delete(s"/foo/apis/${id}.xml") {
+        status should equal(202)
       }
       Api.findById(id).isDefined should equal(false)
     }
 
     {
       val id = Api.createWithAttributes('name -> "Twitter", 'url -> "https://dev.twitter.com")
-      delete(s"/bar/apis/${id}.json") {
+      delete(s"/foo/apis/${id}.json") {
+        status should equal(202)
+      }
+      Api.findById(id).isDefined should equal(false)
+    }
+
+    {
+      val id = Api.createWithAttributes('name -> "Twitter", 'url -> "https://dev.twitter.com")
+      delete(s"/foo/apis/${id}") {
         status should equal(200)
       }
       Api.findById(id).isDefined should equal(false)
