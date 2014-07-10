@@ -142,6 +142,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |  addFilter(Controllers.members, "/*")
           |
           |  override def afterAll() {
+          |    super.afterAll()
           |    Member.deleteAll()
           |  }
           |
@@ -276,6 +277,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |  addFilter(Controllers.adminMembers, "/*")
           |
           |  override def afterAll() {
+          |    super.afterAll()
           |    Member.deleteAll()
           |  }
           |
@@ -434,6 +436,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |  addFilter(Controllers.adminGroupMembers, "/*")
           |
           |  override def afterAll() {
+          |    super.afterAll()
           |    GroupMember.deleteAll()
           |  }
           |
@@ -575,6 +578,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |  addFilter(Controllers.adminMembers, "/*")
           |
           |  override def afterAll() {
+          |    super.afterAll()
           |    Member.deleteAll()
           |  }
           |

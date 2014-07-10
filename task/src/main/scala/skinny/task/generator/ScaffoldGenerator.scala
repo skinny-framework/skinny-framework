@@ -325,6 +325,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       |class ${controllerClassName}Spec extends FunSpec with Matchers with BeforeAndAfterAll with DBSettings {
       |
       |  override def afterAll() {
+      |    super.afterAll()
       |    ${modelClassName}.deleteAll()
       |  }
       |
@@ -452,6 +453,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  addFilter(Controllers.${controllerName}, "/*")
         |
         |  override def afterAll() {
+        |    super.afterAll()
         |    ${modelClassName}.deleteAll()
         |  }
         |
