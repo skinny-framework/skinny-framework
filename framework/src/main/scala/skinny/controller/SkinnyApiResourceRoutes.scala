@@ -10,6 +10,13 @@ import skinny._
 trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self: SkinnyApiResourceActions[Id] =>
 
   /**
+   * Set Content-Type response header which is suitable for specified extension.
+   */
+  protected def setContentTypeFromSkinnyApiResourceExtParam: Unit = {
+    params.get("ext").foreach(f => setContentTypeIfAbsent()(Format(f)))
+  }
+
+  /**
    * to enable params.getAs[Id]("id")
    */
   implicit val scalatraParamsIdTypeConverter: TypeConverter[String, Id] = new TypeConverter[String, Id] {
@@ -24,7 +31,11 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
 
   // --------------
   // create API
-  val createApiUrl = post(s"${resourcesBasePath}.:ext")(createApiAction).as('createApi)
+  val createApiUrl = post(s"${resourcesBasePath}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    createApiAction
+  }).as('createApi)
+
   @deprecated("Use createApiUrl instead", since = "1.0.0")
   val createExtUrl = createApiUrl
 
@@ -37,7 +48,11 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   // --------------
   // index API
 
-  val indexApiUrl: Route = get(s"${resourcesBasePath}.:ext")(indexApiAction).as('indexApi)
+  val indexApiUrl: Route = get(s"${resourcesBasePath}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    indexApiAction
+  }).as('indexApi)
+
   @deprecated("Use indexApiUrl instead", since = "1.0.0")
   val indexExtUrl = indexApiUrl
 
@@ -55,11 +70,15 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   // show API
 
   val showApiUrl: Route = routeForShowApi
+
   @deprecated("Use showApiUrl instead", since = "1.0.0")
   val showExtUrl = showApiUrl
 
   protected def routeForShowApi = {
-    get(s"${resourcesBasePath}/:${idParamName}.:ext")(showApiAction).as('showApi)
+    get(s"${resourcesBasePath}/:${idParamName}.:ext")({
+      setContentTypeFromSkinnyApiResourceExtParam
+      showApiAction
+    }).as('showApi)
   }
   protected def showApiAction = (for {
     id <- params.getAs[Id](idParamName)
@@ -75,15 +94,27 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   // --------------
   // update API
 
-  val updatePostApiUrl = post(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
+  val updatePostApiUrl = post(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
+
   @deprecated("Use updatePostApiUrl instead", since = "1.0.0")
   val updatePostExtUrl = updatePostApiUrl
 
-  val updatePutApiUrl = put(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
+  val updatePutApiUrl = put(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
+
   @deprecated("Use updatePutApiUrl instead", since = "1.0.0")
   val updatePutExtUrl = updatePutApiUrl
 
-  val updatePatchApiUrl = patch(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
+  val updatePatchApiUrl = patch(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
+
   @deprecated("Use updatePatchApiUrl instead", since = "1.0.0")
   val updatePatchExtUrl = updatePatchApiUrl
 
@@ -103,7 +134,11 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   // --------------
   // delete API
 
-  val destroyApiUrl = delete(s"${resourcesBasePath}/:${idParamName}.:ext")(deleteApiAction).as('destroyApi)
+  val destroyApiUrl = delete(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    deleteApiAction
+  }).as('destroyApi)
+
   @deprecated("Use destroyApiUrl instead", since = "1.0.0")
   val destroyExtUrl = destroyApiUrl
   @deprecated("Use destroyApiUrl instead", since = "1.0.0")

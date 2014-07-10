@@ -56,12 +56,28 @@ trait SkinnyResourceRoutes[Id] extends SkinnyApiResourceRoutes[Id] { self: Skinn
 
   // ###########################
   // override API routes
+  post(s"${resourcesBasePath}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    createApiAction
+  }).as('createApi)
 
-  post(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
-  put(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
-  patch(s"${resourcesBasePath}/:${idParamName}.:ext")(updateApiAction).as('updateApi)
+  post(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
+  put(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
+  patch(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    updateApiAction
+  }).as('updateApi)
 
-  delete(s"${resourcesBasePath}/:${idParamName}.:ext")(deleteApiAction).as('destroyApi)
+  delete(s"${resourcesBasePath}/:${idParamName}.:ext")({
+    setContentTypeFromSkinnyApiResourceExtParam
+    deleteApiAction
+  }).as('destroyApi)
   // ###########################
 
 }

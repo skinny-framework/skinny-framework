@@ -49,6 +49,18 @@ trait SkinnyControllerBase
   protected def respondTo: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
 
   /**
+   * Set Content-Type for the format if absent.
+   *
+   * @param format format
+   */
+  protected def setContentTypeIfAbsent()(implicit format: Format = Format.HTML): Unit = {
+    // If Content-Type is already set, never overwrite it.
+    if (contentType == null) {
+      contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
+    }
+  }
+
+  /**
    * Renders body which responds to the specified format (JSON, XML) if possible.
    *
    * @param entity entity
@@ -56,6 +68,7 @@ trait SkinnyControllerBase
    * @return body if possible
    */
   protected def renderWithFormat(entity: Any)(implicit format: Format = Format.HTML): String = {
+    setContentTypeIfAbsent()
     format match {
       case Format.XML =>
         val entityXml = convertJValueToXML(toJSON(entity)).toString
@@ -84,6 +97,7 @@ trait SkinnyControllerBase
    */
   protected def withFormat[A](format: Format)(action: => A): A = {
     respondTo.find(_ == format) getOrElse haltWithBody(406)
+    setContentTypeIfAbsent()(format)
     action
   }
 

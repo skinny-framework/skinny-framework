@@ -26,11 +26,7 @@ trait TemplateEngineFeature
    * @return body
    */
   def render(path: String)(implicit format: Format = Format.HTML): String = {
-
-    // If Content-Type is already set, never overwrite it.
-    if (contentType == null) {
-      contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
-    }
+    setContentTypeIfAbsent()
 
     if (templateExists(path)) {
       // template found, render with it
