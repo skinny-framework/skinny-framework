@@ -77,6 +77,7 @@ case class SkinnyDBsWithEnv(envValue: String) extends DBs
     with TypesafeConfig
     with NoEnvPrefix {
 
+  // Replacing Config because (at least) ScalikeJDBC 2.0.4 or lower versions doesn't support default values
   override val config = sConfigReader.config(envValue)
 
 }
