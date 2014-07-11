@@ -28,8 +28,6 @@ sbt ++2.11.1 \
   mailer/publishSigned \
   standalone/publishSigned \
   task/publishSigned \
-  # SI-6240
-  #scaldi/publishSigned \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned 
