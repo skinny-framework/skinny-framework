@@ -1,7 +1,8 @@
 package skinny
 
-import scalikejdbc._, config._
+import scalikejdbc.config._
 import skinny.exception._
+import skinny.util.{ TypesafeConfigReader => sConfigReader }
 
 trait DBSettings {
   DBSettings.initialize()
@@ -17,19 +18,18 @@ object DBSettings {
   private[this] case class State(var alreadyInitialized: Boolean = false)
   private[this] val state: State = State()
 
+  lazy val dbs = SkinnyDBsWithEnv(SkinnyEnv.getOrElse(SkinnyEnv.Development))
+
   /**
    * Initializes DB settings.
    */
   def initialize(force: Boolean = false): Unit = {
     state.synchronized {
       if (force || !state.alreadyInitialized) {
-        SkinnyEnv.get().map(env => DBsWithEnv(env).setupAll()).getOrElse {
-          if (!TypesafeConfigReaderWithEnv(SkinnyEnv.Development).dbNames.isEmpty) {
-            DBsWithEnv(SkinnyEnv.Development).setupAll()
-          } else if (!TypesafeConfigReader.dbNames.isEmpty) {
-            DBs.setupAll()
-          } else {
-            throw new DBSettingsException(s"""
+        if (!dbs.dbNames.isEmpty) {
+          dbs.setupAll()
+        } else {
+          throw new DBSettingsException(s"""
         | ---------------------------------------------
         |
         |  !!! Skinny Configuration Error !!!
@@ -56,7 +56,6 @@ object DBSettings {
         |
         | ---------------------------------------------
         |""".stripMargin)
-          }
         }
         state.alreadyInitialized = true
       }
@@ -66,7 +65,19 @@ object DBSettings {
   /**
    * Wipes out all DB settings.
    */
-  def destroy() = DBs.closeAll()
+  def destroy() = dbs.closeAll()
 
 }
 
+/**
+ * DB setup executor with default settings
+ */
+case class SkinnyDBsWithEnv(envValue: String) extends DBs
+    with TypesafeConfigReader
+    with TypesafeConfig
+    with NoEnvPrefix {
+
+  // Replacing Config because (at least) ScalikeJDBC 2.0.4 or lower versions doesn't support default values
+  override val config = sConfigReader.config(envValue)
+
+}
