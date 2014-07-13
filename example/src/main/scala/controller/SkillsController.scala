@@ -24,4 +24,13 @@ object SkillsController extends SkinnyResource with ApplicationController
 
   def urlSample = url(SkillsController.indexUrl, "page" -> "1")
 
+  // #158 SkinnySessionFilter#skinnySession become infinite loop
+  def skinnySessionBug = {
+    skinnySession("foo")
+    skinnySession('foo)
+    "ok"
+  }
+
+  get("/skills/skinny-session-bug")(skinnySessionBug).as('bug)
+
 }

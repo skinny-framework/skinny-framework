@@ -3,13 +3,10 @@ package skinny.filter
 import scala.language.implicitConversions
 
 import skinny.session._
-import javax.servlet.http._
 import skinny.controller.feature._
 import org.scalatra.{ GenerateId, CsrfTokenSupport, FlashMap }
 import org.scalatra.FlashMapSupport._
 import java.util.Locale
-import org.joda.time.DateTime
-import skinny.session.jdbc.SkinnySession
 
 object SkinnySessionFilter {
 
@@ -37,8 +34,10 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
       initializeSkinnySession
     }
   }
-  def skinnySession(key: String)(implicit request: HttpServletRequest): Any = skinnySession(key)
-  def skinnySession(key: Symbol)(implicit request: HttpServletRequest): Any = skinnySession(key)
+
+  def skinnySession[A](key: String): Option[A] = skinnySession.getAs[A](key)
+
+  def skinnySession[A](key: Symbol): Option[A] = skinnySession[A](key.name)
 
   // override FlashMapSupport
 
@@ -46,7 +45,7 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
     try {
       skinnySession.setAttribute(SessionKey, f)
     } catch {
-      case e: Throwable =>
+      case e: Throwable => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
     }
   }
 
