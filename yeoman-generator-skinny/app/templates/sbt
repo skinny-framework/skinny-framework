@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 cd `dirname $0`
 current_dir=`pwd`
 sbt_config=${current_dir}/.sbtconfig
@@ -11,7 +11,7 @@ if [ \$java_major_version -ge 8 ]; then
 else
   PERM_OPT=\"-XX:MaxPermSize=256M\"
 fi
-export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT}\"
+export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT} \${SBT_OPTS}\"
 " > ${sbt_config}
 fi
 
