@@ -11,7 +11,12 @@ if [ \$java_major_version -ge 8 ]; then
 else
   PERM_OPT=\"-XX:MaxPermSize=256M\"
 fi
-export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT} \${SBT_OPTS}\"
+if [ \"${SBT_OPTS}\" == \"@/etc/sbt/sbtopts\" ]; then
+  # Travis CI environment
+  export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT}\"
+else
+  export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT} \${SBT_OPTS}\"
+fi
 " > ${sbt_config}
 fi
 
