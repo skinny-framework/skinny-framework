@@ -135,7 +135,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] { self: Ski
   override def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
-      val id = if (!createFormStrongParameters.isEmpty) {
+      val id: Id = if (!createFormStrongParameters.isEmpty) {
         val parameters = createParams.permit(createFormStrongParameters: _*)
         doCreateAndReturnId(parameters)
       } else {
