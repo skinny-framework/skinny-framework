@@ -62,7 +62,8 @@ object SkinnyAppBuild extends Build {
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     ideaExcludeFolders := Seq(
       ".idea", ".idea_modules",
-      "db", "target", "task/target", "build", "standalone-build"
+      "db", "target", "task/target", "build", "standalone-build",
+      "node_modules"
     )
   )
 
