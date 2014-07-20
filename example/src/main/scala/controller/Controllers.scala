@@ -21,6 +21,7 @@ object Controllers {
     freemarker.mount(ctx)
     sampleApi.mount(ctx)
     scaldi.mount(ctx)
+    dashboard.mount(ctx)
 
     SkillsController.mount(ctx)
     CommentsController.mount(ctx)
@@ -81,6 +82,10 @@ object Controllers {
 
   object scaldi extends ScaldiController with Routes {
     val indexUrl = get("/scaldi/")(index).as('index)
+  }
+
+  object dashboard extends DashboardController with Routes {
+    val indexUrl = get("/dashboard/")(index).as('index)
   }
 
 }

@@ -25,6 +25,7 @@ trait SkinnyControllerBase
     with ActionDefinitionFeature
     with RequestScopeFeature
     with BeforeAfterActionFeature
+    with FutureOpsFeature
     with LocaleFeature
     with ValidationFeature
     with JSONFeature

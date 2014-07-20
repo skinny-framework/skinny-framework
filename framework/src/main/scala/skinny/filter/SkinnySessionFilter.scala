@@ -1,5 +1,7 @@
 package skinny.filter
 
+import javax.servlet.http.HttpServletRequest
+
 import scala.language.implicitConversions
 
 import skinny.session._
@@ -29,18 +31,18 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   beforeAction()(initializeSkinnySession)
 
-  def skinnySession: SkinnyHttpSession = {
-    requestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).getOrElse {
+  def skinnySession(implicit req: HttpServletRequest): SkinnyHttpSession = {
+    getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(req).getOrElse {
       initializeSkinnySession
     }
   }
 
-  def skinnySession[A](key: String): Option[A] = skinnySession.getAs[A](key)
+  def skinnySession[A](key: String)(implicit req: HttpServletRequest): Option[A] = skinnySession(req).getAs[A](key)
 
-  def skinnySession[A](key: Symbol): Option[A] = skinnySession[A](key.name)
+  def skinnySession[A](key: Symbol)(implicit req: HttpServletRequest): Option[A] = skinnySession[A](key.name)(req)
 
   // override FlashMapSupport
-
+  // NOTICE: This API doesn't support Future ops
   override def flashMapSetSession(f: FlashMap) {
     try {
       skinnySession.setAttribute(SessionKey, f)
@@ -66,11 +68,15 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   // override SessionLocaleFeature
 
-  override def setCurrentLocale(locale: String): Unit = skinnySession.setAttribute(sessionLocaleKey, locale)
+  override def setCurrentLocale(locale: String)(implicit req: HttpServletRequest): Unit = {
+    skinnySession(req).setAttribute(sessionLocaleKey, locale)
+  }
 
-  override def currentLocale: Option[Locale] = {
-    skinnySession.getAttribute(sessionLocaleKey)
-      .map(l => new Locale(l.toString)).orElse(defaultLocale)
+  override def currentLocale(implicit req: HttpServletRequest): Option[Locale] = {
+    skinnySession(req)
+      .getAttribute(sessionLocaleKey)
+      .map(l => new Locale(l.toString))
+      .orElse(defaultLocale)
   }
 
   afterAction() {

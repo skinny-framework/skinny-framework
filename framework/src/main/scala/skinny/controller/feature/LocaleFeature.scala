@@ -1,6 +1,7 @@
 package skinny.controller.feature
 
 import java.util.Locale
+import javax.servlet.http.HttpServletRequest
 import org.scalatra.ScalatraBase
 
 /**
@@ -24,16 +25,21 @@ trait LocaleFeature extends ScalatraBase {
    *
    * @param locale locale string
    */
-  protected def setCurrentLocale(locale: String): Unit = session.put(sessionLocaleKey, locale)
+  protected def setCurrentLocale(locale: String)(implicit req: HttpServletRequest = request): Unit = {
+    session(req).put(sessionLocaleKey, locale)
+  }
 
   /**
    * Returns current locale for this request.
    *
    * @return current locale
    */
-  protected def currentLocale: Option[Locale] = {
+  protected def currentLocale(implicit req: HttpServletRequest = request): Option[Locale] = {
     // avoid creating a session
-    sessionOption.flatMap(_.get(sessionLocaleKey)).map(l => new Locale(l.toString)).orElse(defaultLocale)
+    sessionOption(req)
+      .flatMap(_.get(sessionLocaleKey))
+      .map(locale => new Locale(locale.toString))
+      .orElse(defaultLocale)
   }
 
 }
