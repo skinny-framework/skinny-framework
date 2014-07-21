@@ -106,6 +106,17 @@ class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting
       delete(s"/programmers/${id}?csrf-token=aaaaaa") {
         status should equal(200)
       }
+      post(s"/programmers/${id}?csrf-token=aaaaaa") {
+        status should equal(404)
+      }
+      post(s"/programmers/${id}.json?csrf-token=aaaaaa") {
+        status should equal(404)
+        header("Content-Type") should equal("application/json; charset=utf-8")
+      }
+      post(s"/programmers/${id}.xml?csrf-token=aaaaaa") {
+        status should equal(404)
+        header("Content-Type") should equal("application/xml; charset=utf-8")
+      }
     }
   }
 

@@ -1,0 +1,136 @@
+<div ng-app="myApp">
+<hr/>
+<div ng-view>Loading....</div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-resource.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular-route.min.js"></script>
+
+<script>
+'use strict';
+
+// -----------
+// Angular app for this resource CRUD
+
+var app = angular.module('myApp', ['ngRoute', 'ngResource']);
+
+// routes
+app.config(function($routeProvider) {
+  $routeProvider.when('/',         {templateUrl: 'partials/list.html', controller: 'ListController'});
+  $routeProvider.when('/new',      {templateUrl: 'partials/new.html',  controller: 'NewController'});
+  $routeProvider.when('/:id',      {templateUrl: 'partials/show.html', controller: 'ShowController'});
+  $routeProvider.when('/:id/edit', {templateUrl: 'partials/edit.html', controller: 'EditController'});
+  $routeProvider.otherwise({redirectTo: '/'});
+});
+
+// form params instead of JSON request body
+// Skinny's Angular support basically works with both of them
+app.config(['$httpProvider', function($httpProvider) {
+  $httpProvider.defaults.transformRequest =  function(data) {
+    if (data === undefined) { return data; }
+    var params = '', delim = '';
+    for (var key in data) {
+      if (key.substr(0, 1) === '$') { continue; }
+      if (data.hasOwnProperty(key)) {
+        var val = data[key];
+        params += delim + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+        delim = '&';
+      }
+    }
+    return params;
+  };
+  $httpProvider.defaults.headers.post = {'Content-Type': 'application/x-www-form-urlencoded'};
+}]);
+
+// -----------
+// resource
+
+app.factory('Resource', ['$resource', function($resource) {
+  return $resource('/example/angular/programmers/:id.json', {}, {});
+}]);
+
+// -----------
+// controllers
+
+app.controller('ListController', function($scope, Resource) {
+  $scope.load = function() {
+    var items = Resource.query(function () {
+      $scope.items = items;
+    });
+  };
+  $scope.$on('refreshList', $scope.load);
+});
+
+app.controller('NewController', function($scope) {
+});
+
+app.controller('ShowController', function($scope, $routeParams, Resource) {
+  $scope.load = function() {
+    var item = Resource.get({id: $routeParams.id}, function() {
+      $scope.item = item;
+    });
+  };
+});
+
+app.controller('EditController', function($scope, $routeParams, Resource) {
+  $scope.load = function() {
+    var item = Resource.get({id: $routeParams.id}, function() {
+      $scope.item = item;
+    });
+  };
+});
+
+// -----------
+// directives
+
+app.directive('saveItem', function(Resource) {
+  return {
+    restrict: 'A',
+    controller: function($scope, $location) {
+      $scope.submit = function(item) {
+        Resource.save(item,
+          function() { // success
+            $location.path('/');
+          },
+          function(response) { // failure
+            if (response.data) {
+              // validation errors
+              $scope.formErrors = {};
+              for (var name in response.data) {
+                $scope.formErrors[name] = response.data[name];
+              }
+            } else {
+              window.alert('Failed to access server - ' + JSON.stringify(response));
+            }
+          }
+        );
+      };
+      $scope.cancel = function() {
+        $location.path('/');
+      }
+    }
+  }
+});
+
+app.directive('deleteItem', function(Resource) {
+  return {
+    restrict: 'A',
+    controller: function($scope) {
+      $scope.submit = function(id) {
+        if (window.confirm('Are you sure?')) {
+          Resource.delete({id: id},
+            function (item, headers) {
+              // success
+              $scope.$emit('refreshList');
+            },
+            function(response) {
+              // failure
+            }
+          );
+        }
+      };
+    }
+  }
+});
+</script>

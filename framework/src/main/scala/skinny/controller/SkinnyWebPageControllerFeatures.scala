@@ -6,8 +6,12 @@ import skinny.controller.feature.{ CSRFProtectionFeature, ScalateTemplateEngineF
  * Additional web pages specific features for SkinnyControllers.
  */
 trait SkinnyWebPageControllerFeatures
-  extends SkinnyControllerBase
-  with FlashFeature
-  with TemplateEngineFeature
-  with ScalateTemplateEngineFeature
-  with CSRFProtectionFeature
+    extends SkinnyControllerBase
+    with FlashFeature
+    with TemplateEngineFeature
+    with ScalateTemplateEngineFeature
+    with CSRFProtectionFeature {
+
+  override def handleForgeryIfDetected() = haltWithBody(403)
+
+}
