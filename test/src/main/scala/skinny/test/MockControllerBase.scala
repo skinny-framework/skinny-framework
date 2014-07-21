@@ -21,13 +21,13 @@ trait MockControllerBase extends SkinnyControllerBase {
   override def contextPath = ""
   override def initParameter(name: String): Option[String] = None
 
-  override val request: HttpServletRequest = {
+  override implicit val request: HttpServletRequest = {
     val req = new MockHttpServletRequest
     req.setAttribute(RequestScopeFeature.REQUEST_SCOPE_KEY, _requestScope)
     req
   }
 
-  override val response: HttpServletResponse = {
+  override implicit val response: HttpServletResponse = {
     val res = new MockHttpServletResponse
     res
   }

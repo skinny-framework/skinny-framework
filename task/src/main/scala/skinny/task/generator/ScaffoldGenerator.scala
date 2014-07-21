@@ -359,7 +359,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       |        val controller = createMockController
       |        controller.showResource(${resource}.${primaryKeyName})
       |        controller.status should equal(200)
-      |        controller.requestScope[${toClassName(resource)}]("item") should equal(Some(${resource}))
+      |        controller.getFromRequestScope[${toClassName(resource)}]("item") should equal(Some(${resource}))
       |        controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/show"))
       |      }
       |    }

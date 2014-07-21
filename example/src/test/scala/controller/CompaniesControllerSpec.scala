@@ -41,6 +41,7 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
 
         controller.status should equal(200)
         controller.requestScope[Company]("item") should equal(Some(company))
+        controller.getFromRequestScope[Company]("item") should equal(Some(company))
         controller.renderCall.map(_.path) should equal(Some("/companies/show"))
       }
     }
