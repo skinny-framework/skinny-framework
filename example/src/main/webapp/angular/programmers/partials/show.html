@@ -1,0 +1,27 @@
+<div ng-app="myApp" ng-controller="ShowController" ng-init="load()">
+    <h3>Detail</h3>
+    <hr/>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <td>{{item.id}}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{item.name}}</td>
+        </tr>
+        <tr>
+            <th>Favorite Number</th>
+            <td>{{item.favoriteNumber}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <hr/>
+
+    <div class="form-actions">
+        <a href="#/{{item.id}}/edit" class="btn btn-info">Edit</a>
+        <button delete-item ng-click="submit(item.id)" class="btn btn-danger">Delete</button>
+        <a href="#/" class="btn btn-default">Back to list</a>
+    </div>
+</div>

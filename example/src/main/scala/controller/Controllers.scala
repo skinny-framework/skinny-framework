@@ -27,6 +27,9 @@ object Controllers {
     CommentsController.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)
 
+    AngularXHRProgrammersController.mount(ctx)
+    angularApp.mount(ctx)
+
     AssetsController.mount(ctx)
   }
 
@@ -86,6 +89,11 @@ object Controllers {
 
   object dashboard extends DashboardController with Routes {
     val indexUrl = get("/dashboard/")(index).as('index)
+  }
+
+  object angularApp extends AngularAppController with Routes {
+    val indexUrl = get("/angular/app")(index).as('index)
+    val programmersUrl = get("/angular/programmers/")(programmers).as('programmers)
   }
 
 }

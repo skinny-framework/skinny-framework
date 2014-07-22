@@ -1,26 +1,16 @@
 package skinny.controller.feature
 
+import org.scalatra.SkinnyScalatraBase
 import skinny.logging.Logging
-import org.scalatra._
-
-object CSRFProtectionFeature {
-
-  // follows Rails default
-  val DEFAULT_KEY: String = "csrf-token"
-
-}
 
 /**
- * Provides Cross-Site Request Forgery (CSRF) protection.
+ * Angular.js Cross Site Request Forgery (XSRF) Protection support.
+ *
+ * https://docs.angularjs.org/api/ng/service/$http#cross-site-request-forgery-xsrf-protection
  */
-trait CSRFProtectionFeature extends CsrfTokenSupport {
+trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
 
   self: SkinnyScalatraBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with Logging =>
-
-  /**
-   * Overrides Scalatra's default key name.
-   */
-  override def csrfKey: String = CSRFProtectionFeature.DEFAULT_KEY
 
   /**
    * Enabled if true.
@@ -38,7 +28,17 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
   private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
 
   /**
-   * Declarative activation of CSRF protection. Of course, highly inspired by Ruby on Rails.
+   * Cookie name.
+   */
+  override protected def xsrfCookieName: String = super.xsrfCookieName
+
+  /**
+   * Header name.
+   */
+  protected def xsrfHeaderName: String = AngularJSSpecification.xsrfHeaderName
+
+  /**
+   * Declarative activation of XSRF protection. Of course, highly inspired by Ruby on Rails.
    *
    * @param only should be applied only for these action methods
    * @param except should not be applied for these action methods
@@ -52,12 +52,12 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
   /**
    * Overrides to skip execution when the current request matches excluded patterns.
    */
-  override def handleForgery() {
+  def handleAngularForgery() {
     if (forgeryProtectionEnabled) {
       logger.debug {
         s"""
         | ------------------------------------------
-        |  [CSRF Protection Enabled]
+        |  [Angular XSRF Protection Enabled]
         |  method      : ${request.getMethod}
         |  requestPath : ${requestPath}
         |  actionName  : ${currentActionName}
@@ -83,16 +83,21 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
   }
 
   /**
-   * Handles when CSRF is detected.
+   * Handles when XSRF is detected.
    */
   def handleForgeryIfDetected(): Unit = halt(403)
 
-  // Registers csrfKey & csrfToken to request scope.
-  beforeAction() {
-    if (getFromRequestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
-      set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
-      set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())
-    }
+  def isForged: Boolean = {
+    val unsafeMethod = !request.requestMethod.isSafe
+    val headerValue = request.headers.get(xsrfHeaderName)
+    val cookieValue = request.cookies.get(xsrfCookieName)
+    val neither = (headerValue.isEmpty || cookieValue.isEmpty)
+    val differentValue = !headerValue.exists(h => cookieValue.exists(c => c == h))
+    unsafeMethod && (neither || differentValue)
+  }
+
+  before(isForged) {
+    handleAngularForgery()
   }
 
 }

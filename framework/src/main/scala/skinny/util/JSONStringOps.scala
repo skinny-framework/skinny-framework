@@ -81,9 +81,13 @@ trait JSONStringOps extends jackson.JsonMethods {
    * @return value
    */
   def fromJSONString[A](json: String, underscoreKeys: Boolean = false)(implicit mf: Manifest[A]): Option[A] = {
+    fromJSONStringToJValue(json, underscoreKeys).map[A](_.extract[A])
+  }
+
+  def fromJSONStringToJValue(json: String, underscoreKeys: Boolean = false): Option[JValue] = {
     parseOpt(StringInput(json)).map { v =>
       if (underscoreKeys) v.underscoreKeys else v.camelizeKeys
-    }.map[A](_.extract[A])
+    }
   }
 
 }
