@@ -91,6 +91,15 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
     Api.findById(id).get.name should equal("Twitter API")
+
+    put(s"/bar/apis/dummy.json", "name" -> "Twitter API") {
+      status should equal(404)
+      header("Content-Type") should equal("application/json; charset=utf-8")
+    }
+    put(s"/bar/apis/dummy.xml", "name" -> "Twitter API") {
+      status should equal(404)
+      header("Content-Type") should equal("application/xml; charset=utf-8")
+    }
   }
 
   it should "have delete API" in {
@@ -112,6 +121,17 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
         body should equal("")
       }
       Api.findById(id).isDefined should equal(false)
+
+      delete(s"/bar/apis/dummy.json") {
+        status should equal(404)
+        header("Content-Type") should equal("application/json; charset=utf-8")
+        body should not equal ("")
+      }
+      delete(s"/bar/apis/dummy.xml") {
+        status should equal(404)
+        header("Content-Type") should equal("application/xml; charset=utf-8")
+        body should not equal ("")
+      }
     }
   }
 

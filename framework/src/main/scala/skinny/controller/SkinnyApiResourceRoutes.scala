@@ -119,16 +119,16 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   val updatePatchExtUrl = updatePatchApiUrl
 
   protected def updateApiAction = {
-    (for {
-      id <- params.getAs[Id](idParamName)
-      ext <- params.get("ext")
-    } yield {
-      ext match {
-        case "json" => updateResource(id)(Format.JSON)
-        case "xml" => updateResource(id)(Format.XML)
-        case _ => haltWithBody(404)
+    params.get("ext").map(ext => Format(ext)).map { implicit format =>
+      format match {
+        case Format.HTML => haltWithBody(404)
+        case _ =>
+          params.getAs[Id](idParamName) match {
+            case Some(id) => updateResource(id)
+            case _ => haltWithBody(404)
+          }
       }
-    }) getOrElse haltWithBody(404)
+    }.getOrElse(haltWithBody(404))
   }
 
   // --------------
@@ -147,16 +147,16 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   val deleteExtUrl = destroyApiUrl
 
   protected def deleteApiAction = {
-    (for {
-      id <- params.getAs[Id](idParamName)
-      ext <- params.get("ext")
-    } yield {
-      ext match {
-        case "json" => destroyResource(id)(Format.JSON)
-        case "xml" => destroyResource(id)(Format.XML)
-        case _ => haltWithBody(404)
+    params.get("ext").map(ext => Format(ext)).map { implicit format =>
+      format match {
+        case Format.HTML => haltWithBody(404)
+        case _ =>
+          params.getAs[Id](idParamName) match {
+            case Some(id) => destroyResource(id)
+            case _ => haltWithBody(404)
+          }
       }
-    }) getOrElse haltWithBody(404)
+    }.getOrElse(haltWithBody(404))
   }
 
 }

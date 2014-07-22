@@ -86,7 +86,9 @@ trait SkinnyControllerBase
    * @tparam A response type
    * @return body if possible
    */
-  protected def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = halt(status)
+  protected def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = {
+    halt(httpStatus, renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message)))
+  }
 
   /**
    * Provides code block with format. If absent, halt as status 406.
