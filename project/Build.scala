@@ -8,10 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.2.0-SNAPSHOT"
+  val _version = "1.2.0"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.0.5"
+  val scalikeJDBCVersion = "2.0.6"
   val h2Version = "1.4.180"
   val jettyVersion = "9.2.1.v20140609"
 
@@ -116,7 +116,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.0"         % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.5.Final" % "test"
+        "org.hibernate"   %  "hibernate-core" % "4.3.6.Final" % "test"
       ) ++ testDependencies
     )
   ) dependsOn(common)
