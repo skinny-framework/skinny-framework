@@ -27,7 +27,7 @@ import skinny.controller.SkinnyWebPageControllerFeatures
  * }}}
  *
  * If you use Scatatra's filter (before/after not beforeAction/afterAction), be careful. It's pretty tricky.
- * Because Scalatra's filters would be applied for all the controllers difined below in ScalatraBootstrap.
+ * Scalatra's filters would be applied for all the controllers defined below in ScalatraBootstrap.
  */
 trait SkinnyRenderingFilter extends SkinnyFilter with SkinnyWebPageControllerFeatures {
 

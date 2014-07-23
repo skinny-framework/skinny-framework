@@ -20,6 +20,7 @@ object Controllers {
     thymeleaf.mount(ctx)
     freemarker.mount(ctx)
     sampleApi.mount(ctx)
+    sampleTxApi.mount(ctx)
     scaldi.mount(ctx)
     dashboard.mount(ctx)
 
@@ -76,6 +77,9 @@ object Controllers {
   object sampleApi extends SampleApiController with Routes {
     val createCompanyUrl = post("/api/companies")(createCompany).as('createCompany)
     val companiesUrl = get("/api/companies")(companiesJson).as('companies)
+  }
+  object sampleTxApi extends SampleTxApiController with Routes {
+    get("/api/error")(index).as('index)
   }
 
   object fileUpload extends FileUploadController with Routes {

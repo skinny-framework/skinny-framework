@@ -33,14 +33,16 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
     // initialize error handler
     val filtersTraverse: PartialFunction[Throwable, Any] = {
       case (t: Throwable) =>
+        // rendering filters returns body as Any value
+        // non-rendering filters just throws exception
         skinnyErrorFilters.foldLeft(null.asInstanceOf[Any]) {
-          case (last, (WithoutRendering, filter)) =>
+          case (_, (WithoutRendering, filter)) =>
             try filter.apply(t)
             catch {
               case e: Exception => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
             }
-            last
-          case (last, (WithRendering, filter)) =>
+            throw t
+          case (body, (WithRendering, filter)) =>
             try filter.apply(t)
             catch {
               case e: Exception =>
