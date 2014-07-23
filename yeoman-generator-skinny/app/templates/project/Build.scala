@@ -34,7 +34,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
-      "com.h2database"          %  "h2"                  % "1.4.180"            % "test",      // your own JDBC driver
+      "com.h2database"          %  "h2"                  % "1.4.180", // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
       "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
@@ -107,8 +107,7 @@ object SkinnyAppBuild extends Build {
 
   lazy val task = Project(id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
-      mainClass := Some("TaskRunner"),
-      libraryDependencies += "com.h2database" % "h2" % "1.4.180" // development
+      mainClass := Some("TaskRunner")
     )
   )
 
