@@ -15,7 +15,7 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
   /**
    * Registered error handlers.
    */
-  protected lazy val skinnyErrorFilters = new scala.collection.concurrent.TrieMap[RenderingRequired, ErrorHandler]
+  protected lazy val skinnyErrorFilters = new scala.collection.concurrent.TrieMap[RenderingRequired, Seq[ErrorHandler]]
 
   /**
    * Adds error handler which doesn't return result to SkinnyController.
@@ -23,34 +23,50 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
    * @param handler
    */
   def addErrorFilter(handler: ErrorHandler) = {
-    skinnyErrorFilters.update(WithoutRendering, handler)
+    val mergedHandlers = skinnyErrorFilters.get(WithoutRendering).map(hs => hs :+ handler).getOrElse(Seq(handler))
+    skinnyErrorFilters.update(WithoutRendering, mergedHandlers)
   }
 
   /**
    * Start applying all the filters
    */
   beforeAction() {
-    // initialize error handler
+    // combine error filters
+    var alreadyRendered = false
     val filtersTraverse: PartialFunction[Throwable, Any] = {
       case (t: Throwable) =>
-        // rendering filters returns body as Any value
-        // non-rendering filters just throws exception
-        skinnyErrorFilters.foldLeft(null.asInstanceOf[Any]) {
-          case (_, (WithoutRendering, filter)) =>
-            try filter.apply(t)
-            catch {
-              case e: Exception => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
-            }
-            throw t
-          case (body, (WithRendering, filter)) =>
-            try filter.apply(t)
-            catch {
-              case e: Exception =>
-                logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
-                throw e
-            }
+
+        skinnyErrorFilters.get(WithoutRendering).foreach { handlers =>
+          handlers.foreach { handler =>
+            // just apply this filter and return the existing body.
+            try handler.apply(t)
+            catch { case e: Exception => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e) }
+          }
         }
+
+        // rendering body
+        val body: Any = skinnyErrorFilters.get(WithRendering).map { handlers =>
+          handlers.foldLeft(null.asInstanceOf[Any]) {
+            case (body, handler) =>
+              // just apply this filter and return the existing body.
+              if (alreadyRendered) {
+                logger.error("This response is marked as rendered because other RenderingFilter already did the stuff.")
+                body
+              } else {
+                alreadyRendered = true
+                try handler.apply(t)
+                catch {
+                  case e: Exception =>
+                    logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
+                    body
+                }
+              }
+          }
+        }.getOrElse(null)
+
+        if (alreadyRendered) body else throw t
     }
+    // register combined error filters
     error(filtersTraverse)
   }
 

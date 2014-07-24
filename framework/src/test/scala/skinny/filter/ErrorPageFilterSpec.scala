@@ -32,9 +32,14 @@ class ErrorPageFilterSpec extends ScalatraFlatSpec {
     def execute = throw new RuntimeException("foo-bar-baz")
     get("/error2")(execute).as('execute)
   }
+  object Error3Controller extends SkinnyController with ErrorPageFilter with ErrorMessageFilter with Routes {
+    def execute = throw new RuntimeException("foo-bar-baz")
+    get("/error3")(execute).as('execute)
+  }
 
   addFilter(ErrorController, "/*")
   addFilter(Error2Controller, "/*")
+  addFilter(Error3Controller, "/*")
 
   it should "render" in {
     get("/error") {
@@ -45,6 +50,16 @@ class ErrorPageFilterSpec extends ScalatraFlatSpec {
 
     get("/error2") {
       status should equal(500)
+      body should equal(
+        """error page
+          |<p>Jade footer</p>
+          |""".stripMargin)
+      header("Content-Type") should startWith("text/html;")
+    }
+
+    get("/error3") {
+      status should equal(500)
+      // ErrorPageFilter should be given priority
       body should equal(
         """error page
           |<p>Jade footer</p>
