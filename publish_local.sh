@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sbt clean \
-  ++2.11.1 \
+  ++2.11.2 \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
