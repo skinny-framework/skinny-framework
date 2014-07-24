@@ -35,8 +35,6 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 // scoverage for test coverage (./skinny test:coverage)
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.5.1")
 
-libraryDependencies += "org.scoverage" %% "scalac-scoverage-plugin" % "0.99.7"
-
 // --------
 // scalac options for sbt
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
