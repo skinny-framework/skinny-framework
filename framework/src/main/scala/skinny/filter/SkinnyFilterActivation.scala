@@ -32,7 +32,6 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
    */
   beforeAction() {
     // combine error filters
-    var alreadyRendered = false
     val filtersTraverse: PartialFunction[Throwable, Any] = {
       case (t: Throwable) =>
 
@@ -44,16 +43,18 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
           }
         }
 
+        var rendered = false
+
         // rendering body
         val body: Any = skinnyErrorFilters.get(WithRendering).map { handlers =>
           handlers.foldLeft(null.asInstanceOf[Any]) {
             case (body, handler) =>
               // just apply this filter and return the existing body.
-              if (alreadyRendered) {
+              if (rendered) {
                 logger.error("This response is marked as rendered because other RenderingFilter already did the stuff.")
                 body
               } else {
-                alreadyRendered = true
+                rendered = true
                 try handler.apply(t)
                 catch {
                   case e: Exception =>
@@ -64,7 +65,7 @@ trait SkinnyFilterActivation { self: SkinnyControllerBase =>
           }
         }.getOrElse(null)
 
-        if (alreadyRendered) body else throw t
+        if (rendered) body else throw t
     }
     // register combined error filters
     error(filtersTraverse)
