@@ -78,10 +78,16 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
       body should equal("""{"name":[],"url":["url is required"]}""")
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
+    post("/foo/apis.xml", "name" -> "Twitter API", "url" -> "https://dev.twitter.com/") {
+      status should equal(201)
+      body should equal("")
+      header("Location") should equal("/foo/apis/2.xml")
+      header("Content-Type") should equal("application/xml; charset=utf-8")
+    }
     post("/foo/apis.json", "name" -> "Twitter API", "url" -> "https://dev.twitter.com/") {
       status should equal(201)
       body should equal("")
-      header("Location") should equal("/foo/apis/2")
+      header("Location") should equal("/foo/apis/3.json")
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
   }

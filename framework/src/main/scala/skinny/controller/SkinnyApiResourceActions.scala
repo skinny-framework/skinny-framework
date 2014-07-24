@@ -208,7 +208,8 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
           "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined.")
       }
       status = 201
-      response.setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
+      val ext = if (format == Format.HTML) "" else "." + format.name
+      response.setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}${ext}")
     } else {
       status = 400
       renderWithFormat(keyAndErrorMessages)
