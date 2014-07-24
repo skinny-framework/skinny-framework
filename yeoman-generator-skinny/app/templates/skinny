@@ -74,6 +74,8 @@ elif [ "$command" == "debug" -o "$command" == "d" ];then
   run_debuggable_app ${port}
 elif [ "$command" == "clean" ];then
   ${sbt_path} dev/clean
+  ${sbt_path} task/clean
+  copy_resources_to_task
 elif [ "$command" == "update" ];then
   ${sbt_path} update
 elif [ "$command" == "console" ];then
