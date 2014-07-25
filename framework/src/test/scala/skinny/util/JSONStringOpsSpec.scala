@@ -52,6 +52,43 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
 
   }
 
+  case class Something(fooBarBaz: String, hogeFooBar: Int)
+  case class Something2(fooBar_Baz: String, hogeFoo_bar: Int)
+
+  describe("JSONStringOps#fromJSONString for objects") {
+
+    it("converts JSON string value to Something object") {
+      val source = Something("abC", 123)
+      val json = JSONStringOps.toJSONStringAsIs(source)
+      val result: Option[Something] = JSONStringOps.fromJSONString[Something](json, false)
+      result.get.fooBarBaz should equal(source.fooBarBaz)
+      result.get.hogeFooBar should equal(source.hogeFooBar)
+    }
+
+    it("converts snake_cased JSON string value to Something object") {
+      val source = Something("abC", 123)
+      val json = JSONStringOps.toJSONString(source, true)
+      val result: Option[Something] = JSONStringOps.fromJSONString[Something](json, false)
+      result.get.fooBarBaz should equal(source.fooBarBaz)
+      result.get.hogeFooBar should equal(source.hogeFooBar)
+    }
+
+  }
+
+  /* TODO json4s doesn't support fields such as "fooBar_baz"
+  describe("JSONStringOps#fromJSONStringAsIs for objects") {
+
+    it("converts JSON string value to Something2 object") {
+      val source = Something2("abC", 123)
+      val json = JSONStringOps.toJSONStringAsIs(source)
+      val result: Option[Something2] = JSONStringOps.fromJSONStringAsIs[Something2](json)
+      result.get.fooBar_Baz should equal(source.fooBar_Baz)
+      result.get.hogeFoo_bar should equal(source.hogeFoo_bar)
+    }
+
+  }
+   */
+
   describe("JSONStringOps#fromJSONString for Map objects") {
 
     it("converts JSON string value to Map object") {

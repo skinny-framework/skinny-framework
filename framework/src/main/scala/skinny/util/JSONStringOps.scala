@@ -54,6 +54,7 @@ trait JSONStringOps extends jackson.JsonMethods {
    * Converts a value to JSON string.
    *
    * @param v value
+   * @param underscoreKeys apply #underscoreKeys keys if true
    * @return json string
    */
   def toJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
@@ -62,9 +63,18 @@ trait JSONStringOps extends jackson.JsonMethods {
   }
 
   /**
+   * Converts a value to JSON string without key conversions.
+   *
+   * @param v value
+   * @return json string
+   */
+  def toJSONStringAsIs(v: Any): String = toJSONString(v, false)
+
+  /**
    * Converts a value to prettified JSON string.
    *
    * @param v value
+   * @param underscoreKeys apply #underscoreKeys keys if true
    * @return json string
    */
   def toPrettyJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
@@ -73,20 +83,58 @@ trait JSONStringOps extends jackson.JsonMethods {
   }
 
   /**
+   * Converts a value to prettified JSON string without key conversions.
+   *
+   * @param v value
+   * @return json string
+   */
+  def toPrettyJSONStringAsIs(v: Any): String = toPrettyJSONString(v, false)
+
+  /**
    * Extracts a value from JSON string.
    * NOTE: When you convert to Map objects, be aware that underscoreKeys is false by default.
    *
    * @param json json string
-   * @tparam A type
+   * @param underscoreKeys apply #underscoreKeys keys if true
+   * @param asIs never apply key conversions if true
+   * @tparam A return type
    * @return value
    */
-  def fromJSONString[A](json: String, underscoreKeys: Boolean = false)(implicit mf: Manifest[A]): Option[A] = {
+  def fromJSONString[A](json: String, underscoreKeys: Boolean = false, asIs: Boolean = false)(implicit mf: Manifest[A]): Option[A] = {
     fromJSONStringToJValue(json, underscoreKeys).map[A](_.extract[A])
   }
 
-  def fromJSONStringToJValue(json: String, underscoreKeys: Boolean = false): Option[JValue] = {
+  /**
+   * Extracts a value from JSON string. The keys will be used as-is.
+   *
+   * {{{
+   *   case class Something(fooBar_baz: String)
+   *   val something = new Something("foo")
+   *   val json = toJSONString(something)
+   *   val something2 = fromJSONStringAsIs[Something](json)
+   *   something2.map(_.fooBar_baz) should equal(Some(something.fooBar_Baz))
+   * }}}
+   *
+   * @param json json string
+   * @param mf manifest
+   * @tparam A return type
+   * @return value
+   */
+  def fromJSONStringAsIs[A](json: String)(implicit mf: Manifest[A]): Option[A] = fromJSONString(json, false, true)
+
+  /**
+   * Extracts a JSON value from JSON string.
+   * NOTE: When you convert to Map objects, be aware that underscoreKeys is false by default.
+   *
+   * @param json json string
+   * @param underscoreKeys underscore keys
+   * @return value
+   */
+  def fromJSONStringToJValue(json: String, underscoreKeys: Boolean = false, asIs: Boolean = false): Option[JValue] = {
     parseOpt(StringInput(json)).map { v =>
-      if (underscoreKeys) v.underscoreKeys else v.camelizeKeys
+      if (asIs) v
+      else if (underscoreKeys) v.underscoreKeys
+      else v.camelizeKeys
     }
   }
 
