@@ -85,7 +85,13 @@ trait JSONStringOps extends jackson.JsonMethods {
   }
 
   def fromJSONStringToJValue(json: String, underscoreKeys: Boolean = false): Option[JValue] = {
-    parseOpt(StringInput(json)).map { v =>
+    val pureJson = if (useJSONVulnerabilityProtection &&
+      json.startsWith(prefixForJSONVulnerabilityProtection)) {
+      json.replace(prefixForJSONVulnerabilityProtection, "")
+    } else {
+      json
+    }
+    parseOpt(StringInput(pureJson)).map { v =>
       if (underscoreKeys) v.underscoreKeys else v.camelizeKeys
     }
   }
