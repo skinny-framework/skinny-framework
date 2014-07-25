@@ -1,7 +1,10 @@
 package integrationtest
 
 import controller.{ AngularXHRProgrammersController, Controllers }
+import model._
 import org.scalatra.test.scalatest._
+import skinny.util.AngularJSONStringOps._
+import skinny.test._
 
 class AngularXHRProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
 
@@ -19,9 +22,16 @@ class AngularXHRProgrammersControllerSpec extends ScalatraFlatSpec with unit.Ski
   // Angular XHR APIs
 
   it should "accept resource list request" in {
+    val programmer = Programmer.findAllWithLimitOffset(1, 0).headOption.getOrElse {
+      FactoryGirl(Programmer).create('name -> "Alice")
+    }
     get("/angular/programmers.json") {
       logger.debug(body)
       status should equal(200)
+      val acts = fromJSONString[List[Programmer]](body)
+      acts should not equal (None)
+      acts.get should not be (empty)
+      atLeast(1, acts.get) should have('name(programmer.name))
     }
   }
 
