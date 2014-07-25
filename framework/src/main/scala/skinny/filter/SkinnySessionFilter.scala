@@ -81,7 +81,7 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   afterAction() {
     try {
-      requestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).map { sessionWrapper =>
+      getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).foreach { sessionWrapper =>
         sessionWrapper.save()
       }
     } catch {
