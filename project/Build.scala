@@ -229,7 +229,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"    
   )
   val jodaDependencies = Seq(
-    "joda-time" %  "joda-time"    % "2.3"   % "compile",
+    "joda-time" %  "joda-time"    % "2.4"   % "compile",
     "org.joda"  %  "joda-convert" % "1.6"   % "compile"
   )
   val mailDependencies = slf4jApiDependencies ++ Seq(
@@ -269,6 +269,11 @@ object SkinnyFrameworkBuild extends Build {
           <id>seratch</id>
           <name>Kazuhiro Sera</name>
           <url>http://git.io/sera</url>
+        </developer>
+        <developer>
+          <id>namutaka</id>
+          <name>namu</name>
+          <url>https://github.com/namutaka</url>
         </developer>
         <developer>
           <id>Arakaki</id>
