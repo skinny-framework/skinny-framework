@@ -150,6 +150,14 @@ IF "%is_generator%"=="true" (
   GOTO script_eof
 )
 
+IF "%command%"=="task:clean" (
+  RMDIR task\src\main\resources /S /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  sbt "task/clean"
+  GOTO script_eof
+)
+
 SET is_task_run=false
 SET task_run_params=
 IF "%command%"=="task:run" SET is_task_run=true
@@ -164,7 +172,6 @@ IF "%is_task_run%"=="true" (
   SET task_run_params=%task_run_params:~1%
 
   RMDIR task\src\main\resources /S /q
-  RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
   sbt "task/run %task_run_params%"
@@ -299,6 +306,7 @@ ECHO.
 ECHO   eclipse       : will setup Scala IDE settings
 ECHO   idea/gen-idea : will setup IntelliJ IDEA settings
 ECHO.
+ECHO   task:clean    : will clean task project's target directory
 ECHO   task:run      : will run tasks
 ECHO.
 ECHO   g/generate controller : will generate controller

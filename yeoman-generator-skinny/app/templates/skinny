@@ -36,7 +36,6 @@ function setup_standalone_build() {
 }
 function copy_resources_to_task() {
   rm -rf task/src/main/resources
-  rm -rf task/target/
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
 }
@@ -111,6 +110,9 @@ elif [ "$command" == "scalajs:watch" ];then
 elif [ "$command" == "scalajs:package" ];then
   setup_scalajs
   ${sbt_path} "project scalajs" fastOptJS
+elif [ "$command" == "task:clean" ];then
+  ${sbt_path} "task/clean"
+  copy_resources_to_task
 elif [ "$command" == "task:run" ];then
   copy_resources_to_task
   shift
@@ -218,6 +220,7 @@ else
   echo ""
   echo "  heroku:init   : will setup Heroku deployment settings"
   echo ""
+  echo "  task:clean    : will clean task project's target directory"
   echo "  task:run      : will run tasks"
   echo ""
   echo "  g/generate controller : will generate controller"
