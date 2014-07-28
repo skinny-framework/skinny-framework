@@ -107,9 +107,10 @@ object SkinnyAppBuild extends Build {
 
   lazy val task = Project(id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
-      mainClass := Some("TaskRunner")
+      mainClass := Some("TaskRunner"),
+      name := appName + "-task"
     )
-  )
+  ) dependsOn(dev)
 
   // -------------------------------------------------------
   // Packaging

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 current_dir=`dirname $0`
 sbt_path=${current_dir}/sbt
@@ -111,6 +111,11 @@ elif [ "$command" == "scalajs:watch" ];then
 elif [ "$command" == "scalajs:package" ];then
   setup_scalajs
   ${sbt_path} "project scalajs" fastOptJS
+elif [ "$command" == "task:run" ];then
+  copy_resources_to_task
+  shift
+  command="task/run $@"
+  ${sbt_path} "${command}"
 elif [ "$command" == "g" -o "$command" == "generate" ];then
   generator_type="$2"
   shift
@@ -212,6 +217,8 @@ else
   echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
   echo ""
   echo "  heroku:init   : will setup Heroku deployment settings"
+  echo ""
+  echo "  task:run      : will run tasks"
   echo ""
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"
