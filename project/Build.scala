@@ -13,7 +13,7 @@ object SkinnyFrameworkBuild extends Build {
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.7"
   val h2Version = "1.4.180"
-  val jettyVersion = "9.2.1.v20140609"
+  val jettyVersion = "9.2.2.v20140723"
 
   lazy val baseSettings = Seq(
     organization := _organization,
