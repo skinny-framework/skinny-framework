@@ -76,14 +76,14 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
   }
 
   private def eval(v: String): Any = {
-    import scala.reflect.runtime.currentMirror
-    import scala.tools.reflect.ToolBox
     if (v == null) null
-    else {
+    else if (v.matches(".*\\$\\{.+\\}.*")) {
+      import scala.reflect.runtime.currentMirror
+      import scala.tools.reflect.ToolBox
       val toolbox = currentMirror.mkToolBox()
       val tree = toolbox.parse("s\"\"\"" + v + "\"\"\"")
       toTypedValue(toolbox.eval(tree))
-    }
+    } else v
   }
 
   /**
@@ -157,3 +157,4 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
   }
 
 }
+
