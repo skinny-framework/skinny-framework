@@ -43,7 +43,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies  <++= (scalaVersion) { scalaVersion => 
         Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
         jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (scalaVersion match {
-          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" % "compile")
+          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2" % "compile")
           case _ => Nil
         })
       }
