@@ -101,7 +101,7 @@ trait JSONStringOps extends jackson.JsonMethods {
    * @return value
    */
   def fromJSONString[A](json: String, underscoreKeys: Boolean = false, asIs: Boolean = false)(implicit mf: Manifest[A]): Option[A] = {
-    fromJSONStringToJValue(json, underscoreKeys).map[A](_.extract[A])
+    fromJSONStringToJValue(json, underscoreKeys, asIs).map[A](_.extract[A])
   }
 
   /**
