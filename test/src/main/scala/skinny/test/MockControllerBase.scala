@@ -7,8 +7,10 @@ import org.mockito.Mockito._
 import org.scalatra._
 import skinny.util.JSONStringOps
 import scala.collection.concurrent.TrieMap
+import skinny.controller.SkinnyControllerBase
 import skinny.controller.feature.{ JSONParamsAutoBinderFeature, RequestScopeFeature }
-import skinny.SkinnyControllerBase
+import javax.servlet.http.HttpServletResponse
+import javax.servlet.ServletOutputStream
 
 /**
  * Mock Controller Base.
@@ -30,8 +32,31 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   override implicit val response: HttpServletResponse = {
-    val res = new MockHttpServletResponse
+    val res = new MockHttpServletResponse {
+      val stubOutputStream = new MockServletOutputStream
+      override def getOutputStream: ServletOutputStream = stubOutputStream
+    }
     res
+  }
+
+  override def halt[T: Manifest](
+    status: Integer = null,
+    body: T = (),
+    headers: Map[String, String] = Map.empty,
+    reason: String = null): Nothing = {
+
+    throw new MockHaltException(
+      status = Option(status).map(_.intValue()),
+      reason = Option(reason),
+      headers = headers,
+      body = body)
+  }
+
+  def outputStreamContents: String = {
+    response
+      .asInstanceOf[MockHttpServletResponse]
+      .getOutputStream
+      .toString
   }
 
   private[this] val _params = TrieMap[String, Seq[String]]()
