@@ -19,8 +19,25 @@ class SkinnyTestSupportSpec extends ScalatraFlatSpec with SkinnyTestSupport
 
     def showSkinnySession = skinnySession.getAttribute("inject").orNull
     get("/skinny-session-injector-result")(showSkinnySession)
+
+    def useUrl = url("/foo")
+    get("/useUrl")(useUrl)
+
+    val hoge = get("hoge")("aaaa").as('hoge)
+    def useUrl2 = url(hoge)
+    get("/useUrl2")(useUrl2)
   }
   addFilter(SessionInjectorTest, "/*")
+
+  class ApiTest extends SkinnyApiController with Routes {
+    def useUrl = url("/foo")
+    get("/api/useUrl")(useUrl)
+
+    val hoge = get("hoge")("aaaa").as('hoge)
+    def useUrl2 = url(hoge)
+    get("/api/useUrl2")(useUrl2)
+  }
+  addFilter(new ApiTest, "/*")
 
   it should "serialize string" in {
     val obj = "foo"
@@ -67,5 +84,24 @@ class SkinnyTestSupportSpec extends ScalatraFlatSpec with SkinnyTestSupport
       }
     }
   }
+
+  it should "work with #url" in {
+    get("/useUrl") {
+      status should equal(200)
+    }
+    get("/useUrl2") {
+      status should equal(200)
+    }
+  }
+
+  it should "work with #url when using SkinnyApiController" in {
+    get("/api/useUrl") {
+      status should equal(200)
+    }
+    get("/api/useUrl2") {
+      status should equal(200)
+    }
+  }
+
 }
 

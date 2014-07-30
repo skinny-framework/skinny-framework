@@ -1,5 +1,7 @@
 package skinny.controller
 
+import javax.servlet.http.HttpServletRequest
+
 import skinny._
 import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
@@ -148,5 +150,24 @@ trait SkinnyControllerBase
     extends Elem(null, name, xml.Null, TopScope, children.isEmpty, children: _*)
   private[this] class XmlElem(name: String, value: String)
     extends Elem(null, name, xml.Null, TopScope, Text(value).isEmpty, Text(value))
+
+  // ----
+  // Scalatra issue #368 work around
+
+  override def url(
+    route: Route,
+    params: Map[String, String],
+    splats: Iterable[String])(
+      implicit req: HttpServletRequest): String = {
+
+    try {
+      super.url(route, params, splats)(req)
+    } catch {
+      case e: NullPointerException =>
+        // work around for Scalatra issue
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
+    }
+  }
 
 }
