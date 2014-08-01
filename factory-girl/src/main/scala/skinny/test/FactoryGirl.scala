@@ -83,7 +83,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
       val toolbox = currentMirror.mkToolBox()
       val tree = toolbox.parse("s\"\"\"" + v + "\"\"\"")
       toTypedValue(toolbox.eval(tree))
-    } else v
+    } else toTypedValue(v)
   }
 
   /**
