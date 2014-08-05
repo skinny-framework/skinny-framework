@@ -8,7 +8,8 @@ resolvers += Classpaths.sbtPluginReleases
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
   ExclusionRule(organization = "org.mortbay.jetty"),
   ExclusionRule(organization = "org.eclipse.jetty"),
-  ExclusionRule(organization = "org.apache.tomcat.embed")
+  ExclusionRule(organization = "org.apache.tomcat.embed"),
+  ExclusionRule(organization = "com.earldouglas")
 ))
 
 // scalatra-sbt depends on xsbt-web-plugin
