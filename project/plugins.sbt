@@ -17,9 +17,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.5")
 
-addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.5.1")
-
-libraryDependencies += "org.scoverage" %% "scalac-scoverage-plugin" % "0.99.7"
+addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.7.1")
 
 // TODO java.lang.ArrayIndexOutOfBoundsException: -1 with 0.13.2-MX
 //scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
