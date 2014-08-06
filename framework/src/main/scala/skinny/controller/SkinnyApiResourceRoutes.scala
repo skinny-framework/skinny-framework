@@ -39,7 +39,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
   @deprecated("Use createApiUrl instead", since = "1.0.0")
   val createExtUrl = createApiUrl
 
-  def createApiAction = params.get("ext").map {
+  protected def createApiAction = params.get("ext").map {
     case "json" => createResource()(Format.JSON)
     case "xml" => createResource()(Format.XML)
     case _ => haltWithBody(404)
