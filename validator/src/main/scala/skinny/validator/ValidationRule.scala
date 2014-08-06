@@ -60,6 +60,58 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
 
   protected def isEmpty(v: Any): Boolean = v == null || v == ""
 
+  protected def isNumeric(v: Any): Boolean = {
+    !isEmpty(v) && "^((-|\\+)?[0-9]+(\\.[0-9]+)?)+$".r.findFirstIn(v.toString).isDefined
+  }
+
+  protected def toDouble(v: Any): Double = v.toString.toDouble
+
+  protected def isDouble(v: Any): Boolean = isEmpty(v) || {
+    try {
+      toDouble(v)
+      true
+    } catch {
+      case e: NullPointerException => false
+      case e: NumberFormatException => false
+    }
+  }
+
+  protected def toFloat(v: Any): Float = v.toString.toFloat
+
+  protected def isFloat(v: Any): Boolean = isEmpty(v) || {
+    try {
+      toFloat(v)
+      true
+    } catch {
+      case e: NullPointerException => false
+      case e: NumberFormatException => false
+    }
+  }
+
+  protected def toInt(v: Any): Int = v.toString.toInt
+
+  protected def isInt(v: Any): Boolean = isEmpty(v) || {
+    try {
+      toInt(v)
+      true
+    } catch {
+      case e: NullPointerException => false
+      case e: NumberFormatException => false
+    }
+  }
+
+  protected def toLong(v: Any): Long = v.toString.toLong
+
+  protected def isLong(v: Any): Boolean = isEmpty(v) || {
+    try {
+      toLong(v)
+      true
+    } catch {
+      case e: NullPointerException => false
+      case e: NumberFormatException => false
+    }
+  }
+
   protected def toHasSize(v: Any): Option[{ def size(): Int }] = {
     val x = v.asInstanceOf[{ def size(): Int }]
     try {
