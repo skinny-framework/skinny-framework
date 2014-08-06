@@ -91,7 +91,10 @@ trait ValidationFeature {
           errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
+                case I18nKeyParam(key) => i18n.get(key).getOrElse(key)
+                case value => value
+              }.toList
             ).getOrElse(error.name)
           }
         }
@@ -102,7 +105,10 @@ trait ValidationFeature {
           key -> errors.get(key).map { error =>
             skinnyValidationMessages.get(
               key = error.name,
-              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.toList
+              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
+                case I18nKeyParam(key) => i18n.get(key).getOrElse(key)
+                case value => value
+              }.toList
             ).getOrElse(error.name)
           }
         }.toMap)

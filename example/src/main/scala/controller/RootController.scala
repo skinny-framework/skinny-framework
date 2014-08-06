@@ -1,7 +1,9 @@
 package controller
 
 import service._
+import skinny.controller.Params
 import skinny.filter._
+import skinny.validator._
 
 class RootController extends ApplicationController with TxPerRequestFilter with SkinnySessionFilter {
 
@@ -25,6 +27,25 @@ class RootController extends ApplicationController with TxPerRequestFilter with 
   def invalidateExample = {
     session.invalidate()
     redirect("/")
+  }
+
+  def form = validation(Params(params),
+    paramKey("foo") is required & matches(".*OK.*", "ok")
+  )
+
+  def nestedI18nExample = {
+    if (form.validate()) {
+      status = 200
+    } else {
+      status = 400
+    }
+    render("/nestI18nExample/index")
+  }
+
+  case class matches(regexp: String, regexpName: String) extends ValidationRule {
+    override def name: String = "matches"
+    override def messageParams = Seq(I18nKeyParam(regexpName))
+    override def isValid(value: Any): Boolean = isEmpty(value) || value.toString.matches(regexp)
   }
 
 }

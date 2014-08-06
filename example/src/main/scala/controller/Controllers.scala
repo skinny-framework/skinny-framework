@@ -42,6 +42,7 @@ object Controllers {
     val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
     val errorUrl = get("/error")(errorExample).as('error)
     val reactUrl = get("/react")(reactExample).as('react)
+    val nestedI18nUrl = get("/nested-i18n")(nestedI18nExample).as('nestedI18n)
     val invalidateUrl = get("/invalidate")(invalidateExample).as('invalidate)
   }
 
