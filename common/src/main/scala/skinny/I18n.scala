@@ -39,6 +39,14 @@ case class I18n(locale: Locale = null) extends Logging {
   def get(key: String): Option[String] = messages.get(key)
 
   /**
+   * Returns i18n value if exists. If absent, returns the message key.
+   *
+   * @param key key
+   * @return value or key
+   */
+  def getOrKey(key: String): String = get(key).getOrElse(key)
+
+  /**
    * Returns i18n value if exists.
    *
    * @param key key
@@ -49,5 +57,14 @@ case class I18n(locale: Locale = null) extends Logging {
     get(key).map(template =>
       MessageFormat.format(template, params.map(_.asInstanceOf[Object]): _*))
   }
+
+  /**
+   * Returns i18n value if exists. If absent, returns the message key.
+   *
+   * @param key key
+   * @param params params
+   * @return value or key
+   */
+  def getOrKey(key: String, params: Seq[Any]): String = get(key, params).getOrElse(key)
 
 }
