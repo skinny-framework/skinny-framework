@@ -27,7 +27,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |
           |<div class="form-group">
           |  <label class="control-label" for="name">
-          |    ${s.i18n.get("member.name")}
+          |    ${s.i18n.getOrKey("member.name")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""}">
@@ -46,7 +46,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="favorite_number">
-          |    ${s.i18n.get("member.favoriteNumber")}
+          |    ${s.i18n.getOrKey("member.favoriteNumber")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("favorite_number")) "has-error" else ""}">
@@ -65,7 +65,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="magic_number">
-          |    ${s.i18n.get("member.magicNumber")}
+          |    ${s.i18n.getOrKey("member.magicNumber")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("magic_number")) "has-error" else ""}">
@@ -84,7 +84,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="is_activated">
-          |    ${s.i18n.get("member.isActivated")}
+          |    ${s.i18n.getOrKey("member.isActivated")}
           |  </label>
           |  <div class="controls row">
           |    <div class="col-xs-12">
@@ -94,18 +94,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label">
-          |    ${s.i18n.get("member.birthday")}
+          |    ${s.i18n.getOrKey("member.birthday")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""}">
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthday_year"  class="form-control" value="${s.params.birthday_year}"  placeholder="${s.i18n.get("year")}"  maxlength=4 />
+          |        <input type="text" name="birthday_year"  class="form-control" value="${s.params.birthday_year}"  placeholder="${s.i18n.getOrKey("year")}"  maxlength=4 />
           |      </div>
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthday_month" class="form-control" value="${s.params.birthday_month}" placeholder="${s.i18n.get("month")}" maxlength=2 />
+          |        <input type="text" name="birthday_month" class="form-control" value="${s.params.birthday_month}" placeholder="${s.i18n.getOrKey("month")}" maxlength=2 />
           |      </div>
           |      <div class="col-xs-2">
-          |        <input type="text" name="birthday_day"   class="form-control" value="${s.params.birthday_day}"   placeholder="${s.i18n.get("day")}"   maxlength=2 />
+          |        <input type="text" name="birthday_day"   class="form-control" value="${s.params.birthday_day}"   placeholder="${s.i18n.getOrKey("day")}"   maxlength=2 />
           |      </div>
           |    </div>
           |    #if (keyAndErrorMessages.hasErrors("birthday"))
@@ -119,8 +119,8 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-actions">
           |  ${unescape(s.csrfHiddenInputTag)}
-          |  <input type="submit" class="btn btn-primary" value="${s.i18n.get("submit")}">
-          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("cancel")}</a>
+          |  <input type="submit" class="btn btn-primary" value="${s.i18n.getOrKey("submit")}">
+          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.getOrKey("cancel")}</a>
           |</div>
           |""".stripMargin
       code should equal(expected)
@@ -144,7 +144,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.get("member.new")}</h3>
+          |<h3>${s.i18n.getOrKey("member.new")}</h3>
           |<hr/>
           |
           |<%--
@@ -178,7 +178,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.get("member.edit")}</h3>
+          |<h3>${s.i18n.getOrKey("member.edit")}</h3>
           |<hr/>
           |
           |<%--
@@ -214,7 +214,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.get("member.list")}</h3>
+          |<h3>${s.i18n.getOrKey("member.list")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
@@ -239,12 +239,12 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<table class="table table-bordered">
           |<thead>
           |  <tr>
-          |    <th>${s.i18n.get("member.id")}</th>
-          |    <th>${s.i18n.get("member.name")}</th>
-          |    <th>${s.i18n.get("member.favoriteNumber")}</th>
-          |    <th>${s.i18n.get("member.magicNumber")}</th>
-          |    <th>${s.i18n.get("member.isActivated")}</th>
-          |    <th>${s.i18n.get("member.birthday")}</th>
+          |    <th>${s.i18n.getOrKey("member.id")}</th>
+          |    <th>${s.i18n.getOrKey("member.name")}</th>
+          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
           |    <th></th>
           |  </tr>
           |</thead>
@@ -258,17 +258,17 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |    <td>${item.isActivated}</td>
           |    <td>${item.birthday}</td>
           |    <td>
-          |      <a href="${s.url(Controllers.adminMembers.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.get("detail")}</a>
-          |      <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.get("edit")}</a>
-          |      <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |        href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |      <a href="${s.url(Controllers.adminMembers.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.getOrKey("detail")}</a>
+          |      <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.getOrKey("edit")}</a>
+          |      <a data-method="delete" data-confirm="${s.i18n.getOrKey("member.delete.confirm")}"
+          |        href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.getOrKey("delete")}</a>
           |    </td>
           |  </tr>
           |  #end
           |</tbody>
           |</table>
           |
-          |<a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.get("new")}</a>
+          |<a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
           |""".stripMargin
       code should equal(expected)
     }
@@ -292,7 +292,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.get("member.detail")}</h3>
+          |<h3>${s.i18n.getOrKey("member.detail")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
@@ -300,27 +300,27 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<table class="table table-bordered">
           |<tbody>
           |  <tr>
-          |    <th>${s.i18n.get("member.id")}</th>
+          |    <th>${s.i18n.getOrKey("member.id")}</th>
           |    <td>${item.id}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.get("member.name")}</th>
+          |    <th>${s.i18n.getOrKey("member.name")}</th>
           |    <td>${item.name}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.get("member.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
           |    <td>${item.favoriteNumber}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.get("member.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
           |    <td>${item.magicNumber}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.get("member.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
           |    <td>${item.isActivated}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.get("member.birthday")}</th>
+          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
           |    <td>${item.birthday}</td>
           |  </tr>
           |
@@ -329,10 +329,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |
           |<hr/>
           |<div class="form-actions">
-          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.get("backToList")}</a>
-          |  <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.get("edit")}</a>
-          |  <a data-method="delete" data-confirm="${s.i18n.get("member.delete.confirm")}"
-          |    href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.get("delete")}</a>
+          |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.getOrKey("backToList")}</a>
+          |  <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.getOrKey("edit")}</a>
+          |  <a data-method="delete" data-confirm="${s.i18n.getOrKey("member.delete.confirm")}"
+          |    href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.getOrKey("delete")}</a>
           |</div>
           |""".stripMargin
       code should equal(expected)
