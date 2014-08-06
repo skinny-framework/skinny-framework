@@ -67,7 +67,7 @@ object SkinnyAppBuild extends Build {
     )
   )
 
-  lazy val scalatePrecompileSettings = baseSettings ++ scalateSettings ++ Seq(
+  lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
     scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
