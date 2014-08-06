@@ -30,6 +30,9 @@ class numericSpec extends FlatSpec with Matchers {
     validate(param("id", 0.3F)).isSuccess should equal(true)
     validate(param("id", 123L)).isSuccess should equal(true)
 
+    validate(param("id", "123\n")).isSuccess should equal(false)
+    validate(param("id", "123\n234")).isSuccess should equal(false)
+
   }
 
 }

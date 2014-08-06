@@ -61,7 +61,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
   protected def isEmpty(v: Any): Boolean = v == null || v == ""
 
   protected def isNumeric(v: Any): Boolean = {
-    !isEmpty(v) && "^((-|\\+)?[0-9]+(\\.[0-9]+)?)+$".r.findFirstIn(v.toString).isDefined
+    !isEmpty(v) && """\A((-|\+)?[0-9]+(\.[0-9]+)?)+\z""".r.findFirstIn(v.toString).isDefined
   }
 
   protected def toDouble(v: Any): Double = v.toString.toDouble

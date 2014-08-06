@@ -264,7 +264,7 @@ object same extends ValidationRule {
 object email extends ValidationRule {
   def name = "email"
   def isValid(v: Any) = isEmpty(v) ||
-    """^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$""".r.findFirstIn(v.toString).isDefined
+    """\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z""".r.findFirstIn(v.toString).isDefined
 }
 
 // ----
