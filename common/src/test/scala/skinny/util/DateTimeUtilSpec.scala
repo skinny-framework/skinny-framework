@@ -3,7 +3,7 @@ package skinny.util
 import org.scalatest._
 import skinny.ParamType
 
-class DateTimeUtilTest extends FlatSpec with Matchers {
+class DateTimeUtilSpec extends FlatSpec with Matchers {
 
   behavior of "DateTimeUtil"
 

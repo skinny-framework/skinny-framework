@@ -2,7 +2,7 @@ package skinny.util
 
 import org.scalatest._
 
-class StringUtilTest extends FlatSpec with Matchers {
+class StringUtilSpec extends FlatSpec with Matchers {
   import StringUtil._
 
   behavior of "StringUtil"
