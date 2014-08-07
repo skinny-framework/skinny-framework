@@ -1,5 +1,6 @@
 #!/bin/bash 
 current_dir=`pwd`
+script_dir=`dirname $0`
 sbt_config=${current_dir}/.sbtconfig
 
 if [ ! -f ${sbt_config} ]; then
@@ -17,5 +18,5 @@ fi
 source ${sbt_config}
 DEBUG_PORT=$1
 shift
-exec java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=127.0.0.1:${DEBUG_PORT} -Xmx1024M ${SBT_OPTS} -jar ${current_dir}/bin/sbt-launch.jar "$@"
+exec java -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=127.0.0.1:${DEBUG_PORT} -Xmx1024M ${SBT_OPTS} -jar ${script_dir}/bin/sbt-launch.jar "$@"
 

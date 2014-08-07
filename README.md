@@ -13,6 +13,13 @@ See the website in detail.
 
 http://skinny-framework.org/
 
+## Global skinny script
+
+```sh
+curl -L http://git.io/skinny-install | sh
+skinny new myapp
+```
+
 ## Try Skinny Framework now!
 
 Download latest skinny-blank-app.zip and unzip it, then just run ./skinny command on your terminal. That’s all!

@@ -2,6 +2,7 @@
 
 HOME_DIR=`echo $HOME | sed -e s/\\\\/$//`
 ROOT_DIR=${HOME_DIR}/bin/skinny-framework
+rm -rf ${ROOT_DIR}
 mkdir -p ${ROOT_DIR}
 SKINNY_COMMAND=${ROOT_DIR}/skinny
 cd ${ROOT_DIR}

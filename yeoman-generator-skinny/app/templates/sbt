@@ -1,5 +1,6 @@
 #!/bin/bash
 current_dir=`pwd`
+script_dir=`dirname $0`
 sbt_config=${current_dir}/.sbtconfig
 
 if [ ! -f ${sbt_config} ]; then
@@ -15,5 +16,5 @@ export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT} \${SBT_OPTS}\"
 fi
 
 source ${sbt_config}
-exec java -Xmx1024M ${SBT_OPTS} -jar ${current_dir}/bin/sbt-launch.jar "$@"
+exec java -Xmx1024M ${SBT_OPTS} -jar ${script_dir}/bin/sbt-launch.jar "$@"
 
