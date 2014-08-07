@@ -1,8 +1,10 @@
-#!/bin/bash 
+#!/bin/bash
 
-current_dir=`dirname $0`
-sbt_path=${current_dir}/sbt
-sbt_debug_path=${current_dir}/sbt-debug
+current_dir=.
+current_project=`ls | grep project`
+script_dir=`dirname $0`
+sbt_path=${script_dir}/sbt
+sbt_debug_path=${script_dir}/sbt-debug
 chmod +x ${sbt_path}
 chmod +x ${sbt_debug_path}
 
@@ -11,6 +13,13 @@ if [ -d "${current_dir}/ivy2" ]; then
   cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
   rm -rf ${current_dir}/ivy2
 fi
+
+function verify_skinny_project() {
+  if [ "${current_project}" == "" ]; then
+    echo "Skinny applicaiton not found here!"
+    exit 1
+  fi
+}
 
 function run_app() {
   ${sbt_path} "~;container:restart"
@@ -60,7 +69,37 @@ function setup_scalajs() {
 }
 
 command="$1"
-if [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
+if [ "$command" != "" -a "$command" != "new" ]; then
+  verify_skinny_project
+fi
+
+if [ "$command" == "new" ];then
+  name="$2"
+  if [ "$name" == "" ]; then
+    echo "Usage: ./skinny new [application name]"
+    exit 1
+  fi
+  existing_version=`npm list -g | grep generator-skinny`
+  if [ "${existing_version}" == "" ]; then
+    npm install -g yo
+    npm install -g generator-skinny
+  fi
+  mkdir -p ${name}
+  cd ${name}
+  yo skinny
+
+  echo " ******************************************** "
+  echo "   New Skinny application has been created!"
+  echo ""
+  echo "   $ cd ./${name}"
+  echo "   $ ./skinny run"
+  echo ""
+  echo "   Enjoy Scala programming!"
+  echo ""
+  echo " ******************************************** "
+  echo ""
+
+elif [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
   option="$2"
   if [ "$option" == "-precompile" -o "$option" == "--precompile" ];then
     run_precompile_app
@@ -191,6 +230,7 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
+  echo "  new             : will create new Skinny application"
   echo "  run/server/s    : will run application for local development"
   echo "  run -precompile : will run application with Scalate precompilation"
   echo "  debug/d         : will run application with JDWP. default port 5005"

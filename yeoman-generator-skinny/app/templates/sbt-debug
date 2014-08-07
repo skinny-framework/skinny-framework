@@ -1,5 +1,4 @@
 #!/bin/bash 
-cd `dirname $0`
 current_dir=`pwd`
 sbt_config=${current_dir}/.sbtconfig
 
