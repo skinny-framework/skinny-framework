@@ -8,6 +8,66 @@ class DateTimeInterpolationStringSpec extends FlatSpec with Matchers
 
   behavior of "DateTimeInterpolationString"
 
+  it should "have special keywords" in {
+    val today = LocalDate.now
+    val todayDateTime = today.toDateTime(new LocalTime(0, 0, 0))
+
+    joda"now" should not equal (null)
+    joda"today".toString should equal(todayDateTime.toString)
+    joda"tomorrow".toString should equal(todayDateTime.plusDays(1).toString)
+    joda"yesterday".toString should equal(todayDateTime.minusDays(1).toString)
+
+    joda"1 year ago".toString.take(18) should equal(DateTime.now.minusYears(1).toString.take(18))
+    joda"2 years ago".toString.take(18) should equal(DateTime.now.minusYears(2).toString.take(18))
+    joda"1 year later".toString.take(18) should equal(DateTime.now.plusYears(1).toString.take(18))
+    joda"2 years later".toString.take(18) should equal(DateTime.now.plusYears(2).toString.take(18))
+
+    joda"1 month ago".toString.take(18) should equal(DateTime.now.minusMonths(1).toString.take(18))
+    joda"2 months ago".toString.take(18) should equal(DateTime.now.minusMonths(2).toString.take(18))
+    joda"1 month later".toString.take(18) should equal(DateTime.now.plusMonths(1).toString.take(18))
+    joda"2 months later".toString.take(18) should equal(DateTime.now.plusMonths(2).toString.take(18))
+
+    joda"1 day ago".toString.take(18) should equal(DateTime.now.minusDays(1).toString.take(18))
+    joda"2 days ago".toString.take(18) should equal(DateTime.now.minusDays(2).toString.take(18))
+    joda"1 day later".toString.take(18) should equal(DateTime.now.plusDays(1).toString.take(18))
+    joda"2 days later".toString.take(18) should equal(DateTime.now.plusDays(2).toString.take(18))
+
+    joda"1 hour ago".toString.take(18) should equal(DateTime.now.minusHours(1).toString.take(18))
+    joda"2 hours ago".toString.take(18) should equal(DateTime.now.minusHours(2).toString.take(18))
+    joda"1 hour later".toString.take(18) should equal(DateTime.now.plusHours(1).toString.take(18))
+    joda"2 hours later".toString.take(18) should equal(DateTime.now.plusHours(2).toString.take(18))
+
+    joda"1 minute ago".toString.take(18) should equal(DateTime.now.minusMinutes(1).toString.take(18))
+    joda"2 minutes ago".toString.take(18) should equal(DateTime.now.minusMinutes(2).toString.take(18))
+    joda"1 minute later".toString.take(18) should equal(DateTime.now.plusMinutes(1).toString.take(18))
+    joda"2 minutes later".toString.take(18) should equal(DateTime.now.plusMinutes(2).toString.take(18))
+
+    joda"1 second ago".toString.take(18) should equal(DateTime.now.minusSeconds(1).toString.take(18))
+    joda"2 seconds ago".toString.take(18) should equal(DateTime.now.minusSeconds(2).toString.take(18))
+    joda"1 second later".toString.take(18) should equal(DateTime.now.plusSeconds(1).toString.take(18))
+    joda"2 seconds later".toString.take(18) should equal(DateTime.now.plusSeconds(2).toString.take(18))
+
+    jodaDate"now".toString should equal(today.toString)
+    jodaDate"today".toString should equal(today.toString)
+    jodaDate"tomorrow".toString should equal(today.plusDays(1).toString)
+    jodaDate"yesterday".toString should equal(today.minusDays(1).toString)
+
+    jodaDate"1 year ago".toString.take(18) should equal(today.minusYears(1).toString.take(18))
+    jodaDate"2 years ago".toString.take(18) should equal(today.minusYears(2).toString.take(18))
+    jodaDate"1 year later".toString.take(18) should equal(today.plusYears(1).toString.take(18))
+    jodaDate"2 years later".toString.take(18) should equal(today.plusYears(2).toString.take(18))
+
+    jodaDate"1 month ago".toString.take(18) should equal(today.minusMonths(1).toString.take(18))
+    jodaDate"2 months ago".toString.take(18) should equal(today.minusMonths(2).toString.take(18))
+    jodaDate"1 month later".toString.take(18) should equal(today.plusMonths(1).toString.take(18))
+    jodaDate"2 months later".toString.take(18) should equal(today.plusMonths(2).toString.take(18))
+
+    jodaDate"1 day ago".toString.take(18) should equal(today.minusDays(1).toString.take(18))
+    jodaDate"2 days ago".toString.take(18) should equal(today.minusDays(2).toString.take(18))
+    jodaDate"1 day later".toString.take(18) should equal(today.plusDays(1).toString.take(18))
+    jodaDate"2 days later".toString.take(18) should equal(today.plusDays(2).toString.take(18))
+  }
+
   it should "work with DateTime" in {
     {
       joda"2014-01-02".toString should equal(new DateTime(2014, 1, 2, 0, 0, 0).toString)
