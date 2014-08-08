@@ -30,6 +30,10 @@ class DateTimeInterpolationString(val s: StringContext) extends AnyVal {
   def jodaLocalTime(params: Any*): LocalTime = DateTimeUtil.parseLocalTime(buildInterpolatedString(params, LocalTimeType))
   def jodaTime(params: Any*): LocalTime = jodaLocalTime(params: _*)
 
+  private def string(d: DateTime) = DateTimeUtil.toString(d)
+  private def string(d: LocalDate) = DateTimeUtil.toString(d)
+  private def string(d: LocalTime) = DateTimeUtil.toString(d)
+
   private def buildInterpolatedString(params: Seq[Any], jodaType: JodaType): String = {
     val str = s.parts.zipAll(params, "", LastParam).foldLeft(new StringBuilder) {
       case (sb, (previousQueryPart, LastParam)) => sb ++= previousQueryPart
@@ -46,43 +50,43 @@ class DateTimeInterpolationString(val s: StringContext) extends AnyVal {
     (str, jodaType) match {
       case (str, _) if str.matches("""^\d+\s+years?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusYears(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusYears(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusYears(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusYears(amount.toInt))
         }
       case (str, _) if str.matches("""^\d+\s+months?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusMonths(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusMonths(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusMonths(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusMonths(amount.toInt))
         }
       case (str, _) if str.matches("""^\d+\s+days?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusDays(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusDays(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusDays(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusDays(amount.toInt))
         }
       case (str, _) if str.matches("""^\d+\s+hours?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusHours(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusHours(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusHours(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusHours(amount.toInt))
         }
       case (str, _) if str.matches("""^\d+\s+minutes?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusMinutes(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusMinutes(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusMinutes(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusMinutes(amount.toInt))
         }
       case (str, _) if str.matches("""^\d+\s+seconds?\s+(ago|later)$""") =>
         str.split("\\s+") match {
-          case Array(amount, _, "ago") => DateTime.now.minusSeconds(amount.toInt).toString
-          case Array(amount, _, "later") => DateTime.now.plusSeconds(amount.toInt).toString
+          case Array(amount, _, "ago") => string(DateTime.now.minusSeconds(amount.toInt))
+          case Array(amount, _, "later") => string(DateTime.now.plusSeconds(amount.toInt))
         }
-      case ("now", DateTimeType) => DateTime.now.toString
-      case ("now", LocalDateType) => LocalDate.now.toString
-      case ("now", LocalTimeType) => LocalTime.now.toString
-      case ("today", DateTimeType) => LocalDate.now.toString
-      case ("today", LocalDateType) => LocalDate.now.toString
-      case ("yesterday", DateTimeType) => LocalDate.now.minusDays(1).toString
-      case ("yesterday", LocalDateType) => LocalDate.now.minusDays(1).toString
-      case ("tomorrow", DateTimeType) => LocalDate.now.plusDays(1).toString
-      case ("tomorrow", LocalDateType) => LocalDate.now.plusDays(1).toString
+      case ("now", DateTimeType) => string(DateTime.now)
+      case ("now", LocalDateType) => string(LocalDate.now)
+      case ("now", LocalTimeType) => string(LocalTime.now)
+      case ("today", DateTimeType) => string(LocalDate.now)
+      case ("today", LocalDateType) => string(LocalDate.now)
+      case ("yesterday", DateTimeType) => string(LocalDate.now.minusDays(1))
+      case ("yesterday", LocalDateType) => string(LocalDate.now.minusDays(1))
+      case ("tomorrow", DateTimeType) => string(LocalDate.now.plusDays(1))
+      case ("tomorrow", LocalDateType) => string(LocalDate.now.plusDays(1))
       case _ => str
     }
   }
