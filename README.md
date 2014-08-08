@@ -13,11 +13,13 @@ See the website in detail.
 
 http://skinny-framework.org/
 
-## Global skinny script
+## Global skinny script via Homebrew
+
+https://github.com/skinny-framework/homebrew-alt
 
 ```sh
-curl -L http://git.io/skinny-install | sh
-skinny new myapp
+brew tap skinny-framework/alt
+brew install skinny
 ```
 
 ## Try Skinny Framework now!
