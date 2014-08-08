@@ -16,6 +16,14 @@ IF EXIST "ivy2" (
   RMDIR ivy2 /s /q
 )
 
+IF %command%==new (
+  ECHO Sorry to say, this operation is not supported yet on Windows...
+  GOTO script_eof
+)
+IF %command%==upgrade (
+  ECHO Sorry to say, this operation is not supported yet on Windows...
+  GOTO script_eof
+)
 IF %command%==run (
   GOTO run
 )
@@ -280,6 +288,8 @@ REM ***************************************************************************
 ECHO.
 ECHO  Usage: skinny [COMMAND] [OPTIONS]...
 ECHO.
+ECHO   new                : will create new Skinny application
+ECHO   upgrade            : will upgrade Skinny app project
 ECHO   run/server/s       : will run application for local development
 ECHO   debug/d            : will run application with JDWP. default port 5005
 ECHO   clean              : will clear target directory
