@@ -29,6 +29,11 @@ object SkinnyAppBuild extends Build {
     name         := appName,
     version      := appVersion,
     scalaVersion := theScalaVersion,
+    dependencyOverrides := Set(
+      "org.scala-lang" %  "scala-library"  % scalaVersion.value,
+      "org.scala-lang" %  "scala-reflect"  % scalaVersion.value,
+      "org.scala-lang" %  "scala-compiler" % scalaVersion.value
+    ),
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
@@ -36,8 +41,6 @@ object SkinnyAppBuild extends Build {
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
       "com.h2database"          %  "h2"                  % "1.4.180",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
-      // To fix java.lang.ClassNotFoundException: scala.collection.Seq when running tests
-      "org.scala-lang"          %  "scala-library"       % theScalaVersion      % "test",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
       "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
       "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
@@ -45,9 +48,7 @@ object SkinnyAppBuild extends Build {
       //"org.scalatra"            %% "scalatra-specs2"     % scalatraVersion       % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
       "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
-      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test",
-      // To fix Scalate runtime evaluation error on Java 8 (https://gist.github.com/seratch/9680709)
-      "org.scala-lang"          %  "scala-compiler"      % theScalaVersion       % "container"
+      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
