@@ -92,11 +92,13 @@ object SkinnyAppBuild extends Build {
   )
   lazy val dev = Project(id = "dev", base = file("."),
     settings = devBaseSettings ++ Seq(
+      name := appName + "-dev",
       target := baseDirectory.value / "target" / "dev"
     )
   )
   lazy val precompileDev = Project(id = "precompileDev", base = file("."),
     settings = devBaseSettings ++ scalatePrecompileSettings ++ Seq(
+      name := appName + "-precompile-dev",
       target := baseDirectory.value / "target" / "precompile-dev",
       ideaIgnoreModule := true
     )
