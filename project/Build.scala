@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.2.8"
+  val _version = "1.2.9-SNAPSHOT"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.7"
@@ -36,6 +36,9 @@ object SkinnyFrameworkBuild extends Build {
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     pomExtra := _pomExtra
   )
+
+  // -----------------------------
+  // skinny libraries
 
   lazy val common = Project (id = "common", base = file("common"),
    settings = baseSettings ++ Seq(
@@ -72,7 +75,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-io"    %  "commons-io" % "2.4"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
-  ) dependsOn(common, validator, orm, mailer, httpClient)
+  ) dependsOn(common, json, validator, orm, mailer, httpClient)
 
   lazy val standalone = Project (id = "standalone", base = file("standalone"),
     settings = baseSettings ++ Seq(
@@ -165,6 +168,29 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework)
 
+  lazy val json = Project (id = "json", base = file("json"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-json",
+      libraryDependencies ++= json4sDependencies ++ testDependencies
+    )
+  )
+
+  lazy val oauth2 = Project (id = "oauth2", base = file("oauth2"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-oauth2",
+      libraryDependencies ++= Seq(
+        "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.0" % "compile"
+      ) ++ servletApiDependencies ++ testDependencies
+    )
+  ) dependsOn(common, json)
+
+  lazy val oauth2Controller = Project (id = "oauth2Controller", base = file("oauth2-controller"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-oauth2-controller",
+      libraryDependencies ++= servletApiDependencies
+    )
+  ) dependsOn(framework, oauth2)
+
   lazy val validator = Project (id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
@@ -191,6 +217,9 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
+  // -----------------------------
+  // example and tests with a real project
+  
   lazy val example = Project (id = "example", base = file("example"),
     settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
@@ -209,18 +238,26 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task, scaldi)
+  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task, scaldi, oauth2Controller)
 
+  // -----------------------------
+  // common dependencies
+ 
   val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
+
   val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.7" % "compile")
+
+  val json4sDependencies = Seq(
+    "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api")
+  )
+
   val scalatraDependencies   = Seq(
     "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"    
-  ) ++ servletApiDependencies ++ slf4jApiDependencies
+  ) ++ json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies
 
   val scalikejdbcDependencies = Seq(
     "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 

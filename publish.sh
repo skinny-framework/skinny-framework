@@ -5,6 +5,9 @@ sbt ++2.11.2 \
   common/publishSigned \
   assets/publishSigned \
   httpClient/publishSigned \
+  json/publishSigned \
+  oauth2/publishSigned \
+  oauth2Controller/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
@@ -21,6 +24,9 @@ sbt ++2.11.2 \
   common/publishSigned \
   assets/publishSigned \
   httpClient/publishSigned \
+  json/publishSigned \
+  oauth2/publishSigned \
+  oauth2Controller/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \

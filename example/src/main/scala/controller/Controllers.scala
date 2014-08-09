@@ -31,6 +31,10 @@ object Controllers {
     AngularXHRProgrammersController.mount(ctx)
     angularApp.mount(ctx)
 
+    facebook.mount(ctx)
+    github.mount(ctx)
+    google.mount(ctx)
+
     AssetsController.mount(ctx)
   }
 
@@ -99,6 +103,24 @@ object Controllers {
   object angularApp extends AngularAppController with Routes {
     val indexUrl = get("/angular/app")(index).as('index)
     val programmersUrl = get("/angular/programmers/")(programmers).as('programmers)
+  }
+
+  object facebook extends FacebookController with Routes {
+    val loginUrl = get("/facebook")(loginRedirect).as('login)
+    val callbackUrl = get("/facebook/callback")(callback).as('callback)
+    val okUrl = get("/facebook/ok")(ok).as('ok)
+  }
+
+  object github extends GitHubController with Routes {
+    val loginUrl = get("/github")(loginRedirect).as('login)
+    val callbackUrl = get("/github/callback")(callback).as('callback)
+    val okUrl = get("/github/ok")(ok).as('ok)
+  }
+
+  object google extends GoogleController with Routes {
+    val loginUrl = get("/google")(loginRedirect).as('login)
+    val callbackUrl = get("/google/callback")(callback).as('callback)
+    val okUrl = get("/google/ok")(ok).as('ok)
   }
 
 }
