@@ -13,8 +13,7 @@ cp -pr ${TEMPLATE_PATH}/bin ${WORK_DIR}/.
 VERSION=`grep "val _version =" project/Build.scala | awk -F'"' '{print $2}'`
 
 cd ${WORK_DIR}
-tar cvfzp skinny-${VERSION}.tar.gz .
-mv skinny-${VERSION}.tar.gz ../.
+tar cvfzp ../skinny-${VERSION}.tar.gz .
 cd -
 rm -rf ${WORK_DIR}
 openssl sha1 skinny-${VERSION}.tar.gz
