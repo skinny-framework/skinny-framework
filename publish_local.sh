@@ -5,6 +5,9 @@ sbt clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
+  json/publishLocal \
+  oauth2/publishLocal \
+  oauth2Controller/publishLocal \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
@@ -20,6 +23,9 @@ sbt clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
+  json/publishLocal \
+  oauth2/publishLocal \
+  oauth2Controller/publishLocal \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
