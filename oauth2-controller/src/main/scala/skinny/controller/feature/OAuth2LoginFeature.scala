@@ -12,7 +12,7 @@ object OAuth2LoginFeature {
 
   val DEFAULT_CLIENT_SECRET_ENV_NAME_PREFIX = "SKINNY_OAUTH2_CLIENT_SECRET"
 
-  val SESSION_OAUTH2_STATE_NAME = "SKINNY_OAUTH2_STATE"
+  val DEFAULT_SESSION_OAUTH2_STATE_NAME = "SKINNY_OAUTH2_STATE"
 
 }
 
@@ -30,6 +30,8 @@ trait OAuth2LoginFeature[U <: OAuth2User] extends SkinnyControllerBase {
   protected def clientSecretEnvName: String =
     OAuth2LoginFeature.DEFAULT_CLIENT_SECRET_ENV_NAME_PREFIX + "_" + provider.providerName.toUpperCase(Locale.ENGLISH)
 
+  protected def sessionOAuth2StateName: String = OAuth2LoginFeature.DEFAULT_SESSION_OAUTH2_STATE_NAME
+
   protected def clientId: String = sys.env(clientIdEnvName)
 
   protected def clientSecret: String = sys.env(clientSecretEnvName)
@@ -40,9 +42,9 @@ trait OAuth2LoginFeature[U <: OAuth2User] extends SkinnyControllerBase {
     digestedBytes.map("%02x".format(_)).mkString
   }
 
-  protected def state: String = session.get(OAuth2LoginFeature.SESSION_OAUTH2_STATE_NAME).map(_.toString).getOrElse {
+  protected def state: String = session.get(sessionOAuth2StateName).map(_.toString).getOrElse {
     val state: String = generateStateValue()
-    session.setAttribute(OAuth2LoginFeature.SESSION_OAUTH2_STATE_NAME, state)
+    session.setAttribute(sessionOAuth2StateName, state)
     state
   }
 

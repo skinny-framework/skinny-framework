@@ -34,6 +34,7 @@ object Controllers {
     facebook.mount(ctx)
     github.mount(ctx)
     google.mount(ctx)
+    twitter.mount(ctx)
 
     AssetsController.mount(ctx)
   }
@@ -121,6 +122,12 @@ object Controllers {
     val loginUrl = get("/google")(loginRedirect).as('login)
     val callbackUrl = get("/google/callback")(callback).as('callback)
     val okUrl = get("/google/ok")(ok).as('ok)
+  }
+
+  object twitter extends TwitterController with Routes {
+    val loginUrl = get("/twitter")(loginRedirect).as('login)
+    val callbackUrl = get("/twitter/callback")(callback).as('callback)
+    val okUrl = get("/twitter/ok")(ok).as('ok)
   }
 
 }

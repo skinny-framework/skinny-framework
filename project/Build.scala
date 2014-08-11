@@ -191,6 +191,15 @@ object SkinnyFrameworkBuild extends Build {
     )
   ) dependsOn(framework, oauth2)
 
+  lazy val twitterController = Project (id = "twitterController", base = file("twitter-controller"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-twitter-controller",
+      libraryDependencies ++= Seq(
+        "org.twitter4j" % "twitter4j-core" % "4.0.2" % "compile"
+      ) ++ servletApiDependencies
+    )
+  ) dependsOn(framework)
+
   lazy val validator = Project (id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
@@ -238,7 +247,18 @@ object SkinnyFrameworkBuild extends Build {
       parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
-  ) dependsOn(framework, assets, thymeleaf, freemarker, factoryGirl, test, task, scaldi, oauth2Controller)
+  ) dependsOn(
+    framework, 
+    assets, 
+    thymeleaf, 
+    freemarker, 
+    factoryGirl, 
+    test, 
+    task, 
+    scaldi, 
+    oauth2Controller, 
+    twitterController
+  )
 
   // -----------------------------
   // common dependencies
