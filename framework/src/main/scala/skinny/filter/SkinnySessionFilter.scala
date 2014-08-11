@@ -1,14 +1,13 @@
 package skinny.filter
 
-import javax.servlet.http.HttpServletRequest
-
 import scala.language.implicitConversions
 
 import skinny.session._
 import skinny.controller.feature._
-import org.scalatra.{ GenerateId, CsrfTokenSupport, FlashMap }
+import org.scalatra._
 import org.scalatra.FlashMapSupport._
 import java.util.Locale
+import javax.servlet.http.HttpServletRequest
 
 object SkinnySessionFilter {
 
@@ -24,12 +23,34 @@ object SkinnySessionFilter {
  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
  * }}}
  */
-trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
+trait SkinnySessionFilter extends SkinnyFilter {
+
+  self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
+
   import SkinnySessionFilter._
 
-  def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
+  // --------------------------------------
+  // SkinnySession by using Skinny beforeAction/afterAction
 
   beforeAction()(initializeSkinnySession)
+
+  afterAction()(saveCurrentSkinnySession)
+
+  protected def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
+
+  protected def saveCurrentSkinnySession(): Unit = {
+    try {
+      getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).foreach { sessionWrapper =>
+        sessionWrapper.save()
+      }
+    } catch {
+      case e: Exception =>
+        logger.warn(s"Failed to save skinny session because ${e.getMessage}", e)
+    }
+  }
+
+  // --------------------------------------
+  // Accessing SkinnySession
 
   def skinnySession(implicit req: HttpServletRequest): SkinnyHttpSession = {
     getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(req).getOrElse {
@@ -41,8 +62,10 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
 
   def skinnySession[A](key: Symbol)(implicit req: HttpServletRequest): Option[A] = skinnySession[A](key.name)(req)
 
+  // --------------------------------------
   // override FlashMapSupport
   // NOTICE: This API doesn't support Future ops
+
   override def flashMapSetSession(f: FlashMap) {
     try {
       skinnySession.setAttribute(SessionKey, f)
@@ -51,6 +74,7 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
     }
   }
 
+  // --------------------------------------
   // override CsrfTokenSupport
 
   override protected def isForged: Boolean = {
@@ -66,6 +90,7 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
     skinnySession.getAttributeOrElseUpdate(csrfKey, GenerateId())
   }
 
+  // --------------------------------------
   // override SessionLocaleFeature
 
   override def setCurrentLocale(locale: String)(implicit req: HttpServletRequest): Unit = {
@@ -77,17 +102,6 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
       .getAttribute(sessionLocaleKey)
       .map(l => new Locale(l.toString))
       .orElse(defaultLocale)
-  }
-
-  afterAction() {
-    try {
-      getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).foreach { sessionWrapper =>
-        sessionWrapper.save()
-      }
-    } catch {
-      case e: Exception =>
-        logger.warn(s"Failed to save skinny session because ${e.getMessage}", e)
-    }
   }
 
 }
