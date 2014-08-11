@@ -9,6 +9,7 @@ cp -p ${TEMPLATE_PATH}/sbt ${WORK_DIR}/.
 cp -p ${TEMPLATE_PATH}/sbt-debug ${WORK_DIR}/.
 chmod +x ${WORK_DIR}/*
 cp -pr ${TEMPLATE_PATH}/bin ${WORK_DIR}/.
+cp -pr release/ivy2 ${WORK_DIR}/.
 
 VERSION=`grep "val _version =" project/Build.scala | awk -F'"' '{print $2}'`
 

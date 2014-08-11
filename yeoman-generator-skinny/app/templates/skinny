@@ -14,6 +14,11 @@ if [ -d "${current_dir}/ivy2" ]; then
   cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
   rm -rf ${current_dir}/ivy2
 fi
+if [ -d "${script_dir}/ivy2" ]; then
+  mkdir -p $HOME/.ivy2/cache/
+  cp -prn ${script_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
+  rm -rf ${script_dir}/ivy2
+fi
 
 function verify_skinny_project() {
   if [ "${current_project}" == "" ]; then

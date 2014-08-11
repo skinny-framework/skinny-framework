@@ -21,6 +21,7 @@ SkinnyGenerator.prototype.app = function app() {
   this.directory('heroku', 'heroku');
   this.copy('_gitignore', '.gitignore');
   this.copy('build.sbt', 'build.sbt');
+  this.copy('bower.json', 'bower.json');
   this.copy('package.json', 'package.json');
   this.copy('_package.json', '_package.json');
   this.copy('Gruntfile.js', 'Gruntfile.js');

@@ -33,6 +33,7 @@ rm -rf node_modules
 rm -f  create_local_ivy2
 cd ..
 zip -r skinny-blank-app-with-deps.zip ./skinny-blank-app
-rm -rf skinny-blank-app/ivy2
+rm -rf ivy2
+mv skinny-blank-app/ivy2 ivy2
 zip -r skinny-blank-app.zip ./skinny-blank-app
 
