@@ -8,6 +8,7 @@ sbt ++2.11.2 \
   json/publishSigned \
   oauth2/publishSigned \
   oauth2Controller/publishSigned \
+  twitterController/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
@@ -27,6 +28,7 @@ sbt ++2.11.2 \
   json/publishSigned \
   oauth2/publishSigned \
   oauth2Controller/publishSigned \
+  twitterController/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \

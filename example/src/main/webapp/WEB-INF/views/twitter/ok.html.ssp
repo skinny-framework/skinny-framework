@@ -1,0 +1,4 @@
+<%@val user: Option[twitter4j.User] %>
+<h3>Twitter OAuth</h3>
+<hr/>
+<pre><%= user %></pre>
