@@ -20,7 +20,7 @@ trait GooglePlusAPI extends Logging {
       JSONStringOps.fromJSONString[GoogleUser](response.body)
     } catch {
       case NonFatal(e) =>
-        logger.error(s"Failed to get current Facebook user information because ${e.getMessage}", e)
+        logger.error(s"Failed to get current Google user information because ${e.getMessage}", e)
         None
     }
   }
