@@ -10,7 +10,9 @@ case class GoogleUser(
   displayName: String,
   name: Name,
   url: String,
-  image: Option[Image]) extends OAuth2User
+  image: Option[Image],
+  emails: Seq[Email]) extends OAuth2User
 
 case class Name(givenName: String, familyName: String)
 case class Image(url: String, isDefault: Boolean)
+case class Email(value: String, `type`: String)
