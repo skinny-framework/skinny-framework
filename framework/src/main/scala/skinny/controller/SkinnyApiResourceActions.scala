@@ -7,7 +7,7 @@ import skinny.exception.StrongParametersException
 import java.util.Locale
 
 /**
- * Actions for Skinny resource.
+ * Actions for Skinny API resource.
  */
 trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
 

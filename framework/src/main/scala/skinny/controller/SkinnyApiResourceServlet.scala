@@ -4,7 +4,7 @@ import org.scalatra.util.conversion.{ Conversions, TypeConverter }
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
- * SkinnyResource is surely inspired by Rails ActiveSupport.
+ * SkinnyApiResourceServlet is surely inspired by Rails ActiveSupport.
  */
 trait SkinnyApiResourceServlet extends SkinnyApiResourceServletWithId[Long] {
 
