@@ -7,7 +7,7 @@ import skinny._
 /**
  * Routes for Skinny API resource.
  */
-trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self: SkinnyApiResourceActions[Id] =>
+trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with Routes { self: SkinnyApiResourceActions[Id] =>
 
   /**
    * Set Content-Type response header which is suitable for specified extension.
@@ -27,7 +27,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyApiController with Routes { self
    * Pass this controller instance implicitly
    * because [[skinny.routing.implicits.RoutesAsImplicits]] expects [[skinny.controller.SkinnyControllerBase]].
    */
-  private[this] implicit val skinnyController: SkinnyApiController = this
+  private[this] implicit val skinnyController: SkinnyControllerBase = this
 
   // --------------
   // create API

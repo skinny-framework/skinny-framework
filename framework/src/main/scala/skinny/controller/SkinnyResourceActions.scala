@@ -1,17 +1,17 @@
 package skinny.controller
 
 import skinny._
-import skinny.ParamType
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
-import org.scalatra.util.conversion.{ Conversions, TypeConverter }
 import skinny.controller.feature.RequestScopeFeature
 
 /**
  * Actions for Skinny resource.
  */
-trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] { self: SkinnyController =>
+trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
+
+  self: SkinnyControllerBase with SkinnyWebPageControllerFeatures =>
 
   // set resourceName/resourcesName to the request scope
   beforeAction() {
