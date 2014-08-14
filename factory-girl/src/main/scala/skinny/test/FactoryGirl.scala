@@ -52,7 +52,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     // TODO directory scan and work with factories/*.conf
-    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName.name)
+    val config = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve().getConfig(factoryName.name)
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
