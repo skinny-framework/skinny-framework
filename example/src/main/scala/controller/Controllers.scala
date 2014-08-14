@@ -10,6 +10,7 @@ object Controllers {
     ErrorController.mount(ctx)
 
     fileUpload.mount(ctx)
+    fileDownload.mount(ctx)
 
     root.mount(ctx)
     companies.mount(ctx)
@@ -91,6 +92,12 @@ object Controllers {
   object fileUpload extends FileUploadController with Routes {
     val formUrl = get("/fileupload")(form).as('form)
     val submitUrl = post("/fileupload/submit")(submit).as('submit)
+  }
+  object fileDownload extends FileDownloadController with Routes {
+    val indexUrl = get("/filedownload")(index).as('index)
+    val smallUrl = get("/filedownload/small")(small).as('small)
+    val nullUrl = get("/filedownload/null")(nullValue).as('null)
+    val errorUrl = get("/filedownload/error")(error).as('error)
   }
 
   object scaldi extends ScaldiController with Routes {
