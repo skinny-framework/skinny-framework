@@ -26,6 +26,7 @@ trait SkinnyControllerBase
     with ExplicitRedirectFeature
     with ActionDefinitionFeature
     with RequestScopeFeature
+    with ChunkedResponseFeature
     with BeforeAfterActionFeature
     with FutureOpsFeature
     with LocaleFeature
