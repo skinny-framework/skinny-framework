@@ -15,4 +15,7 @@ class MockServletOutputStream extends ServletOutputStream {
 
   override def toString = byteArrayOutputStream.toString
 
+  def toString(charset: String) = byteArrayOutputStream.toString(charset)
+
+  def toByteArray = byteArrayOutputStream.toByteArray
 }

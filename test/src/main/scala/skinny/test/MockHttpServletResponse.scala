@@ -92,7 +92,9 @@ class MockHttpServletResponse extends HttpServletResponse {
   }
 
   override def getWriter: PrintWriter = writer
-  override def getOutputStream: ServletOutputStream = mock(classOf[ServletOutputStream])
+
+  val stubOutputStream = new MockServletOutputStream
+  override def getOutputStream: ServletOutputStream = stubOutputStream
 
   override def getContentType: String = contentType
   override def getCharacterEncoding: String = characterEncoding
