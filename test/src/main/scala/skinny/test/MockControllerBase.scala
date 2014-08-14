@@ -32,10 +32,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   override implicit val response: HttpServletResponse = {
-    val res = new MockHttpServletResponse {
-      val stubOutputStream = new MockServletOutputStream
-      override def getOutputStream: ServletOutputStream = stubOutputStream
-    }
+    val res = new MockHttpServletResponse
     res
   }
 
@@ -52,11 +49,15 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
       body = body)
   }
 
-  def outputStreamContents: String = {
+  def getOutputStreamContents: String = {
+    response.getOutputStream.toString
+  }
+
+  def getOutputStreamContents(charset: String): String = {
     response
-      .asInstanceOf[MockHttpServletResponse]
       .getOutputStream
-      .toString
+      .asInstanceOf[MockServletOutputStream]
+      .toString(charset)
   }
 
   private[this] val _params = TrieMap[String, Seq[String]]()

@@ -50,6 +50,15 @@ class SampleApiControllerSpec extends FunSpec with Matchers with DBSettings
       controller.status should equal(200)
       response should not equal (null)
     }
+
+    it("output to OutputStream") {
+      val controller = createMockController
+      controller.responseToOutputStream
+      // invalid charset
+      controller.getOutputStreamContents should not equal ("ABCDEGあいうえお")
+      // valid charset
+      controller.getOutputStreamContents("MS932") should equal("ABCDEGあいうえお")
+    }
   }
 
 }
