@@ -117,7 +117,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withTime(key: String): Params = withDate(toHmsKeys(key), key)
+  def withTime(key: String): Params = withTime(toHmsKeys(key), key)
 
   /**
    * Appends a new DateTime param to params.
