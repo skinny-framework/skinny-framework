@@ -217,6 +217,20 @@ object DateTimeUtil {
       }
   }
 
+  def toUnsafeDateTimeStringFromDateAndTime(
+    params: Map[String, Any],
+    date: String = "date",
+    time: String = "time"): Option[String] = {
+
+    (params.get(date).filterNot(_.toString.isEmpty) orElse
+      params.get(time).filterNot(_.toString.isEmpty)).map { _ =>
+        "%s %s".format(
+          params.get(date).map(_.toString).orNull,
+          params.get(time).map(_.toString).orNull
+        )
+      }
+  }
+
   def isLocalDateFormat(str: String): Boolean = Try(parseLocalDate(str)).isSuccess
 
   def isDateTimeFormat(str: String): Boolean = Try(parseDateTime(str)).isSuccess
