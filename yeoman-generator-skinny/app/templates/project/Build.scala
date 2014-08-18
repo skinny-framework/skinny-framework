@@ -19,7 +19,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.2.9"
+  val skinnyVersion = "1.2.10"
   val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.2"
   val jettyVersion = "9.2.1.v20140609" // latest: "9.2.2.v20140723"
@@ -39,7 +39,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
-      "com.h2database"          %  "h2"                  % "1.4.180",      // your own JDBC driver
+      "com.h2database"          %  "h2"                  % "1.4.181",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
       "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",

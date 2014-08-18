@@ -8,11 +8,11 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.2.9"
+  val _version = "1.2.10"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.0.7"
-  val h2Version = "1.4.180"
+  val h2Version = "1.4.181"
   val jettyVersion = "9.2.1.v20140609" // latest "9.2.2.v20140723"
 
   lazy val baseSettings = Seq(
@@ -287,14 +287,14 @@ object SkinnyFrameworkBuild extends Build {
   )
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.4"   % "compile",
-    "org.joda"  %  "joda-convert" % "1.6"   % "compile"
+    "org.joda"  %  "joda-convert" % "1.7"   % "compile"
   )
   val mailDependencies = slf4jApiDependencies ++ Seq(
     "javax.mail"              %  "mail"               % "1.4.7"          % "compile",
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.0"   % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.1"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
