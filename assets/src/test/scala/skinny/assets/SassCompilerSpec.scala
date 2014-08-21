@@ -10,18 +10,15 @@ class SassCompilerSpec extends FlatSpec with Matchers {
     val compiler = SassCompiler
     val css = compiler.compile("font.scss",
       """$font-stack: Helvetica, sans-serif;
-        |$primary-color: #333;
         |
         |body {
         |  font: 100% $font-stack;
-        |  color: $primary-color;
         |}
       """.stripMargin)
 
     css.replaceFirst("\n$", "") should equal(
       """body {
-        |  font: 100% Helvetica, sans-serif;
-        |  color: #333333; }""".stripMargin)
+        |  font: 100% Helvetica, sans-serif; }""".stripMargin)
   }
 
   it should "compile indented-sass code" in {
