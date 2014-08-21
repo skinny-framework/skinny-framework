@@ -73,8 +73,7 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
       status should equal(200)
       header("Content-Type") should equal("text/css; charset=UTF-8")
       body.replaceFirst("\n$", "") should equal("""body {
-        |  font: 100% Helvetica, sans-serif;
-        |  color: #333333; }""".stripMargin)
+        |  font: 100% Helvetica, sans-serif; }""".stripMargin)
     }
   }
   it should "return 304 for scss if If-Modified-Since specified" in {
