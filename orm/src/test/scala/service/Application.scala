@@ -21,13 +21,7 @@ object Application extends SkinnyCRUDMapper[Application]
   override val tableName = "applications"
   override def defaultAlias = createAlias("a")
 
-  override def extract(rs: WrappedResultSet, n: ResultName[Application]) = new Application(
-    id = rs.get(n.id),
-    name = rs.get(n.name),
-    serviceNo = rs.get(n.serviceNo),
-    createdAt = rs.get(n.createdAt),
-    updatedAt = rs.get(n.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, n: ResultName[Application]) = autoConstruct(rs, n, "service")
 
   val service = belongsTo[Service](
     right = Service,

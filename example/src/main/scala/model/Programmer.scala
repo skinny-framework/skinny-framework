@@ -40,16 +40,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
   override lazy val defaultAlias = createAlias("p")
   override lazy val nameConverters = Map("At$" -> "_timestamp")
 
-  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = new Programmer(
-    id = rs.get(p.id),
-    name = rs.get(p.name),
-    favoriteNumber = rs.get(p.favoriteNumber),
-    hashedPassword = rs.get(p.hashedPassword),
-    companyId = rs.get[Option[Long]](p.companyId).map(CompanyId),
-    birthday = rs.get(p.birthday),
-    createdAt = rs.get(p.createdAt),
-    updatedAt = rs.get(p.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = autoConstruct(rs, p, "company", "skills")
 
   private val c = Company.defaultAlias
 

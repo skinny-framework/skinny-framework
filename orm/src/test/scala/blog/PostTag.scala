@@ -15,10 +15,5 @@ object PostTag extends SkinnyJoinTable[PostTag] {
   override val tableName = "posts_tags"
   override val defaultAlias = createAlias("pt")
 
-  override def extract(rs: WrappedResultSet, rn: ResultName[PostTag]): PostTag = new PostTag(
-    id = rs.get(rn.id),
-    tagId = rs.get(rn.tagId),
-    postId = rs.get(rn.postId),
-    createdAt = rs.get(rn.createdAt)
-  )
+  override def extract(rs: WrappedResultSet, rn: ResultName[PostTag]): PostTag = autoConstruct(rs, rn)
 }

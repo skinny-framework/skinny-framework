@@ -15,10 +15,5 @@ object Tag extends SkinnyCRUDMapper[Tag] with TimestampsFeature[Tag] {
   override val tableName = "tags"
   override val defaultAlias = createAlias("t")
 
-  override def extract(rs: WrappedResultSet, rn: ResultName[Tag]): Tag = new Tag(
-    id = rs.get(rn.id),
-    name = rs.get(rn.name),
-    createdAt = rs.get(rn.createdAt),
-    updatedAt = rs.get(rn.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, rn: ResultName[Tag]): Tag = autoConstruct(rs, rn)
 }
