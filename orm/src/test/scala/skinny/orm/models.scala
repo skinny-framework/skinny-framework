@@ -4,7 +4,6 @@ import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import scalikejdbc._
 import skinny.orm.feature._
-import java.sql.ResultSet
 
 case class Member(
   id: Long,
