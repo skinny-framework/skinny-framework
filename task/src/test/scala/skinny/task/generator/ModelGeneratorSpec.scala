@@ -38,6 +38,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val tableName = "members"
           |  override lazy val defaultAlias = createAlias("m")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[Member]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
           |    id = rs.get(rn.id),
           |    name = rs.get(rn.name),
@@ -81,6 +94,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("pm")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
           |    id = rs.get(rn.id),
           |    name = rs.get(rn.name),
@@ -119,6 +145,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("pm")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]): ProjectMember = new ProjectMember(
           |    id = rs.get(rn.id),
           |    name = rs.get(rn.name),
@@ -152,6 +191,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("m")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[Member]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[Member]): Member = new Member(
           |    id = rs.get(rn.id),
           |    createdAt = rs.get(rn.createdAt),
@@ -217,6 +269,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
                        |  override lazy val tableName = "no_id_members"
                        |  override lazy val defaultAlias = createAlias("nim")
                        |
+                       |  /*
+                       |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+                       |   * (e.g.)
+                       |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]) = autoConstruct(rs, rn)
+                       |   *
+                       |   * Be aware of excluding associations like this:
+                       |   * (e.g.)
+                       |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+                       |   * object Member extends SkinnyCRUDMapper[Member] {
+                       |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+                       |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+                       |   * }
+                       |   */
                        |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]): NoIdMember = new NoIdMember(
                        |    name = rs.get(rn.name),
                        |    isActivated = rs.get(rn.isActivated),
@@ -259,6 +324,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("nipm")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]): NoIdProjectMember = new NoIdProjectMember(
           |    name = rs.get(rn.name),
           |    isActivated = rs.get(rn.isActivated),
@@ -298,6 +376,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("nipm")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]): NoIdProjectMember = new NoIdProjectMember(
           |    name = rs.get(rn.name),
           |    isActivated = rs.get(rn.isActivated),
@@ -332,6 +423,19 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |  override lazy val defaultAlias = createAlias("nim")
           |
+          |  /*
+          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * (e.g.)
+          |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]) = autoConstruct(rs, rn)
+          |   *
+          |   * Be aware of excluding associations like this:
+          |   * (e.g.)
+          |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+          |   * object Member extends SkinnyCRUDMapper[Member] {
+          |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+          |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+          |   * }
+          |   */
           |  override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]): NoIdMember = new NoIdMember(
           |    createdAt = rs.get(rn.createdAt),
           |    updatedAt = rs.get(rn.updatedAt)

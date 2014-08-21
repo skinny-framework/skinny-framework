@@ -23,12 +23,5 @@ object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
     many = Tag,
     merge = (p, t) => p.copy(tags = t)) // .byDefault
 
-  override def extract(rs: WrappedResultSet, rn: ResultName[Post]): Post = new Post(
-    id = rs.get(rn.id),
-    title = rs.get(rn.title),
-    body = rs.get(rn.body),
-    viewCount = rs.get(rn.viewCount),
-    createdAt = rs.get(rn.createdAt),
-    updatedAt = rs.get(rn.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, rn: ResultName[Post]): Post = autoConstruct(rs, rn, "tags")
 }

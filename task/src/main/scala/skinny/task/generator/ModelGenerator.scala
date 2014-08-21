@@ -122,6 +122,19 @@ trait ModelGenerator extends CodeGenerator {
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
         |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
         |
+        |  /*
+        |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+        |   * (e.g.)
+        |   * override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]) = autoConstruct(rs, rn)
+        |   *
+        |   * Be aware of excluding associations like this:
+        |   * (e.g.)
+        |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+        |   * object Member extends SkinnyCRUDMapper[Member] {
+        |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+        |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+        |   * }
+        |   */
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
         |}

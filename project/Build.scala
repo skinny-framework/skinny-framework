@@ -8,10 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.2.10"
+  val _version = "1.3.0.RC1"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.0.7"
+  val scalikeJDBCVersion = "2.1.0.RC2"
   val h2Version = "1.4.181"
   val jettyVersion = "9.2.1.v20140609" // latest "9.2.2.v20140723"
 
@@ -234,7 +234,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     % "logback-classic"     % "1.1.2",
+        "ch.qos.logback"     %  "logback-classic"    % "1.1.2",
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion       % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",
         "org.mockito"        %  "mockito-core"       % "1.9.5"               % "test",
@@ -280,9 +280,10 @@ object SkinnyFrameworkBuild extends Build {
   ) ++ json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies
 
   val scalikejdbcDependencies = Seq(
-    "org.scalikejdbc" %% "scalikejdbc"               % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
-    "org.scalikejdbc" %% "scalikejdbc-interpolation" % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
-    "org.scalikejdbc" %% "scalikejdbc-config"        % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalikejdbc" %% "scalikejdbc"                      % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
+    "org.scalikejdbc" %% "scalikejdbc-interpolation"        % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
+    "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalikejdbc" %% "scalikejdbc-config"               % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"    
   )
   val jodaDependencies = Seq(

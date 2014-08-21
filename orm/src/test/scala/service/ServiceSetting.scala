@@ -18,12 +18,6 @@ object ServiceSetting extends SkinnyCRUDMapper[ServiceSetting] with TimestampsFe
   override val tableName = "service_settings"
   override def defaultAlias = createAlias("ss")
 
-  override def extract(rs: WrappedResultSet, n: ResultName[ServiceSetting]) = new ServiceSetting(
-    id = rs.get(n.id),
-    maximumAccounts = rs.get(n.maximumAccounts),
-    serviceNo = rs.get(n.serviceNo),
-    createdAt = rs.get(n.createdAt),
-    updatedAt = rs.get(n.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, n: ResultName[ServiceSetting]) = autoConstruct(rs, n, "service")
 
 }
