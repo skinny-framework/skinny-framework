@@ -43,4 +43,9 @@ trait EnvFeature extends ScalatraBase {
    */
   def isProduction(): Boolean = SkinnyEnv.isProduction(skinnyEnv)
 
+  /**
+   * Replaces Scalatra's development mode with SkinnyEnv.
+   */
+  override protected def isDevelopmentMode = isDevelopment()
+
 }
