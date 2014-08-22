@@ -46,6 +46,6 @@ trait EnvFeature extends ScalatraBase {
   /**
    * Replaces Scalatra's development mode with SkinnyEnv.
    */
-  override protected def isDevelopmentMode = isDevelopment()
+  override def isDevelopmentMode = isDevelopment()
 
 }
