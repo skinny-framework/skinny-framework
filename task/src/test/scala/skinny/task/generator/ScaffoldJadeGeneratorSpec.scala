@@ -133,7 +133,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 1. src/main/scala/templates/ScalatePackage.scala
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
-          |h3 #{s.i18n.getOrKey("member.edit")}
+          |h3 #{s.i18n.getOrKey("member.edit")} : ##{s.params.id}
           |hr
           |
           |-#-for (e <- s.errorMessages)
@@ -160,6 +160,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
         """-@val s: skinny.Skinny
           |-@val items: Seq[model.admin.Member]
           |-@val totalPages: Int
+          |-@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1)
           |
           |-# Be aware of package imports.
           |-# 1. src/main/scala/templates/ScalatePackage.scala
@@ -174,11 +175,14 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |  ul.pagination
           |    li
           |      a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> 1)}) &laquo;
-          |    - for (i <- (1 to totalPages))
-          |      li
+          |    -val maxPage = Math.min(totalPages, if (page <= 5) 11 else page + 5)
+          |    -for (i <- Math.max(1, maxPage - 10) to maxPage)
+          |      li(class={if (i == page) "active" else ""})
           |        a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> i)}) #{i}
           |    li
           |      a(href={s.url(Controllers.adminMembers.indexUrl, "page" -> totalPages)}) &raquo;
+          |    li
+          |      span #{Math.min(page, totalPages)} / #{totalPages}
           |
           |table(class="table table-bordered")
           |  thead
@@ -203,6 +207,9 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |        a(href={s.url(Controllers.adminMembers.showUrl, "id" -> item.id)} class="btn btn-default") #{s.i18n.getOrKey("detail")}
           |        a(href={s.url(Controllers.adminMembers.editUrl, "id" -> item.id)} class="btn btn-info") #{s.i18n.getOrKey("edit")}
           |        a(data-method="delete" data-confirm={s.i18n.getOrKey("member.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
+          |  -if (items.isEmpty)
+          |    tr
+          |      td(colspan="7") #{s.i18n.getOrKey("empty")}
           |
           |a(href={s.url(Controllers.adminMembers.newUrl)} class="btn btn-primary") #{s.i18n.getOrKey("new")}
           |""".stripMargin
