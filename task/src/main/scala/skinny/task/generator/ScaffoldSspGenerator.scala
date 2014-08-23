@@ -182,7 +182,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |${packageImportsWarning}
         |
-        |<h3>$${s.i18n.getOrKey("${resource}.edit")}</h3>
+        |<h3>$${s.i18n.getOrKey("${resource}.edit")} : #$${s.params.id}</h3>
         |<hr/>
         |
         |<%--
@@ -203,6 +203,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     s"""<%@val s: skinny.Skinny %>
         |<%@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}] %>
         |<%@val totalPages: Int %>
+        |<%@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1) %>
         |
         |${packageImportsWarning}
         |
@@ -217,13 +218,17 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |    <li>
         |      <a href="$${s.url(${controllerName}.indexUrl, "page" -> 1)}">&laquo;</a>
         |    </li>
-        |    #for (i <- (1 to totalPages))
-        |      <li>
+        |    <% val maxPage = Math.min(totalPages, if (page <= 5) 11 else page + 5) %>
+        |    #for (i <- Math.max(1, maxPage - 10) to maxPage)
+        |      <li class="$${if (i == page) "active" else ""}">
         |        <a href="$${s.url(${controllerName}.indexUrl, "page" -> i)}">$${i}</a>
         |      </li>
         |    #end
         |    <li>
         |      <a href="$${s.url(${controllerName}.indexUrl, "page" -> totalPages)}">&raquo;</a>
+        |    </li>
+        |    <li>
+        |      <span>$${Math.min(page, totalPages)} / $${totalPages}</span>
         |    </li>
         |  </ul>
         |#end
@@ -245,6 +250,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |      <a data-method="delete" data-confirm="$${s.i18n.getOrKey("${resource}.delete.confirm")}"
         |        href="$${s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" rel="nofollow" class="btn btn-danger">$${s.i18n.getOrKey("delete")}</a>
         |    </td>
+        |  </tr>
+        |  #end
+        |  #if (items.isEmpty)
+        |  <tr>
+        |    <td colspan="${2 + attributePairs.size}">$${s.i18n.getOrKey("empty")}</td>
         |  </tr>
         |  #end
         |</tbody>

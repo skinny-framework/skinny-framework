@@ -133,7 +133,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |
         |${packageImportsWarning}
         |
-        |h3 #{s.i18n.getOrKey("${resource}.edit")}
+        |h3 #{s.i18n.getOrKey("${resource}.edit")} : ##{s.params.id}
         |hr
         |
         |-#-for (e <- s.errorMessages)
@@ -150,6 +150,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     s"""-@val s: skinny.Skinny
         |-@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}]
         |-@val totalPages: Int
+        |-@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1)
         |
         |${packageImportsWarning}
         |
@@ -162,11 +163,14 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |  ul.pagination
         |    li
         |      a(href={s.url(${controllerName}.indexUrl, "page" -> 1)}) &laquo;
-        |    - for (i <- (1 to totalPages))
-        |      li
+        |    -val maxPage = Math.min(totalPages, if (page <= 5) 11 else page + 5)
+        |    -for (i <- Math.max(1, maxPage - 10) to maxPage)
+        |      li(class={if (i == page) "active" else ""})
         |        a(href={s.url(${controllerName}.indexUrl, "page" -> i)}) #{i}
         |    li
         |      a(href={s.url(${controllerName}.indexUrl, "page" -> totalPages)}) &raquo;
+        |    li
+        |      span #{Math.min(page, totalPages)} / #{totalPages}
         |
         |table(class="table table-bordered")
         |  thead
@@ -181,6 +185,9 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |        a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.getOrKey("detail")}
         |        a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.getOrKey("edit")}
         |        a(data-method="delete" data-confirm={s.i18n.getOrKey("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
+        |  -if (items.isEmpty)
+        |    tr
+        |      td(colspan="${2 + attributePairs.size}") #{s.i18n.getOrKey("empty")}
         |
         |a(href={s.url(${controllerName}.newUrl)} class="btn btn-primary") #{s.i18n.getOrKey("new")}
         |""".stripMargin
