@@ -65,7 +65,6 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
   // Access Token
 
   protected def saveAccessToken(accessToken: AccessToken): Unit = {
-    println("SSS"+ accessToken.getToken)
     session.setAttribute(sessionAccessTokenName, accessToken.getToken)
     session.setAttribute(sessionAccessTokenSecretName, accessToken.getTokenSecret)
   }
@@ -108,7 +107,7 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
     new TwitterFactory(twitter4jConfiguration)
   }
 
-  protected def twitter: Option[Twitter] = currentAccessToken.map(t => twitter(t)) 
+  protected def twitter: Option[Twitter] = currentAccessToken.map(t => twitter(t))
 
   protected def twitter(accessToken: AccessToken): Twitter = twitterFactory.getInstance(accessToken)
 
@@ -144,10 +143,11 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
         // access token retrieval
         val accessToken: AccessToken = try {
           twitter.getOAuthAccessToken(requestToken, verifier)
-        } catch { case e: TwitterException =>
-          logger.error(s"Failed to retrieve access token because ${e.getMessage}", e)
-          handleWhenLoginFailed()
-          haltWithBody(401) // will be dead code
+        } catch {
+          case e: TwitterException =>
+            logger.error(s"Failed to retrieve access token because ${e.getMessage}", e)
+            handleWhenLoginFailed()
+            haltWithBody(401) // will be dead code
         }
         saveAccessToken(accessToken)
         twitter.setOAuthAccessToken(accessToken)
@@ -155,10 +155,11 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
         // retrieve current user information
         val user: User = try {
           twitter.showUser(twitter.getId)
-        } catch { case e: TwitterException =>
-          logger.error(s"Failed to retrieve user information because ${e.getMessage}", e)
-          handleWhenLoginFailed()
-          haltWithBody(401) // will be dead code
+        } catch {
+          case e: TwitterException =>
+            logger.error(s"Failed to retrieve user information because ${e.getMessage}", e)
+            handleWhenLoginFailed()
+            haltWithBody(401) // will be dead code
         }
         saveAuthorizedUser(user)
 

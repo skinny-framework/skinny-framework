@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
 import skinny.filter.SkinnySessionFilter
-import twitter4j.auth.{AccessToken, RequestToken}
+import twitter4j.auth.{ AccessToken, RequestToken }
 
 /**
  * SkinnySession wired TwitterLoginFeature.
