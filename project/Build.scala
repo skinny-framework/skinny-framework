@@ -8,10 +8,10 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.3.0.RC1"
+  val _version = "1.3.0"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.1.0.RC2"
+  val scalikeJDBCVersion = "2.1.0"
   val h2Version = "1.4.181"
   val jettyVersion = "9.2.1.v20140609" // latest "9.2.2.v20140723"
 
@@ -57,7 +57,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2"             % "2.3.+"            % "test",
+        "org.specs2"         %% "specs2"             % "2.4.+"            % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -284,7 +284,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-interpolation"        % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"), 
     "org.scalikejdbc" %% "scalikejdbc-syntax-support-macro" % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.scalikejdbc" %% "scalikejdbc-config"               % scalikeJDBCVersion % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.scalikejdbc" %% "scalikejdbc-test"          % scalikeJDBCVersion % "test"    
+    "org.scalikejdbc" %% "scalikejdbc-test"                 % scalikeJDBCVersion % "test"
   )
   val jodaDependencies = Seq(
     "joda-time" %  "joda-time"    % "2.4"   % "compile",
@@ -295,7 +295,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.1"   % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.2"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
