@@ -170,7 +170,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
    * @return input form
    */
   def editResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map { m =>
+    findResource(id).map { m =>
       status = 200
       format match {
         case Format.HTML =>
@@ -200,7 +200,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
   override def updateResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
-    model.findModel(id).map { m =>
+    findResource(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
           val parameters = updateParams.permit(updateFormStrongParameters: _*)
@@ -213,7 +213,6 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
         format match {
           case Format.HTML =>
             setUpdateCompletionFlash()
-            set(itemName, model.findModel(id).getOrElse(haltWithBody(404)))
             redirect302(s"/${normalizedResourcesBasePath}/${model.idToRawValue(id)}")
           case _ =>
         }
@@ -244,7 +243,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
    * @return result
    */
   override def destroyResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map { m =>
+    findResource(id).map { m =>
       doDestroy(id)
       setDestroyCompletionFlash()
       status = 200
