@@ -255,7 +255,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
   def updateResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
-    model.findModel(id).map { m =>
+    findResource(id).map { m =>
       if (updateForm.validate()) {
         if (!updateFormStrongParameters.isEmpty) {
           val parameters = updateParams.permit(updateFormStrongParameters: _*)
@@ -292,7 +292,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
    * @return result
    */
   def destroyResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    model.findModel(id).map { m =>
+    findResource(id).map { m =>
       doDestroy(id)
       status = 200
     } getOrElse haltWithBody(404)
