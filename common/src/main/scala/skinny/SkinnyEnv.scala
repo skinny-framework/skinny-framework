@@ -42,6 +42,8 @@ trait SkinnyEnv {
 
   def getOrElse(default: String): String = get().getOrElse(default)
 
+  def getOrDevelopment(): String = get().getOrElse(Development)
+
   /**
    * Predicates current env is "development" or "dev".
    *
