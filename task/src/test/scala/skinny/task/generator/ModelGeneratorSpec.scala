@@ -39,7 +39,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("m")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[Member]) = autoConstruct(rs, rn)
           |   *
@@ -95,7 +95,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("pm")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]) = autoConstruct(rs, rn)
           |   *
@@ -146,7 +146,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("pm")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[ProjectMember]) = autoConstruct(rs, rn)
           |   *
@@ -192,7 +192,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("m")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[Member]) = autoConstruct(rs, rn)
           |   *
@@ -270,7 +270,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
                        |  override lazy val defaultAlias = createAlias("nim")
                        |
                        |  /*
-                       |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+                       |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
                        |   * (e.g.)
                        |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]) = autoConstruct(rs, rn)
                        |   *
@@ -325,7 +325,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("nipm")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]) = autoConstruct(rs, rn)
           |   *
@@ -377,7 +377,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("nipm")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdProjectMember]) = autoConstruct(rs, rn)
           |   *
@@ -424,7 +424,7 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |  override lazy val defaultAlias = createAlias("nim")
           |
           |  /*
-          |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+          |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
           |   * (e.g.)
           |   * override def extract(rs: WrappedResultSet, rn: ResultName[NoIdMember]) = autoConstruct(rs, rn)
           |   *

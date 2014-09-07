@@ -123,7 +123,7 @@ trait ModelGenerator extends CodeGenerator {
         |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
         |
         |  /*
-        |   * If you're familiar with ScalikeJDBC/Skiny ORM, using #autoConstruct makes your mapper simpler.
+        |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
         |   * (e.g.)
         |   * override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]) = autoConstruct(rs, rn)
         |   *
