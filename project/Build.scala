@@ -8,12 +8,12 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.3.1"
+  val _version = "1.3.2"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
-  val scalikeJDBCVersion = "2.1.1"
+  val scalikeJDBCVersion = "2.1.2"
   val h2Version = "1.4.181"
-  val jettyVersion = "9.2.1.v20140609" // latest "9.2.2.v20140723"
+  val jettyVersion = "9.2.1.v20140609" // latest "9.2.3.v20140905"
 
   lazy val baseSettings = Seq(
     organization := _organization,
