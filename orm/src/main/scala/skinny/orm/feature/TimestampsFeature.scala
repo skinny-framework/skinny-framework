@@ -3,6 +3,7 @@ package skinny.orm.feature
 import scalikejdbc._
 import skinny.PermittedStrongParameters
 import org.joda.time.DateTime
+import skinny.orm.SkinnyMapperBase
 
 /**
  * ActiveRecord timestamps feature.
@@ -12,7 +13,8 @@ import org.joda.time.DateTime
 trait TimestampsFeature[Entity]
   extends TimestampsFeatureWithId[Long, Entity]
 
-trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
+trait BaseTimestampsFeature[Entity] {
+  self: SkinnyMapperBase[Entity] =>
 
   /**
    * createdAt field name.
@@ -24,26 +26,24 @@ trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] 
    */
   def updatedAtFieldName = "updatedAt"
 
+  protected def timestampValues(exists: String => Boolean): Seq[(SQLSyntax, Any)] = {
+    val (column, now) = (defaultAlias.support.column, DateTime.now)
+    val builder = List.newBuilder[(SQLSyntax, Any)]
+    if (!exists(createdAtFieldName)) builder += column.field(createdAtFieldName) -> now
+    if (!exists(updatedAtFieldName)) builder += column.field(updatedAtFieldName) -> now
+    builder.result()
+  }
+}
+
+trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] with BaseTimestampsFeature[Entity] {
   override protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
-    val (params, column, now) = (strongParameters.params, defaultAlias.support.column, DateTime.now)
-    val additionalValues: Seq[(SQLSyntax, Any)] = {
-      val values = new collection.mutable.ListBuffer[(SQLSyntax, Any)]
-      if (!params.contains(createdAtFieldName)) values.append(column.field(createdAtFieldName) -> now)
-      if (!params.contains(updatedAtFieldName)) values.append(column.field(updatedAtFieldName) -> now)
-      values.toSeq
-    }
+    val additionalValues = timestampValues(strongParameters.params.contains)
     super.namedValuesForCreation(strongParameters) ++ additionalValues
   }
 
   override def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Id = {
-    val (column, now) = (defaultAlias.support.column, DateTime.now)
-    val additionalValues: Seq[(SQLSyntax, Any)] = {
-      val values = new collection.mutable.ListBuffer[(SQLSyntax, Any)]
-      if (!namedValues.exists(_._1 == column.field(createdAtFieldName))) values.append(column.field(createdAtFieldName) -> now)
-      if (!namedValues.exists(_._1 == column.field(updatedAtFieldName))) values.append(column.field(updatedAtFieldName) -> now)
-      values.toSeq
-    }
-    super.createWithNamedValues((namedValues ++ additionalValues): _*)
+    val additionalValues = timestampValues(name => namedValues.exists(_._1 == column.field(name)))
+    super.createWithNamedValues(namedValues ++ additionalValues: _*)
   }
 
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
@@ -51,5 +51,24 @@ trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] 
     builder.addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
     builder
   }
-
 }
+
+trait NoIdTimestampsFeature[Entity] extends NoIdCUDFeature[Entity] with BaseTimestampsFeature[Entity] {
+
+  override protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
+    val additionalValues = timestampValues(strongParameters.params.contains)
+    super.namedValuesForCreation(strongParameters) ++ additionalValues
+  }
+
+  override def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Any = {
+    val additionalValues = timestampValues(name => namedValues.exists(_._1 == column.field(name)))
+    super.createWithNamedValues(namedValues ++ additionalValues: _*)
+  }
+
+  override def updateBy(where: SQLSyntax): UpdateOperationBuilder = {
+    val builder = super.updateBy(where)
+    builder.addAttributeToBeUpdated(column.field(updatedAtFieldName) -> DateTime.now)
+    builder
+  }
+}
+
