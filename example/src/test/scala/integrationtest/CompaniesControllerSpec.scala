@@ -17,6 +17,8 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
   it should "show companies" in {
     get("/companies") {
       status should equal(200)
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
     }
     get("/companies/") {
       status should equal(200)

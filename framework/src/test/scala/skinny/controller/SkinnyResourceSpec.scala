@@ -53,6 +53,8 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
   it should "have list APIs" in {
     post("/foo/apis.json", "name" -> "Twitter API", "url" -> "https://dev.twitter.com/") {
       status should equal(201)
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
     get("/foo/apis.json") {

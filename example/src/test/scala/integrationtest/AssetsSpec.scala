@@ -13,6 +13,9 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
     get("/assets/js/hello-react.js") {
       status should equal(200)
       header("Content-Type") should equal("application/javascript; charset=UTF-8")
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
+
       body.replaceFirst("\n$", "") should equal(
         """/** @jsx React.DOM */
          |React.renderComponent(

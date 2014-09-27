@@ -44,6 +44,7 @@ class SkinnyApiServletSpec extends ScalatraFlatSpec {
 
   it should "have creation API" in {
     post("/companies", "name" -> "CompanyName", "url" -> "http://www.example.com/") {
+      header("X-Content-Type-Options") should equal("nosniff")
       status should equal(201)
     }
   }

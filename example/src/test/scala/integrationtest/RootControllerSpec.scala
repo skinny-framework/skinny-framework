@@ -22,6 +22,9 @@ class RootControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     get("/?echo=abcdEFG") {
       status should equal(200)
       body should include("abcdEFG")
+
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
     }
     get("/mock/?echo=abcdEFG") {
       status should equal(200)
