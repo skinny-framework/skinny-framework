@@ -35,6 +35,7 @@ trait SkinnyControllerBase
     with TimeLoggingFeature
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature
+    with XContentTypeOptionsNosniffHeaderFeature
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits

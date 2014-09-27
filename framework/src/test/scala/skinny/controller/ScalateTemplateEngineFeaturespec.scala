@@ -1,11 +1,10 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
-import javax.servlet.ServletContext
-import javax.servlet.http.HttpServletRequest
-import skinny.Format
 import org.scalatest.BeforeAndAfter
 import java.io.File
+
+import skinny.Routes
 
 class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAfter {
 
@@ -27,13 +26,13 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     get("/default/xyz")(xyz)
   }
 
-  object SspOnlyController extends SkinnyController {
+  object SspOnlyController extends SkinnyController with Routes {
     override def scalateExtensions = List("ssp")
     def a = render("foo/a")
     def c = render("foo/c")
     def xyz = render("foo/xyz")
 
-    get("/ssp/a")(a)
+    get("/ssp/a")(a).as('a)
     get("/ssp/c")(c)
     get("/ssp/xyz")(xyz)
   }
@@ -94,6 +93,8 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     get("/ssp/a") {
       status should be(200)
       body should include("<p>This is SSP template A")
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
     }
   }
 

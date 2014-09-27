@@ -48,6 +48,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
   it should "have list APIs" in {
     get("/bar/apis.json") {
       status should equal(200)
+      header("X-Content-Type-Options") should equal("nosniff")
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
     get("/bar/apis.xml") {
