@@ -36,6 +36,7 @@ trait SkinnyControllerBase
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature
     with XContentTypeOptionsNosniffHeaderFeature
+    with XFrameOptionsHeaderFeature
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits

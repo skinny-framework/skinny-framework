@@ -95,6 +95,7 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
       body should include("<p>This is SSP template A")
       header("X-Content-Type-Options") should equal("nosniff")
       header("X-XSS-Protection") should equal("1; mode=block")
+      header("X-Frame-Options") should equal("sameorigin")
     }
   }
 

@@ -55,6 +55,7 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
       status should equal(201)
       header("X-Content-Type-Options") should equal("nosniff")
       header("X-XSS-Protection") should equal("1; mode=block")
+      header("X-Frame-Options") should equal("sameorigin")
       header("Content-Type") should equal("application/json; charset=utf-8")
     }
     get("/foo/apis.json") {
