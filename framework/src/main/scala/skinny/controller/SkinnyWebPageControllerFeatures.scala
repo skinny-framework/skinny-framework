@@ -11,7 +11,8 @@ trait SkinnyWebPageControllerFeatures
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
     with CSRFProtectionFeature
-    with XXSSProtectionHeaderFeature {
+    with XXSSProtectionHeaderFeature
+    with XFrameOptionsHeaderFeature {
 
   override def handleForgeryIfDetected() = haltWithBody(403)
 
