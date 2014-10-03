@@ -1,0 +1,24 @@
+<div ng-app="myApp" ng-controller="ListController" ng-init="load()">
+    <h3>List</h3>
+    <hr/>
+    <table class="table table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>FavoriteNumber</th>
+            <th>HashedPassword</th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="item in items">
+            <td>{{item.name}}</td>
+            <td>{{item.favoriteNumber}}</td>
+            <td>{{item.hashedPassword.value}}</td>
+            <td>
+                <a href="#/{{item.id}}" class="btn btn-default">Detail</a>
+                <a href="#/{{item.id}}/edit" class="btn btn-info">Edit</a>
+                <button delete-item ng-click="submit(item.id)" class="btn btn-danger">Delete</button>
+            </td>
+        </tr>
+    </table>
+
+    <p><a href="#/new" class="btn btn-primary">New</a></p>
+</div>

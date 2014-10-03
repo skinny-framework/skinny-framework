@@ -1,7 +1,7 @@
 package skinny.session.jdbc
 
 import skinny.orm._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import java.io._
 import skinny.logging.Logging
@@ -227,7 +227,8 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
     ServletSession.findByJsessionId(jsessionId).map { servletSession =>
       servletSession.attachTo(session)
     }.getOrElse {
-      ServletSession.create(jsessionId, session)
+      try ServletSession.create(jsessionId, session)
+      catch { case e: Exception => logger.info(s"Failed to create a ServletSession because ${e.getMessage}") }
     }
   }
   private[this] def postponeSkinnySessionTimeout(session: SkinnySession, expireAt: DateTime): Unit = {

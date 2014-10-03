@@ -1,6 +1,6 @@
 package skinny.test
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConverters._
 import skinny.util.JavaReflectAPI

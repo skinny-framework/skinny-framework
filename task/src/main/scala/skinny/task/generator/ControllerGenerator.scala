@@ -18,8 +18,12 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def run(args: List[String]) {
-    val completedArgs = if (args.size == 1) Seq("") ++ args
-    else args
+    val completedArgs: Seq[String] = if (args.size == 1) {
+      if (args.head.contains(".")) {
+        val elements = args.head.split("\\.")
+        Seq(elements.init.mkString("."), elements.last)
+      } else Seq("") ++ args
+    } else args
 
     completedArgs match {
       case namespace :: name :: _ =>
@@ -28,8 +32,8 @@ trait ControllerGenerator extends CodeGenerator {
         generateApplicationControllerIfAbsent()
         generate(namespaces, name)
         appendToControllers(namespaces, name)
-        appendToScalatraBootstrap(name)
-        generateSpec(namespaces, name)
+        generateControllerSpec(namespaces, name)
+        generateIntegrationSpec(namespaces, name)
         println("")
       case _ => showUsage
     }
@@ -38,7 +42,7 @@ trait ControllerGenerator extends CodeGenerator {
   def code(namespaces: Seq[String], name: String): String = {
     s"""package ${toNamespace("controller", namespaces)}
         |
-        |import skinny._
+        |${if (!namespaces.isEmpty) "import _root_.controller._\n"}import skinny._
         |import skinny.validator._
         |
         |class ${toClassName(name)}Controller extends ApplicationController {
@@ -79,65 +83,123 @@ trait ControllerGenerator extends CodeGenerator {
     writeIfAbsent(file, code(namespaces, name))
   }
 
-  def appendToControllers(namespaces: Seq[String], name: String) {
-    val controllerClassName = s"${name.head.toUpper + name.tail}Controller"
-    val newCode =
-      s"""object Controllers {
-        |  object ${toVariable(name)} extends _root_.${toNamespace("controller", namespaces)}.${controllerClassName} with Routes {
-        |    val indexUrl = get("${toResourcesBasePath(namespaces)}/${toVariable(name)}/?")(index).as('index)
-        |  }
-        |""".stripMargin
+  override def appendToControllers(namespaces: Seq[String], name: String) {
+    val controllerName = toControllerName(namespaces, name)
+    val controllerClassName = toNamespace("_root_.controller", namespaces) + "." + toControllerClassName(name)
+    val newMountCode =
+      s"""def mount(ctx: ServletContext): Unit = {
+        |    ${controllerName}.mount(ctx)""".stripMargin
+
+    val path = {
+      val parentPath = toDirectoryPath("", namespaces)
+      if (parentPath.isEmpty) s"/${name}" else s"/${parentPath}/${name}"
+    }
+    val newControllerDefCode = {
+      s"""  object ${controllerName} extends ${controllerClassName} with Routes {
+      |    val indexUrl = get("${path}")(index).as('index)
+      |  }
+      |
+      |}
+      |""".stripMargin
+    }
+
     val file = new File("src/main/scala/controller/Controllers.scala")
     if (file.exists()) {
-      val code = Source.fromFile(file).mkString.replaceFirst("object\\s+Controllers\\s*\\{", newCode)
-      forceWrite(file, code)
-    } else {
-      forceWrite(file, newCode + "}\n")
-    }
-  }
-
-  def appendToScalatraBootstrap(name: String) {
-    val newCode =
-      s"""override def initSkinnyApp(ctx: ServletContext) {
-        |    Controllers.${toVariable(name)}.mount(ctx)
-        |""".stripMargin
-    val file = new File("src/main/scala/ScalatraBootstrap.scala")
-    if (file.exists()) {
-      val code = Source.fromFile(file).mkString.replaceFirst(
-        "(override\\s+def\\s+initSkinnyApp\\s*\\(ctx:\\s+ServletContext\\)\\s*\\{)", newCode)
+      val code = Source.fromFile(file).mkString
+        .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
+        .replaceFirst("(}[\\s\\r\\n]+)$", newControllerDefCode)
       forceWrite(file, code)
     } else {
       val fullNewCode =
-        """import _root_.controller._
-          |import skinny._
+        s"""package controller
           |
-          |class ScalatraBootstrap extends SkinnyLifeCycle {
-          |  ${newCode}
+          |import _root_.controller._
+          |import skinny._
+          |import skinny.controller.AssetsController
+          |
+          |object Controllers {
+          |
+          |  ${newMountCode}
+          |    AssetsController.mount(ctx)
           |  }
-          |}
+          |
+          |${newControllerDefCode}
           |""".stripMargin
       forceWrite(file, fullNewCode)
     }
   }
 
-  def spec(namespaces: Seq[String], name: String): String = {
-    s"""package ${toNamespace("controller", namespaces)}
+  def controllerSpec(namespaces: Seq[String], name: String): String = {
+    val namespace = toNamespace("controller", namespaces)
+    val controllerClassName = toClassName(name) + "Controller"
+    val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${name}"
+
+    s"""package ${namespace}
+      |
+      |import org.scalatest._
+      |import skinny._
+      |import skinny.test._
+      |import org.joda.time._
+      |
+      |// NOTICE before/after filters won't be executed by default
+      |class ${controllerClassName}Spec extends FunSpec with Matchers with DBSettings {
+      |
+      |  def createMockController = new ${controllerClassName} with MockController
+      |
+      |  describe("${controllerClassName}") {
+      |
+      |    it("shows index page") {
+      |      val controller = createMockController
+      |      controller.index
+      |      controller.status should equal(200)
+      |      controller.renderCall.map(_.path) should equal(Some("${viewTemplatesPath}/index"))
+      |      controller.contentType should equal("text/html; charset=utf-8")
+      |    }
+      |
+      |  }
+      |
+      |}
+      |""".stripMargin
+  }
+
+  def generateControllerSpec(namespaces: Seq[String], name: String) {
+    val specFile = new File(s"src/test/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}ControllerSpec.scala")
+    writeIfAbsent(specFile, controllerSpec(namespaces, name))
+  }
+
+  def integrationSpec(namespaces: Seq[String], name: String): String = {
+    val path = {
+      val parentPath = toDirectoryPath("", namespaces)
+      if (parentPath.isEmpty) s"/${name}"
+      else s"/${parentPath}/${name}"
+    }
+
+    s"""package ${toNamespace("integrationtest", namespaces)}
         |
-        |import _root_.controller._
-        |import _root_.model._
         |import org.scalatra.test.scalatest._
+        |import org.scalatest._
+        |import skinny._
         |import skinny.test._
+        |import org.joda.time._
+        |import _root_.controller.Controllers
         |
-        |class ${toClassName(name)}ControllerSpec extends ScalatraFlatSpec {
-        |  addFilter(Controllers.${toVariable(name)}, "/*")
+        |class ${toClassName(name)}Controller_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+        |  addFilter(Controllers.${toControllerName(namespaces, name)}, "/*")
+        |
+        |  it should "show index page" in {
+        |    get("${path}") {
+        |      logBodyUnless(200)
+        |      status should equal(200)
+        |    }
+        |  }
         |
         |}
         |""".stripMargin
   }
 
-  def generateSpec(namespaces: Seq[String], name: String) {
-    val specFile = new File(s"src/test/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}ControllerSpec.scala")
-    writeIfAbsent(specFile, spec(namespaces, name))
+  def generateIntegrationSpec(namespaces: Seq[String], name: String) {
+    val specFile = new File(s"src/test/scala/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala")
+    writeIfAbsent(specFile, integrationSpec(namespaces, name))
   }
 
 }

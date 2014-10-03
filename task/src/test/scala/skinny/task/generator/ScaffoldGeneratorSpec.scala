@@ -1,9 +1,8 @@
 package skinny.task.generator
 
 import org.scalatest._
-import org.scalatest.matchers.ShouldMatchers
 
-class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
+class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   val generator = ScaffoldSspGenerator
 
@@ -132,14 +131,20 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package integrationtest
           |
           |import org.scalatra.test.scalatest._
+          |import org.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |import _root_.controller.Controllers
           |import model._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.members, "/*")
+          |
+          |  override def afterAll() {
+          |    super.afterAll()
+          |    Member.deleteAll()
+          |  }
           |
           |  def newMember = FactoryGirl(Member).create()
           |
@@ -261,14 +266,20 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
+          |import org.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
+          |
+          |  override def afterAll() {
+          |    super.afterAll()
+          |    Member.deleteAll()
+          |  }
           |
           |  def newMember = FactoryGirl(Member).create()
           |
@@ -414,14 +425,20 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
+          |import org.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class GroupMembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |class GroupMembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminGroupMembers, "/*")
+          |
+          |  override def afterAll() {
+          |    super.afterAll()
+          |    GroupMember.deleteAll()
+          |  }
           |
           |  def newGroupMember = FactoryGirl(GroupMember).create()
           |
@@ -550,14 +567,20 @@ class ScaffoldGeneratorSpec extends FunSpec with ShouldMatchers {
         """package integrationtest.admin
           |
           |import org.scalatra.test.scalatest._
+          |import org.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
+          |
+          |  override def afterAll() {
+          |    super.afterAll()
+          |    Member.deleteAll()
+          |  }
           |
           |  def newMember = FactoryGirl(Member).create()
           |

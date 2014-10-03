@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.Pagination
 import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.includes.IncludesQueryRepository
@@ -73,8 +73,7 @@ trait FinderFeatureWithId[Id, Entity]
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
         val sql = selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
-        if (orderings.isEmpty) sql.limit(limit).offset(offset)
-        else sql.orderBy(sqls.csv(orderings: _*)).limit(limit).offset(offset)
+        (if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))).limit(limit).offset(offset)
       }).list.apply())
     }
   }

@@ -1,10 +1,9 @@
 package skinny
 
-import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 import java.util.Locale
 
-class I18nSpec extends FlatSpec with ShouldMatchers {
+class I18nSpec extends FlatSpec with Matchers {
 
   behavior of "I18n"
 

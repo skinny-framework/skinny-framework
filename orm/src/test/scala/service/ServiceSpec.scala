@@ -1,12 +1,11 @@
 package service
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.fixture
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class ServiceSpec extends fixture.FunSpec with ShouldMatchers
+class ServiceSpec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {
@@ -14,10 +13,10 @@ class ServiceSpec extends fixture.FunSpec with ShouldMatchers
   override def db(): DB = NamedDB('service).toDB()
 
   override def fixture(implicit session: DBSession) {
-    val serviceId = Service.createWithAttributes('name -> "Cool Web Service")
-    Application.createWithAttributes('name -> "Smartphone site", 'serviceId -> serviceId)
-    Application.createWithAttributes('name -> "PC site", 'serviceId -> serviceId)
-    Application.createWithAttributes('name -> "Featurephone site", 'serviceId -> serviceId)
+    val serviceNo = Service.createWithAttributes('name -> "Cool Web Service")
+    Application.createWithAttributes('name -> "Smartphone site", 'serviceNo -> serviceNo)
+    Application.createWithAttributes('name -> "PC site", 'serviceNo -> serviceNo)
+    Application.createWithAttributes('name -> "Featurephone site", 'serviceNo -> serviceNo)
   }
 
   describe("hasMany without byDefault") {
@@ -32,11 +31,11 @@ class ServiceSpec extends fixture.FunSpec with ShouldMatchers
       val app = Application.joins(Application.service).findAll().head
       app.service.isDefined should equal(true)
 
-      val beforeService = Service.joins(Service.applications).findById(app.serviceId).get
+      val beforeService = Service.joins(Service.applications).findById(app.serviceNo).get
 
       Application.deleteById(beforeService.applications.head.id)
 
-      val afterService = Service.joins(Service.applications).findById(app.serviceId).get
+      val afterService = Service.joins(Service.applications).findById(app.serviceNo).get
       afterService.applications.size should equal(
         beforeService.applications.size - 1)
     }

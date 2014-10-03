@@ -1,5 +1,6 @@
 /*
  * Copyright 2011-2012 M3, Inc.
+ * Copyright 2013-2014 skinny-framework.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ package skinny.http
 import java.io._
 import java.net.{ URLEncoder, HttpURLConnection }
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.concurrent.{ Future, ExecutionContext }
 import skinny.logging.Logging
 import skinny.util.LoanPattern.using
@@ -168,29 +170,29 @@ object HTTP extends Logging {
           inputStream = Option(conn.getErrorStream)
       }
 
-      val response: Response = new Response(conn.getResponseCode)
-      response.charset = request.charset
-      response.headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }
-      response.headers ++= conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap
-      Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
-        response.rawCookies ++= setCookies.asScala.flatMap { setCookie =>
-          setCookie.split("=") match {
-            case Array(name, _) => Some(name -> setCookie)
-            case _ => None
-          }
-        }
-      }
-      inputStream.foreach { is =>
-        using(is) { input =>
-          using(new ByteArrayOutputStream) { out =>
-            var c: Int = 0
-            while ({ c = input.read(); c } != -1) {
-              out.write(c)
+      val response: Response = Response(
+        status = conn.getResponseCode,
+        charset = request.charset,
+        headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }.toMap,
+        headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
+        rawCookies = Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
+          setCookies.asScala.flatMap { setCookie =>
+            setCookie.split("=") match {
+              case Array(name, _) => Some(name -> setCookie)
+              case _ => None
             }
-            response.body = out.toByteArray
+          }.toMap
+        }.getOrElse(Map()),
+        body = inputStream.map { is =>
+          using(is) { input =>
+            using(new ByteArrayOutputStream) { out =>
+              var c: Int = 0
+              while ({ c = input.read(); c } != -1) { out.write(c) }
+              out.toByteArray
+            }
           }
-        }
-      }
+        }.getOrElse(Array())
+      )
 
       logger.debug {
         s"""

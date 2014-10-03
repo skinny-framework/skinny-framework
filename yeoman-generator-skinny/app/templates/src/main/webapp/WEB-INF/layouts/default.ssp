@@ -7,6 +7,12 @@
     ${unescape(s.csrfMetaTags)}
     <script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.min.js"></script>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+
+    <!-- npm install; npm install -g grunt-cli; grunt -->
+    <!--
+    <link rel="stylesheet" href="${uri("/assets/css/application-less.css")}"/>
+    <link rel="stylesheet" href="${uri("/assets/css/application-scss.css")}"/>
+    -->
   </head>
   <body>
     <div class="container span12">
@@ -16,6 +22,17 @@
     </div>
     <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
+
+    <!-- npm install; npm install -g grunt-cli; grunt -->
+    <!--
+    <script src="http://fb.me/react-0.10.0.js"></script>
+    <script type="text/javascript" src="${uri("/assets/js/react-all.js")}"></script>
+    <script type="text/javascript" src="${uri("/assets/js/coffee-all.js")}"></script>
+    <script type="text/javascript" src="${uri("/assets/js/ts-all.js")}"></script>
+    -->
+
+    <!-- Scala.js default JS filename -->
+    <!--<script type="text/javascript" src="${uri("/assets/js/application-fastopt.js")}"></script>-->
   </body>
 </html>
 

@@ -15,7 +15,7 @@ object CSRFProtectionFeature {
  */
 trait CSRFProtectionFeature extends CsrfTokenSupport {
 
-  self: ScalatraBase with RichRouteFeature with ActionDefinitionFeature with BeforeAfterActionFeature with TemplateEngineFeature with RequestScopeFeature with Logging =>
+  self: SkinnyScalatraBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with Logging =>
 
   /**
    * Overrides Scalatra's default key name.
@@ -85,11 +85,11 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
   /**
    * Handles when CSRF is detected.
    */
-  def handleForgeryIfDetected(): Unit = haltWithBody(403)
+  def handleForgeryIfDetected(): Unit = halt(403)
 
   // Registers csrfKey & csrfToken to request scope.
   beforeAction() {
-    if (requestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
+    if (getFromRequestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
       set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
       set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())
     }

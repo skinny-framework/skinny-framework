@@ -1,0 +1,51 @@
+<form>
+<div class="form-group">
+    <label class="control-label">
+        Name
+    </label>
+    <div class="controls row">
+        <div class="col-xs-12">
+            <div ng-class="formErrors['name'].length > 0 ? 'has-error' : ''">
+                <input type="text" name="name" class="form-control" ng-model="item.name" />
+                <span ng-show="formErrors['name']">
+                    <p class="help-block" ng-repeat="error in formErrors['name']">{{error}}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label">
+        Plain Text Password
+    </label>
+    <div class="controls row">
+        <div class="col-xs-12">
+            <div ng-class="formErrors['plainTextPassword'].length > 0 ? 'has-error' : ''">
+                <input type="text" name="plainTextPassword" class="form-control" ng-model="item.plainTextPassword" />
+                <span ng-show="formErrors['plainTextPassword']">
+                    <p class="help-block" ng-repeat="error in formErrors['plainTextPassword']">{{error}}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label class="control-label">
+        Favorite Number
+    </label>
+    <div class="controls row">
+        <div class="col-xs-12">
+            <div ng-class="formErrors['favoriteNumber'].length > 0 ? 'has-error' : ''">
+                <input type="text" name="favoriteNumber" class="form-control" ng-model="item.favoriteNumber" />
+                <span ng-show="formErrors['favoriteNumber']">
+                    <p class="help-block" ng-repeat="error in formErrors['favoriteNumber']">{{error}}</p>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-actions">
+    <button class="btn btn-primary" save-item ng-click="submit(item)">Submit</button>
+    <button class="btn btn-default" save-item ng-click="cancel()">Cancel</button>
+</div>
+</form>

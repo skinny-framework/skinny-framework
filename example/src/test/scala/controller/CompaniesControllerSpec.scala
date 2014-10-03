@@ -1,13 +1,12 @@
 package controller
 
-import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.FunSpec
+import org.scalatest._
 import skinny.test.{ MockController, FactoryGirl }
 import model.Company
 import skinny.Format
 import unit.DBSettings
 
-class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSettings {
+class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
 
   describe("CompaniesController") {
 
@@ -42,6 +41,7 @@ class CompaniesControllerSpec extends FunSpec with ShouldMatchers with DBSetting
 
         controller.status should equal(200)
         controller.requestScope[Company]("item") should equal(Some(company))
+        controller.getFromRequestScope[Company]("item") should equal(Some(company))
         controller.renderCall.map(_.path) should equal(Some("/companies/show"))
       }
     }

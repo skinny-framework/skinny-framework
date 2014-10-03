@@ -22,6 +22,9 @@ class RootControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     get("/?echo=abcdEFG") {
       status should equal(200)
       body should include("abcdEFG")
+
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
     }
     get("/mock/?echo=abcdEFG") {
       status should equal(200)
@@ -52,4 +55,22 @@ class RootControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     }
   }
 
+  it should "show nested i18n messages" in {
+    get("/nested-i18n", "foo" -> "will be OK") {
+      status should equal(200)
+    }
+    get("/nested-i18n", "foo" -> "will be NG") {
+      status should equal(400)
+      body should include("foo must include 'OK'")
+    }
+    session {
+      get("/session/renew", "locale" -> "ja", "returnTo" -> "/") {
+        status should equal(302)
+      }
+      get("/nested-i18n", "foo" -> "will be NG") {
+        status should equal(400)
+        body should include("ふー は 'OK' を含まなければならない")
+      }
+    }
+  }
 }

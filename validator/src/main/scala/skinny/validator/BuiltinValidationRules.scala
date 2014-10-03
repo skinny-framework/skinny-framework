@@ -37,9 +37,7 @@ object notEmpty extends notEmpty(true)
 case class notEmpty(trim: Boolean = true) extends ValidationRule {
   def name = "notEmpty"
   def isValid(v: Any) = !isEmpty(v) && {
-    toHasSize(v).map {
-      x => x.size > 0
-    }.getOrElse {
+    toHasSize(v).map(x => x.size > 0).getOrElse {
       if (trim) v.toString.trim.length > 0
       else v.toString.length > 0
     }
@@ -50,11 +48,8 @@ case class length(len: Int) extends ValidationRule {
   def name = "length"
   override def messageParams = Seq(len.toString)
   def isValid(v: Any) = isEmpty(v) || {
-    toHasSize(v).map {
-      x => x.size == len
-    }.getOrElse {
-      v.toString.length == len
-    }
+    toHasSize(v).map(x => x.size == len)
+      .getOrElse(v.toString.length == len)
   }
 }
 
@@ -66,11 +61,8 @@ case class minLength(min: Int) extends ValidationRule {
   def name = "minLength"
   override def messageParams = Seq(min.toString)
   def isValid(v: Any) = isEmpty(v) || {
-    toHasSize(v).map {
-      x => x.size >= min
-    }.getOrElse {
-      v.toString.length >= min
-    }
+    toHasSize(v).map(x => x.size >= min)
+      .getOrElse(v.toString.length >= min)
   }
 }
 
@@ -82,11 +74,8 @@ case class maxLength(max: Int) extends ValidationRule {
   def name = "maxLength"
   override def messageParams = Seq(max.toString)
   def isValid(v: Any) = isEmpty(v) || {
-    toHasSize(v).map {
-      x => x.size <= max
-    }.getOrElse {
-      v.toString.length <= max
-    }
+    toHasSize(v).map(x => x.size <= max)
+      .getOrElse(v.toString.length <= max)
   }
 }
 
@@ -98,9 +87,7 @@ case class minMaxLength(min: Int, max: Int) extends ValidationRule {
   def name = "minMaxLength"
   override def messageParams = Seq(min.toString, max.toString)
   def isValid(v: Any) = isEmpty(v) || {
-    toHasSize(v).map {
-      x => x.size >= min && x.size <= max
-    }.getOrElse {
+    toHasSize(v).map(x => x.size >= min && x.size <= max).getOrElse {
       v.toString.length >= min && v.toString.length <= max
     }
   }
@@ -112,20 +99,14 @@ case class minMaxLength(min: Int, max: Int) extends ValidationRule {
 
 object numeric extends ValidationRule {
   def name = "numeric"
-  def isValid(v: Any) = isEmpty(v) ||
-    "^((-|\\+)?[0-9]+(\\.[0-9]+)?)+$".r.findFirstIn(v.toString).isDefined
+  def isValid(v: Any) = isEmpty(v) || isNumeric(v)
 }
 
 // ----
 // param("x" -> "123") is intValue
 object intValue extends ValidationRule {
   def name = "intValue"
-  def isValid(v: Any) = isEmpty(v) || {
-    try {
-      v.toString.toInt
-      true
-    } catch { case e: NumberFormatException => false }
-  }
+  def isValid(v: Any) = isEmpty(v) || isInt(v)
 }
 
 // ----
@@ -133,12 +114,7 @@ object intValue extends ValidationRule {
 
 object longValue extends ValidationRule {
   def name = "longValue"
-  def isValid(v: Any) = isEmpty(v) || {
-    try {
-      v.toString.toLong
-      true
-    } catch { case e: NumberFormatException => false }
-  }
+  def isValid(v: Any) = isEmpty(v) || isLong(v)
 }
 
 // ----
@@ -146,12 +122,7 @@ object longValue extends ValidationRule {
 
 object doubleValue extends ValidationRule {
   def name = "doubleValue"
-  def isValid(v: Any) = isEmpty(v) || {
-    try {
-      v.toString.toDouble
-      true
-    } catch { case e: NumberFormatException => false }
-  }
+  def isValid(v: Any) = isEmpty(v) || isDouble(v)
 }
 
 // ----
@@ -159,12 +130,7 @@ object doubleValue extends ValidationRule {
 
 object floatValue extends ValidationRule {
   def name = "floatValue"
-  def isValid(v: Any) = isEmpty(v) || {
-    try {
-      v.toString.toFloat
-      true
-    } catch { case e: NumberFormatException => false }
-  }
+  def isValid(v: Any) = isEmpty(v) || isFloat(v)
 }
 
 // ----
@@ -173,7 +139,7 @@ object floatValue extends ValidationRule {
 case class intMinMaxValue(min: Int, max: Int) extends ValidationRule {
   def name = "intMinMaxValue"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = v == null || v.toString.toInt >= min && v.toString.toInt <= max
+  def isValid(v: Any) = isEmpty(v) || (isInt(v) && toInt(v) >= min && toInt(v) <= max)
 }
 
 // ----
@@ -182,7 +148,7 @@ case class intMinMaxValue(min: Int, max: Int) extends ValidationRule {
 case class intMinValue(min: Int) extends ValidationRule {
   def name = "intMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toInt >= min
+  def isValid(v: Any) = isEmpty(v) || (isInt(v) && toInt(v) >= min)
 }
 
 // ----
@@ -191,7 +157,7 @@ case class intMinValue(min: Int) extends ValidationRule {
 case class intMaxValue(max: Int) extends ValidationRule {
   def name = "intMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toInt <= max
+  def isValid(v: Any) = isEmpty(v) || (isInt(v) && toInt(v) <= max)
 }
 
 // ----
@@ -200,7 +166,7 @@ case class intMaxValue(max: Int) extends ValidationRule {
 case class longMinMaxValue(min: Long, max: Long) extends ValidationRule {
   def name = "longMinMaxValue"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toLong >= min && v.toString.toLong <= max
+  def isValid(v: Any) = isEmpty(v) || (isLong(v) && toLong(v) >= min && toLong(v) <= max)
 }
 
 // ----
@@ -209,7 +175,7 @@ case class longMinMaxValue(min: Long, max: Long) extends ValidationRule {
 case class longMinValue(min: Long) extends ValidationRule {
   def name = "longMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toLong >= min
+  def isValid(v: Any) = isEmpty(v) || (isLong(v) && toLong(v) >= min)
 }
 
 // ----
@@ -218,7 +184,7 @@ case class longMinValue(min: Long) extends ValidationRule {
 case class longMaxValue(max: Long) extends ValidationRule {
   def name = "longMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toLong <= max
+  def isValid(v: Any) = isEmpty(v) || (isLong(v) && toLong(v) <= max)
 }
 
 // ----
@@ -227,7 +193,7 @@ case class longMaxValue(max: Long) extends ValidationRule {
 case class doubleMinMaxValue(min: Double, max: Double) extends ValidationRule {
   def name = "doubleMinMaxValue"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble >= min && v.toString.toDouble <= max
+  def isValid(v: Any) = isEmpty(v) || (isDouble(v) && toDouble(v) >= min && toDouble(v) <= max)
 }
 
 // ----
@@ -236,7 +202,7 @@ case class doubleMinMaxValue(min: Double, max: Double) extends ValidationRule {
 case class doubleMinValue(min: Double) extends ValidationRule {
   def name = "doubleMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble >= min
+  def isValid(v: Any) = isEmpty(v) || (isDouble(v) && toDouble(v) >= min)
 }
 
 // ----
@@ -245,7 +211,7 @@ case class doubleMinValue(min: Double) extends ValidationRule {
 case class doubleMaxValue(max: Double) extends ValidationRule {
   def name = "doubleMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toDouble <= max
+  def isValid(v: Any) = isEmpty(v) || (isDouble(v) && toDouble(v) <= max)
 }
 
 // ----
@@ -254,7 +220,7 @@ case class doubleMaxValue(max: Double) extends ValidationRule {
 case class floatMinMaxValue(min: Float, max: Float) extends ValidationRule {
   def name = "floatMinMaxValue"
   override def messageParams = Seq(min.toString, max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat >= min && v.toString.toFloat <= max
+  def isValid(v: Any) = isEmpty(v) || (isFloat(v) && toFloat(v) >= min && toFloat(v) <= max)
 }
 
 // ----
@@ -263,7 +229,7 @@ case class floatMinMaxValue(min: Float, max: Float) extends ValidationRule {
 case class floatMinValue(min: Float) extends ValidationRule {
   def name = "floatMinValue"
   override def messageParams = Seq(min.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat >= min
+  def isValid(v: Any) = isEmpty(v) || (isFloat(v) && toFloat(v) >= min)
 }
 
 // ----
@@ -272,7 +238,7 @@ case class floatMinValue(min: Float) extends ValidationRule {
 case class floatMaxValue(max: Float) extends ValidationRule {
   def name = "floatMaxValue"
   override def messageParams = Seq(max.toString)
-  def isValid(v: Any) = isEmpty(v) || v.toString.toFloat <= max
+  def isValid(v: Any) = isEmpty(v) || (isFloat(v) && toFloat(v) <= max)
 }
 
 // ----
@@ -298,7 +264,7 @@ object same extends ValidationRule {
 object email extends ValidationRule {
   def name = "email"
   def isValid(v: Any) = isEmpty(v) ||
-    """^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$""".r.findFirstIn(v.toString).isDefined
+    """\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z""".r.findFirstIn(v.toString).isDefined
 }
 
 // ----

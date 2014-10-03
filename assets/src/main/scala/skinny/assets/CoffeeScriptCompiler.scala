@@ -38,6 +38,8 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
 
   private[this] def coffeeCommand = if (isWindows) "coffee.bat" else "coffee"
 
+  // TODO Scala 2.11 method lines in trait ProcessBuilder is deprecated: Use lineStream instead.
+  // lineStream doesn't exist in Scala 2.10
   private[this] def nativeCompilerDescription = Seq(coffeeCommand, "-v").lines.mkString
 
   private[this] def nativeCompilerCommand = Seq(coffeeCommand, "--compile", "--stdio") ++ (if (bare) Seq("--bare") else Nil)

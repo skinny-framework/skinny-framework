@@ -1,9 +1,5 @@
 package skinny.orm
 
-import scalikejdbc._, SQLInterpolation._
-import skinny.util.JavaReflectAPI
-import skinny.orm.feature.CRUDFeatureWithId
-
 /**
  * ActiveRecord::Base-like entity object base.
  *

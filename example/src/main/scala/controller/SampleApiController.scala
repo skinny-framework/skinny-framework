@@ -1,8 +1,10 @@
 package controller
 
-import skinny._
+import java.io.OutputStreamWriter
 import model.Company
+import skinny._
 import skinny.validator._
+import skinny.util.LoanPattern
 
 class SampleApiController extends SkinnyApiController {
 
@@ -29,4 +31,9 @@ class SampleApiController extends SkinnyApiController {
 
   def companiesJson = toPrettyJSONString(Company.findAll())
 
+  def responseToOutputStream = {
+    LoanPattern.using(new OutputStreamWriter(response.getOutputStream, "MS932")) { writer =>
+      writer.write("ABCDEGあいうえお")
+    }
+  }
 }

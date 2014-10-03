@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm._
 
 /**
@@ -16,7 +16,7 @@ trait SoftDeleteWithBooleanFeatureWithId[Id, Entity] extends CRUDFeatureWithId[I
   /**
    * is deleted flag field name.
    */
-  val isDeletedFieldName = "isDeleted"
+  def isDeletedFieldName = "isDeleted"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
     val c = defaultAlias.support.column

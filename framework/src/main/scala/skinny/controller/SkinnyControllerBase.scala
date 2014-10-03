@@ -1,5 +1,7 @@
 package skinny.controller
 
+import javax.servlet.http.HttpServletRequest
+
 import skinny._
 import skinny.controller.feature._
 import skinny.validator.implicits.ParametersGetAsImplicits
@@ -24,13 +26,16 @@ trait SkinnyControllerBase
     with ExplicitRedirectFeature
     with ActionDefinitionFeature
     with RequestScopeFeature
+    with ChunkedResponseFeature
     with BeforeAfterActionFeature
+    with FutureOpsFeature
     with LocaleFeature
     with ValidationFeature
     with JSONFeature
     with TimeLoggingFeature
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature
+    with XContentTypeOptionsNosniffHeaderFeature
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits
@@ -49,6 +54,18 @@ trait SkinnyControllerBase
   protected def respondTo: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
 
   /**
+   * Set Content-Type for the format if absent.
+   *
+   * @param format format
+   */
+  protected def setContentTypeIfAbsent()(implicit format: Format = Format.HTML): Unit = {
+    // If Content-Type is already set, never overwrite it.
+    if (contentType == null) {
+      contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
+    }
+  }
+
+  /**
    * Renders body which responds to the specified format (JSON, XML) if possible.
    *
    * @param entity entity
@@ -56,6 +73,7 @@ trait SkinnyControllerBase
    * @return body if possible
    */
   protected def renderWithFormat(entity: Any)(implicit format: Format = Format.HTML): String = {
+    setContentTypeIfAbsent()
     format match {
       case Format.XML =>
         val entityXml = convertJValueToXML(toJSON(entity)).toString
@@ -72,7 +90,9 @@ trait SkinnyControllerBase
    * @tparam A response type
    * @return body if possible
    */
-  protected def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = halt(status)
+  protected def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = {
+    halt(httpStatus, renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message)))
+  }
 
   /**
    * Provides code block with format. If absent, halt as status 406.
@@ -84,6 +104,7 @@ trait SkinnyControllerBase
    */
   protected def withFormat[A](format: Format)(action: => A): A = {
     respondTo.find(_ == format) getOrElse haltWithBody(406)
+    setContentTypeIfAbsent()(format)
     action
   }
 
@@ -131,5 +152,24 @@ trait SkinnyControllerBase
     extends Elem(null, name, xml.Null, TopScope, children.isEmpty, children: _*)
   private[this] class XmlElem(name: String, value: String)
     extends Elem(null, name, xml.Null, TopScope, Text(value).isEmpty, Text(value))
+
+  // ----
+  // Scalatra issue #368 work around
+
+  override def url(
+    route: Route,
+    params: Map[String, String],
+    splats: Iterable[String])(
+      implicit req: HttpServletRequest): String = {
+
+    try {
+      super.url(route, params, splats)(req)
+    } catch {
+      case e: NullPointerException =>
+        // work around for Scalatra issue
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
+    }
+  }
 
 }

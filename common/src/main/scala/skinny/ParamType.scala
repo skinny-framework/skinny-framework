@@ -75,7 +75,7 @@ object ParamType {
     case v: Long => scala.math.BigDecimal(v)
     case v: Int => scala.math.BigDecimal(v)
     case v: Double => scala.math.BigDecimal(v)
-    case v: Float => scala.math.BigDecimal(v)
+    case v: Float => scala.math.BigDecimal(v.toDouble)
     case v: Short => scala.math.BigDecimal(v)
   })
   case object String extends AbstractParamType({

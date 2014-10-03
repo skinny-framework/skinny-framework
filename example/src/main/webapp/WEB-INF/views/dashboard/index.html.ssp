@@ -1,0 +1,46 @@
+<%@val currentUser: Option[AdminUser] %>
+<%@val hourlyStats: Seq[HourlyStat] %>
+<%@val alerts: Seq[String] %>
+
+<h3>Dashboard</h3>
+<div class="pull-right">Login User: ${currentUser.map(_.name)}</div>
+<hr/>
+
+<div class="alert alert-success">
+<ul>
+#for (alert <- alerts)
+<li>${alert}</li>
+#end
+</ul>
+</div>
+
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart"]});
+  google.setOnLoadCallback(drawCharts);
+  function drawCharts() {
+    var data = google.visualization.arrayToDataTable([
+      ['YYYYMMDDHH', 'totalCount', 'errorCount'],
+      #for (s <- hourlyStats)
+      ['${s.yyyymmddhh}', ${s.totalCount}, ${s.errorCount}],
+      #end
+    ]);
+    var options = { title: 'Access Count', hAxis: {title: 'yyyymmddhh',  titleTextStyle: {color: '#333'}}, vAxis: {minValue: 0} };
+    var countChart = new google.visualization.AreaChart(document.getElementById('countChart'));
+    countChart.draw(data, options);
+
+    data = google.visualization.arrayToDataTable([
+      ['YYYYMMDDHH', 'responseTimeMillis'],
+      #for (s <- hourlyStats)
+      ['${s.yyyymmddhh}', ${s.responseTimeMillis}],
+      #end
+    ]);
+    options = { title: 'Response Time', hAxis: {title: 'yyyymmddhh',  titleTextStyle: {color: '#333'}}, vAxis: {minValue: 0} };
+    var responseTimeChart = new google.visualization.AreaChart(document.getElementById('responseTimeChart'));
+    responseTimeChart.draw(data, options);
+  }
+</script>
+
+<div id="countChart" style="width: 900px; height: 500px;"></div>
+<div id="responseTimeChart" style="width: 900px; height: 500px;"></div>
+

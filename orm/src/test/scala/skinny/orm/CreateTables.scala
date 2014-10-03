@@ -1,6 +1,6 @@
 package skinny.orm
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.dbmigration.DBSeeds
 
 trait CreateTables extends DBSeeds { self: Connection =>

@@ -16,11 +16,15 @@ object ModelWithoutTimestampsGenerator extends ModelGenerator {
 
 trait ModelGenerator extends CodeGenerator {
 
+  def withId: Boolean = true
+
   def withTimestamps: Boolean = true
 
   def primaryKeyName: String = "id"
 
   def primaryKeyType: ParamType = ParamType.Long
+
+  def tableName: Option[String] = None
 
   private[this] def showUsage = {
     showSkinnyGenerator()
@@ -29,19 +33,23 @@ trait ModelGenerator extends CodeGenerator {
     println("")
   }
 
-  def run(args: List[String]) {
-    val completedArgs: Seq[String] = if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
-    else args
-    completedArgs.toList match {
+  def run(args: Seq[String]) {
+    val completedArgs: List[String] = {
+      if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
+      else args
+    }.toList
+    completedArgs match {
       case namespace :: name :: attributes =>
         showSkinnyGenerator()
         val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
+            case Array(k, v, columnDef) => Some(k -> v)
             case Array(k, v) => Some(k -> v)
             case _ => None
           }
         }
-        generate(namespace.split('.'), name, None, attributePairs)
+        generate(namespace.split('.'), name, tableName, attributePairs)
+        generateSpec(namespace.split('.'), name, attributePairs)
         println("")
 
       case _ => showUsage
@@ -52,39 +60,44 @@ trait ModelGenerator extends CodeGenerator {
     val namespace = toNamespace("model", namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
+    val timestampPrefix = if (withId) ",\n" else { if (attributePairs.isEmpty) "" else ",\n" }
+    val classFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
+    val extractorsPrimaryKeyRow = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""
+    val attributePrefix = if (withId) ",\n" else ""
+    val mapperClassName = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
+
     val timestamps = if (withTimestamps) {
-      s""",
-         |  createdAt: DateTime,
+      s"""${timestampPrefix}  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
     } else ""
+
     val timestampsExtraction = if (withTimestamps) {
-      s""",
-         |    createdAt = rs.get(rn.createdAt),
+      s"""${timestampPrefix}    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
+
     val customPkName = {
       if (primaryKeyName != "id") "\n  override lazy val primaryKeyFieldName = \"" + primaryKeyName + "\""
       else ""
     }
 
-    val classFields =
-      s"""  ${primaryKeyName}: ${primaryKeyType}${
-        if (attributePairs.isEmpty) ""
-        else attributePairs.map {
-          case (k, t) =>
-            s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
-        }.mkString(",\n", ",\n", "")
-      }${timestamps}
+    val classFields = s"""${classFieldsPrimaryKeyRow}${
+      if (attributePairs.isEmpty) ""
+      else attributePairs.map {
+        case (k, t) =>
+          s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
+      }.mkString(attributePrefix, ",\n", "")
+    }${timestamps}
         |""".stripMargin
 
     val extractors =
-      s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})${
+      s"""${extractorsPrimaryKeyRow}${
         if (attributePairs.isEmpty) ""
         else attributePairs.map {
           case (k, t) =>
             "    " + k + " = rs.get(rn." + k + ")"
-        }.mkString(",\n", ",\n", "")
+        }.mkString(attributePrefix, ",\n", "")
       }${timestampsExtraction}
         |""".stripMargin
 
@@ -98,17 +111,30 @@ trait ModelGenerator extends CodeGenerator {
     s"""package ${namespace}
         |
         |import skinny.orm._, feature._
-        |import scalikejdbc._, SQLInterpolation._
+        |import scalikejdbc._
         |import org.joda.time._
         |
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
         |${classFields})
         |
-        |object ${modelClassName} extends SkinnyCRUDMapper${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
+        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
         |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
         |
+        |  /*
+        |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
+        |   * (e.g.)
+        |   * override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]) = autoConstruct(rs, rn)
+        |   *
+        |   * Be aware of excluding associations like this:
+        |   * (e.g.)
+        |   * case class Member(id: Long, companyId: Long, company: Option[Company] = None)
+        |   * object Member extends SkinnyCRUDMapper[Member] {
+        |   *   override def extract(rs: WrappedResultSet, rn: ResultName[Member]) =
+        |   *     autoConstruct(rs, rn, "company") // "company" will be skipped
+        |   * }
+        |   */
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
         |}
@@ -126,11 +152,12 @@ trait ModelGenerator extends CodeGenerator {
         |import skinny.DBSettings
         |import skinny.test._
         |import org.scalatest.fixture.FlatSpec
-        |import scalikejdbc._, SQLInterpolation._
+        |import org.scalatest._
+        |import scalikejdbc._
         |import scalikejdbc.scalatest._
         |import org.joda.time._
         |
-        |class ${toClassName(name)}Spec extends FlatSpec with DBSettings with AutoRollback {
+        |class ${toClassName(name)}Spec extends FlatSpec with Matchers with DBSettings with AutoRollback {
         |}
         |""".stripMargin
   }

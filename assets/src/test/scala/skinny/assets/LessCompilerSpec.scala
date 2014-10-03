@@ -1,9 +1,8 @@
 package skinny.assets
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class LessCompilerSpec extends FlatSpec with ShouldMatchers {
+class LessCompilerSpec extends FlatSpec with Matchers {
 
   behavior of "LessCompiler"
 

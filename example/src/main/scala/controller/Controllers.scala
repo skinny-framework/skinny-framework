@@ -10,6 +10,7 @@ object Controllers {
     ErrorController.mount(ctx)
 
     fileUpload.mount(ctx)
+    fileDownload.mount(ctx)
 
     root.mount(ctx)
     companies.mount(ctx)
@@ -20,10 +21,21 @@ object Controllers {
     thymeleaf.mount(ctx)
     freemarker.mount(ctx)
     sampleApi.mount(ctx)
+    sampleTxApi.mount(ctx)
+    scaldi.mount(ctx)
+    dashboard.mount(ctx)
 
     SkillsController.mount(ctx)
     CommentsController.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)
+
+    AngularXHRProgrammersController.mount(ctx)
+    angularApp.mount(ctx)
+
+    facebook.mount(ctx)
+    github.mount(ctx)
+    google.mount(ctx)
+    twitter.mount(ctx)
 
     AssetsController.mount(ctx)
   }
@@ -36,6 +48,7 @@ object Controllers {
     val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as('sessionRenew)
     val errorUrl = get("/error")(errorExample).as('error)
     val reactUrl = get("/react")(reactExample).as('react)
+    val nestedI18nUrl = get("/nested-i18n")(nestedI18nExample).as('nestedI18n)
     val invalidateUrl = get("/invalidate")(invalidateExample).as('invalidate)
   }
 
@@ -72,10 +85,56 @@ object Controllers {
     val createCompanyUrl = post("/api/companies")(createCompany).as('createCompany)
     val companiesUrl = get("/api/companies")(companiesJson).as('companies)
   }
+  object sampleTxApi extends SampleTxApiController with Routes {
+    get("/api/error")(index).as('index)
+  }
 
   object fileUpload extends FileUploadController with Routes {
     val formUrl = get("/fileupload")(form).as('form)
     val submitUrl = post("/fileupload/submit")(submit).as('submit)
+  }
+  object fileDownload extends FileDownloadController with Routes {
+    val indexUrl = get("/filedownload")(index).as('index)
+    val smallUrl = get("/filedownload/small")(small).as('small)
+    val nullUrl = get("/filedownload/null")(nullValue).as('null)
+    val errorUrl = get("/filedownload/error")(error).as('error)
+  }
+
+  object scaldi extends ScaldiController with Routes {
+    val indexUrl = get("/scaldi/")(index).as('index)
+  }
+
+  object dashboard extends DashboardController with Routes {
+    val indexUrl = get("/dashboard/")(index).as('index)
+  }
+
+  object angularApp extends AngularAppController with Routes {
+    val indexUrl = get("/angular/app")(index).as('index)
+    val programmersUrl = get("/angular/programmers/")(programmers).as('programmers)
+  }
+
+  object facebook extends FacebookController with Routes {
+    val loginUrl = get("/facebook")(loginRedirect).as('login)
+    val callbackUrl = get("/facebook/callback")(callback).as('callback)
+    val okUrl = get("/facebook/ok")(ok).as('ok)
+  }
+
+  object github extends GitHubController with Routes {
+    val loginUrl = get("/github")(loginRedirect).as('login)
+    val callbackUrl = get("/github/callback")(callback).as('callback)
+    val okUrl = get("/github/ok")(ok).as('ok)
+  }
+
+  object google extends GoogleController with Routes {
+    val loginUrl = get("/google")(loginRedirect).as('login)
+    val callbackUrl = get("/google/callback")(callback).as('callback)
+    val okUrl = get("/google/ok")(ok).as('ok)
+  }
+
+  object twitter extends TwitterController with Routes {
+    val loginUrl = get("/twitter")(loginRedirect).as('login)
+    val callbackUrl = get("/twitter/callback")(callback).as('callback)
+    val okUrl = get("/twitter/ok")(ok).as('ok)
   }
 
 }

@@ -8,6 +8,7 @@ import java.util.Locale
 import org.joda.time._
 import skinny.I18n
 import skinny.logging.Logging
+import skinny.util.DateTimeUtil
 import javax.servlet.http.HttpServletRequest
 
 object RequestScopeFeature extends Logging {
@@ -74,29 +75,38 @@ object RequestScopeFeature extends Logging {
  */
 trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
 
+  // ---------------------------------------------------
+  // Notice: Due to org.scalatra.DynamicScope's implicit conversion, we need to specify request explicitly.
+
+  // [error] ambiguous implicit values:
+  // [error]  both value req of type javax.servlet.http.HttpServletRequest
+  // [error]  and method request in class DashboardController of type => javax.servlet.http.HttpServletRequest
+  // [error]  match expected type javax.servlet.http.HttpServletRequest
+  // ---------------------------------------------------
+
   import RequestScopeFeature._
 
   /**
    * Registers default attributes in the request scope.
    */
-  before()(initializeRequestScopeAttributes)
+  before()(initializeRequestScopeAttributes(request))
 
-  def initializeRequestScopeAttributes = {
-    if (requestScope().get(ATTR_SKINNY).isEmpty) {
-      set(ATTR_SKINNY, skinny.Skinny(requestScope()))
+  def initializeRequestScopeAttributes(implicit req: HttpServletRequest) = {
+    if (requestScope(req).get(ATTR_SKINNY).isEmpty) {
+      set(ATTR_SKINNY, skinny.Skinny(requestScope(req)))(req)
       // requestPath/contextPath
-      val requestPathWithContext = contextPath + requestPath
+      val requestPathWithContext = contextPath + requestPath(req)
       val queryStringPart = Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")
-      set(ATTR_CONTEXT_PATH -> contextPath)
-      set(ATTR_REQUEST_PATH -> requestPathWithContext)
-      set(ATTR_REQUEST_PATH_WITH_QUERY_STRING -> s"${requestPathWithContext}${queryStringPart}")
+      set(ATTR_CONTEXT_PATH -> contextPath)(req)
+      set(ATTR_REQUEST_PATH -> requestPathWithContext)(req)
+      set(ATTR_REQUEST_PATH_WITH_QUERY_STRING -> s"${requestPathWithContext}${queryStringPart}")(req)
       // for forms/validator
-      set(ATTR_PARAMS -> skinny.controller.Params(params))
-      set(ATTR_MULTI_PARAMS -> skinny.controller.MultiParams(multiParams))
-      set(ATTR_ERROR_MESSAGES -> Seq())
-      set(ATTR_KEY_AND_ERROR_MESSAGES -> KeyAndErrorMessages())
+      set(ATTR_PARAMS -> skinny.controller.Params(params(req)))(req)
+      set(ATTR_MULTI_PARAMS -> skinny.controller.MultiParams(multiParams(req)))(req)
+      set(ATTR_ERROR_MESSAGES -> Seq())(req)
+      set(ATTR_KEY_AND_ERROR_MESSAGES -> KeyAndErrorMessages())(req)
       // i18n in view templates
-      setI18n()
+      setI18n(req)
     }
   }
 
@@ -105,14 +115,18 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    *
    * @return whole attributes
    */
-  def requestScope(): scala.collection.concurrent.Map[String, Any] = RequestScopeFeature.requestScope(request)
+  def requestScope(implicit req: HttpServletRequest = request): scala.collection.concurrent.Map[String, Any] = {
+    RequestScopeFeature.requestScope(req)
+  }
   /**
    * Set attribute to request scope.
    *
    * @param keyAndValue key and value
    * @return self
    */
-  def requestScope(keyAndValue: (String, Any)): RequestScopeFeature = requestScope(Seq(keyAndValue))
+  def requestScope(keyAndValue: (String, Any))(implicit req: HttpServletRequest): RequestScopeFeature = {
+    requestScope(Seq(keyAndValue))(req)
+  }
 
   /**
    * Set attributes to request scope.
@@ -120,7 +134,7 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @param keyAndValues collection of key and value.
    * @return self
    */
-  def requestScope(keyAndValues: Seq[(String, Any)]): RequestScopeFeature = {
+  def requestScope(keyAndValues: Seq[(String, Any)])(implicit req: HttpServletRequest): RequestScopeFeature = {
     keyAndValues.foreach {
       case (key, _) =>
         if (key == "layout") {
@@ -129,19 +143,26 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
             "Or if you'd like to change layout for this action, use layout(\"/other\") instead.")
         }
     }
-    requestScope() ++= keyAndValues
+    requestScope(req) ++= keyAndValues
     this
   }
 
   /**
    * Set attribute to request scope.
    */
-  def set(keyAndValue: (String, Any)): RequestScopeFeature = requestScope(Seq(keyAndValue))
+  def set(keyAndValue: (String, Any))(implicit req: HttpServletRequest): RequestScopeFeature = {
+    requestScope(Seq(keyAndValue))(req)
+  }
 
   /**
    * Set attributes to request scope.
    */
-  def set(keyAndValues: Seq[(String, Any)]): RequestScopeFeature = requestScope(keyAndValues)
+  def set(keyAndValues: Seq[(String, Any)])(implicit req: HttpServletRequest): RequestScopeFeature = {
+    requestScope(keyAndValues)(req)
+  }
+
+  @deprecated("Use #getFromRequestScope instead. This method will be removed since 1.3.", "1.2.0")
+  def requestScope[A](key: String): Option[A] = getFromRequestScope(key)(request)
 
   /**
    * Fetches value from request scope.
@@ -150,13 +171,13 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @tparam A type
    * @return value if exists
    */
-  def requestScope[A](key: String): Option[A] = {
-    requestScope().get(key).map { v =>
+  def getFromRequestScope[A](key: String)(implicit req: HttpServletRequest = request): Option[A] = {
+    requestScope(req).get(key).map { v =>
       try v.asInstanceOf[A]
       catch {
         case e: ClassCastException =>
-          throw new RequestScopeConflictException(
-            s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})""")
+          val message = s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})"""
+          throw new RequestScopeConflictException(message)
       }
     }
   }
@@ -166,100 +187,44 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    *
    * @param model model instance
    */
-  def setAsParams(model: Any): Unit = {
-    import skinny.util.StringUtil.toSnakeCase
+  def setAsParams(model: Any)(implicit req: HttpServletRequest = request): Unit = {
+    val toKey: (String) => String = if (useSnakeCasedParamKeys) {
+      skinny.util.StringUtil.toSnakeCase
+    } else {
+      (value: String) => value
+    }
 
     getterNamesFromEntity(model).foreach { getterName =>
       val value = model.getClass.getDeclaredMethod(getterName).invoke(model)
-      if (useSnakeCasedParamKeys) {
-        addParam(toSnakeCase(getterName), value)
-      } else {
-        addParam(getterName, value)
+      addParam(toKey(getterName), value)(req)
+
+      val rawValue = value match {
+        case Some(raw) => raw
+        case None => null
+        case _ => value
       }
-
-      value match {
-        case opt: Option[_] => opt foreach {
-          case dt: DateTime =>
-            if (useSnakeCasedParamKeys) {
-              addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
-              addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
-              addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
-              addParam(toSnakeCase(s"${getterName}Hour"), dt.getHourOfDay)
-              addParam(toSnakeCase(s"${getterName}Minute"), dt.getMinuteOfHour)
-              addParam(toSnakeCase(s"${getterName}Second"), dt.getSecondOfMinute)
-            } else {
-              addParam(s"${getterName}Year", dt.getYearOfEra)
-              addParam(s"${getterName}Month", dt.getMonthOfYear)
-              addParam(s"${getterName}Day", dt.getDayOfMonth)
-              addParam(s"${getterName}Hour", dt.getHourOfDay)
-              addParam(s"${getterName}Minute", dt.getMinuteOfHour)
-              addParam(s"${getterName}Second", dt.getSecondOfMinute)
-            }
-
-          case ld: LocalDate =>
-            if (useSnakeCasedParamKeys) {
-              addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
-              addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
-              addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
-            } else {
-              addParam(s"${getterName}Year", ld.getYearOfEra)
-              addParam(s"${getterName}Month", ld.getMonthOfYear)
-              addParam(s"${getterName}Day", ld.getDayOfMonth)
-            }
-
-          case lt: LocalTime =>
-            if (useSnakeCasedParamKeys) {
-              addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
-              addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
-              addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
-            } else {
-              addParam(s"${getterName}Hour", lt.getHourOfDay)
-              addParam(s"${getterName}Minute", lt.getMinuteOfHour)
-              addParam(s"${getterName}Second", lt.getSecondOfMinute)
-            }
-
-          case value =>
-        }
+      rawValue match {
         case dt: DateTime =>
-          if (useSnakeCasedParamKeys) {
-            addParam(toSnakeCase(s"${getterName}Year"), dt.getYearOfEra)
-            addParam(toSnakeCase(s"${getterName}Month"), dt.getMonthOfYear)
-            addParam(toSnakeCase(s"${getterName}Day"), dt.getDayOfMonth)
-            addParam(toSnakeCase(s"${getterName}Hour"), dt.getHourOfDay)
-            addParam(toSnakeCase(s"${getterName}Minute"), dt.getMinuteOfHour)
-            addParam(toSnakeCase(s"${getterName}Second"), dt.getSecondOfMinute)
-          } else {
-            addParam(s"${getterName}Year", dt.getYearOfEra)
-            addParam(s"${getterName}Month", dt.getMonthOfYear)
-            addParam(s"${getterName}Day", dt.getDayOfMonth)
-            addParam(s"${getterName}Hour", dt.getHourOfDay)
-            addParam(s"${getterName}Minute", dt.getMinuteOfHour)
-            addParam(s"${getterName}Second", dt.getSecondOfMinute)
-          }
+          addParam(toKey(s"${getterName}Year"), dt.getYearOfEra)(req)
+          addParam(toKey(s"${getterName}Month"), dt.getMonthOfYear)(req)
+          addParam(toKey(s"${getterName}Day"), dt.getDayOfMonth)(req)
+          addParam(toKey(s"${getterName}Hour"), dt.getHourOfDay)(req)
+          addParam(toKey(s"${getterName}Minute"), dt.getMinuteOfHour)(req)
+          addParam(toKey(s"${getterName}Second"), dt.getSecondOfMinute)(req)
+          addParam(toKey(s"${getterName}Date"), DateTimeUtil.toString(dt.toLocalDate))(req)
+          addParam(toKey(s"${getterName}Time"), DateTimeUtil.toString(dt.toLocalTime))(req)
 
         case ld: LocalDate =>
-          if (useSnakeCasedParamKeys) {
-            addParam(toSnakeCase(s"${getterName}Year"), ld.getYearOfEra)
-            addParam(toSnakeCase(s"${getterName}Month"), ld.getMonthOfYear)
-            addParam(toSnakeCase(s"${getterName}Day"), ld.getDayOfMonth)
-          } else {
-            addParam(s"${getterName}Year", ld.getYearOfEra)
-            addParam(s"${getterName}Month", ld.getMonthOfYear)
-            addParam(s"${getterName}Day", ld.getDayOfMonth)
-          }
+          addParam(toKey(s"${getterName}Year"), ld.getYearOfEra)(req)
+          addParam(toKey(s"${getterName}Month"), ld.getMonthOfYear)(req)
+          addParam(toKey(s"${getterName}Day"), ld.getDayOfMonth)(req)
 
         case lt: LocalTime =>
-          if (useSnakeCasedParamKeys) {
-            addParam(toSnakeCase(s"${getterName}Hour"), lt.getHourOfDay)
-            addParam(toSnakeCase(s"${getterName}Minute"), lt.getMinuteOfHour)
-            addParam(toSnakeCase(s"${getterName}Second"), lt.getSecondOfMinute)
-          } else {
-            addParam(s"${getterName}Hour", lt.getHourOfDay)
-            addParam(s"${getterName}Minute", lt.getMinuteOfHour)
-            addParam(s"${getterName}Second", lt.getSecondOfMinute)
-          }
+          addParam(toKey(s"${getterName}Hour"), lt.getHourOfDay)(req)
+          addParam(toKey(s"${getterName}Minute"), lt.getMinuteOfHour)(req)
+          addParam(toKey(s"${getterName}Second"), lt.getSecondOfMinute)(req)
 
-        case value =>
+        case _ =>
       }
     }
   }
@@ -288,12 +253,12 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
   /**
    * Set params to request scope.
    */
-  def setParams() = setParamsToRequestScope()
+  def setParams(implicit req: HttpServletRequest = request) = setParamsToRequestScope(req)
 
   /**
    * Set params to request scope.
    */
-  def setParamsToRequestScope(): Unit = set(ATTR_PARAMS -> Params(params))
+  def setParamsToRequestScope(implicit req: HttpServletRequest = request): Unit = set(ATTR_PARAMS -> Params(params(req)))(req)
 
   /**
    * Set {{skinny.I18n}} object for the current request to request scope.
@@ -301,8 +266,8 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @param locale current locale
    * @return self
    */
-  def setI18n()(implicit locale: Locale = currentLocale.orNull[Locale]) = {
-    set(RequestScopeFeature.ATTR_I18N, I18n(locale))
+  def setI18n(implicit req: HttpServletRequest = request, locale: Locale = currentLocale(request).orNull[Locale]) = {
+    set(RequestScopeFeature.ATTR_I18N, I18n(locale))(req)
   }
 
   /**
@@ -311,41 +276,41 @@ trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature w
    * @param name name
    * @param value value
    */
-  def addParam(name: String, value: Any): Unit = {
+  def addParam(name: String, value: Any)(implicit req: HttpServletRequest = request): Unit = {
 
     // ensure "params" in the request scope is valid
     // don't delete requestScope[Any] 's `Any` (because cannot cast Nothing to Params)
-    val isParamsInRequestScopeValid = requestScope[Any](ATTR_PARAMS).map(_.isInstanceOf[Params]).getOrElse(false)
+    val isParamsInRequestScopeValid = getFromRequestScope[Any](ATTR_PARAMS)(req).map(_.isInstanceOf[Params]).getOrElse(false)
 
     if (isParamsInRequestScopeValid) {
       val updatedParams: Params = {
-        Params(requestScope[Params]("params")
+        Params(getFromRequestScope[Params](ATTR_PARAMS)(req)
           .map(_.underlying)
-          .getOrElse(params)
+          .getOrElse(params(req))
           .updated(name, value))
       }
-      set(RequestScopeFeature.ATTR_PARAMS -> updatedParams)
+      set(RequestScopeFeature.ATTR_PARAMS -> updatedParams)(req)
 
     } else {
-      val actual = requestScope(ATTR_PARAMS)
+      val actual = getFromRequestScope(ATTR_PARAMS)(req)
       throw new RequestScopeConflictException(
         s"""Skinny Framework expects that $${params} is a SkinnyParams value. (actual: "${actual}", class: ${actual.getClass.getName})""")
     }
   }
 
   /**
-   * Returns erorrMessages in the RequestScope.
+   * Returns errorMessages in the RequestScope.
    */
-  def errorMessages: Seq[String] = {
-    requestScope.get(RequestScopeFeature.ATTR_ERROR_MESSAGES)
+  def errorMessages(implicit req: HttpServletRequest = request): Seq[String] = {
+    requestScope(req).get(RequestScopeFeature.ATTR_ERROR_MESSAGES)
       .map(_.asInstanceOf[Seq[String]]).getOrElse(Nil)
   }
 
   /**
    * Returns keyAndErrorMessages in the RequestScope.
    */
-  def keyAndErrorMessages: Map[String, Seq[String]] = {
-    requestScope.get(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES)
+  def keyAndErrorMessages(implicit req: HttpServletRequest = request): Map[String, Seq[String]] = {
+    requestScope(req).get(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES)
       .map(_.asInstanceOf[KeyAndErrorMessages].underlying).getOrElse(Map())
   }
 

@@ -1,9 +1,11 @@
 package skinny
 
+object SkinnyEnv extends SkinnyEnv
+
 /**
  * Skinny Env value (key: "skinny.env")
  */
-object SkinnyEnv {
+trait SkinnyEnv {
 
   /**
    * Key for Skinny framework env value.
@@ -39,6 +41,8 @@ object SkinnyEnv {
   }
 
   def getOrElse(default: String): String = get().getOrElse(default)
+
+  def getOrDevelopment(): String = get().getOrElse(Development)
 
   /**
    * Predicates current env is "development" or "dev".

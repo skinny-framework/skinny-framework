@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class longMinMaxValueSpec extends FlatSpec with ShouldMatchers {
+class longMinMaxValueSpec extends FlatSpec with Matchers {
 
   behavior of "longMinMaxValue"
 

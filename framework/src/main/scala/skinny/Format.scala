@@ -13,6 +13,14 @@ trait Format {
  */
 object Format {
 
+  def apply(format: String): Format = format match {
+    case HTML.name => HTML
+    case XML.name => XML
+    case JSON.name => JSON
+    case JavaScript.name => JavaScript
+    case _ => HTML
+  }
+
   case object HTML extends Format {
     override val name = "html"
     override val contentType = "text/html"

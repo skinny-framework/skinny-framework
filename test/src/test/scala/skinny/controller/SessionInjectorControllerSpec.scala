@@ -8,7 +8,8 @@ class SessionInjectorControllerSpec extends ScalatraFlatSpec {
 
   it should "renew session attributes" in {
     session {
-      put("/session", "hoge" -> "aaa") {}
+      put("/session",
+        "hoge" -> SessionInjectorController.serialize("aaa")) {}
       get("/session.json") {
         body should include(""""hoge":"aaa"""")
       }

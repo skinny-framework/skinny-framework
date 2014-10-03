@@ -26,8 +26,9 @@ trait SkinnySessionInjectorController extends SkinnyController with SkinnySessio
     else {
       params.foreach {
         case (key, value) =>
-          logger.debug(s"${key} -> ${value}")
-          skinnySession.setAttribute(key, value)
+          val obj = SessionInjectorController.deserialize(value)
+          logger.debug(s"${key} -> ${obj}")
+          skinnySession.setAttribute(key, obj)
       }
       skinnySession.save()
     }

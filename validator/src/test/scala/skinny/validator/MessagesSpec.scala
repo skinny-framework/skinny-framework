@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class MessagesSpec extends FlatSpec with ShouldMatchers {
+class MessagesSpec extends FlatSpec with Matchers {
 
   behavior of "Messages"
 

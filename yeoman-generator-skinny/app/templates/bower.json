@@ -1,0 +1,14 @@
+{
+  "name": "TODO",
+  "version": "0.1",
+  "homepage": "http://skinny-framework.org/",
+  "authors": [],
+  "license": "TODO",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

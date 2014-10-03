@@ -21,7 +21,10 @@ SkinnyGenerator.prototype.app = function app() {
   this.directory('heroku', 'heroku');
   this.copy('_gitignore', '.gitignore');
   this.copy('build.sbt', 'build.sbt');
+  this.copy('bower.json', 'bower.json');
   this.copy('package.json', 'package.json');
+  this.copy('_package.json', '_package.json');
+  this.copy('Gruntfile.js', 'Gruntfile.js');
   this.copy('README.md', 'README.md');
   this.copy('skinny', 'skinny');
   this.copy('skinny.bat', 'skinny.bat');
@@ -30,7 +33,5 @@ SkinnyGenerator.prototype.app = function app() {
   this.copy('create_local_ivy2', 'create_local_ivy2');
   this.copy('sbt-debug', 'sbt-debug');
   this.copy('sbt-debug.bat', 'sbt-debug.bat');
-  this.copy('Procfile', 'Procfile');
-  this.copy('system.properties', 'system.properties');
 };
 

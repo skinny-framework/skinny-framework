@@ -2,6 +2,7 @@ package integrationtest
 
 import org.scalatra.test.scalatest._
 import skinny.test._
+import skinny.util.JSONStringOps._
 import model._
 import controller.Controllers
 
@@ -16,6 +17,8 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
   it should "show companies" in {
     get("/companies") {
       status should equal(200)
+      header("X-Content-Type-Options") should equal("nosniff")
+      header("X-XSS-Protection") should equal("1; mode=block")
     }
     get("/companies/") {
       status should equal(200)
@@ -23,6 +26,10 @@ class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     get("/companies.json") {
       logger.debug(body)
       status should equal(200)
+      val acts = fromJSONString[List[Company]](body)
+      acts should not equal (None)
+      acts.get should not be (empty)
+      atLeast(1, acts.get) should have('name(company.name))
     }
     get("/companies.xml") {
       logger.debug(body)

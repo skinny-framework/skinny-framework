@@ -233,11 +233,9 @@ class AssetsController extends SkinnyController {
   protected val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
   protected val PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy"
 
-  protected val modifiedHeaderFormats = Seq(
-    DateTimeFormat.forPattern(PATTERN_RFC1123).withZone(DateTimeZone.UTC),
-    DateTimeFormat.forPattern(PATTERN_RFC1036).withZone(DateTimeZone.UTC),
-    DateTimeFormat.forPattern(PATTERN_ASCTIME).withZone(DateTimeZone.UTC)
-  )
+  protected val modifiedHeaderFormats = Seq(PATTERN_RFC1123, PATTERN_RFC1036, PATTERN_ASCTIME).map { pattern =>
+    DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.UTC).withLocale(java.util.Locale.ENGLISH)
+  }
 
   protected def setLastModified(lastModified: Long): Unit = {
     val format = modifiedHeaderFormats.head

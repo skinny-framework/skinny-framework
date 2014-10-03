@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.SkinnyMapperBase
 import skinny.PermittedStrongParameters
 import scala.collection.mutable

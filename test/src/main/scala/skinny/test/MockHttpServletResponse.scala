@@ -92,7 +92,9 @@ class MockHttpServletResponse extends HttpServletResponse {
   }
 
   override def getWriter: PrintWriter = writer
-  override def getOutputStream: ServletOutputStream = mock(classOf[ServletOutputStream])
+
+  val stubOutputStream = new MockServletOutputStream
+  override def getOutputStream: ServletOutputStream = stubOutputStream
 
   override def getContentType: String = contentType
   override def getCharacterEncoding: String = characterEncoding
@@ -149,4 +151,6 @@ class MockHttpServletResponse extends HttpServletResponse {
 
   override def addCookie(cookie: Cookie): Unit = cookies.add(cookie)
 
+  // TODO
+  override def setContentLengthLong(len: Long): Unit = ???
 }

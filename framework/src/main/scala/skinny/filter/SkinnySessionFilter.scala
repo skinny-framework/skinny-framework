@@ -3,13 +3,11 @@ package skinny.filter
 import scala.language.implicitConversions
 
 import skinny.session._
-import javax.servlet.http._
 import skinny.controller.feature._
-import org.scalatra.{ GenerateId, CsrfTokenSupport, FlashMap }
+import org.scalatra._
 import org.scalatra.FlashMapSupport._
 import java.util.Locale
-import org.joda.time.DateTime
-import skinny.session.jdbc.SkinnySession
+import javax.servlet.http.HttpServletRequest
 
 object SkinnySessionFilter {
 
@@ -25,31 +23,58 @@ object SkinnySessionFilter {
  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
  * }}}
  */
-trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
+trait SkinnySessionFilter extends SkinnyFilter {
+
+  self: FlashFeature with CSRFProtectionFeature with LocaleFeature =>
+
   import SkinnySessionFilter._
 
-  def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
+  // --------------------------------------
+  // SkinnySession by using Skinny beforeAction/afterAction
 
   beforeAction()(initializeSkinnySession)
 
-  def skinnySession: SkinnyHttpSession = {
-    requestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).getOrElse {
+  afterAction()(saveCurrentSkinnySession)
+
+  protected def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
+
+  protected def saveCurrentSkinnySession(): Unit = {
+    try {
+      getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).foreach { sessionWrapper =>
+        sessionWrapper.save()
+      }
+    } catch {
+      case e: Exception =>
+        logger.warn(s"Failed to save skinny session because ${e.getMessage}", e)
+    }
+  }
+
+  // --------------------------------------
+  // Accessing SkinnySession
+
+  def skinnySession(implicit req: HttpServletRequest): SkinnyHttpSession = {
+    getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(req).getOrElse {
       initializeSkinnySession
     }
   }
-  def skinnySession(key: String)(implicit request: HttpServletRequest): Any = skinnySession(key)
-  def skinnySession(key: Symbol)(implicit request: HttpServletRequest): Any = skinnySession(key)
 
+  def skinnySession[A](key: String)(implicit req: HttpServletRequest): Option[A] = skinnySession(req).getAs[A](key)
+
+  def skinnySession[A](key: Symbol)(implicit req: HttpServletRequest): Option[A] = skinnySession[A](key.name)(req)
+
+  // --------------------------------------
   // override FlashMapSupport
+  // NOTICE: This API doesn't support Future ops
 
   override def flashMapSetSession(f: FlashMap) {
     try {
       skinnySession.setAttribute(SessionKey, f)
     } catch {
-      case e: Throwable =>
+      case e: Throwable => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
     }
   }
 
+  // --------------------------------------
   // override CsrfTokenSupport
 
   override protected def isForged: Boolean = {
@@ -65,24 +90,18 @@ trait SkinnySessionFilter extends SkinnyFilter { self: FlashFeature with CSRFPro
     skinnySession.getAttributeOrElseUpdate(csrfKey, GenerateId())
   }
 
+  // --------------------------------------
   // override SessionLocaleFeature
 
-  override def setCurrentLocale(locale: String): Unit = skinnySession.setAttribute(sessionLocaleKey, locale)
-
-  override def currentLocale: Option[Locale] = {
-    skinnySession.getAttribute(sessionLocaleKey)
-      .map(l => new Locale(l.toString)).orElse(defaultLocale)
+  override def setCurrentLocale(locale: String)(implicit req: HttpServletRequest): Unit = {
+    skinnySession(req).setAttribute(sessionLocaleKey, locale)
   }
 
-  afterAction() {
-    try {
-      requestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE).map { sessionWrapper =>
-        sessionWrapper.save()
-      }
-    } catch {
-      case e: Exception =>
-        logger.warn(s"Failed to save skinny session because ${e.getMessage}", e)
-    }
+  override def currentLocale(implicit req: HttpServletRequest): Option[Locale] = {
+    skinnySession(req)
+      .getAttribute(sessionLocaleKey)
+      .map(l => new Locale(l.toString))
+      .orElse(defaultLocale)
   }
 
 }

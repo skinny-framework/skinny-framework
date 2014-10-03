@@ -1,6 +1,6 @@
 package model
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }
@@ -40,16 +40,7 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
   override lazy val defaultAlias = createAlias("p")
   override lazy val nameConverters = Map("At$" -> "_timestamp")
 
-  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = new Programmer(
-    id = rs.long(p.id),
-    name = rs.string(p.name),
-    favoriteNumber = rs.long(p.favoriteNumber),
-    hashedPassword = rs.get(p.hashedPassword),
-    companyId = rs.longOpt(p.companyId).map(CompanyId),
-    birthday = rs.localDateOpt(p.birthday),
-    createdAt = rs.dateTime(p.createdAt),
-    updatedAt = rs.dateTimeOpt(p.updatedAt)
-  )
+  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = autoConstruct(rs, p, "company", "skills")
 
   private val c = Company.defaultAlias
 

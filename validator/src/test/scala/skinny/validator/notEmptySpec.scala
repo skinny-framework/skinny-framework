@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class notEmptySpec extends FlatSpec with ShouldMatchers {
+class notEmptySpec extends FlatSpec with Matchers {
 
   behavior of "notEmpty"
 

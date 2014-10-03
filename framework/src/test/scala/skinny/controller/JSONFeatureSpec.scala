@@ -96,10 +96,10 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     }
 
     // Test the async version
-    implicit val ec = ExecutionContext.Implicits.global
-    val listOfFutureBodies = (1 to 5).map(_ => Future { get("/async") { body } })
+    import ExecutionContext.Implicits.global
+    val listOfFutureBodies = (1 to 3).map(_ => Future { get("/async") { body } })
     val fListOfBodies = Future.sequence(listOfFutureBodies)
-    Await.result(fListOfBodies, atMost = Duration.Inf).foreach(_ should equal("""{"id":1,"first_name":"Alice"}"""))
+    Await.result(fListOfBodies, 5.seconds).foreach(_ should equal("""{"id":1,"first_name":"Alice"}"""))
   }
 
   it should "have fromJSON" in {

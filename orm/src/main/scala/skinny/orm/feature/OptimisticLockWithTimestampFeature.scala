@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.exception.OptimisticLockException
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
@@ -20,7 +20,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   /**
    * Lock timestamp field name.
    */
-  val lockTimestampFieldName = "lockTimestamp"
+  def lockTimestampFieldName = "lockTimestamp"
 
   /**
    * Returns where condition part which search by primary key and lock timestamp.

@@ -1,0 +1,101 @@
+<div ng-app="myApp" ng-controller="ProgrammersController" ng-init="refreshProgrammerList()">
+  <h3>Angular Programmers</h3>
+  <hr/>
+  <table class="table table-bordered">
+  <tr>
+    <th>programmer.name</th>
+    <th>programmer.favoriteNumber</th>
+    <th>programmer.hashedPassword</th>
+    <th></th>
+  </tr>
+  <tr ng-repeat="programmer in programmers">
+    <td>{{programmer.name}}</td>
+    <td>{{programmer.favoriteNumber}}</td>
+    <td>{{programmer.hashedPassword.value}}</td>
+    <td><button class="btn btn-xs" ng-click="deleteProgrammer(programmer)">Delete</button></td>
+  </tr>
+  </table>
+  <hr/>
+  <form>
+    <p>
+    <input type="text" ng-model="name" placeholder="name">
+    <span ng-show="createProgrammerFormError['name']">
+      <li style="color:#DF3A01" ng-repeat="error in createProgrammerFormError['name']">{{error}}</li>
+    </span>
+    </p>
+    <p>
+    <input type="text" ng-model="favoriteNumber" placeholder="favoriteNumber">
+    <span ng-show="createProgrammerFormError[favoriteNumber]">
+      <li style="color:#DF3A01" ng-repeat="error in createProgrammerFormError['favoriteNumber']">{{error}}</li>
+    </span>
+    </p>
+    <p>
+    <input type="password" ng-model="plainTextPassword" placeholder="plainTextPassword">
+    <span ng-show="createProgrammerFormError['plainTextPassword']">
+      <li style="color:#DF3A01" ng-repeat="error in createProgrammerFormError['plainTextPassword']">{{error}}</li>
+    </span>
+    </p>
+    <button ng-click="createProgrammer(name, favoriteNumber, plainTextPassword)" class="btn btn-default btn-sm">Add</button>
+  </form>
+</div>
+
+<script>
+'use strict';
+var app = angular.module('myApp', ['ngResource']);
+
+app.controller('ProgrammersController', ['$scope', '$http', '$resource', 'Programmer',
+  function($scope, $http, $resource, Programmer) {
+
+  $scope.refreshProgrammerList = function() {
+    var programmers = Programmer.query(function () {
+      $scope.programmers = programmers;
+    });
+  };
+
+  $scope.clearCreationForm = function() {
+    $scope.createProgrammerFormError = {};
+    $scope.name = $scope.favoriteNumber = $scope.plainTextPassword = null;
+  }
+
+  $scope.createProgrammer = function() {
+    var newbie = {};
+    newbie.name = $scope.name;
+    newbie.favoriteNumber = $scope.favoriteNumber;
+    newbie.plainTextPassword = $scope.plainTextPassword;
+
+    new Programmer(newbie).$save(
+      function (programmer, headers) {
+               $scope.clearCreationForm();
+               $scope.refreshProgrammerList();
+             },
+             function(response) {
+               if (response.data) {
+                 $scope.createProgrammerFormError = {};
+                 for (var name in response.data) {
+                   $scope.createProgrammerFormError[name] = response.data[name];
+                 }
+               } else {
+                 window.alert(JSON.stringify(response));
+               }
+             }
+    );
+  };
+
+  $scope.deleteProgrammer = function(programmer) {
+    Programmer.delete({id: programmer.id},
+      function (programmer, headers) {
+        $scope.refreshProgrammerList();
+      },
+      function(response) {
+        window.alert('server error: ' + JSON.stringify(response.data));
+      }
+    );
+  }
+}]);
+
+app.factory('Programmer', ['$resource', function($resource) {
+  var resources =  $resource('/example/angular/programmers/:id.json', {}, {});
+  return resources;
+}]);
+
+</script>

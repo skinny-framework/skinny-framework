@@ -1,9 +1,6 @@
 package skinny.controller.feature
 
 import org.scalatra._
-import org.json4s._
-import scala.xml._
-
 import skinny.Format
 import skinny.logging.Logging
 import skinny.exception.ViewTemplateNotFoundException
@@ -26,11 +23,7 @@ trait TemplateEngineFeature
    * @return body
    */
   def render(path: String)(implicit format: Format = Format.HTML): String = {
-
-    // If Content-Type is already set, never overwrite it.
-    if (contentType == null) {
-      contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
-    }
+    setContentTypeIfAbsent()
 
     if (templateExists(path)) {
       // template found, render with it
@@ -42,12 +35,12 @@ trait TemplateEngineFeature
       // template not found, but try to render JSON or XML body if possible
       logger.debug(s"Template for ${path} not found (format: ${format}).")
       val entity = (for {
-        resourcesName <- requestScope[String](RequestScopeFeature.ATTR_RESOURCES_NAME)
-        resources <- requestScope[Any](resourcesName)
+        resourcesName <- getFromRequestScope[String](RequestScopeFeature.ATTR_RESOURCES_NAME)
+        resources <- getFromRequestScope[Any](resourcesName)
       } yield resources) getOrElse {
         for {
-          resourceName <- requestScope[String](RequestScopeFeature.ATTR_RESOURCE_NAME)
-          resource <- requestScope[Any](resourceName)
+          resourceName <- getFromRequestScope[String](RequestScopeFeature.ATTR_RESOURCE_NAME)
+          resource <- getFromRequestScope[Any](resourceName)
         } yield resource
       }
       // renderWithFormat returns null when body is empty

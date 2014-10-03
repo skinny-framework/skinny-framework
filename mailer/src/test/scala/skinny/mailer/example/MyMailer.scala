@@ -22,7 +22,7 @@ class MyMailer extends SkinnyMailer {
   }
 
   def sendMessage2(toAddress: String) = {
-    from("from@example.com").to(toAddress).subject("subject2").body("body2").deliver()
+    from("from@example.com").envelopeFrom("e-from@example.com").to(toAddress).subject("subject2").body("body2").deliver()
   }
 
   def sendOther = from("from@example.com").to("other@example.com").deliver()

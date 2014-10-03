@@ -1,6 +1,7 @@
 package skinny.dbmigration
 
-import com.googlecode.flyway.core.Flyway
+import org.flywaydb.core.Flyway
+import skinny.util.TypesafeConfigReader
 import skinny.{ SkinnyEnv, DBSettings }
 import scalikejdbc.ConnectionPool
 import com.typesafe.config.ConfigFactory
@@ -25,8 +26,8 @@ trait DBMigration {
         val flyway = new Flyway
         flyway.setDataSource(pool.dataSource)
 
-        val migrationConfigPath = s"${env}.db.${poolName}.migration"
-        val rootConfig = ConfigFactory.load()
+        val migrationConfigPath = s"db.${poolName}.migration"
+        val rootConfig = TypesafeConfigReader.config(env)
         if (rootConfig.hasPath(migrationConfigPath)) {
           rootConfig.getConfig(migrationConfigPath).entrySet.asScala.foreach(println)
           val locations = rootConfig.getConfig(migrationConfigPath)

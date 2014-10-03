@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import org.joda.time.DateTime
 import skinny.orm.Alias
 
@@ -17,7 +17,7 @@ trait SoftDeleteWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId
   /**
    * deleted_at timestamp field name.
    */
-  val deletedAtFieldName = "deletedAt"
+  def deletedAtFieldName = "deletedAt"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
     val c = defaultAlias.support.column

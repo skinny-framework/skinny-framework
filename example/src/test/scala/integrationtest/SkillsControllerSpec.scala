@@ -106,4 +106,10 @@ class SkillsControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
     }
   }
 
+  it should "fix a skinny session bug #158" in {
+    get(s"/skills/skinny-session-bug") {
+      status should equal(200)
+      body should equal("ok")
+    }
+  }
 }

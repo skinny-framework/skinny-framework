@@ -13,6 +13,8 @@ object Params {
   val Hour = "Hour"
   val Minute = "Minute"
   val Second = "Second"
+  val Date = "Date"
+  val Time = "Time"
 
   val _year = "_year"
   val _month = "_month"
@@ -20,6 +22,8 @@ object Params {
   val _hour = "_hour"
   val _minute = "_minute"
   val _second = "_second"
+  val _date = "_date"
+  val _time = "_time"
 
 }
 
@@ -49,6 +53,8 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
       .orElse(getAs[String](keyPrefix + Hour))
       .orElse(getAs[String](keyPrefix + Minute))
       .orElse(getAs[String](keyPrefix + Second))
+      .orElse(getAs[String](keyPrefix + Date))
+      .orElse(getAs[String](keyPrefix + Time))
       .isEmpty
   }
 
@@ -65,6 +71,11 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
   def toHmsKeys(key: String): (String, String, String) = {
     if (isSnakeCasedParams(key)) (key + _hour, key + _minute, key + _second)
     else (key + Hour, key + Minute, key + Second)
+  }
+
+  def toDatetimeKeys(key: String): (String, String) = {
+    if (isSnakeCasedParams(key)) (key + _date, key + _time)
+    else (key + Date, key + Time)
   }
 
   /**
@@ -117,7 +128,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withTime(key: String): Params = withDate(toHmsKeys(key), key)
+  def withTime(key: String): Params = withTime(toHmsKeys(key), key)
 
   /**
    * Appends a new DateTime param to params.
@@ -126,9 +137,13 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateTime(ymdhms: (String, String, String, String, String, String), key: String): Params = ymdhms match {
-    case (year, month, day, hour, minute, second) =>
+  def withDateTime[A <: Product](ymdhms: A, key: String): Params = ymdhms match {
+    case (year: String, month: String, day: String, hour: String, minute: String, second: String) =>
       DateTimeUtil.toUnsafeDateTimeString(underlying, year, month, day, hour, minute, second).map { value =>
+        Params(underlying + (key -> value))
+      } getOrElse this
+    case (date: String, time: String) =>
+      DateTimeUtil.toUnsafeDateTimeStringFromDateAndTime(underlying, date, time).map { value =>
         Params(underlying + (key -> value))
       } getOrElse this
     case _ => this
@@ -140,7 +155,7 @@ case class Params(underlying: Map[String, Any]) extends Dynamic {
    * @param key new param key
    * @return params
    */
-  def withDateTime(key: String): Params = withDateTime(toYmdhmsKeys(key), key)
+  def withDateTime(key: String): Params = withDateTime(toYmdhmsKeys(key), key).withDateTime(toDatetimeKeys(key), key)
 
   /**
    * Returns value for the key if exists.

@@ -1,16 +1,31 @@
 #!/bin/bash
 
-current_dir=`dirname $0`
-sbt_path=${current_dir}/sbt
-sbt_debug_path=${current_dir}/sbt-debug
+current_dir=.
+current_project=`ls | grep project`
+script_dir=`dirname $0`
+sbt_path=${script_dir}/sbt
+sbt_debug_path=${script_dir}/sbt-debug
 chmod +x ${sbt_path}
 chmod +x ${sbt_debug_path}
 
 # prepared deps
 if [ -d "${current_dir}/ivy2" ]; then
+  mkdir -p $HOME/.ivy2/cache/
   cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
   rm -rf ${current_dir}/ivy2
 fi
+if [ -d "${script_dir}/ivy2" ]; then
+  mkdir -p $HOME/.ivy2/cache/
+  cp -prn ${script_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
+  rm -rf ${script_dir}/ivy2
+fi
+
+function verify_skinny_project() {
+  if [ "${current_project}" == "" ]; then
+    echo "Skinny applicaiton not found here!"
+    exit 1
+  fi
+}
 
 function run_app() {
   ${sbt_path} "~;container:restart"
@@ -31,8 +46,8 @@ function setup_standalone_build() {
   rm -rf standalone-build
   mkdir standalone-build
   cp -pr src standalone-build/src
-  cp -pr build.sbt standalone-build/build.sbt
-  cp -pr _skinny_assembly_settings.sbt standalone-build/build.sbt
+  cp -p build.sbt standalone-build/
+  cp -p _skinny_assembly_settings.sbt standalone-build/
 }
 function copy_resources_to_task() {
   rm -rf task/src/main/resources
@@ -42,16 +57,16 @@ function copy_resources_to_task() {
 function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"org.scala-lang.modules.scalajs\" % \"scalajs-sbt-plugin\" % \"0.4.3\")" > ${setting_file}
+    echo "addSbtPlugin(\"org.scala-lang.modules.scalajs\" % \"scalajs-sbt-plugin\" % \"0.5.4\")" > ${setting_file}
 
     echo "lazy val scalaJS = Project(id = \"scalajs\", base = file(\"src/main/webapp/WEB-INF/assets\"),
-  settings = Defaults.defaultSettings ++ Seq(
+  settings = Seq(
     name := \"application\", // JavaScript file name
     unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
     libraryDependencies ++= Seq(
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-dom\"                    % \"0.3\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jquery\"                 % \"0.3\",
-      \"org.scala-lang.modules.scalajs\" %% \"scalajs-jasmine-test-framework\" % \"0.4.3\" % \"test\"
+      \"org.scala-lang.modules.scalajs\" %%% \"scalajs-dom\"                    % \"0.6\",
+      \"org.scala-lang.modules.scalajs\" %%% \"scalajs-jquery\"                 % \"0.6\",
+      \"org.scala-lang.modules.scalajs\" %%  \"scalajs-jasmine-test-framework\" % \"0.5.4\" % \"test\"
     ),
     crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
   )
@@ -60,58 +75,102 @@ function setup_scalajs() {
 }
 
 command="$1"
-if [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ];then
+if [ "$command" != "" -a "$command" != "new" ]; then
+  verify_skinny_project
+fi
+
+if [ "$command" == "new" ]; then
+  name="$2"
+  if [ "$name" == "" ]; then
+    echo "Usage: ./skinny new [application name]"
+    exit 1
+  fi
+  existing_version=`npm list -g | grep generator-skinny`
+  if [ "${existing_version}" == "" ]; then
+    npm install -g yo
+    npm install -g generator-skinny
+  fi
+  mkdir -p ${name}
+  cd ${name}
+  yo skinny
+
+  echo " ******************************************** "
+  echo "   New Skinny application has been created!"
+  echo ""
+  echo "   $ cd ./${name}"
+  echo "   $ ./skinny run"
+  echo ""
+  echo "   Enjoy Scala programming!"
+  echo ""
+  echo " ******************************************** "
+  echo ""
+
+elif [ "$command" == "upgrade" ]; then
+  npm update -g yo
+  npm update -g generator-skinny
+  mv package.json _package.json
+  yo --no-insight skinny
+  mv _package.json package.json
+  
+elif [ "$command" == "run" -o "$command" == "s" -o "$command" == "server" ]; then
   option="$2"
-  if [ "$option" == "-precompile" -o "$option" == "--precompile" ];then
+  if [ "$option" == "-precompile" -o "$option" == "--precompile" ]; then
     run_precompile_app
   else
     run_app
   fi
-elif [ "$command" == "debug" -o "$command" == "d" ];then
+elif [ "$command" == "debug" -o "$command" == "d" ]; then
   port="$2"
   [ -z "${port}" ] && port=5005
   run_debuggable_app ${port}
-elif [ "$command" == "clean" ];then
+elif [ "$command" == "clean" ]; then
   ${sbt_path} dev/clean
-elif [ "$command" == "update" ];then
+  ${sbt_path} task/clean
+  copy_resources_to_task
+elif [ "$command" == "update" ]; then
   ${sbt_path} update
-elif [ "$command" == "console" ];then
+elif [ "$command" == "console" ]; then
   ${sbt_path} dev/console
-elif [ "$command" == "~compile" ];then
+elif [ "$command" == "~compile" ]; then
   ${sbt_path} "project dev" "~;compile"
-elif [ "$command" == "compile" ];then
+elif [ "$command" == "compile" ]; then
   ${sbt_path} dev/compile
-elif [ "$command" == "test" ];then
+elif [ "$command" == "test" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} dev/test
-elif [ "$command" == "~test" ];then
+elif [ "$command" == "~test" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} "project dev" "~;test"
-elif [ "$command" == "test-quick" -o "$command" == "testQuick" ];then
+elif [ "$command" == "test-quick" -o "$command" == "testQuick" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} dev/testQuick
-elif [ "$command" == "~test-quick" -o "$command" == "~testQuick" ];then
+elif [ "$command" == "~test-quick" -o "$command" == "~testQuick" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} "project dev" "~;testQuick"
-elif [ "$command" == "test-only" -o "$command" == "testOnly" ];then
+elif [ "$command" == "test-only" -o "$command" == "testOnly" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} "dev/testOnly $2"
-elif [ "$command" == "~test-only" -o "$command" == "~testOnly" ];then
+elif [ "$command" == "~test-only" -o "$command" == "~testOnly" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} "project dev" "~;testOnly $2"
-elif [ "$command" == "test:coverage" ];then
+elif [ "$command" == "test:coverage" ]; then
   export SKINNY_ENV="test"
   ${sbt_path} "dev/scoverage:test"
-elif [ "$command" == "scalajs:watch" ];then
+elif [ "$command" == "scalajs:watch" ]; then
   setup_scalajs
-  ${sbt_path} "project scalajs" "~;packageJS"
-elif [ "$command" == "scalajs:package" ];then
+  ${sbt_path} "project scalajs" "~;fastOptJS"
+elif [ "$command" == "scalajs:package" ]; then
   setup_scalajs
-  ${sbt_path} "project scalajs" packageJS
-elif [ "$command" == "scalajs:optimize" ];then
-  setup_scalajs
-  ${sbt_path} "project scalajs" optimizeJS
-elif [ "$command" == "g" -o "$command" == "generate" ];then
+  ${sbt_path} "project scalajs" fastOptJS
+elif [ "$command" == "task:clean" ]; then
+  ${sbt_path} "task/clean"
+  copy_resources_to_task
+elif [ "$command" == "task:run" ]; then
+  copy_resources_to_task
+  shift
+  command="task/run $@"
+  ${sbt_path} "${command}"
+elif [ "$command" == "g" -o "$command" == "generate" ]; then
   generator_type="$2"
   shift
   shift
@@ -122,31 +181,27 @@ elif [ "$command" == "g" -o "$command" == "generate" ];then
     command="task/run generate:$generator_type $@"
     ${sbt_path} "${command}"
   fi
-elif [ "$command" == "db:migrate" ];then
+elif [ "$command" == "db:migrate" ]; then
   copy_resources_to_task
   shift
   ${sbt_path} "task/run db:migrate $@"
-elif [ "$command" == "db:repair" ];then
+elif [ "$command" == "db:repair" ]; then
   copy_resources_to_task
   shift
   ${sbt_path} "task/run db:repair $@"
-elif [ "$command" == "eclipse" ];then
+elif [ "$command" == "eclipse" ]; then
   setting_file="${current_dir}/project/_skinny_eclipse.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "addSbtPlugin(\"com.typesafe.sbteclipse\" % \"sbteclipse-plugin\" % \"2.4.0\")" > ${setting_file} 
   fi
   ${sbt_path} eclipse
-elif [ "$command" == "idea" -o "$command" == "gen-idea" ];then
-  setting_file="${current_dir}/project/_skinny_idea.sbt"
-  if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"com.github.mpeltonen\" % \"sbt-idea\" % \"1.6.0\")" > ${setting_file} 
-  fi
+elif [ "$command" == "idea" -o "$command" == "gen-idea" ]; then
   ${sbt_path} gen-idea
-elif [ "$command" == "package" ];then
+elif [ "$command" == "package" ]; then
   setup_build
   copy_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/package
-elif [ "$command" == "package:standalone" ];then
+elif [ "$command" == "package:standalone" ]; then
   setting_file="${current_dir}/project/_skinny_assembly.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.11.2\")" > ${setting_file} 
@@ -157,13 +212,30 @@ assemblySettings
 mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
 
 _root_.sbt.Keys.test in assembly := {}
+
+resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (managedBase, base) =>
+  val webappBase = base / \"src\" / \"main\" / \"webapp\"
+  for ( (from, to) <- webappBase ** \"*\" \`pair\` rebase(webappBase, managedBase / \"main/\") )
+  yield {
+    Sync.copy(from, to)
+    to
+  }
+}
 " > "${current_dir}/_skinny_assembly_settings.sbt"
   fi
 
   setup_standalone_build
   copy_resources_to_task
-  ${sbt_path} "task/run assets:precompile" standalone-build/assembly
-elif [ "$command" == "publish" ];then
+  ${sbt_path} "task/run assets:precompile standalone-build"
+  rm -fr standalone-build/src/main/webapp/WEB-INF/assets
+  mv standalone-build/src/main/webapp/assets standalone-build/src/main/webapp/WEB-INF/
+  ${sbt_path} standalone-build/assembly
+elif [ "$command" == "heroku:init" ]; then
+  echo "web: heroku/run" > Procfile
+  echo "java.runtime.version=1.7" > system.properties
+  echo "Heroku deployment settings are prepared."
+
+elif [ "$command" == "publish" ]; then
   setup_build
   copy_resources_to_task
   ${sbt_path} "task/run assets:precompile" build/publish
@@ -171,6 +243,8 @@ else
   echo ""
   echo " Usage: ./skinny [COMMAND] [OPTIONS]..."
   echo ""
+  echo "  new             : will create new Skinny application"
+  echo "  upgrade         : will upgrade Skinny app project"
   echo "  run/server/s    : will run application for local development"
   echo "  run -precompile : will run application with Scalate precompilation"
   echo "  debug/d         : will run application with JDWP. default port 5005"
@@ -194,10 +268,14 @@ else
   echo ""
   echo "  scalajs:watch    : will watch Scala.js Scala code change and convert to JS"
   echo "  scalajs:package  : will convert Scala.js Scala code to JS file"
-  echo "  scalajs:optimize : will optimize the huge JS file to optimized small JS"
   echo ""
   echo "  eclipse       : will setup Scala IDE settings"
   echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
+  echo ""
+  echo "  heroku:init   : will setup Heroku deployment settings"
+  echo ""
+  echo "  task:clean    : will clean task project's target directory"
+  echo "  task:run      : will run tasks"
   echo ""
   echo "  g/generate controller : will generate controller"
   echo "  g/generate model      : will generate model"

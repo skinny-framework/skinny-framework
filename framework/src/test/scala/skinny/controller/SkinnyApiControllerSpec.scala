@@ -1,7 +1,7 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.Routes
 import org.scalatra.{ BadRequest, Created }
@@ -48,6 +48,7 @@ class SkinnyApiControllerSpec extends ScalatraFlatSpec {
 
   it should "have creation API" in {
     post("/companies", "name" -> "CompanyName", "url" -> "http://www.example.com/") {
+      header("X-Content-Type-Options") should equal("nosniff")
       status should equal(201)
     }
   }

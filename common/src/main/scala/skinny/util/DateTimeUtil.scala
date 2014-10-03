@@ -4,6 +4,8 @@ import scala.language.implicitConversions
 import skinny.ParamType
 import org.joda.time._
 
+import scala.util.Try
+
 /**
  * DateTime utility.
  */
@@ -58,7 +60,8 @@ object DateTimeUtil {
     if (str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}")) {
       val timeZone = "([+-]\\d{2}:\\d{2})".r.findFirstIn(s).getOrElse(currentTimeZone)
       str + timeZone
-    } else if (str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
+    } else if (str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")
+      || str.matches("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+[+-]\\d{2}:\\d{2}")) {
       str
     } else if (str.matches("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}")) {
       str.replaceFirst("\\s+", "T")
@@ -213,5 +216,23 @@ object DateTimeUtil {
         )
       }
   }
+
+  def toUnsafeDateTimeStringFromDateAndTime(
+    params: Map[String, Any],
+    date: String = "date",
+    time: String = "time"): Option[String] = {
+
+    (params.get(date).filterNot(_.toString.isEmpty) orElse
+      params.get(time).filterNot(_.toString.isEmpty)).map { _ =>
+        "%s %s".format(
+          params.get(date).map(_.toString).orNull,
+          params.get(time).map(_.toString).orNull
+        )
+      }
+  }
+
+  def isLocalDateFormat(str: String): Boolean = Try(parseLocalDate(str)).isSuccess
+
+  def isDateTimeFormat(str: String): Boolean = Try(parseDateTime(str)).isSuccess
 
 }

@@ -32,7 +32,7 @@ class SkinnySessionInitializer extends Filter with Logging {
   def getSkinnyHttpSession(req: HttpServletRequest): SkinnyHttpSession = {
     val session = req.getSession(true)
     val jsessionIdCookieName = req.getServletContext.getSessionCookieConfig.getName
-    val jsessionIdInCookie = req.getCookies.find(_.getName == jsessionIdCookieName).map(_.getValue)
+    val jsessionIdInCookie = Option(req.getCookies).flatMap(_.find(_.getName == jsessionIdCookieName).map(_.getValue))
     val jsessionIdInSession = session.getId
     logger.debug(s"[Skinny Session] session id (cookie: ${jsessionIdInCookie}, local session: ${jsessionIdInSession})")
     val expireAt = SkinnySession.getExpireAtFromMaxInactiveInterval(session.getMaxInactiveInterval)

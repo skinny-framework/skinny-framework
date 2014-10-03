@@ -50,6 +50,18 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
       this
     }
 
+    /**
+     * NOTICE: When using this API, the session is not thread-safe. Don't share a session among threads.
+     */
+    def envelopeFrom(from: String): SkinnyMessageBuilder = {
+      val sessionProperties = message.currentSession.getProperties
+      message.transportProtocol match {
+        case "smtps" => sessionProperties.setProperty("mail.smtps.from", from)
+        case _ => sessionProperties.setProperty("mail.smtp.from", from)
+      }
+      this
+    }
+
     def to(to: String*): SkinnyMessageBuilder = {
       message.to = to
       this

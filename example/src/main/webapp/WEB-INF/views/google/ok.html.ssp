@@ -1,0 +1,7 @@
+<%@val user: Option[skinny.oauth2.client.OAuth2User] %>
+<%@val google: Option[skinny.oauth2.client.google.GoogleUser] %>
+<% import skinny.util.JSONStringOps %>
+<h3>Google OAuth</h3>
+<hr/>
+<pre><%= user.map(u => JSONStringOps.toPrettyJSONString(u)) %></pre>
+<pre><%= google.map(u => JSONStringOps.toPrettyJSONString(u)) %></pre>

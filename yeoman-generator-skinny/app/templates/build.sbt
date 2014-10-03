@@ -5,8 +5,8 @@
 
 // ------------------------------
 // for ./skinny test:coverage
-// Disabled by default because scoverage 0.95.7 doesn't work with Skinny ORM
-//ScoverageSbtPlugin.instrumentSettings
+// https://github.com/scoverage/sbt-scoverage
+instrumentSettings
 
 // ------------------------------
 // for ./skinnny console

@@ -7,11 +7,20 @@ Skinny is a full-stack web app framework, which is built on [Scalatra](http://sc
 
 To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is highly inspired by [Ruby on Rails](http://rubyonrails.org/) and it is optimized for sustainable productivity for ordinary Servlet-based app development. 
 
-![Logo](https://github.com/seratch/skinny-framework/raw/develop/img/logo.png)
+![Logo](https://github.com/seratch/skinny-framework/raw/1.1.x/img/logo.png)
 
 See the website in detail.
 
 http://skinny-framework.org/
+
+## Global skinny script via Homebrew
+
+https://github.com/skinny-framework/homebrew-alt
+
+```sh
+brew tap skinny-framework/alt
+brew install skinny
+```
 
 ## Try Skinny Framework now!
 

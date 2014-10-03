@@ -2,7 +2,7 @@ package skinny.orm
 
 import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature._
 
 case class Member(
@@ -74,8 +74,8 @@ object Member extends SkinnyCRUDMapper[Member] {
     countryId = rs.long(n.countryId),
     companyId = rs.longOpt(n.companyId),
     mentorId = rs.longOpt(n.mentorId),
-    createdAt = rs.dateTime(n.createdAt),
-    country = Country(rs)
+    createdAt = rs.jodaDateTime(n.createdAt),
+    country = Country(rs) // cannot use #autoConstruct in this case
   )
 }
 
@@ -95,13 +95,7 @@ object Name extends SkinnyCRUDMapper[Name]
 
   val member = belongsTo[Member](Member, (name, member) => name.copy(member = member)).byDefault
 
-  def extract(rs: WrappedResultSet, s: ResultName[Name]): Name = new Name(
-    memberId = rs.long(s.memberId),
-    first = rs.string(s.first),
-    last = rs.string(s.last),
-    createdAt = rs.dateTime(s.createdAt),
-    updatedAt = rs.dateTimeOpt(s.updatedAt)
-  )
+  def extract(rs: WrappedResultSet, s: ResultName[Name]): Name = autoConstruct(rs, s, "member")
 }
 
 case class Company(id: Option[Long] = None, name: String,
@@ -120,11 +114,7 @@ object Company extends SkinnyCRUDMapper[Company] with SoftDeleteWithBooleanFeatu
     merge = (c, ms) => c.copy(members = ms)
   ).includes[Member](merge = (cs, ms) => cs.map(c => c.copy(members = ms.filter(_.companyId == c.id))))
 
-  def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = new Company(
-    id = rs.longOpt(s.id),
-    name = rs.string(s.name),
-    countryId = rs.longOpt(s.countryId)
-  )
+  def extract(rs: WrappedResultSet, s: ResultName[Company]): Company = autoConstruct(rs, s, "country", "members")
 }
 
 case class Country(id: Long, name: String) extends SkinnyRecord[Country] {
@@ -134,9 +124,7 @@ case class Country(id: Long, name: String) extends SkinnyRecord[Country] {
 object Country extends SkinnyCRUDMapper[Country] {
   override val tableName = "countries"
   override val defaultAlias = createAlias("cnt")
-  def extract(rs: WrappedResultSet, s: ResultName[Country]): Country = new Country(
-    id = rs.long(s.id), name = rs.string(s.name)
-  )
+  def extract(rs: WrappedResultSet, s: ResultName[Country]): Country = autoConstruct(rs, s)
 }
 
 case class Group(id: Long, name: String)
@@ -145,10 +133,7 @@ case class Group(id: Long, name: String)
 object GroupMapper extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampFeature[Group] {
   override val tableName = "groups"
   override val defaultAlias = createAlias("g")
-  def extract(rs: WrappedResultSet, s: ResultName[Group]): Group = new Group(
-    id = rs.long(s.id),
-    name = rs.string(s.name)
-  )
+  def extract(rs: WrappedResultSet, s: ResultName[Group]): Group = autoConstruct(rs, s)
 
   private[this] val logger = LoggerFactory.getLogger(classOf[Group])
   override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession) = {
@@ -176,13 +161,7 @@ object Skill extends SkinnyCRUDMapper[Skill]
 
   override val tableName = "skills"
   override val defaultAlias = createAlias("s")
-  override def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = new Skill(
-    id = rs.long(s.id),
-    name = rs.string(s.name),
-    createdAt = rs.dateTime(s.createdAt),
-    updatedAt = rs.dateTime(s.updatedAt),
-    lockVersion = rs.long(s.lockVersion)
-  )
+  override def extract(rs: WrappedResultSet, s: ResultName[Skill]): Skill = autoConstruct(rs, s)
 }
 
 case class MemberSkill(memberId: Long, skillId: Long)
@@ -193,6 +172,11 @@ object MemberSkill extends SkinnyJoinTable[MemberSkill] {
 }
 
 case class ISBN(value: String)
+
+object ISBN {
+  implicit val typeBinder: TypeBinder[ISBN] = TypeBinder.string.map(ISBN.apply)
+}
+
 case class Book(isbn: ISBN, title: String, description: Option[String], isbnMaster: Option[ISBNMaster] = None)
     extends SkinnyRecordWithId[ISBN, Book] {
   def skinnyCRUDMapper = Book
@@ -216,11 +200,7 @@ object Book extends SkinnyCRUDMapperWithId[ISBN, Book] {
     merge = (b, im) => b.copy(isbnMaster = im)
   ).byDefault
 
-  override def extract(rs: WrappedResultSet, b: ResultName[Book]) = new Book(
-    isbn = ISBN(rs.get(b.isbn)),
-    title = rs.get(b.title),
-    description = rs.get(b.description)
-  )
+  override def extract(rs: WrappedResultSet, b: ResultName[Book]) = autoConstruct(rs, b, "isbnMaster")
 }
 
 case class ISBNMaster(isbn: ISBN, publisher: String, books: Seq[Book] = Nil)
@@ -236,10 +216,7 @@ object ISBNMaster extends SkinnyCRUDMapperWithId[ISBN, ISBNMaster] {
   override def rawValueToId(rawValue: Any): ISBN = ISBN(rawValue.toString)
   override def idToRawValue(id: ISBN): String = id.value
 
-  override def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = new ISBNMaster(
-    isbn = ISBN(rs.get(b.isbn)),
-    publisher = rs.get(b.publisher)
-  )
+  override def extract(rs: WrappedResultSet, b: ResultName[ISBNMaster]) = autoConstruct(rs, b, "books")
 }
 
 case class ProductId(value: Long)
@@ -252,7 +229,7 @@ object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
   override def idToRawValue(id: ProductId) = id.value
   override def rawValueToId(value: Any) = ProductId(value.toString.toLong)
 
-  override def extract(rs: WrappedResultSet, p: SQLInterpolation.ResultName[Product]) = new Product(
+  override def extract(rs: WrappedResultSet, p: ResultName[Product]) = new Product(
     id = ProductId(rs.get(p.id)),
     name = rs.get(p.name),
     priceYen = rs.get(p.priceYen)
@@ -274,8 +251,7 @@ case class TagDescription(tag: String, description: String)
 object TagDescription extends SkinnyTable[TagDescription] {
   override def defaultAlias = createAlias("td")
   override def defaultJoinColumnFieldName = "tag"
-  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription =
-    new TagDescription(tag = rs.get(n.tag), description = rs.get(n.description))
+  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription = autoConstruct(rs, n)
 }
 
 // -----------------------------------
@@ -298,8 +274,7 @@ case class TagDescription2(tag: String, description: String)
 object TagDescription2 extends SkinnyNoIdMapper[TagDescription2] {
   override def tableName = "tag_description2"
   override def defaultAlias = createAlias("td")
-  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription2]): TagDescription2 =
-    new TagDescription2(tag = rs.get(n.tag), description = rs.get(n.description))
+  override def extract(rs: WrappedResultSet, n: ResultName[TagDescription2]): TagDescription2 = autoConstruct(rs, n)
 }
 
 // -----------------------------------
@@ -309,18 +284,14 @@ case class LegacyAccount(accountCode: String, userId: Option[Int], name: Option[
 object LegacyAccount extends SkinnyNoIdCRUDMapper[LegacyAccount] {
   override def defaultAlias = createAlias("la")
   override def tableName = "legacy_accounts"
-  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = {
-    new LegacyAccount(rs.get(n.accountCode), rs.get(n.userId), rs.get(n.name))
-  }
+  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = autoConstruct(rs, n)
 }
 
 case class LegacyAccount2(accountCode: String, userId: Option[Int], name: Option[String])
 object LegacyAccount2 extends SkinnyNoIdMapper[LegacyAccount] {
   override def defaultAlias = createAlias("la")
   override def tableName = "legacy_accounts"
-  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = {
-    new LegacyAccount(rs.get(n.accountCode), rs.get(n.userId), rs.get(n.name))
-  }
+  override def extract(rs: WrappedResultSet, n: ResultName[LegacyAccount]): LegacyAccount = autoConstruct(rs, n)
 }
 
 // -----------------------------------
@@ -331,7 +302,7 @@ case class Table2(label: String, table1: Option[Table1] = None)
 
 object Table1 extends SkinnyNoIdCRUDMapper[Table1] {
   override def defaultAlias = createAlias("t1")
-  override def extract(rs: WrappedResultSet, n: ResultName[Table1]): Table1 = Table1(rs.get(n.num), rs.get(n.name))
+  override def extract(rs: WrappedResultSet, n: ResultName[Table1]): Table1 = autoConstruct(rs, n, "table2")
 
   private[this] val t2 = Table2.defaultAlias
 
@@ -345,7 +316,7 @@ object Table1 extends SkinnyNoIdCRUDMapper[Table1] {
 
 object Table2 extends SkinnyNoIdCRUDMapper[Table2] {
   override def defaultAlias = createAlias("t2")
-  override def extract(rs: WrappedResultSet, n: ResultName[Table2]): Table2 = new Table2(rs.get(n.label))
+  override def extract(rs: WrappedResultSet, n: ResultName[Table2]): Table2 = autoConstruct(rs, n, "table1")
 
   private[this] val t1 = Table1.defaultAlias
 

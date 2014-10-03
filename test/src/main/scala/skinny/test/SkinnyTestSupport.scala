@@ -29,17 +29,25 @@ trait SkinnyTestSupport extends Logging { self: ScalatraTests =>
   /**
    * Provides a code block with injected session.
    */
-  def withSession[A](attributes: (String, String)*)(action: => A): A = session {
-    put("/tmp/SkinnyTestSupport/session", attributes)()
-    action
+  def withSession[A](attributes: (String, AnyRef)*)(action: => A): A = session {
+    val params = attributes.map {
+      case (key, obj) =>
+        (key, SessionInjectorController.serialize(obj))
+    }
+
+    put("/tmp/SkinnyTestSupport/session", params)(action)
   }
 
   /**
    * Provides a code block with injected session.
    */
-  def withSkinnySession[A](attributes: (String, String)*)(action: => A): A = session {
-    put("/tmp/SkinnyTestSupport/skinnySession", attributes)()
-    action
+  def withSkinnySession[A](attributes: (String, AnyRef)*)(action: => A): A = session {
+    val params = attributes.map {
+      case (key, obj) =>
+        (key, SessionInjectorController.serialize(obj))
+    }
+
+    put("/tmp/SkinnyTestSupport/skinnySession", params)(action)
   }
 
   /**

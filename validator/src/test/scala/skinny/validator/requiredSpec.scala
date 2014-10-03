@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class requiredSpec extends FlatSpec with ShouldMatchers {
+class requiredSpec extends FlatSpec with Matchers {
 
   behavior of "required"
 

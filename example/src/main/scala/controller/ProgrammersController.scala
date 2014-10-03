@@ -73,7 +73,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
 
   def joinCompany = {
     (for {
-      companyId <- params.getAs[Long]("companyId").map(CompanyId)
+      companyId <- params.getAs[Long]("companyId").map(CompanyId.apply)
       company <- Company.findById(companyId)
       programmerId <- params.getAs[Long]("programmerId")
       programmer <- Programmer.findById(programmerId)

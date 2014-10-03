@@ -3,7 +3,7 @@ package skinny.orm.feature
 import skinny.orm._
 import skinny.orm.feature.associations._
 import skinny.orm.feature.includes.IncludesQueryRepository
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 
 /**
  * Provides #joins APIs.
@@ -26,6 +26,12 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
       override protected val underlying = _self
       override def defaultAlias = _self.defaultAlias
 
+      override def tableName = _self.tableName
+      override def columnNames = _self.columnNames
+
+      override def primaryKeyField = _self.primaryKeyField
+      override def primaryKeyFieldName = _self.primaryKeyFieldName
+
       override def rawValueToId(value: Any) = _self.rawValueToId(value).asInstanceOf[Id]
       override def idToRawValue(id: Id) = id
 
@@ -40,9 +46,10 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
       override def connectionPoolName = underlying.connectionPoolName
       override def connectionPool = underlying.connectionPool
 
-      override def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = _self.defaultScope(alias)
+      override def defaultScope(alias: Alias[Entity]) = _self.defaultScope(alias)
+      //override def singleSelectQuery = _self.singleSelectQuery
 
-      def extract(rs: WrappedResultSet, n: SQLInterpolation.ResultName[Entity]) = underlying.extract(rs, n)
+      def extract(rs: WrappedResultSet, n: ResultName[Entity]) = underlying.extract(rs, n)
     }
   }
 

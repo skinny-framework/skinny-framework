@@ -1,13 +1,14 @@
 package skinny.test
 
 import com.typesafe.config.ConfigFactory
-import com.twitter.util.Eval
 import scala.collection.JavaConverters._
-import scalikejdbc._, SQLInterpolation._
+import scalikejdbc._
 import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
-import skinny.util.JavaReflectAPI
+import skinny.util.{ DateTimeUtil, JavaReflectAPI }
 import skinny.logging.Logging
+
+import scala.util.Try
 
 /**
  * Test data generator highly inspired by thoughtbot/factory_girl
@@ -51,7 +52,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     // TODO directory scan and work with factories/*.conf
-    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName.name)
+    val config = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve().getConfig(factoryName.name)
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
@@ -65,9 +66,24 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
-  private def eval(v: String): String = {
+  private def toTypedValue(value: Any): Any = value match {
+    case str: String if Try(str.toBoolean).isSuccess => str.toBoolean
+    case str: String if Try(str.toLong).isSuccess => str.toLong
+    case str: String if Try(str.toDouble).isSuccess => str.toDouble
+    case str: String if DateTimeUtil.isDateTimeFormat(str) => DateTimeUtil.parseDateTime(str)
+    case str: String if DateTimeUtil.isLocalDateFormat(str) => DateTimeUtil.parseLocalDate(str)
+    case value => value
+  }
+
+  private def eval(v: String): Any = {
     if (v == null) null
-    else new Eval(None).apply("s\"\"\"" + v + "\"\"\"")
+    else if (v.matches(".*\\$\\{.+\\}.*")) {
+      import scala.reflect.runtime.currentMirror
+      import scala.tools.reflect.ToolBox
+      val toolbox = currentMirror.mkToolBox()
+      val tree = toolbox.parse("s\"\"\"" + v + "\"\"\"")
+      toTypedValue(toolbox.eval(tree))
+    } else toTypedValue(v)
   }
 
   /**
@@ -141,3 +157,4 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
   }
 
 }
+

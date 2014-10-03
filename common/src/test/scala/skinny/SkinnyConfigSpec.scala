@@ -1,9 +1,8 @@
 package skinny
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest._
 
-class SkinnyConfigSpec extends FunSpec with ShouldMatchers with SkinnyConfig {
+class SkinnyConfigSpec extends FunSpec with Matchers with SkinnyConfig {
 
   describe("SkinnyConfing#values") {
 
@@ -18,6 +17,16 @@ class SkinnyConfigSpec extends FunSpec with ShouldMatchers with SkinnyConfig {
       intSeqConfigValue("iseq") should equal(Some(Seq(1, 2, 3)))
       longSeqConfigValue("iseq") should equal(Some(Seq(1, 2, 3)))
       stringSeqConfigValue("strseq") should equal(Some(Seq("A", "b", "c")))
+    }
+
+    it("should read application.conf from default") {
+      System.setProperty(SkinnyEnv.PropertyKey, "test")
+      stringConfigValue("only") should equal(Some("default"))
+    }
+
+    it("should read application.conf with type mismatch") {
+      System.setProperty(SkinnyEnv.PropertyKey, "test")
+      stringConfigValue("iseq") should equal(None)
     }
   }
 

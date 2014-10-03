@@ -1,10 +1,34 @@
 #!/bin/sh
 
-sbt clean \
-  ++2.10.3 \
+sbt ++2.11.2 \
+  clean \
   common/publishSigned \
   assets/publishSigned \
   httpClient/publishSigned \
+  json/publishSigned \
+  oauth2/publishSigned \
+  oauth2Controller/publishSigned \
+  twitterController/publishSigned \
+  orm/publishSigned \
+  factoryGirl/publishSigned \
+  validator/publishSigned \
+  framework/publishSigned \
+  mailer/publishSigned \
+  standalone/publishSigned \
+  task/publishSigned \
+  scaldi/publishSigned \
+  test/publishSigned \
+  freemarker/publishSigned \
+  thymeleaf/publishSigned \
+  ++2.10.4 \
+  clean \
+  common/publishSigned \
+  assets/publishSigned \
+  httpClient/publishSigned \
+  json/publishSigned \
+  oauth2/publishSigned \
+  oauth2Controller/publishSigned \
+  twitterController/publishSigned \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
@@ -15,4 +39,5 @@ sbt clean \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned 
+
 

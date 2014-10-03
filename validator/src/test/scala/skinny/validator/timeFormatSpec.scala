@@ -1,9 +1,8 @@
 package skinny.validator
 
 import org.scalatest._
-import org.scalatest.matchers._
 
-class timeFormatSpec extends FlatSpec with ShouldMatchers {
+class timeFormatSpec extends FlatSpec with Matchers {
 
   behavior of "timeFormat"
 
