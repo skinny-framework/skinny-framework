@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.3.2"
+  val _version = "1.3.3"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.1.2"
@@ -57,7 +57,8 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2-core"        % "2.4.+"            % "test",
+        // TODO https://github.com/etorreborre/specs2/issues/301
+        "org.specs2"         %% "specs2-core"        % "2.4.5"            % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -287,7 +288,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-test"                 % scalikeJDBCVersion % "test"
   )
   val jodaDependencies = Seq(
-    "joda-time" %  "joda-time"    % "2.4"   % "compile",
+    "joda-time" %  "joda-time"    % "2.5"   % "compile",
     "org.joda"  %  "joda-convert" % "1.7"   % "compile"
   )
   val mailDependencies = slf4jApiDependencies ++ Seq(
