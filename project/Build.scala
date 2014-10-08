@@ -155,6 +155,16 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ) dependsOn(framework)
 
+  lazy val velocity = Project (id = "velocity", base = file("velocity"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-velocity",
+      libraryDependencies ++= scalatraDependencies ++ Seq(
+        "org.apache.velocity" % "velocity"        % "1.7"  % "compile",
+        "org.apache.velocity" % "velocity-tools" % "2.0" % "compile"
+      ) ++ testDependencies
+    ) ++ _jettyOrbitHack
+  ) dependsOn(framework)
+
   lazy val scaldi = Project (id = "scaldi", base = file("scaldi"),
     settings = baseSettings ++ Seq(
       name := "skinny-scaldi",
@@ -253,6 +263,7 @@ object SkinnyFrameworkBuild extends Build {
     assets, 
     thymeleaf, 
     freemarker, 
+    velocity, 
     factoryGirl, 
     test, 
     task, 
