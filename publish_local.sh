@@ -20,6 +20,7 @@ sbt clean \
   test/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
+  velocity/publishLocal \
   ++2.10.4 \
   common/publishLocal \
   assets/publishLocal \
@@ -38,6 +39,7 @@ sbt clean \
   scaldi/publishLocal \
   test/publishLocal \
   freemarker/publishLocal \
-  thymeleaf/publishLocal 
+  thymeleaf/publishLocal \
+  velocity/publishLocal 
 
 

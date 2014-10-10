@@ -8,7 +8,7 @@ import ScalateKeys._
 object SkinnyFrameworkBuild extends Build {
 
   val _organization = "org.skinny-framework"
-  val _version = "1.3.3"
+  val _version = "1.3.4-SNAPSHOT"
   val scalatraVersion = "2.3.0"
   val json4SVersion = "3.2.10"
   val scalikeJDBCVersion = "2.1.2"
@@ -57,8 +57,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        // TODO https://github.com/etorreborre/specs2/issues/301
-        "org.specs2"         %% "specs2-core"        % "2.4.5"            % "test",
+        "org.specs2"         %% "specs2-core"        % "2.4.6"            % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -149,7 +148,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.5"         % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.6"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -159,7 +158,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-velocity",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.apache.velocity" % "velocity"        % "1.7"  % "compile",
+        "org.apache.velocity" % "velocity"       % "1.7"  % "compile",
         "org.apache.velocity" % "velocity-tools" % "2.0" % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -229,7 +228,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-test",
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
-        "org.mockito"     %  "mockito-core"       % "1.9.5"            % "compile",
+        "org.mockito"     %  "mockito-core"       % "1.10.7"           % "compile",
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
         "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
