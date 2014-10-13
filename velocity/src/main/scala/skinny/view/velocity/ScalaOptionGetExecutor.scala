@@ -12,21 +12,18 @@ import org.apache.velocity.util.introspection.Introspector
  * @param clazz target class
  * @param property target property
  */
-class ScalaOptionGetExecutor(log: Log, introspector: Introspector, clazz: Class[_], property: String)
+class ScalaOptionGetExecutor(
+  log: Log, introspector: Introspector, clazz: Class[_], property: String)
     extends PropertyExecutor(log, introspector, clazz, property) {
 
   override protected def discover(clazz: Class[_], property: String): Unit = {
     setMethod(introspector.getMethod(clazz, property, Array.empty[AnyRef]))
-
-    if (!isAlive) {
-      super.discover(clazz, property)
-    }
+    if (!isAlive) super.discover(clazz, property)
   }
 
-  override def execute(o: AnyRef): AnyRef =
-    if (isAlive) {
-      o.asInstanceOf[Option[AnyRef]].getOrElse(null)
-    } else {
-      null
-    }
+  override def execute(o: AnyRef): AnyRef = {
+    if (isAlive) o.asInstanceOf[Option[AnyRef]].orNull[AnyRef]
+    else null
+  }
+
 }

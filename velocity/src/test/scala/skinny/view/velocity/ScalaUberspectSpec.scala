@@ -8,6 +8,7 @@ import org.apache.velocity.util.introspection.UberspectImpl
 import org.scalatest._
 
 class ScalaUberspectSpec extends FlatSpec with Matchers {
+
   behavior of "ScalaUberspectSpec"
 
   val dummyInfo: Info = new Info("Dummy.scala", 5, 5)
@@ -110,4 +111,5 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
       Array("key"),
       dummyInfo) should be(a[RewriteVelMethod])
   }
+
 }

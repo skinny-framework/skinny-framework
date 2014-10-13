@@ -8,46 +8,56 @@ class VelocitySpec extends FlatSpec with Matchers with VelocityTestSupport {
   behavior of "VelocitySpec"
 
   it should "#foreach List" in {
-    val template = """|#foreach ($e in $list)
-                      |$e
-                      |#end""".stripMargin
-    eval(template, "list" -> List(1, 2, 3)) should include("""|1
-                                                               |2
-                                                               |3""".stripMargin)
+    val template =
+      """|#foreach ($e in $list)
+         |$e
+         |#end""".stripMargin
+
+    eval(template, "list" -> List(1, 2, 3)) should include(
+      """|1
+         |2
+         |3""".stripMargin)
   }
 
   it should "#foreach Option(Some)" in {
-    val template = """|#foreach ($e in $option)
-                      |$e
-                      |#end""".stripMargin
+    val template =
+      """|#foreach ($e in $option)
+         |$e
+         |#end""".stripMargin
+
     eval(template, "option" -> Some("foo")) should include("foo")
   }
 
   it should "#foreach Option(None)" in {
-    val template = """|#foreach ($e in $option)
-                      |$e
-                      |#end""".stripMargin
+    val template =
+      """|#foreach ($e in $option)
+         |$e
+         |#end""".stripMargin
+
     eval(template, "option" -> None).trim should equal("")
   }
 
   it should "#foreach Map" in {
-    val template = """|#foreach ($v in $map)
-                      |$v
-                      |#end""".stripMargin
-    eval(template,
-      "map" ->
-        Map("key1" -> "value1",
-          "key2" -> "value2")) should include("""|value1
-                                                 |value2""".stripMargin)
+    val template =
+      """|#foreach ($v in $map)
+         |$v
+         |#end""".stripMargin
+
+    eval(template, "map" -> Map("key1" -> "value1", "key2" -> "value2")) should include(
+      """|value1
+         |value2""".stripMargin)
   }
 
   it should "#foreach JavaList" in {
-    val template = """|#foreach ($e in $list)
-                      |$e
-                      |#end""".stripMargin
-    eval(template, "list" -> java.util.Arrays.asList(1, 2, 3)) should include("""|1
-                                                                                 |2
-                                                                                 |3""".stripMargin)
+    val template =
+      """|#foreach ($e in $list)
+         |$e
+         |#end""".stripMargin
+
+    eval(template, "list" -> java.util.Arrays.asList(1, 2, 3)) should include(
+      """|1
+         |2
+         |3""".stripMargin)
   }
 
   it should "access property val" in {
@@ -150,4 +160,5 @@ class VelocitySpec extends FlatSpec with Matchers with VelocityTestSupport {
     val template = "$foo.say('fuga')"
     eval(template, "foo" -> new Foo) should equal("bar fuga")
   }
+
 }

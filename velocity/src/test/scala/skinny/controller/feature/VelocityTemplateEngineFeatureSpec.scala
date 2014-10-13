@@ -7,6 +7,7 @@ import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny.Routes
 
 class VelocityTemplateEngineFeatureSpec extends ScalatraFlatSpec {
+
   behavior of "VelocityTemplateEngineFeature"
 
   val resourcesDir = "velocity/src/test/resources"
@@ -21,7 +22,6 @@ class VelocityTemplateEngineFeatureSpec extends ScalatraFlatSpec {
     get("/velocity/b")(b)
     get("/velocity/d")(d)
   }
-
   addFilter(VelocityController, "/*")
 
   it should "render an Velocity template" in {

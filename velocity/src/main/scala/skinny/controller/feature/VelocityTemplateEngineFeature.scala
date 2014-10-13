@@ -31,4 +31,5 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
     velocity.render(templatePath(path), requestScope.toMap, request, response)
   }
+
 }
