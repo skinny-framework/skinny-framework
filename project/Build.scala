@@ -209,6 +209,13 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(framework)
 
+  lazy val logback = Project(id = "logback", base = file("logback"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-logback",
+      libraryDependencies ++= Seq("ch.qos.logback" %  "logback-classic" % "1.1.2") ++ testDependencies
+    )
+  )
+
   lazy val validator = Project(id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
@@ -259,6 +266,7 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     framework, 
     assets, 
+    logback, 
     thymeleaf, 
     freemarker, 
     velocity, 

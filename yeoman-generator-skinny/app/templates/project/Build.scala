@@ -19,7 +19,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.3"
+  val skinnyVersion = "1.3.4-SNAPSHOT"
   val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.2"
   val jettyVersion = "9.2.1.v20140609" // latest: "9.2.3.v20140905"
@@ -36,6 +36,7 @@ object SkinnyAppBuild extends Build {
     ),
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
+      "org.skinny-framework"    %% "skinny-logback"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
