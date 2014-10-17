@@ -6,6 +6,7 @@ sbt clean \
   assets/publishLocal \
   httpClient/publishLocal \
   json/publishLocal \
+  logback/publishLocal \
   oauth2/publishLocal \
   oauth2Controller/publishLocal \
   twitterController/publishLocal \
@@ -26,6 +27,7 @@ sbt clean \
   assets/publishLocal \
   httpClient/publishLocal \
   json/publishLocal \
+  logback/publishLocal \
   oauth2/publishLocal \
   oauth2Controller/publishLocal \
   twitterController/publishLocal \
