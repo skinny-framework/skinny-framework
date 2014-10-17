@@ -36,9 +36,9 @@ object SkinnyAppBuild extends Build {
     ),
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"      % "1.0.2",
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
+      "org.skinny-framework"    %  "skinny-logback"      % "1.0.3",
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
       "com.h2database"          %  "h2"                  % "1.4.181",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
