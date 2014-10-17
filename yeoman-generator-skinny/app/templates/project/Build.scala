@@ -36,7 +36,7 @@ object SkinnyAppBuild extends Build {
     ),
     libraryDependencies := Seq(
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"      % "1.0.1",
+      "org.skinny-framework"    %  "skinny-logback"      % "1.0.2",
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",

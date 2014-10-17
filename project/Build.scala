@@ -33,6 +33,7 @@ object SkinnyFrameworkBuild extends Build {
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    javacOptions ++= Seq("-source", "1.7"),
     scalacOptions += "-target:jvm-1.7",
     pomExtra := _pomExtra
   )
@@ -213,7 +214,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val logback = Project(id = "logback", base = file("logback"),
     settings = baseSettings ++ Seq(
       name             := "skinny-logback",
-      version          := "1.0.1",
+      version          := "1.0.2",
       crossPaths       := false,
       autoScalaLibrary := false,
       libraryDependencies ++= Seq("ch.qos.logback" % "logback-classic" % "1.1.2" % "compile")
