@@ -6,7 +6,6 @@ sbt ++2.11.2 \
   assets/publishSigned \
   httpClient/publishSigned \
   json/publishSigned \
-  logback/publishSigned \
   oauth2/publishSigned \
   oauth2Controller/publishSigned \
   twitterController/publishSigned \
@@ -28,7 +27,6 @@ sbt ++2.11.2 \
   assets/publishSigned \
   httpClient/publishSigned \
   json/publishSigned \
-  logback/publishSigned \
   oauth2/publishSigned \
   oauth2Controller/publishSigned \
   twitterController/publishSigned \
