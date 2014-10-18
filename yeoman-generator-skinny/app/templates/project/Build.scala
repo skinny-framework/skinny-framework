@@ -19,9 +19,9 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.4-SNAPSHOT"
+  val skinnyVersion = "1.3.4"
   val scalatraVersion = "2.3.0"
-  val theScalaVersion = "2.11.2"
+  val theScalaVersion = "2.11.2" // Skip 2.11.3 (https://issues.scala-lang.org/browse/SI-8899)
   val jettyVersion = "9.2.1.v20140609" // latest: "9.2.3.v20140905"
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
@@ -40,7 +40,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
       "org.skinny-framework"    %  "skinny-logback"      % "1.0.3",
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
-      "com.h2database"          %  "h2"                  % "1.4.181",      // your own JDBC driver
+      "com.h2database"          %  "h2"                  % "1.4.182",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
       "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
@@ -62,11 +62,7 @@ object SkinnyAppBuild extends Build {
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
-    ideaExcludeFolders := Seq(
-      ".idea", ".idea_modules",
-      "db", "target", "task/target", "build", "standalone-build",
-      "node_modules"
-    )
+    ideaExcludeFolders := Seq(".idea", ".idea_modules", "db", "target", "task/target", "build", "standalone-build", "node_modules")
   )
 
   lazy val scalatePrecompileSettings = scalateSettings ++ Seq(

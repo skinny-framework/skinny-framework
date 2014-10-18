@@ -7,11 +7,11 @@ import ScalateKeys._
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.4-SNAPSHOT"
+  lazy val currentVersion = "1.3.4"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.10"
   lazy val scalikeJDBCVersion = "2.1.2"
-  lazy val h2Version = "1.4.181"
+  lazy val h2Version = "1.4.182"
   lazy val jettyVersion = "9.2.1.v20140609" // latest "9.2.3.v20140905"
 
   lazy val baseSettings = Seq(
@@ -149,7 +149,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.6"         % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.7"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -239,7 +239,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-test",
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
-        "org.mockito"     %  "mockito-core"       % "1.10.7"           % "compile",
+        "org.mockito"     %  "mockito-core"       % "1.10.8"           % "compile",
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion % "compile",
         "org.scalatra"    %% "scalatra-specs2"    % scalatraVersion    % "provided",
         "org.scalatra"    %% "scalatra-scalatest" % scalatraVersion    % "provided"
@@ -258,7 +258,7 @@ object SkinnyFrameworkBuild extends Build {
         "ch.qos.logback"     %  "logback-classic"    % "1.1.2",
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion       % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",
-        "org.mockito"        %  "mockito-core"       % "1.9.5"               % "test",
+        "org.mockito"        %  "mockito-core"       % "1.10.8"              % "test",
         "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion          % "container",
         "org.eclipse.jetty"  %  "jetty-plus"         % jettyVersion          % "container",
         "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"               % "container;provided;test"
