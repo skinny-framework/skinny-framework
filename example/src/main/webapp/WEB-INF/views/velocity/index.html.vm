@@ -1,0 +1,49 @@
+#parse ('/layouts/default.html.vm')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Velocity Example</title>
+#header()
+</head>
+<body>
+<div class="container span12">
+<section>
+<div>
+<h3>numbers</h3>
+#foreach ($n in $!numbers)
+  <div>
+    <span>$!esc.html($n)</span>
+  </div>
+#end
+</div>
+
+<h3>nestedNumbers</h3>
+#foreach ($nn in $!nestedNumbers)
+  #foreach ($n in $nn)
+  <div>
+    nested-<span>$!esc.html($n)</span>
+  </div>
+  #end
+#end
+
+<h3>map</h3>
+#foreach ($key in $!map.keys)
+  <div>
+    <span>$!esc.html($key) -> $!esc.html($!map[$key])</span>
+  </div>
+#end
+
+<h3>persons</h3>
+#foreach ($p in $!persons)
+  <div>
+    <span>$!esc.html($p.id)<span>
+    <span>$!esc.html($p.name)<span>
+  </div>
+#end
+
+  <span>Hello! $!esc.html($!name)</span>
+</div>
+</section>
+#bodyjs()
+</body>
+</html>

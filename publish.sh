@@ -20,6 +20,7 @@ sbt ++2.11.2 \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
+  velocity/publishSigned \
   ++2.10.4 \
   clean \
   common/publishSigned \
@@ -38,6 +39,7 @@ sbt ++2.11.2 \
   task/publishSigned \
   test/publishSigned \
   freemarker/publishSigned \
-  thymeleaf/publishSigned 
+  thymeleaf/publishSigned \
+  velocity/publishSigned 
 
 
