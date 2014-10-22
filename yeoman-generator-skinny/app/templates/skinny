@@ -85,10 +85,14 @@ if [ "$command" == "new" ]; then
     echo "Usage: ./skinny new [application name]"
     exit 1
   fi
-  existing_version=`npm list -g | grep generator-skinny`
-  if [ "${existing_version}" == "" ]; then
-    npm install -g yo
-    npm install -g generator-skinny
+  # node_modules can be configured with PREFIX env variable
+  # homebrew formula will set this value to avoid using universal npm modules
+  if [ "${PREFIX}" == "" ]; then
+    existing_version=`npm list -g | grep generator-skinny`
+    if [ "${existing_version}" == "" ]; then
+      npm install -g yo
+      npm install -g generator-skinny
+    fi
   fi
   mkdir -p ${name}
   cd ${name}
