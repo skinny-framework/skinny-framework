@@ -37,7 +37,7 @@ class Test003Spec extends fixture.FunSpec with Matchers
     lazy val personRef = belongsTo[Person](Person, (e, p) => e.copy(person = p))
     lazy val companyRef = belongsTo[Company](Company, (e, c) => e.copy(company = c))
 
-    def withAssociations = joins(Employee.companyRef, personRef)
+    lazy val withAssociations = joins(companyRef, personRef)
   }
 
   override def db(): DB = NamedDB('test003).toDB()
