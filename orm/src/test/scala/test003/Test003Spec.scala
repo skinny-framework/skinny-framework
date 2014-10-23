@@ -19,27 +19,25 @@ class Test003Spec extends fixture.FunSpec with Matchers
 
   object Person extends SkinnyCRUDMapper[Person] {
     override def connectionPoolName = 'test003
-    override def defaultAlias: Alias[Person] = createAlias("p")
-    override def extract(rs: WrappedResultSet, rn: scalikejdbc.ResultName[Person]) = autoConstruct(rs, rn)
+    override def defaultAlias = createAlias("p")
+    override def extract(rs: WrappedResultSet, rn: ResultName[Person]) = autoConstruct(rs, rn)
   }
 
   object Company extends SkinnyCRUDMapper[Company] {
     override def connectionPoolName = 'test003
-    override def defaultAlias: Alias[Company] = createAlias("c")
-    override def extract(rs: WrappedResultSet, rn: scalikejdbc.ResultName[Company]) = autoConstruct(rs, rn)
+    override def defaultAlias = createAlias("c")
+    override def extract(rs: WrappedResultSet, rn: ResultName[Company]) = autoConstruct(rs, rn)
   }
 
   object Employee extends SkinnyNoIdCRUDMapper[Employee] {
     override def connectionPoolName = 'test003
-    override def defaultAlias: Alias[Employee] = createAlias("e")
-    override def extract(rs: WrappedResultSet, rn: scalikejdbc.ResultName[Employee]) = {
-      autoConstruct(rs, rn, "company", "person")
-    }
+    override def defaultAlias = createAlias("e")
+    override def extract(rs: WrappedResultSet, rn: ResultName[Employee]) = (rs, rn, "company", "person")
 
-    val personRef = belongsTo[Person](Person, (e, p) => e.copy(person = p))
-    val companyRef = belongsTo[Company](Company, (e, c) => e.copy(company = c))
+    lazy val personRef = belongsTo[Person](Person, (e, p) => e.copy(person = p))
+    lazy val companyRef = belongsTo[Company](Company, (e, c) => e.copy(company = c))
 
-    def withAssociations = joins(Employee.companyRef, Employee.personRef)
+    def withAssociations = joins(Employee.companyRef, personRef)
   }
 
   override def db(): DB = NamedDB('test003).toDB()
