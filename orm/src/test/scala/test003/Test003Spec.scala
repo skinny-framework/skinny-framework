@@ -3,6 +3,7 @@ package test003
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
+import skinny.exception.IllegalAssociationException
 import skinny.orm._
 
 class Test003Spec extends fixture.FunSpec with Matchers
@@ -10,6 +11,9 @@ class Test003Spec extends fixture.FunSpec with Matchers
     with CreateTables
     with AutoRollback {
 
+  override def db(): DB = NamedDB('test003).toDB()
+
+  // entities
   case class Person(id: Int, name: String)
   case class Company(id: Int, name: String)
   case class Employee(
@@ -17,30 +21,31 @@ class Test003Spec extends fixture.FunSpec with Matchers
     company: Option[Company] = None,
     person: Option[Person] = None)
 
+  // mappers
   object Person extends SkinnyCRUDMapper[Person] {
-    override def connectionPoolName = 'test003
-    override def defaultAlias = createAlias("p")
+    override val connectionPoolName = 'test003
+    override lazy val defaultAlias = createAlias("p")
     override def extract(rs: WrappedResultSet, rn: ResultName[Person]) = autoConstruct(rs, rn)
   }
 
   object Company extends SkinnyCRUDMapper[Company] {
-    override def connectionPoolName = 'test003
-    override def defaultAlias = createAlias("c")
+    override val connectionPoolName = 'test003
+    override lazy val defaultAlias = createAlias("c")
     override def extract(rs: WrappedResultSet, rn: ResultName[Company]) = autoConstruct(rs, rn)
   }
 
   object Employee extends SkinnyNoIdCRUDMapper[Employee] {
-    override def connectionPoolName = 'test003
-    override def defaultAlias = createAlias("e")
-    override def extract(rs: WrappedResultSet, rn: ResultName[Employee]) = (rs, rn, "company", "person")
+    override val connectionPoolName = 'test003
+    override lazy val defaultAlias = createAlias("e")
+    override def extract(rs: WrappedResultSet, rn: ResultName[Employee]) = autoConstruct(rs, rn, "company", "person")
 
     lazy val personRef = belongsTo[Person](Person, (e, p) => e.copy(person = p))
     lazy val companyRef = belongsTo[Company](Company, (e, c) => e.copy(company = c))
 
+    lazy val hasOneRef = hasOne[Company](Company, (e, c) => e.copy(company = c))
+
     lazy val withAssociations = joins(companyRef, personRef)
   }
-
-  override def db(): DB = NamedDB('test003).toDB()
 
   override def fixture(implicit session: DBSession) {
     val p1 = Person.createWithAttributes('name -> "Alice")
@@ -52,19 +57,23 @@ class Test003Spec extends fixture.FunSpec with Matchers
   }
 
   describe("Entities with compound primary keys") {
-    it("should work as expected") { implicit session =>
-
+    it("should have finder APIs") { implicit session =>
       Employee.findAll().size should equal(2)
-
       Employee.withAssociations.findAll().size should equal(2)
+    }
 
+    it("should have querying APIs") { implicit session =>
       val e = Employee.defaultAlias
       val es1 = Employee.where(sqls.eq(e.companyId, Company.limit(1).apply().head.id)).apply()
       es1.size should equal(2)
-
-      val es2 = Employee.withAssociations.where(sqls.eq(e.companyId, Company.limit(1).apply().head.id)).apply()
-      es2.size should equal(2)
     }
+
+    it("should detect invalid associations") { implicit session =>
+      intercept[IllegalAssociationException] {
+        Employee.joins(Employee.hasOneRef).count()
+      }
+    }
+
   }
 
 }
