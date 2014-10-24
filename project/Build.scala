@@ -321,6 +321,8 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalatest"           %% "scalatest"       % "2.2.2"   % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
+    "com.h2database"          %  "h2"              % h2Version % "test",
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.3"   % "test",
     "com.h2database"          %  "h2"              % h2Version % "test"
   )
 
