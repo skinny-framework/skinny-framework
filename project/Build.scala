@@ -24,7 +24,7 @@ object SkinnyFrameworkBuild extends Build {
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
     sbtPlugin := false,
-    scalaVersion := "2.11.2",
+    scalaVersion := "2.11.4",
     scalacOptions ++= _scalacOptions,
     publishMavenStyle := true,
     publishArtifact in Test := false,
