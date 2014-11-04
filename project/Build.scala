@@ -25,6 +25,7 @@ object SkinnyFrameworkBuild extends Build {
     publishMavenStyle := true,
     sbtPlugin := false,
     scalaVersion := "2.11.4",
+    ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     scalacOptions ++= _scalacOptions,
     publishMavenStyle := true,
     publishArtifact in Test := false,
