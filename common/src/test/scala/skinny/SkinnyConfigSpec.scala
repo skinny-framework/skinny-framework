@@ -35,7 +35,7 @@ class SkinnyConfigSpec extends FunSpec with Matchers with SkinnyConfig {
         System.setProperty("config.file", "common/src/test/resources/other.conf")
         stringConfigValue("other") should equal(Some("found"))
       } finally {
-        System.setProperty("config.file", "")
+        System.clearProperty("config.file")
       }
     }
 
@@ -45,7 +45,7 @@ class SkinnyConfigSpec extends FunSpec with Matchers with SkinnyConfig {
         System.setProperty("config.resource", "other.conf")
         stringConfigValue("other") should equal(Some("found"))
       } finally {
-        System.setProperty("config.resource", "")
+        System.clearProperty("config.resource")
       }
     }
   }

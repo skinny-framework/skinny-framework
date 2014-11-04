@@ -71,9 +71,10 @@ object TypesafeConfigReader {
       findEnv("SKINNY_CONFIG_RESOURCE", "config.resource").map(r => ConfigFactory.load(r)),
       findEnv("SKINNY_CONFIG_FILE", "config.file").map(f => ConfigFactory.parseFile(new File(f))),
       findEnv("SKINNY_CONFIG_URL", "config.url").map(u => ConfigFactory.parseURL(new URL(u)))
-    ).flatten.foldLeft(ConfigFactory.load()) { case (config, each) =>
-      config.withFallback(each)
-    }
+    ).flatten.foldLeft(ConfigFactory.load()) {
+        case (config, each) =>
+          config.withFallback(each)
+      }
   }
 
   private[this] def findEnv(env: String, prop: String): Option[String] = {
