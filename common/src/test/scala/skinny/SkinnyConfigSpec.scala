@@ -28,6 +28,26 @@ class SkinnyConfigSpec extends FunSpec with Matchers with SkinnyConfig {
       System.setProperty(SkinnyEnv.PropertyKey, "test")
       stringConfigValue("iseq") should equal(None)
     }
+
+    it("should read other.conf via sys.props - config.file") {
+      try {
+        stringConfigValue("other") should equal(None)
+        System.setProperty("config.file", "common/src/test/resources/other.conf")
+        stringConfigValue("other") should equal(Some("found"))
+      } finally {
+        System.setProperty("config.file", "")
+      }
+    }
+
+    it("should read other.conf via sys.props - config.resource") {
+      try {
+        stringConfigValue("other") should equal(None)
+        System.setProperty("config.resource", "other.conf")
+        stringConfigValue("other") should equal(Some("found"))
+      } finally {
+        System.setProperty("config.resource", "")
+      }
+    }
   }
 
 }
