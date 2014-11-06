@@ -12,7 +12,7 @@
     <logger name="org.scalatra.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#1.SourceMap" level="warn"/>
     <logger name="org.scalatra.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#2.SourceMap" level="warn"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="default"/>
     </root>
 </configuration>
