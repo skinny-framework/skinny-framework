@@ -1,14 +1,13 @@
 package skinny.controller.feature
 
-import org.scalatra.json.JacksonJsonSupport
-import skinny.{ Format }
+import skinny.Format
 import skinny.util.JSONStringOps
 import org.scalatra.ScalatraContext
 
 /**
  * JSON response support.
  */
-trait JSONFeature extends JacksonJsonSupport with JSONStringOps {
+trait JSONFeature extends JSONStringOps {
 
   /**
    * Returns JSON response.
