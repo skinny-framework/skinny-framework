@@ -1,9 +1,7 @@
-import sbt._
-import Keys._
-import org.scalatra.sbt._
-import org.scalatra.sbt.PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._
-import ScalateKeys._
+import sbt._, Keys._
+import org.scalatra.sbt._, PluginKeys._
+import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
+import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
