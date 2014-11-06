@@ -9,7 +9,7 @@
     <logger name="skinny" level="debug"/>
     <logger name="org.eclipse.jetty" level="warn"/>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="default"/>
     </root>
 </configuration>
