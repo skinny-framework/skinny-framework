@@ -28,5 +28,7 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
 
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.11")
 
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.2.1")
+
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
