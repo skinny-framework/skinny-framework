@@ -20,6 +20,7 @@ import org.json4s.JDecimal
 
 trait SkinnyControllerBase
     extends org.scalatra.SkinnyScalatraBase
+    with ApiFormats
     with EnvFeature
     with RichRouteFeature
     with UrlGeneratorSupport

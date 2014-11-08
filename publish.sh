@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sbt ++2.11.2 \
+sbt ++2.11.4 \
   clean \
   common/publishSigned \
   assets/publishSigned \
@@ -40,6 +40,7 @@ sbt ++2.11.2 \
   test/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  velocity/publishSigned 
+  velocity/publishSigned  \
+  sonatypeRelease
 
 

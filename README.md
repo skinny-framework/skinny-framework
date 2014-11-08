@@ -15,11 +15,8 @@ http://skinny-framework.org/
 
 ## Global skinny script via Homebrew
 
-https://github.com/skinny-framework/homebrew-alt
-
 ```sh
-brew tap skinny-framework/alt
-brew install skinny
+brew update && brew install skinny
 ```
 
 ## Try Skinny Framework now!

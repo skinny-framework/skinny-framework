@@ -1,5 +1,8 @@
 package skinny.util
 
+import java.io.File
+import java.net.URL
+
 import com.typesafe.config._
 import scala.collection.JavaConverters._
 import scala.util.Try
@@ -48,37 +51,79 @@ object TypesafeConfigReader {
   }
 
   /**
-   * Get Typesafe-config object from env or default.
+   * Returns a config object from env or default.
    *
    * @param env env string
    * @return config
    */
   def config(env: String): Config = {
-    val config = ConfigFactory.load()
+    val config = defaultConfig
     config.getConfig(env).withFallback(config)
   }
 
-  def boolean(env: String, path: String): Option[Boolean] =
+  /**
+   * Returns default config object.
+   *
+   * @return default config
+   */
+  def defaultConfig: Config = {
+    Seq(
+      findEnv("SKINNY_CONFIG_RESOURCE", "config.resource").map(r => ConfigFactory.load(r)),
+      findEnv("SKINNY_CONFIG_FILE", "config.file").map(f => ConfigFactory.parseFile(new File(f))),
+      findEnv("SKINNY_CONFIG_URL", "config.url").map(u => ConfigFactory.parseURL(new URL(u)))
+    ).flatten.foldLeft(ConfigFactory.load()) {
+        case (config, each) =>
+          config.withFallback(each)
+      }
+  }
+
+  private[this] def findEnv(env: String, prop: String): Option[String] = {
+    Option(System.getenv(env))
+      .orElse(Option(System.getProperty(prop)))
+      .filterNot(_.trim.isEmpty)
+  }
+
+  def boolean(env: String, path: String): Option[Boolean] = {
     Try(config(env).getBoolean(path)).toOption
-  def booleanSeq(env: String, path: String): Option[Seq[Boolean]] =
+  }
+
+  def booleanSeq(env: String, path: String): Option[Seq[Boolean]] = {
     Try(config(env).getBooleanList(path).asScala.map(_.asInstanceOf[Boolean])).toOption
-  def double(env: String, path: String): Option[Double] =
+  }
+
+  def double(env: String, path: String): Option[Double] = {
     Try(config(env).getDouble(path)).toOption
-  def doubleSeq(env: String, path: String): Option[Seq[Double]] =
+  }
+
+  def doubleSeq(env: String, path: String): Option[Seq[Double]] = {
     Try(config(env).getDoubleList(path).asScala.map(_.asInstanceOf[Double])).toOption
-  def int(env: String, path: String): Option[Int] =
+  }
+
+  def int(env: String, path: String): Option[Int] = {
     Try(config(env).getInt(path)).toOption
-  def intSeq(env: String, path: String): Option[Seq[Int]] =
+  }
+
+  def intSeq(env: String, path: String): Option[Seq[Int]] = {
     Try(config(env).getIntList(path).asScala.map(_.asInstanceOf[Int])).toOption
-  def long(env: String, path: String): Option[Long] =
+  }
+
+  def long(env: String, path: String): Option[Long] = {
     Try(config(env).getLong(path)).toOption
-  def longSeq(env: String, path: String): Option[Seq[Long]] =
+  }
+
+  def longSeq(env: String, path: String): Option[Seq[Long]] = {
     Try(config(env).getLongList(path).asScala.map(_.asInstanceOf[Long])).toOption
-  def string(env: String, path: String): Option[String] =
+  }
+
+  def string(env: String, path: String): Option[String] = {
     Try(config(env).getString(path)).toOption
-  def stringSeq(env: String, path: String): Option[Seq[String]] =
+  }
+  def stringSeq(env: String, path: String): Option[Seq[String]] = {
     Try(config(env).getStringList(path).asScala).toOption
-  def get(env: String, path: String): Option[ConfigValue] =
+  }
+
+  def get(env: String, path: String): Option[ConfigValue] = {
     Try(config(env).getValue(path)).toOption
+  }
 
 }

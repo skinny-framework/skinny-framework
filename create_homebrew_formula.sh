@@ -11,7 +11,7 @@ chmod +x ${WORK_DIR}/*
 cp -pr ${TEMPLATE_PATH}/bin ${WORK_DIR}/.
 cp -pr release/ivy2 ${WORK_DIR}/.
 
-VERSION=`grep "val _version =" project/Build.scala | awk -F'"' '{print $2}'`
+VERSION=`grep "val currentVersion =" project/Build.scala | awk -F'"' '{print $2}'`
 
 cd ${WORK_DIR}
 tar cvfzp ../skinny-${VERSION}.tar.gz .

@@ -1,0 +1,2 @@
+xerial.sbt.Sonatype.sonatypeSettings
+

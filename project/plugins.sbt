@@ -20,16 +20,15 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
 // here to reduce blanka-app deps
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-pgp" % "0.8.3")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
 
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
 addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
 
-// Don't use 0.99.9 because scoverage appends scalac-scoverage-plugin to our artifact automatically
-// https://github.com/scoverage/sbt-scoverage/issues/57
-addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.7.1")
+addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.11")
 
-// TODO java.lang.ArrayIndexOutOfBoundsException: -1 with 0.13.2-MX
-//scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "0.2.1")
+
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
