@@ -4,12 +4,16 @@ import skinny.test._
 class FileUploadControllerSpec extends FunSpec with Matchers {
   def createMockController = new FileUploadController with MockServlet
   describe("FileUploadController") {
-    it("should return error as expected") {
+    it("should work wiht MockServlet") {
       try {
         val controller = createMockController
         controller.form
         controller.status should equal(200)
-      } catch { case e: Exception => e.printStackTrace }
+      } catch {
+        case e: Exception =>
+          e.printStackTrace
+          throw e
+      }
     }
   }
 }
