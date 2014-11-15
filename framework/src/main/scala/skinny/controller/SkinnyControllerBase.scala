@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 
 import skinny._
 import skinny.controller.feature._
+import skinny.filter.SkinnyFilterActivation
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
@@ -40,6 +41,7 @@ trait SkinnyControllerBase
     with RoutesAsImplicits
     with ParametersGetAsImplicits
     with ParamsPermitImplicits
+    with SkinnyFilterActivation
     with Logging {
 
   /**
