@@ -1,13 +1,10 @@
-import sbt._
-import Keys._
-import org.scalatra.sbt._
-import org.scalatra.sbt.PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._
-import com.earldouglas.xsbtwebplugin.PluginKeys._
+import sbt._, Keys._
+import org.scalatra.sbt._, PluginKeys._
+import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
-import ScalateKeys._
-import scala.language.postfixOps
+import com.earldouglas.xsbtwebplugin.PluginKeys._
 import org.sbtidea.SbtIdeaPlugin._
+import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
@@ -60,6 +57,9 @@ object SkinnyAppBuild extends Build {
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
+    updateOptions := updateOptions.value
+      .withCircularDependencyLevel(CircularDependencyLevel.Error)
+      .withCachedResolution(true),    
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     ideaExcludeFolders := Seq(".idea", ".idea_modules", "db", "target", "task/target", "build", "standalone-build", "node_modules")

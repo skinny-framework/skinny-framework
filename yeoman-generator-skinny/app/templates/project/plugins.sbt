@@ -11,14 +11,14 @@ addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
   ExclusionRule(organization = "org.apache.tomcat.embed"),
   ExclusionRule(organization = "com.earldouglas")
 ))
-
 // scalatra-sbt depends on xsbt-web-plugin
+// TODO: scalatra-sbt 0.3.5 is incompatible with xsbt-web-plugin 1.0.0
+// https://github.com/scalatra/scalatra-sbt/issues/9
 addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0" excludeAll(
   ExclusionRule(organization = "org.mortbay.jetty"),
   ExclusionRule(organization = "org.eclipse.jetty"),
   ExclusionRule(organization = "org.apache.tomcat.embed")
 ))
-
 // for Scalate template compilaion
 addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
 
