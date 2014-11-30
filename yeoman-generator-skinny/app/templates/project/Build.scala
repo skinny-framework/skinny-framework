@@ -1,13 +1,10 @@
-import sbt._
-import Keys._
-import org.scalatra.sbt._
-import org.scalatra.sbt.PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._
-import com.earldouglas.xsbtwebplugin.PluginKeys._
+import sbt._, Keys._
+import org.scalatra.sbt._, PluginKeys._
+import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
-import ScalateKeys._
-import scala.language.postfixOps
+import com.earldouglas.xsbtwebplugin.PluginKeys._
 import org.sbtidea.SbtIdeaPlugin._
+import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
@@ -42,14 +39,12 @@ object SkinnyAppBuild extends Build {
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
       "com.h2database"          %  "h2"                  % "1.4.182",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
-      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
-      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
-      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
-      // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
-      //"org.scalatra"            %% "scalatra-specs2"     % scalatraVersion       % "test",
-      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
-      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
-      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test"
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion   % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion   % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion % "test",
+      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion    % "container",
+      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion    % "container",
+      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"         % "container;provided;test"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
@@ -59,6 +54,8 @@ object SkinnyAppBuild extends Build {
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
+    // https://github.com/sbt/sbt/blob/0.13/notes/0.13.7.markdown#cached-resolution-minigraph-caching
+    updateOptions := updateOptions.value.withCachedResolution(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),

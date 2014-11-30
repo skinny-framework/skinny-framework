@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.0"
   lazy val h2Version = "1.4.182"
-  lazy val jettyVersion = "9.2.1.v20140609" // latest "9.2.3.v20140905"
+  lazy val jettyVersion = "9.2.1.v20140609" // latest: 9.2.5.v20141112
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -32,6 +32,7 @@ object SkinnyFrameworkBuild extends Build {
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    //updateOptions := updateOptions.value.withCircularDependencyLevel(CircularDependencyLevel.Error).withCachedResolution(true),
     javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-encoding", "UTF-8", "-Xlint:-options"),
     javacOptions in doc := Seq("-source", "1.7"),
     pomExtra := _pomExtra
