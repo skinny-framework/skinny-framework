@@ -34,12 +34,12 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
-addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.11")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "0.99.11")
 
 // --------
 // scalac options for sbt
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.6")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.7")
 // addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
