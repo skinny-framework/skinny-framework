@@ -57,7 +57,10 @@ fbyte = %x01-08 / %x0B / %x0C / %x0E-FF
   def ltsv = repsep(record, nl)
   def record = repsep(field, tab) ^^ { _.toMap }
   def field = label ~ ":" ~ fieldValue ^^ { case k ~ ":" ~ v => (k, v) }
-  def label = "[0-9A-Za-z_\\.-]+".r
+  def label = {
+    if (config.lenient) """[^\t\r\n:]*""".r
+    else "[0-9A-Za-z_\\.-]+".r
+  }
   def fieldValue = {
     if (config.lenient) """[^\t\r\n]*""".r
     else """[\u000B\u000C\u0001-\u0008\u000E-\u00FF]*""".r
