@@ -143,7 +143,7 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def generate(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
-    val productionFile = new File(s"${sourceDir}/${toDirectoryPath(modelPackage, namespaces)}/${toClassName(name)}.scala")
+    val productionFile = new File(s"${sourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}.scala")
     writeIfAbsent(productionFile, code(namespaces, name, tableName, attributePairs))
   }
 
@@ -164,7 +164,7 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def generateSpec(namespaces: Seq[String], name: String, attributePairs: Seq[(String, String)]) {
-    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(modelPackage, namespaces)}/${toClassName(name)}Spec.scala")
+    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}Spec.scala")
     FileUtils.forceMkdir(specFile.getParentFile)
     writeIfAbsent(specFile, spec(namespaces, name))
   }

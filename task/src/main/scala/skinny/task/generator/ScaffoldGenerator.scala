@@ -171,7 +171,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // --------------------------
 
   def generateApplicationControllerIfAbsent() {
-    val file = new File(s"${sourceDir}/${controllerPackage}/ApplicationController.scala")
+    val file = new File(s"${sourceDir}/${controllerPackageDir}/ApplicationController.scala")
     writeIfAbsent(file,
       s"""package ${controllerPackage}
         |
@@ -277,7 +277,7 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateResourceController(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath(controllerPackage, namespaces)
+    val dir = toDirectoryPath(controllerPackageDir, namespaces)
     val file = new File(s"${sourceDir}/${dir}/${controllerClassName}.scala")
     writeIfAbsent(file, controllerCode(namespaces, resources, resource, template, args))
   }
@@ -423,7 +423,7 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateControllerSpec(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath(controllerPackage, namespaces)
+    val dir = toDirectoryPath(controllerPackageDir, namespaces)
     val file = new File(s"${testSourceDir}/${dir}/${controllerClassName}Spec.scala")
     writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, attributePairs))
   }

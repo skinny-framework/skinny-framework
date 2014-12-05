@@ -30,8 +30,12 @@ trait CodeGenerator {
   // If you prefer Play Framework's style, override this and specify "controllers"
   def controllerPackage: String = "controller"
 
+  def controllerPackageDir: String = controllerPackage.split("\\.").mkString("/")
+
   // If you prefer Play Framework's style, override this and specify "models"
   def modelPackage: String = "model"
+
+  def modelPackageDir: String = modelPackage.split("\\.").mkString("/")
 
   def toVariable(name: String) = name.head.toLower + name.tail
 
