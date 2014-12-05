@@ -16,7 +16,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.5"
+  val skinnyVersion = "1.3.6-SNAPSHOT"
   val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.4"
   val jettyVersion = "9.2.1.v20140609" // latest: 9.2.5.v20141112
@@ -54,8 +54,6 @@ object SkinnyAppBuild extends Build {
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
-    // https://github.com/sbt/sbt/blob/0.13/notes/0.13.7.markdown#cached-resolution-minigraph-caching
-    updateOptions := updateOptions.value.withCachedResolution(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),

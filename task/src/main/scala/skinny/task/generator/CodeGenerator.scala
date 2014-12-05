@@ -17,6 +17,22 @@ import scala.io.Source
  */
 trait CodeGenerator {
 
+  def sourceDir = "src/main/scala"
+
+  def testSourceDir = "src/test/scala"
+
+  def resourceDir = "src/main/resources"
+
+  def testResourceDir = "src/test/resources"
+
+  def webInfDir = "src/main/webapp/WEB-INF"
+
+  // If you prefer Play Framework's style, override this and specify "controllers"
+  def controllerPackage: String = "controller"
+
+  // If you prefer Play Framework's style, override this and specify "models"
+  def modelPackage: String = "model"
+
   def toVariable(name: String) = name.head.toLower + name.tail
 
   def toClassName(name: String) = name.head.toUpper + name.tail
@@ -116,7 +132,7 @@ trait CodeGenerator {
 
   def appendToControllers(namespaces: Seq[String], name: String) {
     val controllerName = toControllerName(namespaces, name)
-    val controllerClassName = toNamespace("_root_.controller", namespaces) + "." + toControllerClassName(name)
+    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(name)
     val newMountCode =
       s"""def mount(ctx: ServletContext): Unit = {
         |    ${controllerName}.mount(ctx)""".stripMargin
@@ -128,7 +144,7 @@ trait CodeGenerator {
         |""".stripMargin
     }
 
-    val file = new File("src/main/scala/controller/Controllers.scala")
+    val file = new File(s"${sourceDir}/${controllerPackage}/Controllers.scala")
     if (file.exists()) {
       val code = Source.fromFile(file).mkString
         .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
@@ -136,9 +152,9 @@ trait CodeGenerator {
       forceWrite(file, code)
     } else {
       val fullNewCode =
-        s"""package controller
+        s"""package ${controllerPackage}
           |
-          |import _root_.controller._
+          |import _root_.${controllerPackage}._
           |import skinny._
           |import skinny.controller.AssetsController
           |

@@ -5,7 +5,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.5"
+  lazy val currentVersion = "1.3.6-SNAPSHOT"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.0"
@@ -60,7 +60,7 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2-core"        % "2.4.11"           % "test",
+        "org.specs2"         %% "specs2-core"        % "2.4.14"           % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -311,7 +311,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-test"                 % scalikeJDBCVersion % "test"
   )
   lazy val jodaDependencies = Seq(
-    "joda-time" %  "joda-time"    % "2.5"   % "compile",
+    "joda-time" %  "joda-time"    % "2.6"   % "compile",
     "org.joda"  %  "joda-convert" % "1.7"   % "compile"
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(

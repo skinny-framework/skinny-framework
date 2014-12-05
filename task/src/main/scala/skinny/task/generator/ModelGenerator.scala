@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils
 object ModelGenerator extends ModelGenerator {
   override def withTimestamps: Boolean = true
 }
+
 object ModelWithoutTimestampsGenerator extends ModelGenerator {
   override def withTimestamps: Boolean = false
 }
@@ -57,7 +58,7 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def code(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
-    val namespace = toNamespace("model", namespaces)
+    val namespace = toNamespace(modelPackage, namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
     val timestampPrefix = if (withId) ",\n" else { if (attributePairs.isEmpty) "" else ",\n" }
@@ -142,12 +143,12 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def generate(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
-    val productionFile = new File(s"src/main/scala/${toDirectoryPath("model", namespaces)}/${toClassName(name)}.scala")
+    val productionFile = new File(s"${sourceDir}/${toDirectoryPath(modelPackage, namespaces)}/${toClassName(name)}.scala")
     writeIfAbsent(productionFile, code(namespaces, name, tableName, attributePairs))
   }
 
   def spec(namespaces: Seq[String], name: String): String = {
-    s"""package ${toNamespace("model", namespaces)}
+    s"""package ${toNamespace(modelPackage, namespaces)}
         |
         |import skinny.DBSettings
         |import skinny.test._
@@ -163,7 +164,7 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def generateSpec(namespaces: Seq[String], name: String, attributePairs: Seq[(String, String)]) {
-    val specFile = new File(s"src/test/scala/${toDirectoryPath("model", namespaces)}/${toClassName(name)}Spec.scala")
+    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(modelPackage, namespaces)}/${toClassName(name)}Spec.scala")
     FileUtils.forceMkdir(specFile.getParentFile)
     writeIfAbsent(specFile, spec(namespaces, name))
   }

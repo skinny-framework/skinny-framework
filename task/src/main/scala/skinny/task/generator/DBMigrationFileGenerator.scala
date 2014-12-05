@@ -28,7 +28,7 @@ trait DBMigrationFileGenerator extends CodeGenerator {
 
   def generate(name: String, sql: String): Unit = {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
-    val file = new File(s"src/main/resources/db/migration/V${version}__${name}.sql")
+    val file = new File(s"${resourceDir}/db/migration/V${version}__${name}.sql")
     writeIfAbsent(file, sql)
   }
 

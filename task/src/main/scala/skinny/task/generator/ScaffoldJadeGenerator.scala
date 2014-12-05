@@ -16,7 +16,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
 
   val packageImportsWarning =
     s"""-# Be aware of package imports.
-       |-# 1. src/main/scala/templates/ScalatePackage.scala
+       |-# 1. ${sourceDir}/templates/ScalatePackage.scala
        |-# 2. scalateTemplateConfig in project/Build.scala""".stripMargin
 
   override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
@@ -148,7 +148,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     s"""-@val s: skinny.Skinny
-        |-@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}]
+        |-@val items: Seq[${toNamespace(modelPackage, namespaces)}.${modelClassName}]
         |-@val totalPages: Int
         |-@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1)
         |
@@ -204,7 +204,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
     }.mkString
 
-    s"""-@val item: ${toNamespace("model", namespaces)}.${modelClassName}
+    s"""-@val item: ${toNamespace(modelPackage, namespaces)}.${modelClassName}
         |-@val s: skinny.Skinny
         |
         |${packageImportsWarning}
