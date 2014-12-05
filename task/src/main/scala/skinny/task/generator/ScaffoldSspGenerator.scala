@@ -14,7 +14,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   val packageImportsWarning =
     s"""<%-- Be aware of package imports.
-        | 1. src/main/scala/templates/ScalatePackage.scala
+        | 1. ${sourceDir}/templates/ScalatePackage.scala
         | 2. scalateTemplateConfig in project/Build.scala
         |--%>""".stripMargin
 
@@ -201,7 +201,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
-        |<%@val items: Seq[${toNamespace("model", namespaces)}.${modelClassName}] %>
+        |<%@val items: Seq[${toNamespace(modelPackage, namespaces)}.${modelClassName}] %>
         |<%@val totalPages: Int %>
         |<%@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1) %>
         |
@@ -267,7 +267,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
   override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
-    val modelNamespace = toNamespace("model", namespaces)
+    val modelNamespace = toNamespace(modelPackage, namespaces)
     val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
       case (name, _) =>
         s"""  <tr>

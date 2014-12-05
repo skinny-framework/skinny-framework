@@ -40,9 +40,9 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def code(namespaces: Seq[String], name: String): String = {
-    s"""package ${toNamespace("controller", namespaces)}
+    s"""package ${toNamespace(controllerPackage, namespaces)}
         |
-        |${if (!namespaces.isEmpty) "import _root_.controller._\n"}import skinny._
+        |${if (!namespaces.isEmpty) s"import _root_.${controllerPackage}._\n"}import skinny._
         |import skinny.validator._
         |
         |class ${toClassName(name)}Controller extends ApplicationController {
@@ -55,9 +55,9 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generateApplicationControllerIfAbsent() {
-    val file = new File(s"src/main/scala/controller/ApplicationController.scala")
+    val file = new File(s"${sourceDir}/${controllerPackage}/ApplicationController.scala")
     writeIfAbsent(file,
-      """package controller
+      s"""package ${controllerPackage}
         |
         |import skinny._
         |import skinny.filter._
@@ -79,13 +79,13 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generate(namespaces: Seq[String], name: String) {
-    val file = new File(s"src/main/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}Controller.scala")
+    val file = new File(s"${sourceDir}/${toDirectoryPath(controllerPackage, namespaces)}/${toClassName(name)}Controller.scala")
     writeIfAbsent(file, code(namespaces, name))
   }
 
   override def appendToControllers(namespaces: Seq[String], name: String) {
     val controllerName = toControllerName(namespaces, name)
-    val controllerClassName = toNamespace("_root_.controller", namespaces) + "." + toControllerClassName(name)
+    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(name)
     val newMountCode =
       s"""def mount(ctx: ServletContext): Unit = {
         |    ${controllerName}.mount(ctx)""".stripMargin
@@ -103,7 +103,7 @@ trait ControllerGenerator extends CodeGenerator {
       |""".stripMargin
     }
 
-    val file = new File("src/main/scala/controller/Controllers.scala")
+    val file = new File(s"${sourceDir}/${controllerPackage}/Controllers.scala")
     if (file.exists()) {
       val code = Source.fromFile(file).mkString
         .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
@@ -111,9 +111,9 @@ trait ControllerGenerator extends CodeGenerator {
       forceWrite(file, code)
     } else {
       val fullNewCode =
-        s"""package controller
+        s"""package ${controllerPackage}
           |
-          |import _root_.controller._
+          |import _root_.${controllerPackage}._
           |import skinny._
           |import skinny.controller.AssetsController
           |
@@ -130,7 +130,7 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def controllerSpec(namespaces: Seq[String], name: String): String = {
-    val namespace = toNamespace("controller", namespaces)
+    val namespace = toNamespace(controllerPackage, namespaces)
     val controllerClassName = toClassName(name) + "Controller"
     val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${name}"
 
@@ -163,7 +163,7 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generateControllerSpec(namespaces: Seq[String], name: String) {
-    val specFile = new File(s"src/test/scala/${toDirectoryPath("controller", namespaces)}/${toClassName(name)}ControllerSpec.scala")
+    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(controllerPackage, namespaces)}/${toClassName(name)}ControllerSpec.scala")
     writeIfAbsent(specFile, controllerSpec(namespaces, name))
   }
 
@@ -181,7 +181,7 @@ trait ControllerGenerator extends CodeGenerator {
         |import skinny._
         |import skinny.test._
         |import org.joda.time._
-        |import _root_.controller.Controllers
+        |import _root_.${controllerPackage}.Controllers
         |
         |class ${toClassName(name)}Controller_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
         |  addFilter(Controllers.${toControllerName(namespaces, name)}, "/*")
@@ -198,7 +198,7 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generateIntegrationSpec(namespaces: Seq[String], name: String) {
-    val specFile = new File(s"src/test/scala/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala")
+    val specFile = new File(s"${testSourceDir}/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala")
     writeIfAbsent(specFile, integrationSpec(namespaces, name))
   }
 
