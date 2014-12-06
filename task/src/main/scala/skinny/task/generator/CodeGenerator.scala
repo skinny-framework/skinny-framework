@@ -17,6 +17,9 @@ import scala.io.Source
  */
 trait CodeGenerator {
 
+  // ------------------------
+  // configuration
+
   def sourceDir = "src/main/scala"
 
   def testSourceDir = "src/test/scala"
@@ -37,52 +40,8 @@ trait CodeGenerator {
 
   def modelPackageDir: String = modelPackage.split("\\.").mkString("/")
 
-  def toVariable(name: String) = name.head.toLower + name.tail
-
-  def toClassName(name: String) = name.head.toUpper + name.tail
-
-  def toNamespace(basePackage: String, namespaces: Seq[String]): String =
-    (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "." + b }
-
-  def toDirectoryPath(baseDir: String, namespaces: Seq[String]): String = {
-    val dirs: Seq[String] = (Seq(baseDir) ++ namespaces).filter(!_.isEmpty)
-    if (dirs.isEmpty) "" else dirs.reduceLeft { (a, b) => a + "/" + b }
-  }
-
-  def toResourcesBasePath(namespaces: Seq[String]): String = if (namespaces.filter(!_.isEmpty).isEmpty) ""
-  else "/" + namespaces.filter(!_.isEmpty).reduceLeft { (a, b) => a + "/" + b }
-
-  def toControllerClassName(name: String) = toClassName(name) + "Controller"
-
-  def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
-
-  def toParamType(t: String): String = t.replaceFirst("Option\\[", "").replaceFirst("\\]", "").trim()
-
-  def toCamelCase(v: String): String = StringUtil.toCamelCase(v)
-
-  def toSnakeCase(v: String): String = StringUtil.toSnakeCase(v)
-
-  def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
-
-  def toFirstCharLower(s: String): String = s.head.toLower + s.tail
-
-  def toCapitalizedSplitName(v: String): String = {
-    toSnakeCase(v).split("_").toSeq
-      .map(word => word.head.toUpper + word.tail)
-      .mkString(" ")
-  }
-
-  def toScalaTypeName(paramTypeName: String): String = paramTypeName match {
-    case "ByteArray" => "Array[Byte]"
-    case "Option[ByteArray]" => "Option[Array[Byte]]"
-    case _ => paramTypeName
-  }
-
-  def toScalaTypeNameWithDefaultValueIfOption(paramTypeName: String): String = {
-    val scalaTypeName = toScalaTypeName(paramTypeName.trim())
-    if (scalaTypeName.startsWith("Option")) s"${scalaTypeName} = None"
-    else scalaTypeName
-  }
+  // ------------------------
+  // generator methods
 
   def forceWrite(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
@@ -119,7 +78,7 @@ trait CodeGenerator {
   def showSkinnyGenerator(): Unit = {
     println("""
  *** Skinny Generator Task ***
-""")
+            """)
   }
 
   def showErrors(messages: Seq[String]) = {
@@ -127,11 +86,6 @@ trait CodeGenerator {
     println("""  Command failed!""")
     println("")
     println(messages.mkString("  Error: ", "\n", "\n"))
-  }
-
-  def toControllerName(namespaces: Seq[String], resources: String): String = {
-    if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
-    else namespaces.head + namespaces.tail.map { n => n.head.toUpper + n.tail }.mkString + toClassName(resources)
   }
 
   def appendToControllers(namespaces: Seq[String], name: String) {
@@ -174,11 +128,131 @@ trait CodeGenerator {
     }
   }
 
+  // ------------------------
+  // helper methods
+
+  def toVariable(name: String) = name.head.toLower + name.tail
+
+  def toClassName(name: String) = name.head.toUpper + name.tail
+
+  def toNamespace(basePackage: String, namespaces: Seq[String]): String = {
+    (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "." + b }
+  }
+
+  def toDirectoryPath(baseDir: String, namespaces: Seq[String]): String = {
+    val dirs: Seq[String] = (Seq(baseDir) ++ namespaces).filter(!_.isEmpty)
+    if (dirs.isEmpty) "" else dirs.reduceLeft { (a, b) => a + "/" + b }
+  }
+
+  def toControllerName(namespaces: Seq[String], resources: String): String = {
+    if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
+    else namespaces.head + namespaces.tail.map { n => n.head.toUpper + n.tail }.mkString + toClassName(resources)
+  }
+
+  def toControllerClassName(name: String) = toClassName(name) + "Controller"
+
+  def toResourcesBasePath(namespaces: Seq[String]): String = {
+    if (namespaces.filter(!_.isEmpty).isEmpty) ""
+    else "/" + namespaces.filter(!_.isEmpty).reduceLeft { (a, b) => a + "/" + b }
+  }
+
+  def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
+
+  def extractTypeIfOptionOrSeq(t: String): String = {
+    t.replaceFirst("Option\\[", "")
+      .replaceFirst("Seq\\[", "")
+      .replaceFirst("\\]", "")
+      .trim()
+  }
+
+  def toCamelCase(v: String): String = StringUtil.toCamelCase(v)
+
+  def toSnakeCase(v: String): String = StringUtil.toSnakeCase(v)
+
+  def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
+
+  def toFirstCharUpper(s: String): String = s.head.toUpper + s.tail
+
+  def toFirstCharLower(s: String): String = s.head.toLower + s.tail
+
+  def toCapitalizedSplitName(v: String): String = {
+    toSnakeCase(v).split("_").toSeq
+      .map(word => word.head.toUpper + word.tail)
+      .mkString(" ")
+  }
+
   def extractColumns(tableName: String): List[Column] = {
     DB.getTable(tableName).map { table =>
       table.columns
     }.getOrElse {
       throw new IllegalStateException(s"Failed to retrieve meta data about columns for ${tableName}")
+    }
+  }
+
+  def toScalaTypeName(paramTypeName: String): String = paramTypeName match {
+    case "ByteArray" => "Array[Byte]"
+    case "Option[ByteArray]" => "Option[Array[Byte]]"
+    case _ => paramTypeName
+  }
+
+  def toScalaTypeNameWithDefaultValueIfOptionOrSeq(paramTypeName: String): String = {
+    val scalaTypeName = toScalaTypeName(paramTypeName.trim())
+    if (scalaTypeName.startsWith("Option")) s"${scalaTypeName} = None"
+    else if (scalaTypeName.startsWith("Seq")) s"${scalaTypeName} = Nil"
+    else scalaTypeName
+  }
+
+  def paramTypes = Seq(
+    "Boolean",
+    "Double",
+    "Float",
+    "Long",
+    "Int",
+    "Short",
+    "String",
+    "Byte",
+    "ByteArray",
+    "BigDecimal",
+    "DateTime",
+    "LocalDate",
+    "LocalTime",
+    "Option[Boolean]",
+    "Option[Double]",
+    "Option[Float]",
+    "Option[Long]",
+    "Option[Int]",
+    "Option[Short]",
+    "Option[String]",
+    "Option[Byte]",
+    "Option[ByteArray]",
+    "Option[BigDecimal]",
+    "Option[DateTime]",
+    "Option[LocalDate]",
+    "Option[LocalTime]"
+  )
+
+  def isSupportedParamType(typeName: String): Boolean = paramTypes.contains(typeName)
+
+  def isAssociationTypeName(typeName: String): Boolean = {
+    (typeName.startsWith("Option[") || typeName.startsWith("Seq[")) && !isSupportedParamType(typeName)
+  }
+
+  def toDBType(t: String): String = {
+    extractTypeIfOptionOrSeq(t) match {
+      case "String" => "varchar(512)"
+      case "Long" => "bigint"
+      case "Int" => "int"
+      case "Short" => "int"
+      case "Byte" => "tinyint"
+      case "ByteArray" => "binary"
+      case "BigDecimal" => "numeric"
+      case "DateTime" => "timestamp"
+      case "LocalDate" => "date"
+      case "LocalTime" => "time"
+      case "Boolean" => "boolean"
+      case "Double" => "double"
+      case "Float" => "float"
+      case _ => "other"
     }
   }
 

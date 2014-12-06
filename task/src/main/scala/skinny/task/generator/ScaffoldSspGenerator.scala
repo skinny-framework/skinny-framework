@@ -18,11 +18,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         | 2. scalateTemplateConfig in project/Build.scala
         |--%>""".stripMargin
 
-  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     "<%@val s: skinny.Skinny %>\n<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
       packageImportsWarning + "\n\n" +
-      attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
+      nameAndTypeNamePairs.toList.map { case (k, t) => (k, extractTypeIfOptionOrSeq(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
         |  <label class="control-label" for="${toSnakeCase(name)}">
@@ -155,7 +155,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""<%@val s: skinny.Skinny %>
         |
@@ -176,7 +176,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""<%@val s: skinny.Skinny %>
         |
@@ -197,7 +197,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     s"""<%@val s: skinny.Skinny %>
@@ -236,14 +236,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<table class="table table-bordered">
         |<thead>
         |  <tr>
-        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => "    <th>${s.i18n.getOrKey(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "    <th>${s.i18n.getOrKey(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
         |    <th></th>
         |  </tr>
         |</thead>
         |<tbody>
         |  #for (item <- items)
         |  <tr>
-        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => s"    <td>$${item.${k}}</td>" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => s"    <td>$${item.${k}}</td>" }.mkString("\n")}
         |    <td>
         |      <a href="$${s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-default">$${s.i18n.getOrKey("detail")}</a>
         |      <a href="$${s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-info">$${s.i18n.getOrKey("edit")}</a>
@@ -254,7 +254,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  #end
         |  #if (items.isEmpty)
         |  <tr>
-        |    <td colspan="${2 + attributePairs.size}">$${s.i18n.getOrKey("empty")}</td>
+        |    <td colspan="${2 + nameAndTypeNamePairs.size}">$${s.i18n.getOrKey("empty")}</td>
         |  </tr>
         |  #end
         |</tbody>
@@ -264,11 +264,11 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     val modelNamespace = toNamespace(modelPackage, namespaces)
-    val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
+    val attributesPart = ((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
         |    <th>$${s.i18n.getOrKey("${resource}.${name}")}</th>

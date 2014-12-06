@@ -19,12 +19,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
        |-# 1. ${sourceDir}/templates/ScalatePackage.scala
        |-# 2. scalateTemplateConfig in project/Build.scala""".stripMargin
 
-  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     "-@val s: skinny.Skinny\n" +
       "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
       packageImportsWarning + "\n\n" +
-      attributePairs.toList.map { case (k, t) => (k, toParamType(t)) }.map {
+      nameAndTypeNamePairs.toList.map { case (k, t) => (k, extractTypeIfOptionOrSeq(t)) }.map {
         case (name, "Boolean") =>
           s"""div(class="form-group")
           |  label(class="control-label" for="${toSnakeCase(name)}") #{s.i18n.getOrKey("${resource}.${name}")}
@@ -110,7 +110,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""-@val s: skinny.Skinny
         |
@@ -127,7 +127,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     s"""-@val s: skinny.Skinny
         |
@@ -144,7 +144,7 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     s"""-@val s: skinny.Skinny
@@ -175,28 +175,28 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |table(class="table table-bordered")
         |  thead
         |    tr
-        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => "      th #{s.i18n.getOrKey(\"" + resource + "." + k + "\")}" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "      th #{s.i18n.getOrKey(\"" + resource + "." + k + "\")}" }.mkString("\n")}
         |      th
         |  tbody
         |  -for (item <- items)
         |    tr
-        |${((primaryKeyName -> "Long") :: attributePairs.toList).map { case (k, _) => "      td #{item." + k + "}" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "      td #{item." + k + "}" }.mkString("\n")}
         |      td
         |        a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.getOrKey("detail")}
         |        a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.getOrKey("edit")}
         |        a(data-method="delete" data-confirm={s.i18n.getOrKey("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
         |  -if (items.isEmpty)
         |    tr
-        |      td(colspan="${2 + attributePairs.size}") #{s.i18n.getOrKey("empty")}
+        |      td(colspan="${2 + nameAndTypeNamePairs.size}") #{s.i18n.getOrKey("empty")}
         |
         |a(href={s.url(${controllerName}.newUrl)} class="btn btn-primary") #{s.i18n.getOrKey("new")}
         |""".stripMargin
   }
 
-  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, attributePairs: Seq[(String, String)]): String = {
+  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
-    val attributesPart = ((primaryKeyName -> "Long") :: attributePairs.toList).map {
+    val attributesPart = ((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map {
       case (name, _) =>
         s"""    tr
         |      th #{s.i18n.getOrKey("${resource}.${name}")}
