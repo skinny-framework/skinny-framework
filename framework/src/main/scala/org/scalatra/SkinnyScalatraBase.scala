@@ -29,10 +29,11 @@ trait SkinnyScalatraBase extends ScalatraBase {
         val (rq, rs) = (request, response)
         onCompleted { _ =>
           withRequestResponse(rq, rs) {
+            var className = this.getClass.getCanonicalName
             this match {
-              case f: Filter if !rq.contains("org.scalatra.ScalatraFilter.afterFilters.Run") =>
-                // **** PATCHED ****
-                // rq("org.scalatra.ScalatraFilter.afterFilters.Run") = new {}
+              // **** PATCHED ****
+              case f: Filter if !rq.contains(s"org.scalatra.ScalatraFilter.afterFilters.Run (${className})") =>
+                rq(s"org.scalatra.ScalatraFilter.afterFilters.Run (${className})") = new {}
                 runFilters(routes.afterFilters)
               case f: HttpServlet if !rq.contains("org.scalatra.ScalatraServlet.afterFilters.Run") =>
                 rq("org.scalatra.ScalatraServlet.afterFilters.Run") = new {}
