@@ -21,6 +21,8 @@ trait ModelGenerator extends CodeGenerator {
 
   def withTimestamps: Boolean = true
 
+  def useAutoConstruct: Boolean = false
+
   def primaryKeyName: String = "id"
 
   def primaryKeyType: ParamType = ParamType.Long
@@ -109,20 +111,14 @@ trait ModelGenerator extends CodeGenerator {
          |  override def useExternalIdGenerator = true
          |  override def generateId = java.util.UUID.randomUUID.toString""".stripMargin
 
-    s"""package ${namespace}
-        |
-        |import skinny.orm._, feature._
-        |import scalikejdbc._
-        |import org.joda.time._
-        |
-        |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
-        |case class ${modelClassName}(
-        |${classFields})
-        |
-        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
-        |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
-        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
-        |
+    val extractMethod = {
+      if (useAutoConstruct) {
+        s"""
+        |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = {
+        |    autoConstruct(rs, rn)
+        |  }""".stripMargin
+      } else {
+        s"""
         |  /*
         |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
         |   * (e.g.)
@@ -138,7 +134,24 @@ trait ModelGenerator extends CodeGenerator {
         |   */
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
         |${extractors}  )
-        |}
+        |}""".stripMargin
+      }
+    }
+
+    s"""package ${namespace}
+        |
+        |import skinny.orm._, feature._
+        |import scalikejdbc._
+        |import org.joda.time._
+        |
+        |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
+        |case class ${modelClassName}(
+        |${classFields})
+        |
+        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
+        |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
+        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
+        |${extractMethod}
         |""".stripMargin
   }
 
