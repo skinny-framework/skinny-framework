@@ -11,10 +11,6 @@ object ModelGenerator extends ModelGenerator {
   override def withTimestamps: Boolean = true
 }
 
-object ModelWithoutTimestampsGenerator extends ModelGenerator {
-  override def withTimestamps: Boolean = false
-}
-
 trait ModelGenerator extends CodeGenerator {
 
   def withId: Boolean = true
@@ -44,27 +40,27 @@ trait ModelGenerator extends CodeGenerator {
     completedArgs match {
       case namespace :: name :: attributes =>
         showSkinnyGenerator()
-        val attributePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
+        val nameAndTypeNamePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
-            case Array(k, v, columnDef) => Some(k -> v)
-            case Array(k, v) => Some(k -> v)
+            case Array(name, typeName, columnDef) => Some(name -> typeName)
+            case Array(name, typeName) => Some(name -> typeName)
             case _ => None
           }
         }
-        generate(namespace.split('.'), name, tableName, attributePairs)
-        generateSpec(namespace.split('.'), name, attributePairs)
+        generate(namespace.split('.'), name, tableName, nameAndTypeNamePairs)
+        generateSpec(namespace.split('.'), name, nameAndTypeNamePairs)
         println("")
 
       case _ => showUsage
     }
   }
 
-  def code(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]): String = {
+  def code(namespaces: Seq[String], name: String, tableName: Option[String], nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val namespace = toNamespace(modelPackage, namespaces)
     val modelClassName = toClassName(name)
     val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
-    val timestampPrefix = if (withId) ",\n" else { if (attributePairs.isEmpty) "" else ",\n" }
-    val classFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
+    val timestampPrefix = if (withId) ",\n" else { if (nameAndTypeNamePairs.isEmpty) "" else ",\n" }
+    val caseClassFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
     val extractorsPrimaryKeyRow = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""
     val attributePrefix = if (withId) ",\n" else ""
     val mapperClassName = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
@@ -85,22 +81,23 @@ trait ModelGenerator extends CodeGenerator {
       else ""
     }
 
-    val classFields = s"""${classFieldsPrimaryKeyRow}${
-      if (attributePairs.isEmpty) ""
-      else attributePairs.map {
-        case (k, t) =>
-          s"  ${k}: ${toScalaTypeNameWithDefaultValueIfOption(t)}"
+    val caseClassFields = s"""${caseClassFieldsPrimaryKeyRow}${
+      if (nameAndTypeNamePairs.isEmpty) ""
+      else nameAndTypeNamePairs.map {
+        case (name, typeName) =>
+          s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
       }.mkString(attributePrefix, ",\n", "")
     }${timestamps}
         |""".stripMargin
 
     val extractors =
       s"""${extractorsPrimaryKeyRow}${
-        if (attributePairs.isEmpty) ""
-        else attributePairs.map {
-          case (k, t) =>
-            "    " + k + " = rs.get(rn." + k + ")"
-        }.mkString(attributePrefix, ",\n", "")
+        if (nameAndTypeNamePairs.isEmpty) ""
+        else {
+          nameAndTypeNamePairs.filterNot { case (_, typeName) => isAssociationTypeName(typeName) }.map {
+            case (name, typeName) => "    " + name + " = rs.get(rn." + name + ")"
+          }.mkString(attributePrefix, ",\n", "")
+        }
       }${timestampsExtraction}
         |""".stripMargin
 
@@ -111,15 +108,45 @@ trait ModelGenerator extends CodeGenerator {
          |  override def useExternalIdGenerator = true
          |  override def generateId = java.util.UUID.randomUUID.toString""".stripMargin
 
+    val associationNameAndTypeNamePairs = nameAndTypeNamePairs
+      .filter { case (_, typeName) => isAssociationTypeName(typeName) }
+
+    val associations = {
+      if (associationNameAndTypeNamePairs.isEmpty) {
+        ""
+      } else {
+        associationNameAndTypeNamePairs.map {
+          case (name, typeName) if typeName.startsWith("Option[") =>
+            val entityName = extractTypeIfOptionOrSeq(typeName)
+            val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
+            s"  lazy val ${name}Ref = belongsTo[${entityName}](${entityName}, (${alias}, ${entityAlias}) => ${alias}.copy(${name} = ${entityAlias}))"
+          case (name, typeName) if typeName.startsWith("Seq[") =>
+            val entityName = extractTypeIfOptionOrSeq(typeName)
+            val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
+            val entityFkName = toFirstCharLower(modelClassName) + toFirstCharUpper(primaryKeyName)
+            s"""  lazy val ${name}Ref = hasMany[${entityName}](
+               |    many = ${entityName} -> ${entityName}.defaultAlias,
+               |    on = (${alias}, ${entityAlias}) => sqls.eq(${alias}.${primaryKeyName}, ${entityAlias}.${entityFkName}),
+               |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${name} = ${entityAlias}s)
+               |  )""".stripMargin
+        }.mkString("\n", "\n\n", "\n")
+      }
+    }
+
     val extractMethod = {
       if (useAutoConstruct) {
-        s"""
-        |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = {
-        |    autoConstruct(rs, rn)
+        val associationFields = {
+          val result = associationNameAndTypeNamePairs
+            .map { case (name, _) => "\"" + name + "\"" }
+            .mkString(", ")
+          if (result.isEmpty) "" else ", " + result
+        }
+        s"""  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = {
+        |    autoConstruct(rs, rn${associationFields})
         |  }""".stripMargin
+
       } else {
-        s"""
-        |  /*
+        s"""  /*
         |   * If you're familiar with ScalikeJDBC/Skinny ORM, using #autoConstruct makes your mapper simpler.
         |   * (e.g.)
         |   * override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]) = autoConstruct(rs, rn)
@@ -133,8 +160,7 @@ trait ModelGenerator extends CodeGenerator {
         |   * }
         |   */
         |  override def extract(rs: WrappedResultSet, rn: ResultName[${modelClassName}]): ${modelClassName} = new ${modelClassName}(
-        |${extractors}  )
-        |}""".stripMargin
+        |${extractors}  )""".stripMargin
       }
     }
 
@@ -146,18 +172,20 @@ trait ModelGenerator extends CodeGenerator {
         |
         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
-        |${classFields})
+        |${caseClassFields})
         |
         |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
         |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
+        |${associations}
         |${extractMethod}
+        |}
         |""".stripMargin
   }
 
-  def generate(namespaces: Seq[String], name: String, tableName: Option[String], attributePairs: Seq[(String, String)]) {
+  def generate(namespaces: Seq[String], name: String, tableName: Option[String], nameAndTypeNamePairs: Seq[(String, String)]) {
     val productionFile = new File(s"${sourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}.scala")
-    writeIfAbsent(productionFile, code(namespaces, name, tableName, attributePairs))
+    writeIfAbsent(productionFile, code(namespaces, name, tableName, nameAndTypeNamePairs))
   }
 
   def spec(namespaces: Seq[String], name: String): String = {
@@ -176,7 +204,7 @@ trait ModelGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateSpec(namespaces: Seq[String], name: String, attributePairs: Seq[(String, String)]) {
+  def generateSpec(namespaces: Seq[String], name: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val specFile = new File(s"${testSourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}Spec.scala")
     FileUtils.forceMkdir(specFile.getParentFile)
     writeIfAbsent(specFile, spec(namespaces, name))
