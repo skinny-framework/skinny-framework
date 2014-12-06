@@ -66,6 +66,27 @@ trait ModelGenerator extends CodeGenerator {
     val mapperClassName = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
 
+    def isHasManyThrough(entityName: String, modelClassName: String): Boolean = {
+      entityName.startsWith(modelClassName) || entityName.endsWith(modelClassName)
+    }
+    def toManyThroughNameAndTypeName(entityName: String): (String, String) = {
+      val _entityName = entityName.replaceFirst(modelClassName, "")
+      val _name = {
+        if (_entityName.endsWith("s")) toFirstCharLower(_entityName)
+        else toFirstCharLower(_entityName) + "s"
+      }
+      (_name, _entityName)
+    }
+    def filterHasManyThrough(nameAntTypeName: (String, String), modelClassName: String): (String, String) = {
+      val entityName = extractTypeIfOptionOrSeq(nameAntTypeName._2)
+      if (isHasManyThrough(entityName, modelClassName)) {
+        val (name, typeName) = toManyThroughNameAndTypeName(entityName)
+        (name, s"Seq[${typeName}]")
+      } else {
+        nameAntTypeName
+      }
+    }
+
     val timestamps = if (withTimestamps) {
       s"""${timestampPrefix}  createdAt: DateTime,
          |  updatedAt: DateTime""".stripMargin
@@ -83,10 +104,12 @@ trait ModelGenerator extends CodeGenerator {
 
     val caseClassFields = s"""${caseClassFieldsPrimaryKeyRow}${
       if (nameAndTypeNamePairs.isEmpty) ""
-      else nameAndTypeNamePairs.map {
-        case (name, typeName) =>
-          s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
-      }.mkString(attributePrefix, ",\n", "")
+      else {
+        nameAndTypeNamePairs
+          .map((v) => filterHasManyThrough(v, modelClassName))
+          .map { case (name, typeName) => s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}" }
+          .mkString(attributePrefix, ",\n", "")
+      }
     }${timestamps}
         |""".stripMargin
 
@@ -111,6 +134,17 @@ trait ModelGenerator extends CodeGenerator {
     val associationNameAndTypeNamePairs = nameAndTypeNamePairs
       .filter { case (_, typeName) => isAssociationTypeName(typeName) }
 
+    val associationCaseClassFields = associationNameAndTypeNamePairs
+      .map {
+        case (name, typeName) =>
+          val entityName = extractTypeIfOptionOrSeq(typeName)
+          if (isHasManyThrough(entityName, modelClassName)) {
+            toManyThroughNameAndTypeName(entityName)
+          } else {
+            (name, typeName)
+          }
+      }
+
     val associations = {
       if (associationNameAndTypeNamePairs.isEmpty) {
         ""
@@ -122,13 +156,24 @@ trait ModelGenerator extends CodeGenerator {
             s"  lazy val ${name}Ref = belongsTo[${entityName}](${entityName}, (${alias}, ${entityAlias}) => ${alias}.copy(${name} = ${entityAlias}))"
           case (name, typeName) if typeName.startsWith("Seq[") =>
             val entityName = extractTypeIfOptionOrSeq(typeName)
-            val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
-            val entityFkName = toFirstCharLower(modelClassName) + toFirstCharUpper(primaryKeyName)
-            s"""  lazy val ${name}Ref = hasMany[${entityName}](
+            if (isHasManyThrough(entityName, modelClassName)) {
+              toManyThroughNameAndTypeName(entityName)
+              val (_name, _entityName) = toManyThroughNameAndTypeName(entityName)
+              val entityAlias = toFirstCharUpper(_entityName).filter(_.isUpper).map(_.toLower).mkString
+              s"""  lazy val ${_name}Ref = hasManyThrough[${_entityName}](
+               |    through = ${entityName},
+               |    many = ${_entityName},
+               |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${_name} = ${entityAlias}s)
+               |  )""".stripMargin
+            } else {
+              val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
+              val entityFkName = toFirstCharLower(modelClassName) + toFirstCharUpper(primaryKeyName)
+              s"""  lazy val ${name}Ref = hasMany[${entityName}](
                |    many = ${entityName} -> ${entityName}.defaultAlias,
                |    on = (${alias}, ${entityAlias}) => sqls.eq(${alias}.${primaryKeyName}, ${entityAlias}.${entityFkName}),
                |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${name} = ${entityAlias}s)
                |  )""".stripMargin
+            }
         }.mkString("\n", "\n\n", "\n")
       }
     }
@@ -136,7 +181,7 @@ trait ModelGenerator extends CodeGenerator {
     val extractMethod = {
       if (useAutoConstruct) {
         val associationFields = {
-          val result = associationNameAndTypeNamePairs
+          val result = associationCaseClassFields
             .map { case (name, _) => "\"" + name + "\"" }
             .mkString(", ")
           if (result.isEmpty) "" else ", " + result
