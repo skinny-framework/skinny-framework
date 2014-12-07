@@ -1,3 +1,5 @@
+import scala.language.postfixOps
+
 scalariformSettings
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings

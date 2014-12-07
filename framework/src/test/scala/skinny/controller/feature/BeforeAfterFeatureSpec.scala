@@ -1,4 +1,4 @@
-package skinny.controller
+package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
 import skinny._
@@ -77,5 +77,5 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
       body should equal("Y!")
     }
   }
-
 }
+

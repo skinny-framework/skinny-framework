@@ -1,9 +1,11 @@
-package skinny.controller
+package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
-import org.scalatra.{ FutureSupport, AsyncResult }
-import scala.concurrent.{ Await, Future, ExecutionContext }
+import org.scalatra.{ AsyncResult, FutureSupport }
+import skinny.controller.{ SkinnyController, SkinnyServlet }
+
 import scala.concurrent.duration._
+import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.language.postfixOps
 
 // on Scala 2.10.0 ScalaTest #equal matcher with inner case classes works but it fails on higher version
@@ -96,7 +98,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     }
 
     // Test the async version
-    import ExecutionContext.Implicits.global
+    import scala.concurrent.ExecutionContext.Implicits.global
     val listOfFutureBodies = (1 to 3).map(_ => Future { get("/async") { body } })
     val fListOfBodies = Future.sequence(listOfFutureBodies)
     Await.result(fListOfBodies, 5.seconds).foreach(_ should equal("""{"id":1,"first_name":"Alice"}"""))

@@ -1,13 +1,10 @@
-import sbt._
-import Keys._
-import org.scalatra.sbt._
-import org.scalatra.sbt.PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._
-import com.earldouglas.xsbtwebplugin.PluginKeys._
+import sbt._, Keys._
+import org.scalatra.sbt._, PluginKeys._
+import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
-import ScalateKeys._
-import scala.language.postfixOps
+import com.earldouglas.xsbtwebplugin.PluginKeys._
 import org.sbtidea.SbtIdeaPlugin._
+import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
 
@@ -19,10 +16,10 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.5"
+  val skinnyVersion = "1.3.6"
   val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.4"
-  val jettyVersion = "9.2.1.v20140609" // latest: 9.2.4.v20141103
+  val jettyVersion = "9.2.1.v20140609" // latest: 9.2.5.v20141112
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := appOrganization,
@@ -42,14 +39,12 @@ object SkinnyAppBuild extends Build {
       "org.apache.commons"      %  "commons-dbcp2"       % "2.0.1",
       "com.h2database"          %  "h2"                  % "1.4.182",      // your own JDBC driver
       "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
-      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion        % "test",
-      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion        % "test",
-      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion      % "test",
-      // If you prefer specs2, we don't bother you (scaffold generator supports only scalatest)
-      //"org.scalatra"            %% "scalatra-specs2"     % scalatraVersion       % "test",
-      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion          % "container",
-      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion          % "container",
-      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"               % "container;provided;test"
+      "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion   % "test",
+      "org.skinny-framework"    %% "skinny-test"         % skinnyVersion   % "test",
+      "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion % "test",
+      "org.eclipse.jetty"       %  "jetty-webapp"        % jettyVersion    % "container",
+      "org.eclipse.jetty"       %  "jetty-plus"          % jettyVersion    % "container",
+      "javax.servlet"           %  "javax.servlet-api"   % "3.1.0"         % "container;provided;test"
     ),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"

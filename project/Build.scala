@@ -5,12 +5,12 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.5"
+  lazy val currentVersion = "1.3.6"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.0"
   lazy val h2Version = "1.4.182"
-  lazy val jettyVersion = "9.2.1.v20140609" // latest "9.2.3.v20140905"
+  lazy val jettyVersion = "9.2.1.v20140609" // latest: 9.2.5.v20141112
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -32,6 +32,9 @@ object SkinnyFrameworkBuild extends Build {
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    // TODO: Test failure in velocity module when enabling CachedResolution
+    // (java.lang.NoSuchMethodError: javax.servlet.ServletContext.getContextPath()Ljava/lang/String;)
+    // updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-encoding", "UTF-8", "-Xlint:-options"),
     javacOptions in doc := Seq("-source", "1.7"),
     pomExtra := _pomExtra
@@ -57,8 +60,8 @@ object SkinnyFrameworkBuild extends Build {
    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2-core"        % "2.4.9"            % "test",
-        "commons-fileupload" %  "commons-fileupload" % "1.3.+"            % "test",
+        "org.specs2"         %% "specs2-core"        % "2.4.14"           % "test",
+        "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
         "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % "test",
@@ -106,7 +109,7 @@ object SkinnyFrameworkBuild extends Build {
         scalatraDependencies ++ Seq(
           "commons-io"             %  "commons-io" % "2.4",
           scalaVersion match { 
-            case v if v.startsWith("2.11.") => "org.scalatra.scalate"   %% "scalamd"   % "1.6.1" 
+            case v if v.startsWith("2.11.") => "org.scalatra.scalate"   %% "scalamd" % "1.6.1" 
             case _ =>                          "org.fusesource.scalamd" %% "scalamd" % "1.6" 
           }
         ) ++ testDependencies
@@ -118,7 +121,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"    %  "flyway-core"    % "3.0"         % "compile",
+        "org.flywaydb"    %  "flyway-core"    % "3.1"         % "compile",
         "org.hibernate"   %  "hibernate-core" % "4.3.7.Final" % "test"
       ) ++ testDependencies
     )
@@ -138,7 +141,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-freemarker",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-beanutils" %  "commons-beanutils"  % "1.9.2"   % "compile",
-        "org.freemarker"    %  "freemarker"         % "2.3.20"  % "compile"
+        "org.freemarker"    %  "freemarker"         % "2.3.21"  % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ).dependsOn(framework)
@@ -158,9 +161,9 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-velocity",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.apache.velocity" % "velocity"       % "1.7"  % "compile",
+        "org.apache.velocity" % "velocity"       % "1.7" % "compile",
         "org.apache.velocity" % "velocity-tools" % "2.0" % "compile"
-      ) ++ testDependencies
+      ) ++ testDependencies 
     ) ++ _jettyOrbitHack
   ).dependsOn(framework)
 
@@ -308,7 +311,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalikejdbc" %% "scalikejdbc-test"                 % scalikeJDBCVersion % "test"
   )
   lazy val jodaDependencies = Seq(
-    "joda-time" %  "joda-time"    % "2.5"   % "compile",
+    "joda-time" %  "joda-time"    % "2.6"   % "compile",
     "org.joda"  %  "joda-convert" % "1.7"   % "compile"
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
@@ -389,5 +392,10 @@ object SkinnyFrameworkBuild extends Build {
       <exclude org="org.eclipse.jetty.orbit" />
     </dependencies>
   )
+
+  // TODO: just dummy for sbt-scoverage 0.99.x requirement
+  // since 1.0, we should remove this settings def.
+  // I will remove this after checking scoverage 1.0 works fine with this project
+  lazy val instrumentSettings = Nil
 
 }

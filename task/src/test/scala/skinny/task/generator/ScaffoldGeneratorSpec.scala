@@ -19,6 +19,8 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
         ScaffoldGeneratorArg("isActivated", "Boolean", None),
         ScaffoldGeneratorArg("bytes", "Option[ByteArray]", None),
         ScaffoldGeneratorArg("birthday", "Option[LocalDate]", None),
+        ScaffoldGeneratorArg("boss", "Option[Member]", None),
+        ScaffoldGeneratorArg("friends", "Seq[Member]", None),
         ScaffoldGeneratorArg("timeToWakeUp", "Option[LocalTime]", None),
         ScaffoldGeneratorArg("createdAt", "DateTime", None)
       ))

@@ -1,10 +1,7 @@
 package skinny.task.generator
 
 import skinny._
-import scalikejdbc._
-import scalikejdbc.metadata.Column
-import skinny.ParamType._
-import java.sql.Types._
+import scalikejdbc.metadata.{ Table }
 import java.util.Locale
 
 object ReverseScaffoldGenerator extends ReverseScaffoldGenerator
@@ -12,7 +9,7 @@ object ReverseScaffoldGenerator extends ReverseScaffoldGenerator
 /**
  * Skinny Reverse Generator Task.
  */
-trait ReverseScaffoldGenerator extends CodeGenerator {
+trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
 
   protected def showUsage = {
     showSkinnyGenerator()
@@ -28,7 +25,13 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
 """)
   }
 
-  def run(templateType: String, args: List[String], skinnyEnv: Option[String] = None): Unit = {
+  def cachedTables: Seq[Table] = Nil
+
+  def useAutoConstruct: Boolean = false
+
+  def createAssociationsForForeignKeys: Boolean = false
+
+  def run(templateType: String, args: List[String], skinnyEnv: Option[String]): Unit = {
     if (args.size < 3) {
       showUsage
       return
@@ -64,16 +67,23 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       }
       val pkName: Option[String] = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
       val pkType: Option[ParamType] = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
-      val fields: List[String] = if (hasId) {
-        columns
-          .map(column => toScaffoldFieldDef(column))
-          .filter(param => param != "id:Long" && param != "id:Option[Long]")
-          .filter(param => !param.startsWith(pkName.get + ":"))
-          .map(param => toCamelCase(param))
-      } else {
-        columns
-          .map(column => toScaffoldFieldDef(column))
-          .map(param => toCamelCase(param))
+      val fields: List[String] = {
+        val fields = if (hasId) {
+          columns
+            .map(column => toScaffoldFieldDef(column))
+            .filter(param => param != "id:Long" && param != "id:Option[Long]")
+            .filter(param => !param.startsWith(pkName.get + ":"))
+            .map(param => toCamelCase(param))
+        } else {
+          columns
+            .map(column => toScaffoldFieldDef(column))
+            .map(param => toCamelCase(param))
+        }
+        if (createAssociationsForForeignKeys) {
+          fields ++ extractAssociationParams(tableName, pkName, cachedTables)
+        } else {
+          fields
+        }
       }
 
       println(if (hasId) {
@@ -98,30 +108,64 @@ trait ReverseScaffoldGenerator extends CodeGenerator {
       })
 
       val table = tableName
+      val self = this
       val generator = templateType match {
         case "ssp" => new ScaffoldSspGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
+          override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def sourceDir = self.sourceDir
+          override def testSourceDir = self.testSourceDir
+          override def resourceDir = self.resourceDir
+          override def testResourceDir = self.testResourceDir
+          override def webInfDir = self.webInfDir
+          override def controllerPackage = self.controllerPackage
+          override def controllerPackageDir = self.controllerPackageDir
+          override def modelPackage = self.modelPackage
+          override def modelPackageDir = self.modelPackageDir
         }
         case "scaml" => new ScaffoldScamlGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
+          override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def sourceDir = self.sourceDir
+          override def testSourceDir = self.testSourceDir
+          override def resourceDir = self.resourceDir
+          override def testResourceDir = self.testResourceDir
+          override def webInfDir = self.webInfDir
+          override def controllerPackage = self.controllerPackage
+          override def controllerPackageDir = self.controllerPackageDir
+          override def modelPackage = self.modelPackage
+          override def modelPackageDir = self.modelPackageDir
         }
         case "jade" => new ScaffoldJadeGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
           override def withTimestamps: Boolean = false
+          override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def sourceDir = self.sourceDir
+          override def testSourceDir = self.testSourceDir
+          override def resourceDir = self.resourceDir
+          override def testResourceDir = self.testResourceDir
+          override def webInfDir = self.webInfDir
+          override def controllerPackage = self.controllerPackage
+          override def controllerPackageDir = self.controllerPackageDir
+          override def modelPackage = self.modelPackage
+          override def modelPackageDir = self.modelPackageDir
         }
         case _ => throw new IllegalArgumentException("Unknown template type: " + templateType)
       }

@@ -10,7 +10,7 @@ class FileUploadControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport w
 
   addServlet(Controllers.fileUpload, "/*")
 
-  it should "return error as expected" in {
+  it should "redirect users as expected" in {
     post("/fileupload/submit", "name" -> "foo") {
       status should equal(302)
     }
