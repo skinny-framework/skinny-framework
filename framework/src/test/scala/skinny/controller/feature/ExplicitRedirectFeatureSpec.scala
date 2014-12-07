@@ -1,6 +1,7 @@
-package skinny.controller
+package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
+import skinny.controller.SkinnyController
 
 class ExplicitRedirectFeatureSpec extends ScalatraFlatSpec {
 

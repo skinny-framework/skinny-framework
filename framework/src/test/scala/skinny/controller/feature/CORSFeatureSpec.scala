@@ -1,10 +1,8 @@
-package skinny.controller
+package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
-import scalikejdbc._
 import skinny.Routes
-import skinny.controller.feature.CORSFeature
-import skinny.orm.SkinnyCRUDMapper
+import skinny.controller.SkinnyApiController
 
 class CORSFeatureSpec extends ScalatraFlatSpec {
 

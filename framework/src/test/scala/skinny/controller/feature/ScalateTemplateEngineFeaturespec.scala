@@ -1,10 +1,11 @@
-package skinny.controller
+package skinny.controller.feature
 
-import org.scalatra.test.scalatest.ScalatraFlatSpec
-import org.scalatest.BeforeAndAfter
 import java.io.File
 
+import org.scalatest.BeforeAndAfter
+import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny.Routes
+import skinny.controller.SkinnyController
 
 class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAfter {
 

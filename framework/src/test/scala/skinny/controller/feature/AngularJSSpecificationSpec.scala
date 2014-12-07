@@ -1,7 +1,6 @@
-package skinny.controller
+package skinny.controller.feature
 
 import org.scalatest._
-import skinny.controller.feature.AngularJSSpecification
 
 class AngularJSSpecificationSpec extends FlatSpec with Matchers {
 
