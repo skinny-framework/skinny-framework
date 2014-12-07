@@ -77,7 +77,7 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
   describe("DynamicTableName") {
     it("should be available") { implicit session =>
       Member.withTableName("legacy_members") should not be (null)
-      Member.joins(Member.companyOpt).withTableName("legacy_members") should not be (null)
+      Member.joins(Member.companyOpt).withTableName("legacy_members") shouldNot be(null)
     }
   }
 
