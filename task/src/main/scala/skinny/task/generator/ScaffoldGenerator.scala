@@ -30,6 +30,8 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   protected def customPrimaryKeyName: Option[String] = if (primaryKeyName == "id") None else Option(primaryKeyName)
 
+  protected def useAutoConstruct: Boolean = false
+
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
@@ -92,14 +94,22 @@ trait ScaffoldGenerator extends CodeGenerator {
           // Model
           val self = this
           val modelGenerator = new ModelGenerator {
-            override def modelPackage = self.modelPackage
             override def primaryKeyName = self.primaryKeyName
             override def primaryKeyType = self.primaryKeyType
             override def withId = self.withId
             override def withTimestamps = self.withTimestamps
+            override def useAutoConstruct = self.useAutoConstruct
+
+            override def sourceDir = self.sourceDir
+            override def testSourceDir = self.testSourceDir
+            override def resourceDir = self.resourceDir
+            override def testResourceDir = self.testResourceDir
+            override def modelPackage = self.modelPackage
+            override def modelPackageDir = self.modelPackageDir
           }
-          modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), nameAndTypeNamePairs)
-          modelGenerator.generateSpec(namespaces, resource, nameAndTypeNamePairs)
+          val nameAndTypeNamePairsForModel = generatorArgs.map(a => (a.name, a.typeName))
+          modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), nameAndTypeNamePairsForModel)
+          modelGenerator.generateSpec(namespaces, resource, nameAndTypeNamePairsForModel)
 
           if (withId) {
             // Views
