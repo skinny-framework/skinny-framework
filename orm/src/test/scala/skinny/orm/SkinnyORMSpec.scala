@@ -57,6 +57,30 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
     }
   }
 
+  describe("ConnectionPool") {
+    it("should be available") { implicit session =>
+      Member.connectionPool should not be (null)
+      Member.connectionPoolName should equal(ConnectionPool.DEFAULT_NAME)
+
+      Member.joins(Member.companyOpt).connectionPool should not be (null)
+      Member.joins(Member.companyOpt).connectionPoolName should equal(ConnectionPool.DEFAULT_NAME)
+    }
+  }
+
+  describe("AutoSession") {
+    it("should be available") { implicit session =>
+      Member.autoSession should equal(AutoSession)
+      Member.joins(Member.companyOpt).autoSession should equal(AutoSession)
+    }
+  }
+
+  describe("DynamicTableName") {
+    it("should be available") { implicit session =>
+      Member.withTableName("legacy_members") should not be (null)
+      Member.joins(Member.companyOpt).withTableName("legacy_members") should not be (null)
+    }
+  }
+
   describe("SkinnyRecord") {
     it("should act like ActiveRecord") { implicit session =>
       val countryId = Country.createWithAttributes('name -> "Brazil")
