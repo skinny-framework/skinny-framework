@@ -1,13 +1,14 @@
 package skinny.filter
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
-import skinny.controller.SkinnyApiController
+import skinny.SkinnyController
 import skinny.routing.Routes
+import skinny.session.{ CreateTables, Connection }
 
-class SkinnySessionFilterSpec extends ScalatraFlatSpec {
+class SkinnySessionFilterSpec extends ScalatraFlatSpec with Connection with CreateTables {
   behavior of "SkinnySessionFilter"
 
-  object Controller extends SkinnyApiController with Routes {
+  object Controller extends SkinnyController with SkinnySessionFilter with Routes {
     get("/")("ok").as('index)
   }
   addFilter(Controller, "/*")
