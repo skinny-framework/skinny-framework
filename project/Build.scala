@@ -121,7 +121,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"    %  "flyway-core"    % "3.0"         % "compile",
+        "org.flywaydb"    %  "flyway-core"    % "3.1"         % "compile",
         "org.hibernate"   %  "hibernate-core" % "4.3.7.Final" % "test"
       ) ++ testDependencies
     )
