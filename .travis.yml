@@ -2,9 +2,11 @@ language: scala
 scala:
 - 2.11.4
 script: "./travis.sh"
+after_success: "./travis_after.sh"
 env:
   matrix:
     - TEST_TYPE="framework"
     - TEST_TYPE="blank-app"
   global:
     secure: Sc+Fw9a/cZUbqyGhQrEujg8G2gBlYVVpf7gXcBdFbot5xiHmgvzWXWDxJrkEOVYSvYPWwOnjS2w/fVFF05cCnoT2VVuMxZ3bp/wB1WMEvZ9TLIR2sFUdySohD/VZTV+DiIRZWTZmrlWXXyQmqk/H84n5QBikZZxRmyEHK4WeCag=
+
