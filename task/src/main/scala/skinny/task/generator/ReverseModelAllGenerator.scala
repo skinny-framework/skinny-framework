@@ -24,7 +24,7 @@ trait ReverseModelAllGenerator extends CodeGenerator {
     System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
     DBSettings.initialize()
 
-    val tables: Seq[Table] = DB.getAllTableNames.flatMap { tableName =>
+    val tables: Seq[Table] = DB.getAllTableNames.filter(_.toLowerCase != "schema_version").flatMap { tableName =>
       DB.getTable(tableName)
     }
     val self = this
