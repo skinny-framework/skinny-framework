@@ -4,7 +4,7 @@ import skinny.oauth2.client._
 import skinny.oauth2.client.google._
 
 /**
- * GitHub OAuth2 Login Controller.
+ * Google OAuth2 Login Controller.
  *
  * {{{
  * export SKINNY_OAUTH2_CLIENT_ID_GOOGLE=xxx
