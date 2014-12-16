@@ -1,7 +1,8 @@
 #!/bin/sh
 
-sbt clean \
-  ++2.11.2 \
+sbt \
+  ++2.11.4 \
+  clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
@@ -22,6 +23,7 @@ sbt clean \
   thymeleaf/publishLocal \
   velocity/publishLocal \
   ++2.10.4 \
+  clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
