@@ -8,9 +8,9 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "1.3.7-SNAPSHOT"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
-  lazy val scalikeJDBCVersion = "2.2.0"
+  lazy val scalikeJDBCVersion = "2.2.1"
   lazy val h2Version = "1.4.183"
-  lazy val mockitoVersion = "1.10.16"
+  lazy val mockitoVersion = "1.10.17"
   lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.6.v20141205"
 
   lazy val baseSettings = Seq(
@@ -288,7 +288,7 @@ object SkinnyFrameworkBuild extends Build {
   // common dependencies
  
   lazy val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
-  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.8" % "compile")
+  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.9" % "compile")
   lazy val json4sDependencies = Seq(
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api")
