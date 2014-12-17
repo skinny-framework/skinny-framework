@@ -80,7 +80,7 @@ object OAuth2Provider {
   )
 
   // Typetalk
-  // https://typetalk.in/
+  // https://www.typetalk.in/
   val Typetalk = OAuth2Provider(
     "typetalk",
     "https://typetalk.in/oauth2/authorize",
