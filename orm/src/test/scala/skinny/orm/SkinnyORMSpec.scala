@@ -106,6 +106,37 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
       none.isDefined should be(false)
     }
 
+    // It should behave like `ActiveRecord::Base.find_by(...)`
+    it("should have #findBy(where)") { implicit session =>
+      val m = Member.defaultAlias
+      val mentor = Member.findAll().head
+      val now = DateTime.now
+
+      val member1Id = Member.createWithAttributes(
+        'countryId -> mentor.countryId,
+        'companyId -> mentor.companyId,
+        'mentorId -> mentor.id,
+        'createdAt -> now
+      )
+      val member2Id = Member.createWithAttributes(
+        'countryId -> mentor.countryId,
+        'companyId -> mentor.companyId,
+        'mentorId -> mentor.id,
+        'createdAt -> now
+      )
+
+      val member = Member.findBy(
+        sqls.eq(m.countryId, mentor.countryId)
+          .and.eq(m.companyId, mentor.companyId)
+          .and.eq(m.mentorId, mentor.id))
+
+      // depends on default ordering
+      member.get.id should (
+        equal(member1Id) or
+        equal(member2Id)
+      )
+    }
+
     it("returns nested belongsTo relations") { implicit session =>
       val m = Member.defaultAlias
 

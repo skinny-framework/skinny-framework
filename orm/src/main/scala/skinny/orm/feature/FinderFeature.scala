@@ -114,7 +114,9 @@ trait FinderFeatureWithId[Id, Entity]
   override def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
+      selectQueryWithAssociations
+        .where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
+        .limit(1)
     }).single.apply())
   }
 
