@@ -116,8 +116,7 @@ trait FinderFeatureWithId[Id, Entity]
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations
         .where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
-        .limit(1)
-    }).single.apply())
+    }).list.apply()).headOption
   }
 
   override def findAllBy(where: SQLSyntax, orderings: Seq[SQLSyntax] = defaultOrderings)(
