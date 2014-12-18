@@ -15,15 +15,7 @@ trait GoogleLoginFeature extends OAuth2LoginFeature[GoogleUser] {
 
   override protected def provider = OAuth2Provider.Google
 
-  override protected def createAuthenticationRequest(): AuthenticationRequest = {
-    val req = AuthenticationRequest(provider)
-      .clientId(clientId)
-      .responseType(ResponseType.Code)
-      .state(state)
-      .scope("openid email")
-      .redirectURI(redirectURI)
-    if (scope != null) req.scope(scope) else req
-  }
+  override protected def scope = "openid email"
 
   override protected def retrieveAuthorizedUser(token: OAuth2Token): GoogleUser = {
     GooglePlusAPI.me(token).getOrElse {
