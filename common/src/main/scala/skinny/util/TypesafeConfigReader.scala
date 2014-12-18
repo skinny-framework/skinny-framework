@@ -12,6 +12,14 @@ object TypesafeConfigReader {
   /**
    * Loads a configuration file.
    *
+   * @param file file
+   * @return config
+   */
+  def load(file: File): Config = ConfigFactory.parseFile(file)
+
+  /**
+   * Loads a configuration file.
+   *
    * @param resource file resource
    * @return config
    */

@@ -12,16 +12,20 @@ object ReverseScaffoldAllGenerator extends ReverseScaffoldAllGenerator {
 
 trait ReverseScaffoldAllGenerator extends CodeGenerator {
 
-  private[this] def showUsage = {
+  protected def showUsage = {
     showSkinnyGenerator()
-    println("""  Usage: sbt "task/run generate:reverse-model-all [skinnyEnv]""")
+    println("""  Usage: sbt "task/run generate:reverse-model-all [env]""")
     println("")
+  }
+
+  protected def initializeDB(skinnyEnv: Option[String]): Unit = {
+    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
+    DBSettings.initialize()
   }
 
   def run(templateType: String, args: List[String], skinnyEnv: Option[String]) {
 
-    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
-    DBSettings.initialize()
+    initializeDB(skinnyEnv)
 
     val tables: Seq[Table] = DB.getAllTableNames.filter(_.toLowerCase != "schema_version").flatMap { tableName =>
       DB.getTable(tableName)
