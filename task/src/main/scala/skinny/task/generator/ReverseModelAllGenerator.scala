@@ -32,6 +32,8 @@ trait ReverseModelAllGenerator extends CodeGenerator {
       DB.getTable(tableName)
     }
     val self = this
+    val skipInitializeDB = (env: Option[String]) => {}
+
     val generator = new ReverseModelGenerator {
       override def cachedTables = tables
       override def useAutoConstruct = true
@@ -43,6 +45,7 @@ trait ReverseModelAllGenerator extends CodeGenerator {
       override def testResourceDir = self.testResourceDir
       override def modelPackage = self.modelPackage
       override def modelPackageDir = self.modelPackageDir
+      override def initializeDB(skinnyEnv: Option[String]) = skipInitializeDB(skinnyEnv)
     }
     tables.map { table =>
       val tableName = table.name.toLowerCase
