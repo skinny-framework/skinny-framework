@@ -131,9 +131,9 @@ trait CodeGenerator {
   // ------------------------
   // helper methods
 
-  def toVariable(name: String) = name.head.toLower + name.tail
+  def toVariable(name: String) = toCamelCase(name)
 
-  def toClassName(name: String) = name.head.toUpper + name.tail
+  def toClassName(name: String) = name.head.toUpper + toCamelCase(name.tail)
 
   def toNamespace(basePackage: String, namespaces: Seq[String]): String = {
     (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "." + b }

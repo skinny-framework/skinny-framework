@@ -1,6 +1,7 @@
 language: scala
 scala:
 - 2.11.4
+sudo: false
 script: "./travis.sh"
 after_success: "./travis_after.sh"
 env:

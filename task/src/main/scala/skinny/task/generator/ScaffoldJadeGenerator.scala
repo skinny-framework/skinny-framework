@@ -1,6 +1,6 @@
 package skinny.task.generator
 
-import skinny.Params
+import skinny.controller.Params
 
 /**
  * Scaffold generator with jade template.

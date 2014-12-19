@@ -79,6 +79,14 @@ object OAuth2Provider {
     "https://auth.login.yahoo.co.jp/yconnect/v1/token"
   )
 
+  // Typetalk
+  // https://www.typetalk.in/
+  val Typetalk = OAuth2Provider(
+    "typetalk",
+    "https://typetalk.in/oauth2/authorize",
+    "https://typetalk.in/oauth2/access_token"
+  )
+
   // *** IMPORTANT ***
   // Waiting for your pull request here!
   /*

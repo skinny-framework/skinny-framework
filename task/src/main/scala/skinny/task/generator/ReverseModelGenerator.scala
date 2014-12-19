@@ -24,10 +24,15 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
 
   def createAssociationsForForeignKeys: Boolean = false
 
-  private[this] def showUsage = {
+  protected def showUsage = {
     showSkinnyGenerator()
-    println("""  Usage: sbt "task/run generate:reverse-model table_name [className] [skinnyEnv]""")
+    println("""  Usage: sbt "task/run generate:reverse-model table_name [className] [env]""")
     println("")
+  }
+
+  protected def initializeDB(skinnyEnv: Option[String]): Unit = {
+    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
+    DBSettings.initialize()
   }
 
   def run(args: List[String]) {
@@ -40,8 +45,7 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
         return
     }
 
-    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
-    DBSettings.initialize()
+    initializeDB(skinnyEnv)
 
     val columns: List[Column] = extractColumns(tableName)
 
@@ -106,7 +110,10 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
       override def modelPackageDir = self.modelPackageDir
     }
 
-    generator.run(nameWithPackage.getOrElse(toClassName(tableName.toLowerCase)).split("\\.") ++ fields)
+    val _nameWithPackage = nameWithPackage.getOrElse(toClassName(tableName.toLowerCase))
+    val namespace = _nameWithPackage.split("\\.").init.mkString(".")
+    val name = _nameWithPackage.split("\\.").last
+    generator.run(Seq(namespace, name) ++ fields)
 
   }
 

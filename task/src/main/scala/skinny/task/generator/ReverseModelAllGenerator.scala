@@ -12,22 +12,28 @@ object ReverseModelAllGenerator extends ReverseModelAllGenerator {
 
 trait ReverseModelAllGenerator extends CodeGenerator {
 
-  private[this] def showUsage = {
+  protected def showUsage = {
     showSkinnyGenerator()
-    println("""  Usage: sbt "task/run generate:reverse-model-all [skinnyEnv]""")
+    println("""  Usage: sbt "task/run generate:reverse-model-all [env]""")
     println("")
+  }
+
+  protected def initializeDB(skinnyEnv: Option[String]): Unit = {
+    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
+    DBSettings.initialize()
   }
 
   def run(args: List[String]) {
     val skinnyEnv: Option[String] = args.headOption
 
-    System.setProperty(SkinnyEnv.PropertyKey, skinnyEnv.getOrElse(SkinnyEnv.Development))
-    DBSettings.initialize()
+    initializeDB(skinnyEnv)
 
     val tables: Seq[Table] = DB.getAllTableNames.filter(_.toLowerCase != "schema_version").flatMap { tableName =>
       DB.getTable(tableName)
     }
     val self = this
+    val skipInitializeDB = (env: Option[String]) => {}
+
     val generator = new ReverseModelGenerator {
       override def cachedTables = tables
       override def useAutoConstruct = true
@@ -39,6 +45,7 @@ trait ReverseModelAllGenerator extends CodeGenerator {
       override def testResourceDir = self.testResourceDir
       override def modelPackage = self.modelPackage
       override def modelPackageDir = self.modelPackageDir
+      override def initializeDB(skinnyEnv: Option[String]) = skipInitializeDB(skinnyEnv)
     }
     tables.map { table =>
       val tableName = table.name.toLowerCase

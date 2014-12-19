@@ -37,6 +37,8 @@ object Controllers {
     github.mount(ctx)
     google.mount(ctx)
     twitter.mount(ctx)
+    typetalk.mount(ctx)
+    dropbox.mount(ctx)
 
     AssetsController.mount(ctx)
   }
@@ -139,6 +141,18 @@ object Controllers {
     val loginUrl = get("/twitter")(loginRedirect).as('login)
     val callbackUrl = get("/twitter/callback")(callback).as('callback)
     val okUrl = get("/twitter/ok")(ok).as('ok)
+  }
+
+  object typetalk extends TypetalkController with Routes {
+    val loginUrl = get("/typetalk")(loginRedirect).as('login)
+    val callbackUrl = get("/typetalk/callback")(callback).as('callback)
+    val okUrl = get("/typetalk/ok")(ok).as('ok)
+  }
+
+  object dropbox extends DropboxController with Routes {
+    val loginUrl = get("/dropbox")(loginRedirect).as('login)
+    val callbackUrl = get("/dropbox/callback")(callback).as('callback)
+    val okUrl = get("/dropbox/ok")(ok).as('ok)
   }
 
 }

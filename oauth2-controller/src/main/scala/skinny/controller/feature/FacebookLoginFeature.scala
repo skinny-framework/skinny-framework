@@ -4,7 +4,7 @@ import skinny.oauth2.client._
 import skinny.oauth2.client.facebook._
 
 /**
- * GitHub OAuth2 Login Controller.
+ * Facebook Auth Login Controller.
  *
  * {{{
  * export SKINNY_OAUTH2_CLIENT_ID_FACEBOOK=xxx
