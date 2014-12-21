@@ -62,12 +62,22 @@ trait SkinnyRecordBaseWithId[Id, Entity] {
   }
 
   /**
+   * Returns attribute names to be excluded when persistence.
+   *
+   * @return names
+   */
+  protected def excludedFieldNamesWhenSaving: Seq[String] = Nil
+
+  /**
    * Returns attributes to persist.
    *
    * @return attributes
    */
-  protected def attributesToPersist(): Seq[(SQLSyntax, Any)] = JavaReflectAPI.getterNames(this)
-    .filter { name => skinnyCRUDMapper.isValidFieldName(name) }
-    .map { name => skinnyCRUDMapper.column.field(name) -> JavaReflectAPI.getter(this, name) }
+  protected def attributesToPersist(): Seq[(SQLSyntax, Any)] = {
+    JavaReflectAPI.getterNames(this)
+      .filter { name => skinnyCRUDMapper.isValidFieldName(name) }
+      .filterNot { name => excludedFieldNamesWhenSaving.exists(_ == name) }
+      .map { name => skinnyCRUDMapper.column.field(name) -> JavaReflectAPI.getter(this, name) }
+  }
 
 }
