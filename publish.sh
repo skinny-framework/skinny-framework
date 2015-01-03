@@ -21,6 +21,7 @@ sbt ++2.11.4 \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
   velocity/publishSigned \
+  worker/publishSigned \
   ++2.10.4 \
   clean \
   common/publishSigned \
@@ -41,6 +42,7 @@ sbt ++2.11.4 \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
   velocity/publishSigned  \
+  worker/publishSigned \
   sonatypeRelease
 
 

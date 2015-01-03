@@ -1,8 +1,8 @@
 package skinny.worker
 
-import skinny.logging.Logging
-import org.joda.time.DateTime
 import java.util.concurrent._
+import org.joda.time.DateTime
+import skinny.logging.Logging
 
 /**
  * Service which manages workers.
