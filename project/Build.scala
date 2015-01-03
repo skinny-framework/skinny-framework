@@ -45,7 +45,7 @@ object SkinnyFrameworkBuild extends Build {
   // skinny libraries
 
   lazy val common = Project(id = "common", base = file("common"),
-   settings = baseSettings ++ Seq(
+    settings = baseSettings ++ Seq(
       name := "skinny-common",
       libraryDependencies  <++= (scalaVersion) { scalaVersion => 
         Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
@@ -58,7 +58,7 @@ object SkinnyFrameworkBuild extends Build {
   ) 
 
   lazy val httpClient = Project(id = "httpClient", base = file("http-client"),
-   settings = baseSettings ++ Seq(
+    settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
         "org.specs2"         %% "specs2-core"        % "2.4.15"           % "test",
@@ -73,7 +73,7 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(common)
 
   lazy val framework = Project(id = "framework", base = file("framework"),
-   settings = baseSettings ++ Seq(
+    settings = baseSettings ++ Seq(
       name := "skinny-framework",
       libraryDependencies <++= (scalaVersion) { scalaVersion =>
         scalatraDependencies ++ Seq(
@@ -85,7 +85,14 @@ object SkinnyFrameworkBuild extends Build {
         ) ++ testDependencies
       }
     ) ++ _jettyOrbitHack
-  ).dependsOn(common, json, validator, orm, mailer, httpClient)
+  ).dependsOn(common, json, validator, orm, mailer, httpClient, worker)
+
+  lazy val worker = Project(id = "worker", base = file("worker"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-worker",
+      libraryDependencies ++= testDependencies
+    )
+  ).dependsOn(common)
 
   lazy val standalone = Project(id = "standalone", base = file("standalone"),
     settings = baseSettings ++ Seq(

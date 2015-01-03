@@ -1,7 +1,7 @@
 package skinny.worker
 
-import org.scalatest._
 import skinny.logging.Logging
+import org.scalatest._
 
 class SkinnyWorkerServiceSpec extends FunSpec with Matchers with Logging {
 
