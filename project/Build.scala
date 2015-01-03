@@ -323,6 +323,7 @@ object SkinnyFrameworkBuild extends Build {
   )
   lazy val testDependencies = Seq(
     "org.scalatest"           %% "scalatest"       % "2.2.3"   % "test",
+    "org.mockito"             %  "mockito-core"    % "1.10.19" % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
     "com.h2database"          %  "h2"              % h2Version % "test",
