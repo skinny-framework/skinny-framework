@@ -5,12 +5,12 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.8"
+  lazy val currentVersion = "1.3.9"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.1"
-  lazy val h2Version = "1.4.183"
-  lazy val mockitoVersion = "1.10.17"
+  lazy val h2Version = "1.4.184"
+  lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.6.v20141205"
 
   lazy val baseSettings = Seq(
@@ -156,7 +156,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "org.thymeleaf"            %  "thymeleaf"                % "2.1.3.RELEASE" % "compile",
+        "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE" % "compile",
         "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.7"         % "compile",
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
@@ -322,13 +322,13 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   lazy val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.3"   % "test",
-    "org.mockito"             %  "mockito-core"    % "1.10.19" % "test",
-    "ch.qos.logback"          %  "logback-classic" % "1.1.2"   % "test",
-    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"     % "test",
-    "com.h2database"          %  "h2"              % h2Version % "test",
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.3"   % "test",
-    "com.h2database"          %  "h2"              % h2Version % "test"
+    "org.scalatest"           %% "scalatest"       % "2.2.3"        % "test",
+    "org.mockito"             %  "mockito-core"    % mockitoVersion % "test",
+    "ch.qos.logback"          %  "logback-classic" % "1.1.2"        % "test",
+    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % "test",
+    "com.h2database"          %  "h2"              % h2Version      % "test",
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.3"        % "test",
+    "com.h2database"          %  "h2"              % h2Version      % "test"
   )
 
   def _publishTo(v: String) = {
