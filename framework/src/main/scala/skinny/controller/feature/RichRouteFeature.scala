@@ -3,7 +3,7 @@ package skinny.controller.feature
 import skinny.controller.Constants
 import org.scalatra._
 import skinny._
-import javax.servlet.{ Filter, DispatcherType }
+import javax.servlet.{ FilterRegistration, Filter, DispatcherType }
 
 /**
  * RichRoute support.
@@ -40,13 +40,22 @@ trait RichRouteFeature extends ScalatraBase { self: SkinnyControllerBase =>
       case filter: Filter =>
         allRoutePaths.foreach { path =>
           val name = this.getClass.getName
-          val registration = {
+          val registration: FilterRegistration = {
             Option(ctx.getFilterRegistration(name)).getOrElse(ctx.addFilter(name, this.asInstanceOf[Filter]))
           }
-          registration.addMappingForUrlPatterns(
-            java.util.EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, toNormalizedRoutePath(path))
+          if (registration != null) {
+            registration.addMappingForUrlPatterns(
+              java.util.EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC), true, toNormalizedRoutePath(path))
+          } else {
+            logger.info("FilterRegistration is empty. Skipped.")
+          }
         }
-      case _ => ctx.mount(this, "/")
+      case _ =>
+        try ctx.mount(this, "/")
+        catch {
+          case e: NullPointerException if SkinnyEnv.isTest() =>
+            logger.info("Skipped NPE when mocking servlet APIs.")
+        }
     }
   }
 

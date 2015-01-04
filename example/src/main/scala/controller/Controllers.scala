@@ -69,8 +69,8 @@ object Controllers {
   }
 
   object mail extends MailController with Routes {
-    get("/mail/")(index)
-    get("/mail/ssp")(ssp)
+    val indexUrl = get("/mail/")(index).as('index)
+    val sspUrl = get("/mail/ssp")(ssp).as('ssp)
   }
 
   object mustache extends MustacheController with Routes {
