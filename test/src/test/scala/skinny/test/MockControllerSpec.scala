@@ -4,6 +4,7 @@ import org.scalatest._
 import skinny._
 
 class MockControllerSpec extends FunSpec with Matchers {
+  System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   class AppTest extends SkinnyController {
     def useUrl = url("/foo")

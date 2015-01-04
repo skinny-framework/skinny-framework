@@ -94,7 +94,7 @@ class MockHttpServletRequest extends HttpServletRequest {
   var parameters = new LinkedHashMap[String, Array[String]]
 
   override def getParameterMap: java.util.Map[String, Array[String]] = Collections.unmodifiableMap(parameters)
-  override def getParameterValues(name: String): Array[String] = getParameterMap.get(name)
+  override def getParameterValues(name: String): Array[String] = Option(getParameterMap.get(name)).getOrElse(Array())
   override def getParameterNames: java.util.Enumeration[String] = Collections.enumeration(getParameterMap.keySet)
   override def getParameter(name: String): String = {
     val params = getParameterMap.get(name)
@@ -150,7 +150,7 @@ class MockHttpServletRequest extends HttpServletRequest {
 
   val parts = new LinkedHashMap[String, Part]
 
-  override def getPart(name: String): Part = ???
+  override def getPart(name: String): Part = null
 
   override def getParts: java.util.Collection[Part] = parts.values
 
@@ -185,10 +185,10 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def getServletPath: String = servletPath
 
   override def getRequestURL: StringBuffer = {
-    val url = new StringBuffer(this.scheme).append("://").append(this.serverName);
+    val url = new StringBuffer(this.scheme).append("://").append(this.serverName)
     if (this.serverPort > 0 &&
       (("http".equalsIgnoreCase(scheme) && this.serverPort != 80) || ("https".equalsIgnoreCase(scheme) && this.serverPort != 443))) {
-      url.append(':').append(this.serverPort);
+      url.append(':').append(this.serverPort)
     }
     if (getRequestURI.exists(c => !Character.isWhitespace(c))) {
       url.append(getRequestURI)
@@ -280,10 +280,9 @@ class MockHttpServletRequest extends HttpServletRequest {
 
   override def getAuthType: String = authType
 
-  // TODO
-  override def changeSessionId(): String = ???
+  override def changeSessionId(): String = throw new UnsupportedOperationException
 
-  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = ???
+  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = throw new UnsupportedOperationException
 
-  override def getContentLengthLong: Long = ???
+  override def getContentLengthLong: Long = getContentLength.toLong
 }

@@ -1,5 +1,6 @@
 package skinny.util
 
+import org.joda.time.{ DateTimeZone, LocalTime }
 import org.scalatest._
 import skinny.ParamType
 
@@ -46,8 +47,49 @@ class DateTimeUtilSpec extends FlatSpec with Matchers {
   }
 
   it should "have #toString" in {
-    val dt = DateTimeUtil.parseDateTime("2013-02-03 15:11:22")
+    val dt = DateTimeUtil.parseDateTime("2013-02-03 15:11:22+00:00")
     DateTimeUtil.toString(dt) should equal("2013-02-03 15:11:22")
+
+    val t = new LocalTime(dt.toInstant, DateTimeZone.UTC)
+    DateTimeUtil.toString(t) should equal("15:11:22")
+  }
+
+  it should "have #nowString" in {
+    DateTimeUtil.nowString should not equal (null)
+  }
+
+  it should "have #toDateString" in {
+    DateTimeUtil.toDateString(Map("year" -> 2013, "month" -> 12, "day" -> 23)) should equal(Some("2013-12-23"))
+    DateTimeUtil.toUnsafeDateString(Map("year" -> 2013, "month" -> 12, "day" -> 23)) should equal(Some("2013-12-23"))
+  }
+
+  it should "have #toTimeString" in {
+    DateTimeUtil.toTimeString(Map("hour" -> 1, "minute" -> 2, "second" -> 3)) should equal(Some("1970-01-01 01:02:03"))
+    DateTimeUtil.toUnsafeTimeString(Map("hour" -> 1, "minute" -> 2, "second" -> 3)) should equal(Some("1970-01-01 01:02:03"))
+  }
+
+  it should "have #toDateTimeString" in {
+    DateTimeUtil.toDateTimeString(
+      Map("year" -> 2013, "month" -> 12, "day" -> 23, "hour" -> 1, "minute" -> 2, "second" -> 3)
+    ) should equal(Some("2013-12-23 01:02:03"))
+    DateTimeUtil.toUnsafeDateTimeString(
+      Map("year" -> 2013, "month" -> 12, "day" -> 23, "hour" -> 1, "minute" -> 2, "second" -> 3)
+    ) should equal(Some("2013-12-23 01:02:03"))
+  }
+
+  it should "have #toUnsafeDateTimeStringFromDateAndTime" in {
+    DateTimeUtil.toUnsafeDateTimeStringFromDateAndTime(
+      Map("date" -> "2013-01-02", "time" -> "01:02:03")) should equal(Some("2013-01-02 01:02:03"))
+  }
+
+  it should "have #isLocalDateFormat(String)" in {
+    DateTimeUtil.isLocalDateFormat("foo") should equal(false)
+    DateTimeUtil.isLocalDateFormat("2013-04-05") should equal(true)
+  }
+
+  it should "have #isDateTimeFormat(String)" in {
+    DateTimeUtil.isDateTimeFormat("foo") should equal(false)
+    DateTimeUtil.isDateTimeFormat("2013-04-05 01:02:03") should equal(true)
   }
 
 }
