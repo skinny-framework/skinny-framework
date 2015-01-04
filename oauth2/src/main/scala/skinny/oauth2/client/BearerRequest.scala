@@ -53,7 +53,9 @@ case class BearerRequest(resourceUrl: String, accessToken: String) {
   }
 
   def param(name: String, value: AnyRef): BearerRequest = {
-    param(name, value)
+    if (value != null) {
+      underlying.param(name, String.valueOf(value))
+    }
     this
   }
 
