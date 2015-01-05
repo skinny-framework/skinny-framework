@@ -17,10 +17,10 @@ class RequestSpec extends Specification {
       request.readTimeoutMillis(100)
       request.referer("foo")
       request.userAgent("ua")
-      request.headerNames.size should equalTo(0)
+      request.contentType("text/html")
       request.header("foo") should equalTo(None)
       request.header("foo", "bar")
-      request.contentType("text/html")
+      request.headerNames.size should equalTo(1)
     }
   }
 
