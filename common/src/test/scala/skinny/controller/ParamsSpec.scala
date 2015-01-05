@@ -106,4 +106,26 @@ class ParamsSpec extends FlatSpec with Matchers {
     Params(Map()).toHmsKeys("foo") should equal(("foo_hour", "foo_minute", "foo_second"))
   }
 
+  it should "have #withDate" in {
+    val params = Params(Map(
+      "foo_year" -> 2013, "foo_month" -> 2, "foo_day" -> 3
+    )).withDate("foo")
+    params.getAs[String]("foo") should equal(Some("2013-02-03"))
+  }
+
+  it should "have #withTime" in {
+    val params = Params(Map(
+      "foo_hour" -> 4, "foo_minute" -> 5, "foo_second" -> 6)
+    ).withTime("foo")
+    params.getAs[String]("foo") should equal(Some("1970-01-01 04:05:06"))
+  }
+
+  it should "have #withDateTime" in {
+    val params = Params(Map(
+      "foo_year" -> 2013, "foo_month" -> 2, "foo_day" -> 3,
+      "foo_hour" -> 4, "foo_minute" -> 5, "foo_second" -> 6
+    )).withDateTime("foo")
+    params.getAs[String]("foo") should equal(Some("2013-02-03 04:05:06"))
+  }
+
 }

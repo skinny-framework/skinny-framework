@@ -17,37 +17,37 @@ class AssetsController extends SkinnyController {
   addMimeMapping("text/css", "css")
   addMimeMapping("application/octet-stream", "map")
 
-  protected def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
+  def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
 
   /**
    * Returns assets root path.
    */
-  protected def assetsRootPath = "/assets"
+  def assetsRootPath = "/assets"
 
   /**
    * Returns assets/js root path.
    */
-  protected def jsRootPath = s"${assetsRootPath}/js"
+  def jsRootPath = s"${assetsRootPath}/js"
 
   /**
    * Returns assets/css root path.
    */
-  protected def cssRootPath = s"${assetsRootPath}/css"
+  def cssRootPath = s"${assetsRootPath}/css"
 
   /**
    * Predicates this controller in staging env.
    */
-  protected def isDisabledInStaging: Boolean = true
+  def isDisabledInStaging: Boolean = true
 
   /**
    * Predicates this controller in production env.
    */
-  protected def isDisabledInProduction: Boolean = true
+  def isDisabledInProduction: Boolean = true
 
   /**
    * Predicates this controller is enabled in the current env.
    */
-  protected def isEnabled: Boolean = {
+  def isEnabled: Boolean = {
     if (SkinnyEnv.isProduction()) !isDisabledInProduction
     if (SkinnyEnv.isStaging()) !isDisabledInStaging
     else true
@@ -56,7 +56,7 @@ class AssetsController extends SkinnyController {
   /**
    * Base path for assets files.
    */
-  protected val basePath = "/WEB-INF/assets"
+  val basePath = "/WEB-INF/assets"
 
   /**
    * Registered JS Compilers
@@ -229,20 +229,20 @@ class AssetsController extends SkinnyController {
   private def compiledCssFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, cssCompilers)
   private def compiledCssFromFile(path: String): Option[String] = compiledCodeFromFile(path, cssCompilers)
 
-  protected val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
-  protected val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
-  protected val PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy"
+  val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
+  val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
+  val PATTERN_ASCTIME = "EEE MMM d HH:mm:ss yyyy"
 
-  protected val modifiedHeaderFormats = Seq(PATTERN_RFC1123, PATTERN_RFC1036, PATTERN_ASCTIME).map { pattern =>
+  val modifiedHeaderFormats = Seq(PATTERN_RFC1123, PATTERN_RFC1036, PATTERN_ASCTIME).map { pattern =>
     DateTimeFormat.forPattern(pattern).withZone(DateTimeZone.UTC).withLocale(java.util.Locale.ENGLISH)
   }
 
-  protected def setLastModified(lastModified: Long): Unit = {
+  def setLastModified(lastModified: Long): Unit = {
     val format = modifiedHeaderFormats.head
     response.setHeader("Last-Modified", format.print(lastModified).replaceFirst("UTC$", "GMT"))
   }
 
-  protected def isModified(resourceLastModified: Long): Boolean = {
+  def isModified(resourceLastModified: Long): Boolean = {
     request.header("If-Modified-Since").map(_.replaceFirst("^\"", "").replaceFirst("\"$", "")).map { ifModifiedSince =>
       modifiedHeaderFormats.flatMap { formatter =>
         try Option(formatter.parseDateTime(ifModifiedSince))
@@ -285,8 +285,8 @@ class AssetsController extends SkinnyController {
 object AssetsController extends AssetsController with Routes {
 
   // Unfortunately, *.* seems not to work.
-  get(s"${jsRootPath}/*")(js).as('js)
-  get(s"${cssRootPath}/*")(css).as('css)
+  val jsRootUrl = get(s"${jsRootPath}/*")(js).as('js)
+  val cssRootUrl = get(s"${cssRootPath}/*")(css).as('css)
 
 }
 

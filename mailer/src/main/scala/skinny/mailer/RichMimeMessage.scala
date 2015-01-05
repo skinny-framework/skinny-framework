@@ -66,9 +66,11 @@ trait RichMimeMessage extends Logging {
   // all the recipient addresses for the message.
   // Extracts the TO, CC, BCC, and NEWSGROUPS recipients.
 
-  def recipients: (RecipientType) => Seq[Address] = { typ: RecipientType => underlying.getRecipients(typ) }
+  def recipients: (RecipientType) => Seq[Address] = { typ: RecipientType =>
+    Option(underlying.getRecipients(typ)).map(_.toIndexedSeq).getOrElse(Nil)
+  }
   def recipients_=(pair: (RecipientType, String)): Unit = underlying.setRecipients(pair._1, pair._2)
-  def allRecipients: Seq[Address] = underlying.getAllRecipients
+  def allRecipients: Seq[Address] = Option(underlying.getAllRecipients).map(_.toIndexedSeq).getOrElse(Nil)
 
   // -------------
   // to
