@@ -19,7 +19,7 @@ class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
       body.replaceFirst("\n$", "") should equal(
         """/** @jsx React.DOM */
          |React.renderComponent(
-         |  React.DOM.h1(null, "Hello, world!"),
+         |  React.createElement("h1", null, "Hello, world!"),
          |  document.getElementById('example')
          |);
          |""".stripMargin)
