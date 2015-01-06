@@ -181,6 +181,15 @@ class Test005Spec extends fixture.FunSpec with Matchers
       Summary.joins(d1, d2, d3, d4, d5, d6).count() should equal(1)
       Summary.joins(d1, d2, d3, d4, d5, d6, d7).count() should equal(1)
       Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8).count() should equal(1)
+
+      Summary.joins(d1).findAll().size should equal(1)
+      Summary.joins(d1, d2).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8).findAll().size should equal(1)
     }
   }
   describe("Entity which has 9 associations") {
