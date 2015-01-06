@@ -53,4 +53,34 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
     Person.leftJoinWithDefaults(Person, Company, (p, c) => sqls.eq(p.companyId, c.id))
   }
 
+  it should "have #join" in {
+    Person.join(Company -> Company.defaultAlias, (p, c) => sqls"")
+    Person.join[Company](Company -> Company.defaultAlias, Person -> Person.defaultAlias, (c, p) => sqls"")
+  }
+
+  it should "have #innerJoin" in {
+    Person.innerJoin(Company -> Company.defaultAlias, (p, c) => sqls"")
+    Person.innerJoin[Company](Company -> Company.defaultAlias, Person -> Person.defaultAlias, (c, p) => sqls"")
+  }
+
+  it should "have #hasOneWithAlias" in {
+    Company.hasOneWithAlias[Person](Person -> Person.defaultAlias, (c, p) => c)
+  }
+
+  it should "have #hasOneWithAliasAndJoinCondition" in {
+    Person.hasOneWithAliasAndJoinCondition[Company](Company -> Company.defaultAlias, sqls"", (p, c) => p)
+  }
+
+  it should "have #hasOneWithAliasAndFk" in {
+    Person.hasOneWithAliasAndFk[Company](Company -> Company.defaultAlias, "id", (p, c) => p)
+  }
+
+  it should "have #hasOneWithAliasAndFkAndJoinCondition" in {
+    Person.hasOneWithAliasAndFkAndJoinCondition[Company](Company -> Company.defaultAlias, "id", sqls"", (p, c) => p)
+  }
+
+  it should "have #extract" in {
+    Person.extract(sql"")
+  }
+
 }
