@@ -25,6 +25,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
   addSeedSQL(sql"create table data7 (id bigserial not null, summary_id bigint not null references summary(id))")
   addSeedSQL(sql"create table data8 (id bigserial not null, summary_id bigint not null references summary(id))")
   addSeedSQL(sql"create table data9 (id bigserial not null, summary_id bigint not null references summary(id))")
+  addSeedSQL(sql"create table data10 (id bigserial not null, summary_id bigint not null references summary(id))")
   runIfFailed(sql"select count(1) from summary")
 }
 
@@ -44,7 +45,8 @@ class Test005Spec extends fixture.FunSpec with Matchers
     data6: Seq[Data6] = Nil,
     data7: Seq[Data7] = Nil,
     data8: Seq[Data8] = Nil,
-    data9: Seq[Data9] = Nil)
+    data9: Seq[Data9] = Nil,
+    data10: Seq[Data10] = Nil)
 
   case class Data1(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
   case class Data2(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
@@ -55,12 +57,13 @@ class Test005Spec extends fixture.FunSpec with Matchers
   case class Data7(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
   case class Data8(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
   case class Data9(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
+  case class Data10(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
 
   object Summary extends SkinnyCRUDMapper[Summary] {
     override val connectionPoolName = 'test005
     override def defaultAlias = createAlias("s")
     override def extract(rs: WrappedResultSet, rn: ResultName[Summary]) = {
-      autoConstruct(rs, rn, "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9")
+      autoConstruct(rs, rn, "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10")
     }
     lazy val d1 = hasMany[Data1](
       Data1 -> Data1.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data1 = d))
@@ -80,6 +83,8 @@ class Test005Spec extends fixture.FunSpec with Matchers
       Data8 -> Data8.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data8 = d))
     lazy val d9 = hasMany[Data9](
       Data9 -> Data9.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data9 = d))
+    lazy val d10 = hasMany[Data10](
+      Data10 -> Data10.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data10 = d))
 
     def withAssociations = joins(d1, d2, d3, d4, d5, d6, d7, d8, d9)
   }
@@ -128,6 +133,11 @@ class Test005Spec extends fixture.FunSpec with Matchers
     override def defaultAlias = createAlias("d9")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data9]) = autoConstruct(rs, rn, "summary")
   }
+  object Data10 extends SkinnyCRUDMapper[Data10] {
+    override val connectionPoolName = 'test005
+    override def defaultAlias = createAlias("d10")
+    override def extract(rs: WrappedResultSet, rn: ResultName[Data10]) = autoConstruct(rs, rn, "summary")
+  }
 
   override def db(): DB = NamedDB('test005).toDB()
 
@@ -160,6 +170,19 @@ class Test005Spec extends fixture.FunSpec with Matchers
     Data9.createWithAttributes('summaryId -> summaryId)
   }
 
+  describe("Entity which has 1 - 8 associations") {
+    it("should return results as expected") { implicit session =>
+      import Summary._
+      Summary.joins(d1).count() should equal(1)
+      Summary.joins(d1, d2).count() should equal(1)
+      Summary.joins(d1, d2, d3).count() should equal(1)
+      Summary.joins(d1, d2, d3, d4).count() should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5).count() should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6).count() should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7).count() should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8).count() should equal(1)
+    }
+  }
   describe("Entity which has 9 associations") {
     it("should return results as expected") { implicit session =>
       Summary.count() should equal(1)
@@ -174,6 +197,17 @@ class Test005Spec extends fixture.FunSpec with Matchers
       s.data7.size should equal(1)
       s.data8.size should equal(1)
       s.data9.size should equal(2)
+    }
+  }
+
+  describe("Entity which has 10 associations") {
+    it("should throw exception as expected") { implicit session =>
+      import Summary._
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8, d9, d9).findAll().size should equal(1)
+      Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10).count()
+      intercept[IllegalStateException] {
+        Summary.joins(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10).findAll()
+      }
     }
   }
 
