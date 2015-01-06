@@ -47,14 +47,21 @@ object StringUtil {
    */
   def toCamelCase(str: String): String = {
     Option(str).map { s =>
+      val result = toUpperCamelCase(s)
+      if (result.headOption.exists(c => c.isUpper)) result.head.toLower + result.tail
+      else result
+    }.orNull[String]
+  }
+
+  def toUpperCamelCase(str: String): String = {
+    Option(str).map { s =>
       val result = s.foldLeft((ListBuffer[Char](), false)) {
         case ((cs, prevIs_), c) =>
           if (c == '_') (cs, true)
           else if (prevIs_) (cs += c.toUpper, false)
           else (cs += c, false)
       }._1.mkString
-
-      if (result.headOption.exists(c => c.isUpper)) result.head.toLower + result.tail
+      if (result.headOption.exists(c => c.isLower)) result.head.toUpper + result.tail
       else result
     }.orNull[String]
   }
