@@ -5,11 +5,12 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.9"
+  lazy val currentVersion = "1.3.10-SNAPSHOT"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.1"
   lazy val h2Version = "1.4.184"
+  lazy val kuromojiVersion = "4.10.3"
   lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.6.v20141205"
 
@@ -48,7 +49,12 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-common",
       libraryDependencies  <++= (scalaVersion) { scalaVersion => 
-        Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
+        Seq(
+          "com.typesafe"      % "config"                    % "1.2.1"         % "compile",
+          "org.apache.lucene" % "lucene-core"               % kuromojiVersion % "provided",
+          "org.apache.lucene" % "lucene-analyzers-common"   % kuromojiVersion % "provided",
+          "org.apache.lucene" % "lucene-analyzers-kuromoji" % kuromojiVersion % "provided"
+        ) ++
         jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (scalaVersion match {
           case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3" % "compile")
           case _ => Nil
