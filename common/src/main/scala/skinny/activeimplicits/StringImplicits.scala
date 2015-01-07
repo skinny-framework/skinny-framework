@@ -3,6 +3,7 @@ package skinny.activeimplicits
 import java.util.Locale
 
 import org.joda.time._
+import skinny.nlp.{ SkinnyJapaneseAnalyzerFactory, SkinnyJapaneseAnalyzer }
 import skinny.util.{ DateTimeUtil, StringUtil }
 
 import scala.language.implicitConversions
@@ -237,6 +238,54 @@ trait StringImplicits {
         .map(_.split("\\.").map(_.replaceFirst("^_", "")).mkString("/"))
         .orNull[String]
     }
+
+    // ----------------------------
+    // Japanese word conversions
+    // requires kuromoji analyzer - http://lucene.apache.org/
+
+    def katakanaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
+      Option(str).map { s =>
+        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+        analyzer.toKatakanaReadings(s)
+      }.getOrElse(Nil)
+    }
+
+    def hiraganaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
+      Option(str).map { s =>
+        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+        analyzer.toHiraganaReadings(s)
+      }.getOrElse(Nil)
+    }
+
+    def romajiReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
+      Option(str).map { s =>
+        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+        analyzer.toRomajiReadings(s)
+      }.getOrElse(Nil)
+
+    }
+
+    def toKatakanaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = katakanaReadings
+    def toHiraganaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = hiraganaReadings
+    def toRomajiReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = romajiReadings
+
+    def katakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
+      this.katakanaReadings.mkString
+    }
+
+    def hiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
+      this.hiraganaReadings.mkString
+    }
+
+    def romaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
+      this.romajiReadings.mkString
+    }
+
+    def toKatakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = katakana
+    def toHiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = hiragana
+    def toRomaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = romaji
+
+    // ----------------------------
 
   }
 

@@ -1,6 +1,7 @@
 package skinny.activeimplicits
 
 import org.scalatest._
+import skinny.nlp.SkinnyJapaneseAnalyzerFactory
 
 // http://api.rubyonrails.org/classes/String.html
 class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
@@ -115,7 +116,7 @@ class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
       "And they found that many... (continued)")
   }
 
-  it should "hava #underscore" in {
+  it should "have #underscore" in {
     "ActiveModel".underscore should equal("active_model")
     "ActiveModel::Errors".underscore should equal("active_model/errors")
 
@@ -123,6 +124,87 @@ class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
     "activeModel.Errors".underscore should equal("active_model/errors")
     "ActiveModel.Errors".underscore should equal("active_model/errors")
     "active_model.Errors".underscore should equal("active_model/errors")
+  }
+
+  it should "have #katakana" in {
+    "東京特許許可局".katakanaReadings should equal(Seq("トウキョウ", "トッキョ", "キョカ", "キョク"))
+    "東京特許許可局".katakana should equal("トウキョウトッキョキョカキョク")
+
+    "東京特許許可局".toKatakanaReadings should equal(Seq("トウキョウ", "トッキョ", "キョカ", "キョク"))
+    "東京特許許可局".toKatakana should equal("トウキョウトッキョキョカキョク")
+
+    "ようかい体操第一".katakana should equal("ヨウカイタイソウダイイチ")
+    "妖怪タイソウ第１".katakana should equal("ヨウカイタイソウダイイチ")
+    "ようかい体操第1".katakana should equal("ヨウカイタイソウダイ1")
+    "日本マイクロソフト株式会社".katakana should equal("ニッポンマイクロソフトカブシキガイシャ")
+    "型安全な Web フレームワーク".katakana should equal("カタアンゼンナwebフレームワーク")
+    "地獄のミサワ".katakana should equal("ジゴクノミサワ")
+    "椎名林檎".katakana should equal("シイナリンゴ")
+    "rpscala".katakana should equal("rpscala")
+    "区切り文字".katakana should equal("クギリモジ")
+    "毎日深夜0時更新！掘り出し物をチェック".katakana should equal("マイニチシンヤ0ジコウシンホリダシモノヲチェック")
+    "Skinny Framework はお好きなようにご利用ください".katakana should equal("skinnyframeworkハオスキナヨウニゴリヨウクダサイ")
+  }
+
+  it should "have #katakana with customized analyzer" in {
+    val dictionaryText =
+      """日本,日本,ニホン,カスタム名詞
+        |Skinny Framework,スキニーフレームワーク,スキニーフレームワーク,カスタム名詞""".stripMargin
+    implicit val analyzer = SkinnyJapaneseAnalyzerFactory.create(dictionaryText)
+
+    "日本マイクロソフト株式会社".katakana should equal("ニホンマイクロソフトカブシキガイシャ")
+    "Skinny Framework はお好きなようにご利用ください".katakana should equal("スキニーフレームワークハオスキナヨウニゴリヨウクダサイ")
+  }
+
+  it should "have #hiragana" in {
+    "東京特許許可局".hiraganaReadings should equal(Seq("とうきょう", "とっきょ", "きょか", "きょく"))
+    "東京特許許可局".hiragana should equal("とうきょうとっきょきょかきょく")
+
+    "東京特許許可局".toHiraganaReadings should equal(Seq("とうきょう", "とっきょ", "きょか", "きょく"))
+    "東京特許許可局".toHiragana should equal("とうきょうとっきょきょかきょく")
+
+    "ようかい体操第一".hiragana should equal("ようかいたいそうだいいち")
+    "妖怪タイソウ第１".hiragana should equal("ようかいたいそうだいいち")
+    "ようかい体操第1".hiragana should equal("ようかいたいそうだい1")
+    "日本マイクロソフト株式会社".hiragana should equal("にっぽんまいくろそふとかぶしきがいしゃ")
+    "型安全な Web フレームワーク".hiragana should equal("かたあんぜんなwebふれーむわーく")
+    "地獄のミサワ".hiragana should equal("じごくのみさわ")
+    "椎名林檎".hiragana should equal("しいなりんご")
+    "rpscala".hiragana should equal("rpscala")
+    "区切り文字".hiragana should equal("くぎりもじ")
+    "毎日深夜0時更新！掘り出し物をチェック".hiragana should equal("まいにちしんや0じこうしんほりだしものをちぇっく")
+    "Skinny Framework はお好きなようにご利用ください".hiragana should equal("skinnyframeworkはおすきなようにごりようください")
+  }
+
+  it should "have #romaji" in {
+    "東京特許許可局".romaji should equal("tokyotokkyokyokakyoku")
+    "ようかい体操第一".romaji should equal("yokaitaisodaiichi")
+    "妖怪タイソウ第１".romaji should equal("yokaitaisodaiichi")
+    "ようかい体操第1".romaji should equal("yokaitaisodai1")
+    "日本マイクロソフト株式会社".romaji should equal("nipponmaikurosofutokabushikigaisha")
+    "型安全な Web フレームワーク".romaji should equal("kataanzennawebfuremuwaku")
+    "地獄のミサワ".romaji should equal("jigokunomisawa")
+    "椎名林檎".romaji should equal("shiinaringo")
+    "rpscala".romaji should equal("rpscala")
+    "区切り文字".romaji should equal("kugirimoji")
+    "毎日深夜0時更新！掘り出し物をチェック".romaji should equal("mainichishin'ya0jikoshinhoridashimonoochekku")
+    "Skinny Framework はお好きなようにご利用ください".romaji should equal("skinnyframeworkhaosukinayonigoriyokudasai")
+
+    "東京特許許可局".toRomaji should equal("tokyotokkyokyokakyoku")
+  }
+
+  it should "have #romaji with custom analyzer" in {
+    val dictionaryText =
+      """日本,日本,nihon,カスタム名詞
+        |マイクロソフト,Microsoft,microsoft,カスタム名詞
+        |株式会社,K.K.,k.k.,カスタム名詞""".stripMargin
+    implicit val analyzer = SkinnyJapaneseAnalyzerFactory.create(dictionaryText)
+
+    "日本マイクロソフト株式会社".romajiReadings should equal(Seq("nihon", "microsoft", "k.k."))
+    "日本マイクロソフト株式会社".romaji should equal("nihonmicrosoftk.k.")
+
+    "日本マイクロソフト株式会社".toRomajiReadings should equal(Seq("nihon", "microsoft", "k.k."))
+    "日本マイクロソフト株式会社".toRomaji should equal("nihonmicrosoftk.k.")
   }
 
 }
