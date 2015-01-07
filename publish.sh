@@ -42,7 +42,5 @@ sbt ++2.11.4 \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
   velocity/publishSigned  \
-  worker/publishSigned \
-  sonatypeRelease
-
+  worker/publishSigned 
 

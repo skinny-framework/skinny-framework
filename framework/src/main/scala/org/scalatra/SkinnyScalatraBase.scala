@@ -29,7 +29,7 @@ trait SkinnyScalatraBase extends ScalatraBase {
         val (rq, rs) = (request, response)
         onCompleted { _ =>
           withRequestResponse(rq, rs) {
-            var className = this.getClass.getCanonicalName
+            val className = this.getClass.toString
             this match {
               // **** PATCHED ****
               case f: Filter if !rq.contains(s"org.scalatra.ScalatraFilter.afterFilters.Run (${className})") =>

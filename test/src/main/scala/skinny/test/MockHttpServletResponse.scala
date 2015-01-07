@@ -19,7 +19,6 @@ import javax.servlet.http.{ Cookie, HttpServletResponse }
 import javax.servlet.ServletOutputStream
 import java.io.{ ByteArrayOutputStream, PrintWriter }
 import java.util._
-import org.mockito.Mockito._
 
 class MockHttpServletResponse extends HttpServletResponse {
 
@@ -101,23 +100,27 @@ class MockHttpServletResponse extends HttpServletResponse {
 
   override def getStatus: Int = status
   override def setStatus(sc: Int, sm: String): Unit = {
+    // TODO: sm is ignored for now
     this.status = sc
-    // TODO
   }
   override def setStatus(sc: Int): Unit = {
     this.status = sc
   }
 
   private def _addHeader(name: String, value: Any): Unit = {
-    Option(headers.get(name).getValues()).map(_.add(value)).getOrElse(_setHeader(name, value))
+    Option(headers.get(name)).map(_.getValues()).map(_.add(value)).getOrElse(_setHeader(name, value))
   }
   private def _setHeader(name: String, value: Any): Unit = {
     headers.put(name, HeaderValueHolder(value))
   }
 
   override def getHeaderNames: Collection[String] = headers.keySet
-  override def getHeaders(name: String): Collection[String] = headers.get(name).getStringValues
-  override def getHeader(name: String): String = headers.get(name).getStringValue
+  override def getHeaders(name: String): Collection[String] = {
+    Option(headers.get(name)).map(_.getStringValues).getOrElse(new java.util.ArrayList[String])
+  }
+  override def getHeader(name: String): String = {
+    Option(headers.get(name)).map(_.getStringValue).orNull[String]
+  }
 
   override def addHeader(name: String, value: String): Unit = _addHeader(name, value)
   override def setHeader(name: String, value: String): Unit = _setHeader(name, value)
@@ -151,6 +154,8 @@ class MockHttpServletResponse extends HttpServletResponse {
 
   override def addCookie(cookie: Cookie): Unit = cookies.add(cookie)
 
-  // TODO
-  override def setContentLengthLong(len: Long): Unit = ???
+  override def setContentLengthLong(len: Long): Unit = {
+    this.contentLength = len
+  }
+
 }

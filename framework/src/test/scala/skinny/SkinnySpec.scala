@@ -18,6 +18,7 @@ class SkinnySpec extends ScalatraFlatSpec {
 
   it should "have #contextPath" in {
     skinnyObject.contextPath should equal("/foo")
+    skinnyObject.getContextPath should equal("/foo")
   }
 
   it should "have #env" in {
@@ -45,6 +46,54 @@ class SkinnySpec extends ScalatraFlatSpec {
   it should "have #i18n" in {
     skinnyObject.i18n should equal(i18n)
     skinnyObject.getI18n should equal(i18n)
+  }
+
+  it should "have #errorMessages" in {
+    skinnyObject.errorMessages.size should equal(0)
+    skinnyObject.getErrorMessages.size should equal(0)
+  }
+
+  it should "have #keyAndErrorMessages" in {
+    skinnyObject.keyAndErrorMessages.size should equal(0)
+    skinnyObject.getKeyAndErrorMessages.size should equal(0)
+  }
+
+  it should "have #requestPath" in {
+    skinnyObject.requestPath should equal(null)
+    skinnyObject.getRequestPath should equal(null)
+  }
+
+  it should "have #requestPathWithQueryString" in {
+    skinnyObject.requestPathWithQueryString should equal(null)
+    skinnyObject.getRequestPathWithQueryString should equal(null)
+  }
+
+  it should "have #flash" in {
+    skinnyObject.flash should equal(null)
+    skinnyObject.getFlash should equal(null)
+  }
+
+  it should "have #csrfKey" in {
+    skinnyObject.csrfKey should equal(null)
+    skinnyObject.getCsrfKey should equal(null)
+  }
+
+  it should "have #csrfToken" in {
+    skinnyObject.csrfToken should equal(null)
+    skinnyObject.getCsrfToken should equal(null)
+  }
+
+  it should "have #csrfMetaTag" in {
+    val expected = """<meta content="null" name="null" />"""
+    skinnyObject.csrfMetaTag should equal(expected)
+    skinnyObject.csrfMetaTags should equal(expected)
+    skinnyObject.getCsrfMetaTag should equal(expected)
+  }
+
+  it should "have #getAs, #set" in {
+    skinnyObject.getAs[String]("foo") should equal(None)
+    skinnyObject.set("foo", "bar")
+    skinnyObject.getAs[String]("foo") should equal(Some("bar"))
   }
 
   object Controller extends SkinnyController with Routes {

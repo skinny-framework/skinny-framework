@@ -20,6 +20,9 @@ case class HeaderLines(message: RichMimeMessage) {
   /**
    * Returns as a Seq value.
    */
-  def toSeq: Seq[String] = message.underlying.getAllHeaderLines.asScala.map(_.asInstanceOf[String]).toSeq
+  def toSeq: Seq[String] = {
+    Option(message.underlying.getAllHeaderLines).map(_.asScala).getOrElse(Nil)
+      .map(_.asInstanceOf[String]).toSeq
+  }
 
 }

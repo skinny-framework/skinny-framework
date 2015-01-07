@@ -23,4 +23,13 @@ class StringUtilSpec extends FlatSpec with Matchers {
     toCamelCase("_first_name") should equal("firstName")
     toCamelCase("is_atm_working") should equal("isAtmWorking")
   }
+
+  it should "have #toUpperCamelCase" in {
+    toUpperCamelCase(null) should be(null)
+    toUpperCamelCase("FirstName") should equal("FirstName")
+    toUpperCamelCase("firstName") should equal("FirstName")
+    toUpperCamelCase("first_name") should equal("FirstName")
+    toUpperCamelCase("_first_name") should equal("FirstName")
+    toUpperCamelCase("is_atm_working") should equal("IsAtmWorking")
+  }
 }

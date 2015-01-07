@@ -3,8 +3,10 @@ package skinny.bootstrap
 import javax.servlet.ServletContext
 
 import org.scalatest._
+import skinny.SkinnyEnv
 
 class SkinnyLifeCycleSpec extends FunSpec with Matchers {
+  System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   val lifeCycle = new SkinnyLifeCycle {
     override def initSkinnyApp(ctx: ServletContext): Unit = {

@@ -5,11 +5,12 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.9"
+  lazy val currentVersion = "1.3.10"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.1"
   lazy val h2Version = "1.4.184"
+  lazy val kuromojiVersion = "4.10.3"
   lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.6.v20141205"
 
@@ -48,7 +49,12 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-common",
       libraryDependencies  <++= (scalaVersion) { scalaVersion => 
-        Seq("com.typesafe" %  "config" % "1.2.1" % "compile")  ++
+        Seq(
+          "com.typesafe"      % "config"                    % "1.2.1"         % "compile",
+          "org.apache.lucene" % "lucene-core"               % kuromojiVersion % "provided",
+          "org.apache.lucene" % "lucene-analyzers-common"   % kuromojiVersion % "provided",
+          "org.apache.lucene" % "lucene-analyzers-kuromoji" % kuromojiVersion % "provided"
+        ) ++
         jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (scalaVersion match {
           case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3" % "compile")
           case _ => Nil
@@ -128,7 +134,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.1"         % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.7.Final" % "test"
+        "org.hibernate"   %  "hibernate-core" % "4.3.8.Final" % "test"
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -157,7 +163,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.7"         % "compile",
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.7"         % "compile" exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
@@ -294,8 +300,8 @@ object SkinnyFrameworkBuild extends Build {
   // -----------------------------
   // common dependencies
  
-  lazy val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
-  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.9" % "compile")
+  lazy val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0"  % "provided")
+  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.10" % "compile")
   lazy val json4sDependencies = Seq(
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api")

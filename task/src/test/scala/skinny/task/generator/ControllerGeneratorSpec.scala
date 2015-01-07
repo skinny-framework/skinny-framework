@@ -7,6 +7,11 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
   val generator = ControllerGenerator
 
   describe("Controller") {
+
+    it("should show usage") {
+      generator.run(List())
+    }
+
     it("should be created as expected") {
       val code = generator.code(Seq("admin"), "members")
       val expected =
