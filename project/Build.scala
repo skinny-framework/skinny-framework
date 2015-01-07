@@ -134,7 +134,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.1"         % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.7.Final" % "test"
+        "org.hibernate"   %  "hibernate-core" % "4.3.8.Final" % "test"
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -300,8 +300,8 @@ object SkinnyFrameworkBuild extends Build {
   // -----------------------------
   // common dependencies
  
-  lazy val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided")
-  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.9" % "compile")
+  lazy val servletApiDependencies = Seq("javax.servlet" % "javax.servlet-api" % "3.1.0"  % "provided")
+  lazy val slf4jApiDependencies   = Seq("org.slf4j"     % "slf4j-api"         % "1.7.10" % "compile")
   lazy val json4sDependencies = Seq(
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api"),
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api")
