@@ -81,42 +81,78 @@ trait ValidationFeature {
 
     validator
       .success { _ => }
-      .failure { (inputs, errors) =>
+      .failure { (inputs, errors: Errors) =>
         val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
         val i18n = I18n(locale)
         def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
 
         // errorMessages
-        val errorMessages: Seq[String] = validations.map(_.paramDef.key).flatMap { key =>
-          errors.get(key).map { error =>
-            skinnyValidationMessages.get(
-              key = error.name,
-              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
-                case I18nKeyParam(key) => i18n.getOrKey(key)
-                case value => value
-              }.toList
-            ).getOrElse(error.name)
-          }
+        val errorMessages: Seq[String] = {
+          ValidationFeature.buildErrorMessagesWithPrefix(prefix, validations, errors)
         }
         set(RequestScopeFeature.ATTR_ERROR_MESSAGES, errorMessages)
 
         // keyAndErrorMessages
-        val keyAndErrorMessages: KeyAndErrorMessages = KeyAndErrorMessages(validations.map(_.paramDef.key).map { key =>
-          key -> errors.get(key).map { error =>
-            skinnyValidationMessages.get(
-              key = error.name,
-              params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
-                case I18nKeyParam(key) => i18n.getOrKey(key)
-                case value => value
-              }.toList
-            ).getOrElse(error.name)
-          }
-        }.toMap)
+        val keyAndErrorMessages: KeyAndErrorMessages = {
+          ValidationFeature.buildKeyAndErrorMessagesWithPrefix(prefix, validations, errors)
+        }
         set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, keyAndErrorMessages)
 
       }.apply()
 
     validator
+  }
+
+}
+
+object ValidationFeature {
+
+  def buildErrorMessages(validations: Seq[NewValidation], errors: Errors)(
+    implicit locale: Locale): Seq[String] = {
+    buildErrorMessagesWithPrefix(null, validations, errors)
+  }
+
+  def buildErrorMessagesWithPrefix(prefix: String, validations: Seq[NewValidation], errors: Errors)(
+    implicit locale: Locale): Seq[String] = {
+    val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
+    val i18n = I18n(locale)
+    def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
+
+    validations.map(_.paramDef.key).flatMap { key =>
+      errors.get(key).map { error =>
+        skinnyValidationMessages.get(
+          key = error.name,
+          params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
+            case I18nKeyParam(key) => i18n.getOrKey(key)
+            case value => value
+          }.toList
+        ).getOrElse(error.name)
+      }
+    }
+  }
+
+  def buildKeyAndErrorMessages(validations: Seq[NewValidation], errors: Errors)(
+    implicit locale: Locale): KeyAndErrorMessages = {
+    buildKeyAndErrorMessagesWithPrefix(null, validations, errors)
+  }
+
+  def buildKeyAndErrorMessagesWithPrefix(prefix: String, validations: Seq[NewValidation], errors: Errors)(
+    implicit locale: Locale): KeyAndErrorMessages = {
+    val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
+    val i18n = I18n(locale)
+    def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
+
+    KeyAndErrorMessages(validations.map(_.paramDef.key).map { key =>
+      key -> errors.get(key).map { error =>
+        skinnyValidationMessages.get(
+          key = error.name,
+          params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
+            case I18nKeyParam(key) => i18n.getOrKey(key)
+            case value => value
+          }.toList
+        ).getOrElse(error.name)
+      }
+    }.toMap)
   }
 
 }
