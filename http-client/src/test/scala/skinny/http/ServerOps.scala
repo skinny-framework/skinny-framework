@@ -34,7 +34,7 @@ trait ServerOps {
 
   def start(server: Server) = {
     new Thread(runnable(server)).start()
-    Thread.sleep(300L)
+    Thread.sleep(800L)
   }
 
   def start(server: HttpServer) = {
@@ -43,7 +43,7 @@ trait ServerOps {
         server.start()
       }
     }).start()
-    Thread.sleep(300L)
+    Thread.sleep(800L)
   }
 
 }
