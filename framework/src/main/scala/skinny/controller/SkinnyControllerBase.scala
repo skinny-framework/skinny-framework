@@ -23,6 +23,8 @@ trait SkinnyControllerBase
     extends org.scalatra.SkinnyScalatraBase
     with ApiFormats
     with EnvFeature
+    with QueryParamsFeature
+    with FormParamsFeature
     with RichRouteFeature
     with UrlGeneratorSupport
     with ExplicitRedirectFeature
