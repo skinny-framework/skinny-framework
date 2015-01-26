@@ -6,8 +6,9 @@ import javax.servlet.http._
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import skinny.{ DBSettings, DBSettingsInitializer }
 
-class TxPerRequestFilterSpec extends FunSpec with Matchers with MockitoSugar {
+class TxPerRequestFilterSpec extends FunSpec with Matchers with MockitoSugar with DBSettings with DBSettingsInitializer {
 
   val filter = new TxPerRequestFilter {
   }
