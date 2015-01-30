@@ -57,7 +57,6 @@ import skinny.orm._, feature._
 import scalikejdbc._
 import org.joda.time._
 
-// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
 case class Developer(
   id: Long,
   name: String,
@@ -92,7 +91,6 @@ import skinny.orm._, feature._
 import scalikejdbc._
 import org.joda.time._
 
-// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
 case class Organization(
   id: Long,
   name: String,
@@ -123,7 +121,6 @@ import skinny.orm._, feature._
 import scalikejdbc._
 import org.joda.time._
 
-// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
 case class OrganizationDeveloper(
   organizationId: Long,
   developerId: Long,

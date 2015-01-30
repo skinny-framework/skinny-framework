@@ -22,7 +22,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
@@ -82,7 +81,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class ProjectMember(
           |  id: Long,
           |  name: String,
@@ -131,7 +129,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class ProjectMember(
           |  id: Long,
           |  name: String,
@@ -180,7 +177,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  createdAt: DateTime,
@@ -230,7 +226,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
@@ -270,7 +265,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
@@ -338,7 +332,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class Member(
           |  id: Long,
           |  name: String,
@@ -411,7 +404,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
          |import scalikejdbc._
          |import org.joda.time._
          |
-         |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
          |case class NoIdMember(
          |  name: String,
          |  isActivated: Boolean,
@@ -470,7 +462,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class NoIdProjectMember(
           |  name: String,
           |  isActivated: Boolean,
@@ -520,7 +511,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class NoIdProjectMember(
           |  name: String,
           |  isActivated: Boolean,
@@ -570,7 +560,6 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |import scalikejdbc._
           |import org.joda.time._
           |
-          |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
           |case class NoIdMember(
           |  createdAt: DateTime,
           |  updatedAt: DateTime
