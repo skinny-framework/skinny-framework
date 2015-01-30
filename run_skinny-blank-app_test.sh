@@ -23,6 +23,7 @@ grunt compile
 ./skinny g reverse-model members1 rev2.member1 test && \
 ./skinny g reverse-scaffold members2 rev2.members2 member2 && \
 ./skinny test && \
+./skinny scalajs:package && \
 ./skinny package && \
 ./skinny package:standalone
 
