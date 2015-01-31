@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "1.3.10"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
-  lazy val scalikeJDBCVersion = "2.2.2"
+  lazy val scalikeJDBCVersion = "2.2.3"
   lazy val h2Version = "1.4.185"
   lazy val kuromojiVersion = "4.10.3"
   lazy val mockitoVersion = "1.10.19"
@@ -67,7 +67,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2-core"        % "2.4.15"           % "test",
+        "org.specs2"         %% "specs2-core"        % "2.4.16"           % "test",
         "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % "test",
         "commons-io"         %  "commons-io"         % "2.4"              % "test",
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % "test",
@@ -328,7 +328,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"      % "1.9"            % "provided"
   )
   lazy val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.3"        % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.4"        % "test",
     "org.mockito"             %  "mockito-core"    % mockitoVersion % "test",
     "ch.qos.logback"          %  "logback-classic" % "1.1.2"        % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % "test",
