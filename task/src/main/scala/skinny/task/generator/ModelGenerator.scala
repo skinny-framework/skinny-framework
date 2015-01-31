@@ -215,7 +215,6 @@ trait ModelGenerator extends CodeGenerator {
         |import scalikejdbc._
         |import org.joda.time._
         |
-        |// If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
         |case class ${modelClassName}(
         |${caseClassFields})
         |
