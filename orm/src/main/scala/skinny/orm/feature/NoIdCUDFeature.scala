@@ -320,10 +320,13 @@ trait NoIdCUDFeature[Entity]
    */
   def deleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Int = {
     beforeDeleteBy(where)
+    beforeDeleteByHandlers.foreach(_.apply(s, where))
     val count = withSQL {
       delete.from(this).where(where).and(defaultScopeForUpdateOperations)
     }.update.apply()
     afterDeleteBy(where, count)
+    afterDeleteByHandlers.foreach(_.apply(s, where, count))
+    count
   }
 
   /**
@@ -334,10 +337,45 @@ trait NoIdCUDFeature[Entity]
   }
 
   /**
+   * #updateBy pre-execution handler.
+   */
+  type BeforeDeleteByHandler = (DBSession, SQLSyntax) => Unit
+
+  /**
+   * #updateBy post-execution handler.
+   */
+  type AfterDeleteByHandler = (DBSession, SQLSyntax, Int) => Unit
+
+  /**
+   * Registered beforeUpdateByHandlers.
+   */
+  protected val beforeDeleteByHandlers = new scala.collection.mutable.ListBuffer[BeforeDeleteByHandler]
+
+  /**
+   * Registered afterUpdateByHandlers.
+   */
+  protected val afterDeleteByHandlers = new scala.collection.mutable.ListBuffer[AfterDeleteByHandler]
+
+  /**
+   * #deleteBy pre-execution.
+   *
+   * @param handler handler
+   */
+  protected def beforeDeleteBy(handler: (DBSession, SQLSyntax) => Unit): Unit = beforeDeleteByHandlers.append(handler)
+
+  /**
+   * #deleteBy post-execution.
+   *
+   * @param handler handler
+   */
+  protected def afterDeleteBy(handler: (DBSession, SQLSyntax, Int) => Unit): Unit = afterDeleteByHandlers.append(handler)
+
+  /**
    * #deleteBy pre-execution.
    *
    * @param where condition
    */
+  @deprecated(message = "Use beforeDeleteBy(handler) instead", since = "1.3.12")
   protected def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Unit = {}
 
   /**
@@ -347,6 +385,7 @@ trait NoIdCUDFeature[Entity]
    * @param deletedCount deleted count
    * @return count
    */
+  @deprecated(message = "Use afterDeleteBy(handler) instead", since = "1.3.12")
   protected def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession = autoSession): Int = deletedCount
 
 }
