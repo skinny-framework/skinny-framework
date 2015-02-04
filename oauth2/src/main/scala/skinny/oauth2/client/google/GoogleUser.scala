@@ -9,7 +9,7 @@ case class GoogleUser(
   override val id: String,
   displayName: String,
   name: Name,
-  url: String,
+  url: Option[String],
   image: Option[Image],
   emails: Seq[Email]) extends OAuth2User
 
