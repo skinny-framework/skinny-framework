@@ -372,20 +372,20 @@ GOTO script_eof
 
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
-  ECHO addSbtPlugin^("org.scala-lang.modules.scalajs" %% "scalajs-sbt-plugin" %% "0.5.4"^) > "project\_skinny_scalajs.sbt"
+  ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.0"^) >> "project\_skinny_scalajs.sbt"
 
-  ECHO lazy val scalaJS = Project^(id = "scalajs", base = file^("src/main/webapp/WEB-INF/assets"^),  > "_skinny_scalajs_settings.sbt"
-  ECHO   settings = Seq^(                                  >> "_skinny_scalajs_settings.sbt"
-  ECHO     name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
-  ECHO     unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
-  ECHO     libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-dom"                    %% "0.6", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%%%% "scalajs-jquery"                 %% "0.6", >> "_skinny_scalajs_settings.sbt"
-  ECHO       "org.scala-lang.modules.scalajs" %%%%  "scalajs-jasmine-test-framework" %% "0.5.4" %% "test" >> "_skinny_scalajs_settings.sbt"
-  ECHO     ^), >> "_skinny_scalajs_settings.sbt"
-  ECHO     crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
-  ECHO   ^) >> "_skinny_scalajs_settings.sbt"
-  ECHO ^) >> "_skinny_scalajs_settings.sbt"
+  ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
+  ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
+  ECHO   scalaVersion := "2.11.5", >> "_skinny_scalajs_settings.sbt"
+  ECHO   unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
+  ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.8.0", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.8.0", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.monifu"   %%%%  "minitest"        %% "0.11" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO   ^), >> "_skinny_scalajs_settings.sbt"
+  ECHO   crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
+  ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"
 )
 sbt "project scalajs" %SUB_COMMAND%
 GOTO script_eof
