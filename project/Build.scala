@@ -5,7 +5,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.11"
+  lazy val currentVersion = "1.3.12"
   lazy val scalatraVersion = "2.3.0"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.3"
@@ -186,7 +186,7 @@ object SkinnyFrameworkBuild extends Build {
         Seq(
           scalaVersion match { 
             case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
-            case _ =>                          "org.scaldi" %% "scaldi" % "0.4"
+            case _ =>                          "org.scaldi" %% "scaldi" % "0.5.3"
           }
         ) ++ testDependencies
       }
