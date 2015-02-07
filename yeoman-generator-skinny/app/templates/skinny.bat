@@ -128,7 +128,7 @@ IF "%command%"=="scalajs:watch" (
   GOTO scalajs_task
 )
 IF "%command%"=="scalajs:package" (
-  SET SUB_COMMAND="fastOptJS"
+  SET SUB_COMMAND="fullOptJS"
   GOTO scalajs_task
 )
 
