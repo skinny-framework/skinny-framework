@@ -49,7 +49,7 @@ class AssetsController extends SkinnyController {
    */
   def isEnabled: Boolean = {
     if (SkinnyEnv.isProduction()) !isDisabledInProduction
-    if (SkinnyEnv.isStaging()) !isDisabledInStaging
+    else if (SkinnyEnv.isStaging()) !isDisabledInStaging
     else true
   }
 
