@@ -165,7 +165,7 @@ elif [ "$command" == "scalajs:watch" ]; then
   ${sbt_path} "project scalajs" "~;fastOptJS"
 elif [ "$command" == "scalajs:package" ]; then
   setup_scalajs
-  ${sbt_path} "project scalajs" fastOptJS
+  ${sbt_path} "project scalajs" fullOptJS
 elif [ "$command" == "task:clean" ]; then
   ${sbt_path} "task/clean"
   copy_resources_to_task
