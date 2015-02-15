@@ -21,6 +21,7 @@ import java.net.{ URLEncoder, HttpURLConnection }
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.{ Future, ExecutionContext }
+import scala.util.control.NonFatal
 import skinny.logging.Logging
 import skinny.util.LoanPattern.using
 
@@ -211,6 +212,13 @@ object HTTP extends Logging {
       else response
 
     } finally {
+      inputStream.foreach { s =>
+        try s.close
+        catch {
+          case NonFatal(e) =>
+            logger.debug("Error when closing stream because {}", e.getMessage, e)
+        }
+      }
       conn.disconnect
     }
   }
