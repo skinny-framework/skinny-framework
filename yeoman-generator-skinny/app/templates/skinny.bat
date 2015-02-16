@@ -119,7 +119,7 @@ IF "%command%"=="~testOnly" (
 
 IF "%command%"=="test:coverage" (
   SET SKINNY_ENV=test
-  sbt "dev/scoverage:test"
+  sbt "coverage" "dev/test"
   GOTO script_eof
 )
 

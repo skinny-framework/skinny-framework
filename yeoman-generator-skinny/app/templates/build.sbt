@@ -4,11 +4,6 @@
 //scalariformSettings
 
 // ------------------------------
-// for ./skinny test:coverage
-// https://github.com/scoverage/sbt-scoverage
-instrumentSettings
-
-// ------------------------------
 // for ./skinnny console
 initialCommands := """
 import skinny._
