@@ -31,7 +31,7 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang" %  "scala-reflect"  % scalaVersion.value,
       "org.scala-lang" %  "scala-compiler" % scalaVersion.value
     ),
-    libraryDependencies := Seq(
+    libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,

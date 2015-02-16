@@ -159,7 +159,7 @@ elif [ "$command" == "~test-only" -o "$command" == "~testOnly" ]; then
   ${sbt_path} "project dev" "~;testOnly $2"
 elif [ "$command" == "test:coverage" ]; then
   export SKINNY_ENV="test"
-  ${sbt_path} "dev/scoverage:test"
+  ${sbt_path} "coverage" "dev/test"
 elif [ "$command" == "scalajs:watch" ]; then
   setup_scalajs
   ${sbt_path} "project scalajs" "~;fastOptJS"
