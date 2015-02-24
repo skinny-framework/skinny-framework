@@ -10,9 +10,9 @@ object SkinnyFrameworkBuild extends Build {
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.3"
   lazy val h2Version = "1.4.185"
-  lazy val kuromojiVersion = "4.10.3"
+  lazy val kuromojiVersion = "5.0.0"
   lazy val mockitoVersion = "1.10.19"
-  lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.7.v20150116"
+  lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.9.v20150224"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -186,7 +186,7 @@ object SkinnyFrameworkBuild extends Build {
         Seq(
           scalaVersion match { 
             case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
-            case _ =>                          "org.scaldi" %% "scaldi" % "0.5.3"
+            case _ =>                          "org.scaldi" %% "scaldi" % "0.5.4"
           }
         ) ++ testDependencies
       }

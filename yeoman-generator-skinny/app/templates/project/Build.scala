@@ -19,7 +19,7 @@ object SkinnyAppBuild extends Build {
   val skinnyVersion = "1.3.13"
   val scalatraVersion = "2.3.0"
   val theScalaVersion = "2.11.5"
-  val jettyVersion = "9.2.1.v20140609" // latest: "9.2.7.v20150116"
+  val jettyVersion = "9.2.1.v20140609" // latest: "9.2.9.v20150224"
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
     organization := appOrganization,
