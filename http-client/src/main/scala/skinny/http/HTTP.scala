@@ -31,6 +31,7 @@ import skinny.util.LoanPattern.using
 object HTTP extends Logging {
 
   val DEFAULT_CHARSET = "UTF-8"
+  private[this] val RESPONSE_CONTENT_TYPE_REGEXP = "[^;]+;\\s*charset=(.+)".r
 
   var defaultConnectTimeoutMillis: Int = 1000
   var defaultReadTimeoutMillis: Int = 5000
@@ -173,7 +174,14 @@ object HTTP extends Logging {
 
       val response: Response = Response(
         status = conn.getResponseCode,
-        charset = request.charset,
+        charset = {
+          Option(conn.getHeaderField("Content-Type")).map { contentType =>
+            contentType.toLowerCase match {
+              case RESPONSE_CONTENT_TYPE_REGEXP(charset) => Some(charset)
+              case _ => None
+            }
+          }.getOrElse(request.charset)
+        },
         headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }.toMap,
         headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
         rawCookies = Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
