@@ -12,6 +12,7 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Boolean.unapply(true) should equal(Some(true))
     ParamType.Boolean.unapply(false) should equal(Some(false))
     ParamType.Boolean.unapply("") should equal(Some(false))
+    ParamType.Boolean.unapply("  ") should equal(Some(false))
     ParamType.Boolean.unapply(null) should equal(Some(false))
   }
 
@@ -25,6 +26,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Double.unapply(0.123F) should equal(None)
     ParamType.Double.unapply(1.23F) should equal(None)
     intercept[NumberFormatException] { ParamType.Double.unapply("aaa") }
+    ParamType.Double.unapply("") should equal(Some(null))
+    ParamType.Double.unapply("  ") should equal(Some(null))
     ParamType.Double.unapply(null) should equal(None)
   }
 
@@ -39,6 +42,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Float.unapply(0.123D) should equal(None)
     ParamType.Float.unapply(1.23D) should equal(None)
     intercept[NumberFormatException] { ParamType.Float.unapply("aaa") }
+    ParamType.Float.unapply("") should equal(Some(null))
+    ParamType.Float.unapply("  ") should equal(Some(null))
     ParamType.Float.unapply(null) should equal(None)
   }
 
@@ -53,6 +58,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     intercept[NumberFormatException] { ParamType.Long.unapply("aaa") }
     intercept[NumberFormatException] { ParamType.Long.unapply("123.45") }
     ParamType.Long.unapply(123.45) should equal(None)
+    ParamType.Long.unapply("") should equal(Some(null))
+    ParamType.Long.unapply("  ") should equal(Some(null))
     ParamType.Long.unapply(null) should equal(None)
   }
 
@@ -72,6 +79,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Int.unapply(Long.MaxValue) should equal(None)
     intercept[NumberFormatException] { ParamType.Int.unapply("aaa") }
     intercept[IllegalArgumentException] { ParamType.Int.unapply("123.45") }
+    ParamType.Int.unapply("") should equal(Some(null))
+    ParamType.Int.unapply("  ") should equal(Some(null))
     ParamType.Int.unapply(null) should equal(None)
   }
 
@@ -93,6 +102,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Short.unapply(Long.MaxValue) should equal(None)
     intercept[NumberFormatException] { ParamType.Short.unapply("aaa") }
     intercept[IllegalArgumentException] { ParamType.Short.unapply("123.45") }
+    ParamType.Short.unapply("") should equal(Some(null))
+    ParamType.Short.unapply("  ") should equal(Some(null))
     ParamType.Short.unapply(null) should equal(None)
   }
 
@@ -105,6 +116,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.BigDecimal.unapply(12345L) should equal(Some(BigDecimal("12345")))
     ParamType.BigDecimal.unapply(123.45D) should equal(Some(BigDecimal("123.45")))
     intercept[NumberFormatException] { ParamType.BigDecimal.unapply("aaa") }
+    ParamType.BigDecimal.unapply("") should equal(Some(null))
+    ParamType.BigDecimal.unapply("  ") should equal(Some(null))
     ParamType.BigDecimal.unapply(null) should equal(None)
   }
 
@@ -116,6 +129,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.String.unapply(123L) should equal(Some("123"))
     ParamType.String.unapply(1.23D) should equal(Some("1.23"))
     ParamType.String.unapply(1.23F) should equal(Some("1.23"))
+    ParamType.String.unapply("") should equal(Some(""))
+    ParamType.String.unapply("  ") should equal(Some("  "))
     ParamType.String.unapply(null) should equal(None)
   }
 
@@ -126,6 +141,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.Byte.unapply(b) should equal(Some(b))
     ParamType.Byte.unapply("123") should equal(Some(b))
     ParamType.Byte.unapply(123) should equal(None)
+    ParamType.Byte.unapply("") should equal(Some(null))
+    ParamType.Byte.unapply("  ") should equal(Some(null))
     ParamType.Byte.unapply(null) should equal(None)
   }
 
@@ -135,6 +152,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     val bs: Array[Byte] = Array[Byte](123.toByte, 234.toByte, 345.toByte)
     ParamType.ByteArray.unapply(bs) should equal(Some(bs))
     ParamType.ByteArray.unapply(123) should equal(None)
+    ParamType.ByteArray.unapply("") should equal(Some(null))
+    ParamType.ByteArray.unapply("  ") should equal(Some(null))
     ParamType.ByteArray.unapply(null) should equal(None)
   }
 
@@ -145,6 +164,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     val expected = JDateTime.parse("2013-01-02T03:04:05").getMillis
     ParamType.DateTime.unapply("2013-01-02T03:04:05").map(_.asInstanceOf[JDateTime].getMillis) should equal(Some(expected))
     intercept[IllegalArgumentException] { ParamType.DateTime.unapply("abc") }
+    ParamType.DateTime.unapply("") should equal(Some(null))
+    ParamType.DateTime.unapply("  ") should equal(Some(null))
     ParamType.DateTime.unapply(null) should equal(None)
   }
 
@@ -156,6 +177,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.LocalDate.unapply("2013-01-02").map(_.toString) should equal(Some(expected))
     ParamType.LocalDate.unapply("2013-01-02T03:04:05").map(_.toString) should equal(Some(expected))
     intercept[IllegalArgumentException] { ParamType.LocalDate.unapply("abc") }
+    ParamType.LocalDate.unapply("") should equal(Some(null))
+    ParamType.LocalDate.unapply("  ") should equal(Some(null))
     ParamType.LocalDate.unapply(null) should equal(None)
   }
 
@@ -167,6 +190,8 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.LocalTime.unapply("03:04:05").map(_.toString) should equal(Some(expected))
     ParamType.LocalTime.unapply("2013-01-02T03:04:05").map(_.toString) should equal(Some(expected))
     intercept[IllegalArgumentException] { ParamType.LocalTime.unapply("abc") }
+    ParamType.LocalTime.unapply("") should equal(Some(null))
+    ParamType.LocalTime.unapply("  ") should equal(Some(null))
     ParamType.LocalTime.unapply(null) should equal(None)
   }
 
