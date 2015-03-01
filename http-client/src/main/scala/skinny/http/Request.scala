@@ -94,7 +94,7 @@ case class Request(var url: String) {
   }
 
   def toHttpURLConnection(method: Method): HttpURLConnection = {
-    if (method == Method.GET && !queryParams.isEmpty) {
+    if (!queryParams.isEmpty) {
       for (queryParam <- queryParams) {
         if (queryParam.value != null) {
           val name: String = queryParam.name
