@@ -153,7 +153,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-freemarker",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-beanutils" %  "commons-beanutils"  % "1.9.2"   % "compile",
-        "org.freemarker"    %  "freemarker"         % "2.3.21"  % "compile"
+        "org.freemarker"    %  "freemarker"         % "2.3.22"  % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ).dependsOn(framework)
