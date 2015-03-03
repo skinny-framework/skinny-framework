@@ -39,6 +39,8 @@ object Controllers {
     twitter.mount(ctx)
     typetalk.mount(ctx)
     dropbox.mount(ctx)
+    backlog.mount(ctx)
+    backlogJp.mount(ctx)
 
     AssetsController.mount(ctx)
   }
@@ -153,6 +155,17 @@ object Controllers {
     val loginUrl = get("/dropbox")(loginRedirect).as('login)
     val callbackUrl = get("/dropbox/callback")(callback).as('callback)
     val okUrl = get("/dropbox/ok")(ok).as('ok)
+  }
+
+  object backlog extends BacklogController with Routes {
+    val loginUrl = get("/backlog")(loginRedirect).as('login)
+    val callbackUrl = get("/backlog/callback")(callback).as('callback)
+    val okUrl = get("/backlog/ok")(ok).as('ok)
+  }
+  object backlogJp extends BacklogJPController with Routes {
+    val loginUrl = get("/backlogjp")(loginRedirect).as('login)
+    val callbackUrl = get("/backlogjp/callback")(callback).as('callback)
+    val okUrl = get("/backlogjp/ok")(ok).as('ok)
   }
 
 }
