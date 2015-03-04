@@ -1,0 +1,8 @@
+<%@val user: Option[skinny.oauth2.client.OAuth2User] %>
+<%@val backlog: Option[skinny.oauth2.client.backlog.BacklogUser] %>
+<% import skinny.util.JSONStringOps %>
+<h3>Backlog OAuth</h3>
+<hr/>
+<pre><%= user.map(u => JSONStringOps.toPrettyJSONString(u)) %></pre>
+<pre><%= backlog.map(u => JSONStringOps.toPrettyJSONString(u)) %></pre>
+

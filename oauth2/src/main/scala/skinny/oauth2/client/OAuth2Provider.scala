@@ -87,6 +87,21 @@ object OAuth2Provider {
     "https://typetalk.in/oauth2/access_token"
   )
 
+  // Project Management Tool "Backlog"
+  // http://backlogtool.com/
+  val Backlog = OAuth2Provider(
+    "backlog",
+    "https://{space}.backlogtool.com/OAuth2AccessRequest.action",
+    "https://{space}.backlogtool.com/api/v2/oauth2/token"
+  )
+  // プロジェクト管理ツール"Backlog"
+  // http://www.backlog.jp/
+  val BacklogJP = OAuth2Provider(
+    "backlog_jp",
+    "https://{space}.backlog.jp/OAuth2AccessRequest.action",
+    "https://{space}.backlog.jp/api/v2/oauth2/token"
+  )
+
   // *** IMPORTANT ***
   // Waiting for your pull request here!
   /*
