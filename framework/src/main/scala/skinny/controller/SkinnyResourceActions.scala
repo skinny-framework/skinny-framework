@@ -67,7 +67,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
    * Shows a list of resource.
    *
    * GET /{resources}/
-   * GET /{resources}/?pageNo=1&pageSize=10
+   * GET /{resources}/?page=1&size=10
    * GET /{resources}
    * GET /{resources}.xml
    * GET /{resources}.json
@@ -77,6 +77,7 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
    */
   override def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
+      val pageSize: Int = params.getAs[Int](pageSizeParamName).getOrElse(this.pageSize)
       val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
       val totalCount: Long = countResources()
       val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
