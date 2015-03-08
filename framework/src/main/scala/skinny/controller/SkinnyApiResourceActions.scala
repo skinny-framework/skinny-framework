@@ -117,13 +117,15 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
 
   protected def pageSize: Int = 20
 
+  protected def pageSizeParamName: String = "size"
+
   protected def pageNoParamName: String = "page"
 
   /**
    * Shows a list of resource.
    *
    * GET /{resources}/
-   * GET /{resources}/?pageNo=1&pageSize=10
+   * GET /{resources}/?page=1&size=10
    * GET /{resources}
    * GET /{resources}.xml
    * GET /{resources}.json
@@ -133,6 +135,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
+      val pageSize: Int = params.getAs[Int](pageSizeParamName).getOrElse(this.pageSize)
       val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
       renderWithFormat(findResources(pageSize, pageNo))
     } else {
