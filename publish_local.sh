@@ -23,7 +23,7 @@ sbt \
   thymeleaf/publishLocal \
   velocity/publishLocal \
   worker/publishLocal \
-  ++2.10.4 \
+  ++2.10.5 \
   clean \
   common/publishLocal \
   assets/publishLocal \
