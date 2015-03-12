@@ -36,6 +36,7 @@ sealed trait Association[Entity] {
       mapper.defaultJoinDefinitions.add(joinDef)
     }
     setExtractorByDefault()
+    mapper.defaultAssociations += this
     this
   }
 
