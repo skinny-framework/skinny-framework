@@ -22,7 +22,7 @@ sbt ++2.11.6 \
   thymeleaf/publishSigned \
   velocity/publishSigned \
   worker/publishSigned \
-  ++2.10.4 \
+  ++2.10.5 \
   clean \
   common/publishSigned \
   assets/publishSigned \
