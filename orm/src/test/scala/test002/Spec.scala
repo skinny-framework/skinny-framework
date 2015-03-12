@@ -5,7 +5,7 @@ import scalikejdbc.scalatest.AutoRollback
 
 import org.scalatest.{ Matchers, fixture }
 
-class Test002Spec extends fixture.FunSpec with Matchers
+class Spec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

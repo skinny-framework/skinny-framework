@@ -8,7 +8,7 @@ import org.scalatest.{ Matchers, fixture }
 /**
  * This spec demonstrates that using hasManyThrough.byDefault each other is impossible.
  */
-class Test001Spec extends fixture.FunSpec with Matchers
+class Spec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

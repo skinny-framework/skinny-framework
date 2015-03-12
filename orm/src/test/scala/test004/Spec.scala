@@ -7,7 +7,7 @@ import scalikejdbc.scalatest.AutoRollback
 import skinny.orm._
 import skinny.orm.feature.TimestampsFeature
 
-class Test004Spec extends fixture.FunSpec with Matchers
+class Spec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {

@@ -17,7 +17,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from summary")
 }
 
-class Test005Spec extends fixture.FunSpec with Matchers
+class Spec extends fixture.FunSpec with Matchers
     with Connection
     with CreateTables
     with AutoRollback {
