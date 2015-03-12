@@ -35,7 +35,7 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
       override def rawValueToId(value: Any) = _self.rawValueToId(value).asInstanceOf[Id]
       override def idToRawValue(id: Id) = id
 
-      override def associations = _self.associations ++ _associations
+      override val associations = _self.associations ++ _associations
 
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors

@@ -52,12 +52,10 @@ trait AssociationsFeature[Entity]
 
   import AssociationsFeature._
 
-  val defaultAssociations = new mutable.LinkedHashSet[Association[_]]
-
   /**
    * Associations
    */
-  def associations = defaultAssociations ++ new mutable.LinkedHashSet[Association[_]]
+  val associations = new mutable.LinkedHashSet[Association[_]]
 
   private[skinny] def belongsToAssociations: Seq[BelongsToAssociation[Entity]] = {
     associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]])

@@ -47,7 +47,7 @@ trait CRUDFeatureWithId[Id, Entity]
       // override def idToRawValue(id: Id) = _self.idToRawValue(id)
       override def idToRawValue(id: Id) = id
 
-      override def associations = _self.associations ++ _associations
+      override val associations = _self.associations ++ _associations
 
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
@@ -90,7 +90,7 @@ trait CRUDFeatureWithId[Id, Entity]
       override def rawValueToId(value: Any) = _self.rawValueToId(value)
       override def idToRawValue(id: Id) = _self.idToRawValue(id)
 
-      override def associations = _self.associations
+      override val associations = _self.associations
 
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors

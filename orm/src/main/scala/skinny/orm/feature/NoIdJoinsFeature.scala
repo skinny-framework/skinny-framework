@@ -32,7 +32,7 @@ trait NoIdJoinsFeature[Entity] extends SkinnyMapperBase[Entity] with Association
       override def primaryKeyField = _self.primaryKeyField
       override def primaryKeyFieldName = _self.primaryKeyFieldName
 
-      override def associations = _self.associations ++ _associations
+      override val associations = _self.associations ++ _associations
 
       override val defaultJoinDefinitions = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors

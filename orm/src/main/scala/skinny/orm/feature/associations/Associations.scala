@@ -36,7 +36,7 @@ sealed trait Association[Entity] {
       mapper.defaultJoinDefinitions.add(joinDef)
     }
     setExtractorByDefault()
-    mapper.defaultAssociations += this
+    mapper.associations.add(this)
     this
   }
 
@@ -60,8 +60,6 @@ case class BelongsToAssociation[Entity](
   def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): BelongsToAssociation[Entity] = {
     this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
   }
-
-  mapper.associations.add(this)
 }
 
 /**
@@ -82,8 +80,6 @@ case class HasOneAssociation[Entity](
   def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): HasOneAssociation[Entity] = {
     this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
   }
-
-  mapper.associations.add(this)
 }
 
 /**
@@ -104,6 +100,4 @@ case class HasManyAssociation[Entity](
   def includes[A](merge: (Seq[Entity], Seq[A]) => Seq[Entity]): HasManyAssociation[Entity] = {
     this.copy(extractor = extractor.copy(includesMerge = merge.asInstanceOf[(Seq[Entity], Seq[_]) => Seq[Entity]]))
   }
-
-  mapper.associations.add(this)
 }
