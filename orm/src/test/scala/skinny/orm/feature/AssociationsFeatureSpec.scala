@@ -14,6 +14,7 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
   NamedDB('AssociationsFeatureSpec).autoCommit { implicit s =>
     sql"create table company(id bigserial, name varchar(100) not null)".execute.apply()
     sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute.apply()
+    sql"create table organization(name varchar(100) not null, company_id bigint references company(id))".execute.apply()
   }
 
   it should "have #defaultIncludesMerge" in {
@@ -24,6 +25,7 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
 
   case class Person(id: Long, name: String, companyId: Option[Long], company: Option[Company] = None)
   case class Company(id: Long, name: String)
+  case class Organization(name: String, companyId: Option[Long], company: Option[Company] = None)
 
   object Person extends SkinnyMapper[Person] {
     override def connectionPoolName = 'AssociationsFeatureSpec
@@ -34,6 +36,11 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
     override def connectionPoolName = 'AssociationsFeatureSpec
     override def defaultAlias = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = autoConstruct(rs, n)
+  }
+  object Organization extends SkinnyNoIdCRUDMapper[Organization] {
+    override def connectionPoolName = 'AssociationsFeatureSpec
+    override def defaultAlias = createAlias("o")
+    override def extract(rs: WrappedResultSet, n: ResultName[Organization]) = autoConstruct(rs, n, "company")
   }
 
   it should "have #joinWithDefaults" in {
@@ -81,6 +88,10 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
 
   it should "have #extract" in {
     Person.extract(sql"")
+  }
+
+  it should "have #hasMany with NoId" in {
+    Company.hasMany[Organization](Organization -> Organization.defaultAlias, (c, o) => sqls.eq(c.id, o.companyId), (c, os) => c)
   }
 
 }
