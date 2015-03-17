@@ -12,7 +12,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val h2Version = "1.4.186"
   lazy val kuromojiVersion = "5.0.0"
   lazy val mockitoVersion = "1.10.19"
-  lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.9.v20150224"
+  lazy val jettyVersion = "9.2.1.v20140609" // latest: "9.2.10.v20150310"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -307,10 +307,11 @@ object SkinnyFrameworkBuild extends Build {
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % "compile" exclude("org.slf4j", "slf4j-api")
   )
   lazy val scalatraDependencies   = Seq(
-    "org.scalatra"  %% "scalatra"           % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.scalatra"  %% "scalatra-scalate"   % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.scalatra"  %% "scalatra-json"      % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
-    "org.scalatra"  %% "scalatra-scalatest" % scalatraVersion  % "test"    
+    "org.scalatra"  %% "scalatra"             % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalatra"  %% "scalatra-scalate"     % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalatra.scalate"  %% "scalate-core" % "1.7.1"          % "compile",
+    "org.scalatra"  %% "scalatra-json"        % scalatraVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
+    "org.scalatra"  %% "scalatra-scalatest"   % scalatraVersion  % "test"
   ) ++ json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies
 
   lazy val scalikejdbcDependencies = Seq(
