@@ -222,7 +222,7 @@ trait AssociationsFeature[Entity]
     belongsToWithAliasAndFkAndJoinCondition(right, fk, sqls.eq(this.defaultAlias.field(fk), right._2.field(right._1.primaryKeyFieldName)), merge)
   }
 
-  def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsWithIdFeature[_, A], Alias[A]), fk: String, on: SQLSyntax,
+  def belongsToWithAliasAndFkAndJoinCondition[A](right: (AssociationsFeature[A], Alias[A]), fk: String, on: SQLSyntax,
     merge: (Entity, Option[A]) => Entity): BelongsToAssociation[Entity] = {
     val joinDef = createJoinDefinition(LeftOuterJoin, this -> this.defaultAlias, right, on)
     val extractor = extractBelongsTo[A](right._1, fk, right._2, merge)

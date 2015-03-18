@@ -23,7 +23,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
      body text not null,
      created_at timestamp not null default current_timestamp
    )""")
-  runIfFailed(sql"select count(1) from summary")
+  runIfFailed(sql"select count(1) from blog")
 }
 
 class Spec extends fixture.FunSpec with Matchers
