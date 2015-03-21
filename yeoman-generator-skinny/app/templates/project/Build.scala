@@ -21,7 +21,7 @@ object SkinnyAppBuild extends Build {
   val theScalaVersion = "2.11.6"
   val jettyVersion = "9.2.1.v20140609" // latest: "9.2.10.v20150310"
 
-  lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ herokuSettings ++ Seq(
+  lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ Seq(
     organization := appOrganization,
     name         := appName,
     version      := appVersion,
@@ -132,14 +132,6 @@ object SkinnyAppBuild extends Build {
       ideaIgnoreModule := true
     ) ++ jettyOrbitHack
   )
-
-  // -------------------------------------------------------
-  // Deployment on Heroku
-  // -------------------------------------------------------
-  // Run "./skinny heroku:init"
-
-  lazy val stage = taskKey[Unit]("Dummy stage task to keep Heroku happy")
-  lazy val herokuSettings = Seq(stage := { "heroku/stage" ! })
 
 }
 

@@ -234,11 +234,6 @@ resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (manage
   rm -fr standalone-build/src/main/webapp/WEB-INF/assets
   mv standalone-build/src/main/webapp/assets standalone-build/src/main/webapp/WEB-INF/
   ${sbt_path} standalone-build/assembly
-elif [ "$command" == "heroku:init" ]; then
-  echo "web: heroku/run" > Procfile
-  echo "java.runtime.version=1.7" > system.properties
-  echo "Heroku deployment settings are prepared."
-
 elif [ "$command" == "publish" ]; then
   setup_build
   copy_resources_to_task
@@ -275,8 +270,6 @@ else
   echo ""
   echo "  eclipse       : will setup Scala IDE settings"
   echo "  idea/gen-idea : will setup IntelliJ IDEA settings"
-  echo ""
-  echo "  heroku:init   : will setup Heroku deployment settings"
   echo ""
   echo "  task:clean    : will clean task project's target directory"
   echo "  task:run      : will run tasks"
