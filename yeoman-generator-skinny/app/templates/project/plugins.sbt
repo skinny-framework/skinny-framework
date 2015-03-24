@@ -27,8 +27,9 @@ addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.1" excludeAll(
   ExclusionRule(organization = "org.eclipse.jetty"),
   ExclusionRule(organization = "org.apache.tomcat.embed")
 ))
+
 // Scalate template files precompilation
-addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
+addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.7.1.0")
 
 // --------
 // format Scala source code automatically
@@ -49,4 +50,5 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
 // addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.8")
 
 // visualize this project's dependencies
+// TODO: sbt 0.13.8 support - https://github.com/jrudolph/sbt-dependency-graph/issues/67
 // addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")

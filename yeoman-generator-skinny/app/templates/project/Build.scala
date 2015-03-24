@@ -1,6 +1,6 @@
 import sbt._, Keys._
 import org.scalatra.sbt._, PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
+import skinny.scalate.ScalatePlugin._, ScalateKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
 import com.earldouglas.xsbtwebplugin.PluginKeys._
 import org.sbtidea.SbtIdeaPlugin._
