@@ -75,20 +75,20 @@ class Spec extends fixture.FunSpec with Matchers
       _afterDeleteBy += 1
     })
 
-    @deprecated("will be removed someday")
+    @deprecated("will be removed someday", "1.3.12")
     override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession): Unit = {
       _beforeCreateDeprecated += 1
     }
-    @deprecated("will be removed someday")
+    @deprecated("will be removed someday", "1.3.12")
     override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(implicit s: DBSession): Unit = {
       _afterCreateDeprecated += 1
     }
 
-    @deprecated("will be removed someday")
+    @deprecated("will be removed someday", "1.3.12")
     override protected def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession): Unit = {
       _beforeDeleteByDeprecated += 1
     }
-    @deprecated("will be removed someday")
+    @deprecated("will be removed someday", "1.3.12")
     override protected def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession): Int = {
       _afterDeleteByDeprecated += 1
       1
