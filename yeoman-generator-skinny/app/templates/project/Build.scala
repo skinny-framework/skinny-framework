@@ -16,10 +16,10 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.3.15"
-  val scalatraVersion = "2.3.0"
+  val skinnyVersion = "1.3.16-SNAPSHOT"
+  val scalatraVersion = "2.3.1"
   val theScalaVersion = "2.11.6"
-  val jettyVersion = "9.2.1.v20140609" // latest: "9.2.10.v20150310"
+  val jettyVersion = "9.2.10.v20150310"
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ Seq(
     organization := appOrganization,
@@ -35,10 +35,9 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"    % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"       % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"         % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"      % "1.0.3",
+      "org.skinny-framework"    %  "skinny-logback"      % "1.0.4",
       "org.apache.commons"      %  "commons-dbcp2"       % "2.1",
       "com.h2database"          %  "h2"                  % "1.4.186",      // your own JDBC driver
-      "ch.qos.logback"          %  "logback-classic"     % "1.1.2",
       "org.skinny-framework"    %% "skinny-factory-girl" % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"         % skinnyVersion   % "test",
       "org.scalatra"            %% "scalatra-scalatest"  % scalatraVersion % "test",

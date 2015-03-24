@@ -1,5 +1,6 @@
 resolvers += Classpaths.sbtPluginReleases
-addMavenResolverPlugin
+// TODO: https://github.com/jrudolph/sbt-dependency-graph/issues/67
+//addMavenResolverPlugin
 
 addSbtPlugin("com.mojolly.scalate" % "xsbt-scalate-generator" % "0.5.0")
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt" % "0.3.5" excludeAll(
