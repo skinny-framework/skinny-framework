@@ -1,5 +1,6 @@
 #!/bin/bash
 if [[ "$TEST_TYPE" == "framework" ]]; then
+  export SKINNY_ENV=test
   if [[ "$TRAVIS_SCALA_VERSION" == 2.11* ]]; then
     gem install sass &&
     sbt "example/run db:migrate test" &&
