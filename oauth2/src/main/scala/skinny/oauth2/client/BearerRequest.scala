@@ -5,6 +5,7 @@ import org.apache.oltu.oauth2.common.OAuth
 
 import scala.collection.concurrent.TrieMap
 import scala.collection.JavaConverters._
+import scala.language.reflectiveCalls
 
 object BearerRequest {
 
