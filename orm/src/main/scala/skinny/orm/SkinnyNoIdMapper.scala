@@ -16,7 +16,8 @@ trait SkinnyNoIdMapper[Entity]
     with NoIdFinderFeature[Entity]
     with NoIdQueryingFeature[Entity]
     with NoIdAssociationsFeature[Entity]
-    with StrongParametersFeature {
+    with StrongParametersFeature
+    with AssociationsFeature[Entity] {
 
   override def hasOne[A](
     right: AssociationsWithIdFeature[_, A],

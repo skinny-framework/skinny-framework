@@ -283,7 +283,7 @@ trait AssociationsFeature[Entity]
     defaultOneToManyExtractors.add(extractor)
   }
 
-  def hasMany[M](many: (AssociationsWithIdFeature[_, M], Alias[M]), on: (Alias[Entity], Alias[M]) => SQLSyntax, merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
+  def hasMany[M](many: (AssociationsFeature[M], Alias[M]), on: (Alias[Entity], Alias[M]) => SQLSyntax, merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
     val joinDef = leftJoin(this -> this.defaultAlias, many, on.asInstanceOf[(Alias[_], Alias[_]) => SQLSyntax])
     val extractor = extractOneToMany[M](many._1, many._2, merge)
     val definitions = new mutable.LinkedHashSet().+=(joinDef).++(many._1.defaultJoinDefinitions)
@@ -313,7 +313,7 @@ trait AssociationsFeature[Entity]
   def hasManyThrough[M1, M2](
     through: (AssociationsFeature[M1], Alias[M1]),
     throughOn: (Alias[Entity], Alias[M1]) => SQLSyntax,
-    many: (AssociationsWithIdFeature[_, M2], Alias[M2]),
+    many: (AssociationsFeature[M2], Alias[M2]),
     on: (Alias[M1], Alias[M2]) => SQLSyntax,
     merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
 
