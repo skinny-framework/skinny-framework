@@ -1,6 +1,6 @@
 import sbt._, Keys._
 import org.scalatra.sbt._, PluginKeys._
-import com.mojolly.scalate.ScalatePlugin._, ScalateKeys._
+import skinny.scalate.ScalatePlugin._, ScalateKeys._
 import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
@@ -19,7 +19,7 @@ object SkinnyFrameworkBuild extends Build {
     version := currentVersion,
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
