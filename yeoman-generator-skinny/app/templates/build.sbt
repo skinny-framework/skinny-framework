@@ -12,8 +12,3 @@ import org.joda.time._
 import scalikejdbc._, config._
 DBSettings.initialize()
 """
-
-// ------------------------------
-// sbt-dependency-graph
-//net.virtualvoid.sbt.graph.Plugin.graphSettings
-

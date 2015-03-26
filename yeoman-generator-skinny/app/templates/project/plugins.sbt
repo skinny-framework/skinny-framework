@@ -48,7 +48,3 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
 
 // check the latest version of dependencies
 // addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.8")
-
-// visualize this project's dependencies
-// TODO: sbt 0.13.8 support - https://github.com/jrudolph/sbt-dependency-graph/issues/67
-// addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
