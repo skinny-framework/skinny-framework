@@ -13,6 +13,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val kuromojiVersion = "5.0.0"
   lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.10.v20150310"
+  lazy val logbackVersion = "1.1.3"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -175,7 +176,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-velocity",
       libraryDependencies ++= scalatraDependencies ++ Seq(
-        "commons-logging"     % "commons-logging" % "1.1.1" % "compile",
+        "commons-logging"     % "commons-logging" % "1.2"   % "compile",
         "org.apache.velocity" % "velocity"        % "1.7"   % "compile",
         "org.apache.velocity" % "velocity-tools"  % "2.0"   % "compile" excludeAll(
           ExclusionRule("org.apache.velocity", "velocity"),
@@ -234,12 +235,12 @@ object SkinnyFrameworkBuild extends Build {
   lazy val logback = Project(id = "logback", base = file("logback"),
     settings = baseSettings ++ Seq(
       name             := "skinny-logback",
-      version          := "1.0.4",
+      version          := "1.0.6-SNAPSHOT",
       crossPaths       := false,
       autoScalaLibrary := false,
       libraryDependencies ++= Seq(
-        "ch.qos.logback" % "logback-classic" % "1.1.2"  % "compile" exclude("org.slf4j", "slf4j-api"),
-        "org.slf4j"      % "slf4j-api"       % "1.7.10" % "compile"
+        "ch.qos.logback" % "logback-classic" % logbackVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
+        "org.slf4j"      % "slf4j-api"       % "1.7.10"        % "compile"
       )
     )
   )
@@ -278,7 +279,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
         "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     %  "logback-classic"    % "1.1.2",
+        "ch.qos.logback"     %  "logback-classic"    % logbackVersion,
         "org.scalatra"       %% "scalatra-specs2"    % scalatraVersion       % "test",
         "org.scalatra"       %% "scalatra-scalatest" % scalatraVersion       % "test",
         "org.mockito"        %  "mockito-core"       % mockitoVersion        % "test",
@@ -350,10 +351,10 @@ object SkinnyFrameworkBuild extends Build {
   lazy val testDependencies = Seq(
     "org.scalatest"           %% "scalatest"       % "2.2.4"        % "test",
     "org.mockito"             %  "mockito-core"    % mockitoVersion % "test",
-    "ch.qos.logback"          %  "logback-classic" % "1.1.2"        % "test",
+    "ch.qos.logback"          %  "logback-classic" % logbackVersion % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % "test",
     "com.h2database"          %  "h2"              % h2Version      % "test",
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.3"        % "test",
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.5"        % "test",
     "com.h2database"          %  "h2"              % h2Version      % "test"
   )
 
