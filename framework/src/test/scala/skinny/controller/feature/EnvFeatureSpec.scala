@@ -16,4 +16,10 @@ class EnvFeatureSpec extends FlatSpec with Matchers {
     }
   }
 
+  it should "Scalatra default value should be converted to lower case" in {
+    class Controller extends SkinnyApiController {
+      skinnyEnv should equal(Option("development"))
+    }
+  }
+
 }
