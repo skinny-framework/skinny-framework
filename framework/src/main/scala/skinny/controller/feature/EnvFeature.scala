@@ -13,8 +13,10 @@ trait EnvFeature extends ScalatraBase {
    *
    * @return env string such as "production"
    */
-  def skinnyEnv: Option[String] = SkinnyEnv.get().orElse(Option(environment))
-
+  def skinnyEnv: Option[String] = SkinnyEnv.get().orElse {
+    // convert upper cased "org.scalatra.environment" (e.g. DEVELOPMENT) to skinny's style here
+    Option(environment).map(_.toLowerCase(java.util.Locale.ENGLISH))
+  }
   /**
    * Predicates current env is "development" or "dev".
    *
