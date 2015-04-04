@@ -9,13 +9,14 @@ import org.scalatra.ScalatraBase
 trait EnvFeature extends ScalatraBase {
 
   /**
-   * Env string value from "skinny.env", "org.scalatra.environment" or default value "development".
+   * Env string value from "skinny.env" or "org.scalatra.environment".
    *
    * @return env string such as "production"
    */
-  // Skinny is unified lower case. Therefore, convert to lower case.
-  def skinnyEnv: Option[String] = SkinnyEnv.get().orElse(Option(environment.toLowerCase))
-
+  def skinnyEnv: Option[String] = SkinnyEnv.get().orElse {
+    // convert upper cased "org.scalatra.environment" (e.g. DEVELOPMENT) to skinny's style here
+    Option(environment).map(_.toLowerCase(java.util.Locale.ENGLISH))
+  }
   /**
    * Predicates current env is "development" or "dev".
    *
