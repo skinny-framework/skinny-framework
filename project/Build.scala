@@ -236,7 +236,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val logback = Project(id = "logback", base = file("logback"),
     settings = baseSettings ++ Seq(
       name             := "skinny-logback",
-      version          := "1.0.6-SNAPSHOT",
+      version          := "1.0.7-SNAPSHOT",
       crossPaths       := false,
       autoScalaLibrary := false,
       libraryDependencies ++= Seq(
