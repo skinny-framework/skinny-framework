@@ -9,11 +9,12 @@ object SkinnyFrameworkBuild extends Build {
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.5"
-  lazy val h2Version = "1.4.186"
-  lazy val kuromojiVersion = "5.0.0"
+  lazy val h2Version = "1.4.187"
+  lazy val kuromojiVersion = "5.1.0"
   lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.10.v20150310"
   lazy val logbackVersion = "1.1.3"
+  lazy val slf4jApiVersion = "1.7.12"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -135,7 +136,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.2.1"       % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.8.Final" % "test"
+        "org.hibernate"   %  "hibernate-core" % "4.3.9.Final" % "test"
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -166,8 +167,8 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.7"         % "compile" exclude("org.thymeleaf", "thymeleaf"),
-        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.21"        % "compile"
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.8"         % "compile" exclude("org.thymeleaf", "thymeleaf"),
+        "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ).dependsOn(framework)
@@ -227,7 +228,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-twitter-controller",
       libraryDependencies ++= Seq(
-        "org.twitter4j" % "twitter4j-core" % "4.0.2" % "compile"
+        "org.twitter4j" % "twitter4j-core" % "4.0.3" % "compile"
       ) ++ servletApiDependencies
     )
   ).dependsOn(framework)
@@ -240,7 +241,7 @@ object SkinnyFrameworkBuild extends Build {
       autoScalaLibrary := false,
       libraryDependencies ++= Seq(
         "ch.qos.logback" % "logback-classic" % logbackVersion  % "compile" exclude("org.slf4j", "slf4j-api"),
-        "org.slf4j"      % "slf4j-api"       % "1.7.10"        % "compile"
+        "org.slf4j"      % "slf4j-api"       % slf4jApiVersion % "compile"
       )
     )
   )
@@ -338,7 +339,7 @@ object SkinnyFrameworkBuild extends Build {
     "javax.servlet" % "javax.servlet-api" % "3.1.0"  % "provided"
   )
   lazy val slf4jApiDependencies   = Seq(
-    "org.slf4j"     % "slf4j-api"         % "1.7.10" % "compile"
+    "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % "compile"
   )
   lazy val jodaDependencies = Seq(
     "joda-time"     %  "joda-time"        % "2.7"    % "compile",
