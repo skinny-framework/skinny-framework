@@ -6,11 +6,15 @@ import javax.servlet.http._
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
-import skinny.DBSettings
+import scalikejdbc._
 
-class TxPerRequestFilterSpec extends FunSpec with Matchers with MockitoSugar with DBSettings {
+class TxPerRequestFilterSpec extends FunSpec with Matchers with MockitoSugar {
+
+  Class.forName("org.h2.Driver")
+  ConnectionPool.add('TxPerRequestFilterSpec_ORM, "jdbc:h2:mem:TxPerRequestFilterSpec_ORM", "sa", "sa")
 
   val filter = new TxPerRequestFilter {
+    override def connectionPool = ConnectionPool.get('TxPerRequestFilterSpec_ORM)
   }
 
   describe("TxPerRequestFilter") {
