@@ -20,7 +20,11 @@ object JettyLauncher {
     val context = new WebAppContext()
     val contextPath = sys.env.get("SKINNY_PREFIX").orElse(getEnvVarOrSysProp("skinny.prefix")).getOrElse("/")
     context.setContextPath(contextPath)
-    context.setResourceBase("src/main/webapp")
+    context.setWar({
+      val domain = this.getClass.getProtectionDomain
+      val location = domain.getCodeSource.getLocation
+      location.toExternalForm
+    })
     context.addEventListener(new ScalatraListener)
     context.addServlet(classOf[DefaultServlet], "/")
     server.setHandler(context)
