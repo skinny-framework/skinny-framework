@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "1.3.16"
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
-  lazy val scalikeJDBCVersion = "2.2.5"
+  lazy val scalikeJDBCVersion = "2.2.6"
   lazy val h2Version = "1.4.187"
   lazy val kuromojiVersion = "5.1.0"
   lazy val mockitoVersion = "1.10.19"
