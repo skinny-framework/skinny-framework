@@ -5,7 +5,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.16"
+  lazy val currentVersion = "1.3.17"
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.6"
@@ -355,7 +355,7 @@ object SkinnyFrameworkBuild extends Build {
     "ch.qos.logback"          %  "logback-classic" % logbackVersion % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % "test",
     "com.h2database"          %  "h2"              % h2Version      % "test",
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.5"        % "test",
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.6"        % "test",
     "com.h2database"          %  "h2"              % h2Version      % "test"
   )
 
