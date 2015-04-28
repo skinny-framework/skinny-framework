@@ -231,8 +231,6 @@ resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (manage
   setup_standalone_build
   copy_resources_to_task
   ${sbt_path} "task/run assets:precompile standalone-build"
-  rm -fr standalone-build/src/main/webapp/WEB-INF/assets
-  mv standalone-build/src/main/webapp/assets standalone-build/src/main/webapp/WEB-INF/
   ${sbt_path} standalone-build/assembly
 elif [ "$command" == "publish" ]; then
   setup_build
