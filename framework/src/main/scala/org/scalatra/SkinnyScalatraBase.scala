@@ -1,10 +1,12 @@
 package org.scalatra
 
 import org.scalatra.ScalatraBase._
+import java.util.concurrent.atomic.AtomicInteger
 import javax.servlet.Filter
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest, HttpServlet }
 import scala.util.Failure
 import skinny.SkinnyEnv
+import skinny.logging.Logging
 
 /**
  * Partially patched ScalatraBase for Skinny Framework.
@@ -17,7 +19,7 @@ import skinny.SkinnyEnv
  * So We've patched ScalatraBase to ignore "org.scalatra.ScalatraFilter.afterFilters.Run" only for Filters.
  * Hope Scalatra to support ignoring "org.scalatra.ScalatraFilter.afterFilters.Run" option to 3rd party.
  */
-trait SkinnyScalatraBase extends ScalatraBase {
+trait SkinnyScalatraBase extends ScalatraBase with Logging {
 
   override protected def executeRoutes() {
     var result: Any = null
@@ -118,6 +120,27 @@ trait SkinnyScalatraBase extends ScalatraBase {
         if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
         else throw e
     }
+  }
+
+  /**
+   * Count execution of error filter registration.
+   */
+  private[this] lazy val errorMethodCallCountAtSkinnyScalatraBase: AtomicInteger = new AtomicInteger(0)
+
+  /**
+   * Detects error filter leak issue as an error.
+   */
+  protected def detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase: Boolean = false
+
+  // https://github.com/scalatra/scalatra/blob/v2.3.1/core/src/main/scala/org/scalatra/ScalatraBase.scala#L333-L335
+  override def error(handler: ErrorHandler) {
+    val count = errorMethodCallCountAtSkinnyScalatraBase.incrementAndGet()
+    if (count > 500) {
+      val message = s"skinny's error filter registration for this controller has been evaluated $count times, this behavior will cause memory leak."
+      if (detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase) throw new RuntimeException(message)
+      else logger.warn(message)
+    }
+    super.error(handler)
   }
 
 }
