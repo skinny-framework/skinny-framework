@@ -6,7 +6,7 @@ import org.scalatra._
 /**
  * Activates skinny filters.
  */
-trait SkinnyFilterActivation extends SkinnyScalatraBase { self: SkinnyControllerBase =>
+trait SkinnyFilterActivation { self: SkinnyControllerBase =>
 
   sealed trait RenderingRequired
   case object WithRendering extends RenderingRequired
@@ -27,11 +27,8 @@ trait SkinnyFilterActivation extends SkinnyScalatraBase { self: SkinnyController
     skinnyErrorFilters.update(WithoutRendering, mergedHandlers)
   }
 
-  // mark as already initialized
-  private[this] var isFiltersTraverseAtSkinnyFilterActivationAlreadyLoaded: Boolean = false
-
-  // combined error filters
-  private[this] lazy val filtersTraverseAtSkinnyFilterActivation: PartialFunction[Throwable, Any] = {
+  // combine error filters
+  private[this] val filtersTraverse: PartialFunction[Throwable, Any] = {
     case (t: Throwable) =>
 
       skinnyErrorFilters.get(WithoutRendering).foreach { handlers =>
@@ -67,15 +64,7 @@ trait SkinnyFilterActivation extends SkinnyScalatraBase { self: SkinnyController
       if (rendered) body else throw t
   }
 
-  /**
-   * Start applying all the filters
-   */
-  beforeAction() {
-    if (!isFiltersTraverseAtSkinnyFilterActivationAlreadyLoaded) {
-      // register combined error filters
-      error(filtersTraverseAtSkinnyFilterActivation)
-      isFiltersTraverseAtSkinnyFilterActivationAlreadyLoaded = true
-    }
-  }
+  // register combined error filters
+  error(filtersTraverse)
 
 }
