@@ -62,7 +62,7 @@ trait SkinnyFilterActivation extends SkinnyScalatraBase { self: SkinnyController
               }
             }
         }
-      }.getOrElse(null)
+      }.orNull
 
       if (rendered) body else throw t
   }
