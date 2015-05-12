@@ -52,13 +52,13 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-common",
       libraryDependencies  <++= (scalaVersion) { (sv) =>
         Seq(
-          "com.typesafe"      % "config"                    % "1.2.1"         % "compile",
+          "com.typesafe"      % "config"                    % "1.3.0"         % "compile",
           "org.apache.lucene" % "lucene-core"               % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-common"   % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-kuromoji" % kuromojiVersion % "provided"
         ) ++
         jodaDependencies ++ slf4jApiDependencies ++ testDependencies ++ (sv match {
-          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3" % "compile")
+          case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" % "compile")
           case _ => Nil
         })
       }
