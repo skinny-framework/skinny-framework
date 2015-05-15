@@ -49,12 +49,13 @@ object SkinnyAppBuild extends Build {
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
-    // Faster "./skinny idea" 
+    // Faster "./skinny idea"
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    fork in Test := true,
     scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
     ideaExcludeFolders := Seq(".idea", ".idea_modules", "db", "target", "task/target", "build", "standalone-build", "node_modules")
   )
