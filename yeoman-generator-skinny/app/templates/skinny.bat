@@ -377,7 +377,7 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
-  ECHO   scalaVersion := "2.11.5", >> "_skinny_scalajs_settings.sbt"
+  ECHO   scalaVersion := "2.11.6", >> "_skinny_scalajs_settings.sbt"
   ECHO   unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
   ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.8.0", >> "_skinny_scalajs_settings.sbt"

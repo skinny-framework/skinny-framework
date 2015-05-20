@@ -62,7 +62,7 @@ addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.3\")" > ${setting_file}
 
 echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).settings(
   name := \"application\", // JavaScript file name
-  scalaVersion := \"2.11.5\",
+  scalaVersion := \"2.11.6\",
   unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
   libraryDependencies ++= Seq(
     \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.8.0\",
