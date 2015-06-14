@@ -39,7 +39,7 @@ object SkinnyJapaneseAnalyzerFactory {
   def create(dictionaryText: String): SkinnyJapaneseAnalyzer = {
     val dictionary: UserDictionary = using(new ByteArrayInputStream(dictionaryText.getBytes)) { stream =>
       using(new InputStreamReader(stream)) { reader =>
-        new UserDictionary(reader)
+        UserDictionary.open(reader)
       }
     }
     create(dictionary)

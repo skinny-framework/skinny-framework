@@ -19,7 +19,7 @@ object SkinnyAppBuild extends Build {
   val skinnyVersion = "1.3.18"
   val scalatraVersion = "2.3.1"
   val theScalaVersion = "2.11.6"
-  val jettyVersion = "9.2.10.v20150310"
+  val jettyVersion = "9.2.11.v20150529"
 
   lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ Seq(
     organization := appOrganization,

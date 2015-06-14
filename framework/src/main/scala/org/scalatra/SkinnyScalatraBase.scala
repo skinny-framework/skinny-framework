@@ -102,7 +102,7 @@ trait SkinnyScalatraBase extends ScalatraBase with Logging {
       case e: PassException => None
     }
 
-  // TODO fixed?
+  // TODO: Scalatra 2.3.1 still has this issue. Remove this override when it will be fixed in the future
   override def url(
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,

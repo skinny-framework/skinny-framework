@@ -8,11 +8,11 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "1.3.18"
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
-  lazy val scalikeJDBCVersion = "2.2.6"
+  lazy val scalikeJDBCVersion = "2.2.7"
   lazy val h2Version = "1.4.187"
-  lazy val kuromojiVersion = "5.1.0"
+  lazy val kuromojiVersion = "5.2.0"
   lazy val mockitoVersion = "1.10.19"
-  lazy val jettyVersion = "9.2.10.v20150310"
+  lazy val jettyVersion = "9.2.11.v20150529"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
 
@@ -53,7 +53,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies  <++= (scalaVersion) { (sv) =>
         Seq(
           // NOTE: 1.3.0 requires Java 8 or higher
-          "com.typesafe"      % "config"                    % "1.2.1"         % "compile",
+          "com.typesafe"      % "config"                    % "1.3.0"         % "compile",
           "org.apache.lucene" % "lucene-core"               % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-common"   % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-kuromoji" % kuromojiVersion % "provided"
@@ -136,8 +136,8 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"    %  "flyway-core"    % "3.2.1"       % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.9.Final" % "test"
+        "org.flywaydb"    %  "flyway-core"    % "3.2.1"        % "compile",
+        "org.hibernate"   %  "hibernate-core" % "4.3.10.Final" % "test"
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -343,7 +343,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % "compile"
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.7"    % "compile",
+    "joda-time"     %  "joda-time"        % "2.8"    % "compile",
     "org.joda"      %  "joda-convert"     % "1.7"    % "compile"
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
@@ -351,7 +351,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"            % "provided"
   )
   lazy val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.4"        % "test",
+    "org.scalatest"           %% "scalatest"       % "2.2.5"        % "test",
     "org.mockito"             %  "mockito-core"    % mockitoVersion % "test",
     "ch.qos.logback"          %  "logback-classic" % logbackVersion % "test",
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % "test",
