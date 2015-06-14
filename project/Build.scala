@@ -53,7 +53,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies  <++= (scalaVersion) { (sv) =>
         Seq(
           // NOTE: 1.3.0 requires Java 8 or higher
-          "com.typesafe"      % "config"                    % "1.3.0"         % "compile",
+          "com.typesafe"      % "config"                    % "1.2.1"         % "compile",
           "org.apache.lucene" % "lucene-core"               % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-common"   % kuromojiVersion % "provided",
           "org.apache.lucene" % "lucene-analyzers-kuromoji" % kuromojiVersion % "provided"
