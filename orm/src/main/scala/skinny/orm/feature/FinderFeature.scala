@@ -146,16 +146,33 @@ trait FinderFeatureWithId[Id, Entity]
     }
   }
 
-  def findAllByWithLimitOffsetForOneToManyRelations(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+  def findAllByWithLimitOffsetForOneToManyRelations(
+    where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
+      implicit s: DBSession = autoSession): List[Entity] = {
 
     // find ids for pagination
-    val ids: List[Any] = withSQL {
-      val sql = singleSelectQuery
-        .where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
-      if (orderings.isEmpty) sql.limit(limit).offset(offset)
-      else sql.orderBy(orderings.headOption.getOrElse(defaultOrdering)).limit(limit).offset(offset)
-    }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
+    val ids: Seq[Any] = withSQL {
+      lazy val allowedForDistinctQuery: Seq[SQLSyntax] = {
+        columns.map(column => SQLSyntax.createUnsafely(s"${defaultAlias.tableAliasName}.${column}", Nil))
+      }
+      val baseQuery = {
+        val columnsToFetch: Seq[SQLSyntax] = Seq(sqls"distinct ${defaultAlias.field(primaryKeyFieldName)}") ++ {
+          // in this case, intentionally orderings are empty
+          if (orderings.isEmpty) Nil
+          else orderingsForDistinctQuery(orderings, allowedForDistinctQuery).map(removeAscDesc)
+        }
+        selectQueryWithAdditionalAssociations(
+          select(columnsToFetch: _*).from(as(defaultAlias)),
+          belongsToAssociations ++ includedBelongsToAssociations,
+          hasOneAssociations ++ includedHasOneAssociations,
+          hasManyAssociations ++ includedHasManyAssociations.toSet)
+      }
+      val query = baseQuery.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
+
+      if (orderings.isEmpty) query.limit(limit).offset(offset)
+      else query.orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*)).limit(limit).offset(offset)
+
+    }.map(_.any(1)).list.apply()
 
     if (ids.isEmpty) {
       Nil
@@ -173,7 +190,19 @@ trait FinderFeatureWithId[Id, Entity]
     }
   }
 
-  @deprecated("Use #findAllByWithLimitOffset or #findAllByWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
+  private[this] def removeAscDesc(s: SQLSyntax): SQLSyntax = {
+    SQLSyntax.createUnsafely(
+      s.value
+        .replaceFirst(" desc$", "").replaceFirst(" asc$", "")
+        .replaceFirst(" DESC$", "").replaceFirst(" ASC$", ""),
+      s.parameters)
+  }
+
+  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
+    orderings.filter { o => allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value) }
+  }
+
+  @deprecated("Use #findAllByWithLimitOffset or #findAllByWithPagination instead. This method will be removed since version 1.4.0.", since = "1.0.0")
   def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
     implicit s: DBSession = autoSession): List[Entity] = {
     findAllByWithLimitOffset(where, limit, offset, orderings)
