@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.7"
   lazy val h2Version = "1.4.187"
-  lazy val kuromojiVersion = "5.2.0"
+  lazy val kuromojiVersion = "5.2.1"
   lazy val mockitoVersion = "1.10.19"
   lazy val jettyVersion = "9.2.11.v20150529"
   lazy val logbackVersion = "1.1.3"
@@ -343,7 +343,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % "compile"
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.8"    % "compile",
+    "joda-time"     %  "joda-time"        % "2.8.1"  % "compile",
     "org.joda"      %  "joda-convert"     % "1.7"    % "compile"
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
