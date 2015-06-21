@@ -279,17 +279,33 @@ trait QueryingFeatureWithId[Id, Entity]
 
         if (hasManyAssociations.size > 0 && (limit.isDefined || offset.isDefined)) {
           // find ids for pagination
-          val queryForIds = (conditions match {
-            case Nil => singleSelectQuery.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(singleSelectQuery.where(conditions.head)) {
-              case (query, condition) => query.and.append(condition)
-            }.and(defaultScopeWithDefaultAlias)
-          })
-          val ids: List[Any] = withSQL {
-            queryForIds
-              .orderBy(orderings.headOption.getOrElse(primaryKeyField))
-              .append(pagination)
-          }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
+          val ids: Seq[Any] = withSQL {
+            lazy val allowedForDistinctQuery: Seq[SQLSyntax] = {
+              columns.map(column => SQLSyntax.createUnsafely(s"${defaultAlias.tableAliasName}.${column}", Nil))
+            }
+            val baseQuery = {
+              val columnsToFetch: Seq[SQLSyntax] = Seq(sqls"distinct ${defaultAlias.field(primaryKeyFieldName)}") ++ {
+                // in this case, intentionally orderings are empty
+                if (orderings.isEmpty) Nil
+                else orderingsForDistinctQuery(orderings, allowedForDistinctQuery).map(removeAscDesc)
+              }
+              selectQueryWithAdditionalAssociations(
+                select(columnsToFetch: _*).from(as(defaultAlias)),
+                belongsToAssociations ++ includedBelongsToAssociations,
+                hasOneAssociations ++ includedHasOneAssociations,
+                hasManyAssociations ++ includedHasManyAssociations.toSet)
+            }
+            val query = (conditions match {
+              case Nil => baseQuery.where(defaultScopeWithDefaultAlias)
+              case _ => conditions.tail.foldLeft(baseQuery.where(conditions.head)) {
+                case (query, condition) => query.and.append(condition)
+              }.and(defaultScopeWithDefaultAlias)
+            })
+
+            if (orderings.isEmpty) query.append(pagination)
+            else query.orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*)).append(pagination)
+
+          }.map(_.any(1)).list.apply()
 
           if (ids.isEmpty) return Nil
           else {
@@ -302,6 +318,18 @@ trait QueryingFeatureWithId[Id, Entity]
       }).list.apply())
     }
 
+  }
+
+  private[this] def removeAscDesc(s: SQLSyntax): SQLSyntax = {
+    SQLSyntax.createUnsafely(
+      s.value
+        .replaceFirst(" desc$", "").replaceFirst(" asc$", "")
+        .replaceFirst(" DESC$", "").replaceFirst(" ASC$", ""),
+      s.parameters)
+  }
+
+  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
+    orderings.filter { o => allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value) }
   }
 
 }

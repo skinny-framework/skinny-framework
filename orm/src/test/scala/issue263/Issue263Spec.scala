@@ -95,7 +95,7 @@ class Issue263Spec extends fixture.FunSpec with Matchers
     }
   }
 
-  describe("pagination with hasMany conditions") {
+  describe("Finder pagination with hasMany conditions") {
     lazy val a = Article.defaultAlias
     lazy val u = User.defaultAlias
 
@@ -103,7 +103,32 @@ class Issue263Spec extends fixture.FunSpec with Matchers
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
 
       val users = User.joins(User.articlesRef).findAllByWithLimitOffset(
-        where = matchesScala, limit = 2, offset = 1, orderings = Seq(u.name.desc, a.title))
+        where = matchesScala,
+        limit = 2,
+        offset = 1,
+        orderings = Seq(u.name.desc, a.title)
+      )
+
+      users.map(_.name) should equal(Seq("Chris", "Bob"))
+      // ascending order, shouldn't include "The Better Java?"
+      users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+    }
+  }
+
+  describe("Querying pagination with hasMany conditions") {
+    lazy val a = Article.defaultAlias
+    lazy val u = User.defaultAlias
+
+    it("should return expected results") { implicit session =>
+      val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
+
+      val users = User.joins(User.articlesRef)
+        .where(matchesScala)
+        .limit(2)
+        .offset(1)
+        .orderBy(u.name.desc, a.title)
+        .apply()
 
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       // ascending order, shouldn't include "The Better Java?"
