@@ -17,5 +17,5 @@ cd ${WORK_DIR}
 tar cvfzp ../skinny-${VERSION}.tar.gz .
 cd -
 rm -rf ${WORK_DIR}
-openssl sha1 skinny-${VERSION}.tar.gz
+shasum -a 256 skinny-${VERSION}.tar.gz
 
