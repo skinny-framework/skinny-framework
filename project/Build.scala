@@ -26,7 +26,7 @@ object SkinnyFrameworkBuild extends Build {
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
     sbtPlugin := false,
-    scalaVersion := "2.11.6",
+    scalaVersion := "2.11.7",
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     scalacOptions ++= _scalacOptions,
     publishMavenStyle := true,
@@ -168,7 +168,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE" % "compile",
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.8"         % "compile" exclude("org.thymeleaf", "thymeleaf"),
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.9"         % "compile" exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"        % "compile"
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
