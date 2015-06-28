@@ -1,11 +1,12 @@
 import sbt._, Keys._
-import org.scalatra.sbt._, PluginKeys._
 import skinny.scalate.ScalatePlugin._, ScalateKeys._
+import skinny.servlet._, ServletPlugin._, ServletKeys._
+
 import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.19"
+  lazy val currentVersion = "1.4.0-SNAPSHOT"
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.7"
@@ -36,9 +37,7 @@ object SkinnyFrameworkBuild extends Build {
     incOptions := incOptions.value.withNameHashing(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
-    // TODO: Test failure in velocity module when enabling CachedResolution
-    // (java.lang.NoSuchMethodError: javax.servlet.ServletContext.getContextPath()Ljava/lang/String;)
-    // updateOptions := updateOptions.value.withCachedResolution(true),
+    updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-encoding", "UTF-8", "-Xlint:-options"),
     javacOptions in doc := Seq("-source", "1.7"),
     pomExtra := _pomExtra
@@ -277,7 +276,7 @@ object SkinnyFrameworkBuild extends Build {
   // example and tests with a real project
   
   lazy val example = Project(id = "example", base = file("example"),
-    settings = baseSettings ++ ScalatraPlugin.scalatraWithJRebel ++ scalateSettings ++ Seq(
+    settings = baseSettings ++ servletSettings ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
         "com.h2database"     %  "h2"                 % h2Version,

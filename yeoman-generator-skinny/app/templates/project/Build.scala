@@ -1,9 +1,8 @@
 import sbt._, Keys._
-import org.scalatra.sbt._, PluginKeys._
 import skinny.scalate.ScalatePlugin._, ScalateKeys._
-import com.earldouglas.xsbtwebplugin.WebPlugin._
-import com.earldouglas.xsbtwebplugin.PluginKeys._
+import skinny.servlet._, ServletPlugin._, ServletKeys._
 import org.sbtidea.SbtIdeaPlugin._
+
 import scala.language.postfixOps
 
 object SkinnyAppBuild extends Build {
@@ -21,7 +20,7 @@ object SkinnyAppBuild extends Build {
   val theScalaVersion = "2.11.7"
   val jettyVersion = "9.2.11.v20150529"
 
-  lazy val baseSettings = ScalatraPlugin.scalatraWithJRebel ++ Seq(
+  lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
     name         := appName,
     version      := appVersion,
@@ -53,6 +52,7 @@ object SkinnyAppBuild extends Build {
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     // the name-hashing algorithm for the incremental compiler.
     incOptions := incOptions.value.withNameHashing(true),
+    updateOptions := updateOptions.value.withCachedResolution(true),
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     fork in Test := true,
