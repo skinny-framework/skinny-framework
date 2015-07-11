@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.4.0-SNAPSHOT"
+  lazy val currentVersion = "2.0.0-SNAPSHOT"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
@@ -95,7 +95,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     common,
-    skinnyScalatra % Provided,
+    engine % Provided,
     json,
     validator,
     orm,
@@ -105,9 +105,9 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   // a Scalatra 2.4 fork project (no CoreDsl macros)
-  lazy val skinnyScalatra = Project(id = "skinnyScalatra", base = file("scalatra"),
+  lazy val engine = Project(id = "engine", base = file("engine"),
     settings = baseSettings ++ Seq(
-      name := "skinny-scalatra",
+      name := "skinny-engine",
       libraryDependencies <++= (scalaVersion) { (sv) =>
         scalatraDependencies ++ Seq(
           sv match {
@@ -123,9 +123,9 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(common)
 
-  lazy val skinnyScalatraTest = Project(id = "skinnyScalatraTest", base = file("scalatra-test"),
+  lazy val engineTest = Project(id = "engineTest", base = file("engine-test"),
     settings = baseSettings ++ Seq(
-      name := "skinny-scalatra-test",
+      name := "skinny-engine-test",
       libraryDependencies ++= servletApiDependencies ++ Seq(
         // TODO: sbt occasionally fails to reselve junit when specifying 4.12
         "junit"              %  "junit"            % "4.11"       % Compile,
@@ -138,7 +138,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     common, 
-    skinnyScalatra % Provided
+    engine % Provided
   )
 
   lazy val worker = Project(id = "worker", base = file("worker"),
@@ -160,7 +160,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided
+    engine % Provided
   )
 
   lazy val assets = Project(id = "assets", base = file("assets"),
@@ -173,8 +173,8 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val task = Project(id = "task", base = file("task"),
@@ -215,8 +215,8 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val thymeleaf = Project(id = "thymeleaf", base = file("thymeleaf"),
@@ -230,8 +230,8 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val velocity = Project(id = "velocity", base = file("velocity"),
@@ -248,8 +248,8 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val scaldi = Project(id = "scaldi", base = file("scaldi"),
@@ -266,8 +266,8 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val json = Project(id = "json", base = file("json"),
@@ -293,8 +293,8 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework, 
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided,
+    engine % Provided,
+    engineTest % Provided,
     oauth2
   )
 
@@ -307,8 +307,8 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   lazy val logback = Project(id = "logback", base = file("logback"),
@@ -351,8 +351,8 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    skinnyScalatra % Provided,
-    skinnyScalatraTest % Provided
+    engine % Provided,
+    engineTest % Provided
   )
 
   // -----------------------------
@@ -378,8 +378,8 @@ object SkinnyFrameworkBuild extends Build {
     ) 
   ).dependsOn(
     framework, 
-    skinnyScalatra,
-    skinnyScalatraTest,
+    engine,
+    engineTest,
     assets, 
     logback, 
     thymeleaf, 
