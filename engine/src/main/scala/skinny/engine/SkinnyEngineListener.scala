@@ -20,7 +20,7 @@ class SkinnyEngineListener extends ServletContextListener with Logging {
       configureCycleClass(Thread.currentThread.getContextClassLoader)
     } catch {
       case e: Throwable =>
-        logger.error("Failed to initialize scalatra application at " + sce.getServletContext.getContextPath, e)
+        logger.error("Failed to initialize skinny application at " + sce.getServletContext.getContextPath, e)
         throw e
     }
   }
@@ -36,20 +36,49 @@ class SkinnyEngineListener extends ServletContextListener with Logging {
   }
 
   protected def probeForCycleClass(classLoader: ClassLoader): (String, LifeCycle) = {
-    val cycleClassName =
-      Option(servletContext.getInitParameter(LifeCycleKey)).flatMap(_.blankOption) getOrElse DefaultLifeCycle
-    logger info ("The cycle class name from the config: " + (if (cycleClassName == null) "null" else cycleClassName))
+    val cycleClassName = {
+      Option(servletContext.getInitParameter(LifeCycleKey))
+        .flatMap(_.blankOption)
+        .getOrElse(DefaultLifeCycle)
+    }
+    logger.info("The cycle class name from the config: " + (if (cycleClassName == null) "null" else cycleClassName))
 
-    val lifeCycleClass: Class[_] = try { Class.forName(cycleClassName, true, classLoader) } catch { case _: ClassNotFoundException => null; case t: Throwable => throw t }
-    def oldLifeCycleClass: Class[_] = try { Class.forName(OldDefaultLifeCycle, true, classLoader) } catch { case _: ClassNotFoundException => null; case t: Throwable => throw t }
-    val cycleClass: Class[_] = if (lifeCycleClass != null) lifeCycleClass else oldLifeCycleClass
+    val lifeCycleClass: Class[_] = {
+      try { Class.forName(cycleClassName, true, classLoader) }
+      catch { case _: ClassNotFoundException => null; case t: Throwable => throw t }
+    }
+    lazy val oldLifeCycleClass: Class[_] = {
+      try { Class.forName(OldDefaultLifeCycle, true, classLoader) }
+      catch {
+        case _: ClassNotFoundException => null
+        case t: Throwable => throw t
+      }
+    }
+    val cycleClass: Class[_] = {
+      if (lifeCycleClass != null) lifeCycleClass
+      else oldLifeCycleClass
+    }
 
-    assert(cycleClass != null, "No lifecycle class found!")
-    assert(classOf[LifeCycle].isAssignableFrom(cycleClass), "This is no lifecycle class.")
-    logger debug "Loaded lifecycle class: %s".format(cycleClass)
+    assert(cycleClass != null, "No skinny.engine.LifeCycle class found!")
+    assert(classOf[LifeCycle].isAssignableFrom(cycleClass),
+      """No skinny.engine.LifeCycle class found!
+        |
+        |echo 'import skinny._
+        |import _root_.controller._
+        |
+        |class Bootstrap extends SkinnyLifeCycle {
+        |  override def initSkinnyApp(ctx: ServletContext) {
+        |    Controllers.mount(ctx)
+        |  }
+        |}
+        |' > src/main/scala/Bootstrap.scala
+        |"""".stripMargin
+    )
+    logger.debug(s"Loaded lifecycle class: ${cycleClass}")
 
-    if (cycleClass.getName == OldDefaultLifeCycle)
+    if (cycleClass.getName == OldDefaultLifeCycle) {
       logger.warn("The SkinnyEngine name for a boot class will be removed eventually. Please use SkinnyEngineBootstrap instead as class name.")
+    }
     (cycleClass.getSimpleName, cycleClass.newInstance.asInstanceOf[LifeCycle])
   }
 
@@ -67,11 +96,12 @@ class SkinnyEngineListener extends ServletContextListener with Logging {
 
 object SkinnyEngineListener {
 
+  val DefaultLifeCycle: String = "Bootstrap"
+
   // DO NOT RENAME THIS CLASS NAME AS IT BREAKS THE ENTIRE WORLD
   // TOGETHER WITH THE WORLD IT WILL BREAK ALL EXISTING SCALATRA APPS
   // RENAMING THIS CLASS WILL RESULT IN GETTING SHOT, IF YOU SURVIVE YOU WILL BE SHOT AGAIN
-  val DefaultLifeCycle: String = "SkinnyEngineBootstrap"
-  val OldDefaultLifeCycle: String = "SkinnyEngine"
+  val OldDefaultLifeCycle: String = "ScalatraBootstrap"
   val LifeCycleKey: String = "skinny.engine.LifeCycle"
 
 }
