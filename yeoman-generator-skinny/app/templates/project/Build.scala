@@ -15,8 +15,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "1.4.0-SNAPSHOT"
-  val compatibleScalatraVersion = "2.3.1"
+  val skinnyVersion = "2.0.0-SNAPSHOT"
   val theScalaVersion = "2.11.7"
   val jettyVersion = "9.2.11.v20150529"
 
@@ -32,7 +31,6 @@ object SkinnyAppBuild extends Build {
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
-      "org.skinny-framework"    %% "skinny-scalatra"      % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"        % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
       "org.skinny-framework"    %  "skinny-logback"       % "1.0.6",
@@ -40,7 +38,8 @@ object SkinnyAppBuild extends Build {
       "com.h2database"          %  "h2"                   % "1.4.187",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
-      "org.skinny-framework"    %% "skinny-scalatra-test" % skinnyVersion,
+      // for Skinny 1.x tests compatibility
+      // "org.scalatra"            %% "scalatra-scalatest"   % "2.3.1"         % "test"
       "org.eclipse.jetty"       %  "jetty-webapp"         % jettyVersion    % "container",
       "org.eclipse.jetty"       %  "jetty-plus"           % jettyVersion    % "container",
       "javax.servlet"           %  "javax.servlet-api"    % "3.1.0"         % "container;provided;test"
@@ -66,7 +65,7 @@ object SkinnyAppBuild extends Build {
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
       Seq("import controller._", "import model._"),
-      Seq(Binding("context", "_root_.org.scalatra.scalate.ScalatraRenderContext", importMembers = true, isImplicit = true)),
+      Seq(Binding("context", "_root_.skinny.engine.scalate.SkinnyEngineRenderContext", importMembers = true, isImplicit = true)),
       Some("templates")))
     }
   )
