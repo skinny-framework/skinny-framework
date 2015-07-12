@@ -1,7 +1,8 @@
-package skinny.engine.test.scalatest
+package skinny.test.scalatest
 
 import org.scalatest._
-import org.scalatest.junit.{ JUnit3Suite, JUnitSuite }
+import org.scalatest.junit.{JUnit3Suite, JUnitSuite}
+import skinny.engine.test.scalatest.SkinnyEngineSuite
 
 /**
  * Convenience trait to add Skinny test support to JUnit3Suite.

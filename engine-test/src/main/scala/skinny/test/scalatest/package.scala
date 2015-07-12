@@ -1,4 +1,4 @@
-package skinny.engine.test
+package skinny.test
 
 package object scalatest {
 
