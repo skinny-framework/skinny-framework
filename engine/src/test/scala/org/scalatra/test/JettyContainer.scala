@@ -1,9 +1,9 @@
 package org.scalatra
 package test
 
-import servlet.{ScalatraAsyncSupport, HasMultipartConfig}
-import javax.servlet.{DispatcherType, Filter}
-import javax.servlet.http.{HttpServlet}
+import servlet.{ ScalatraAsyncSupport, HasMultipartConfig }
+import javax.servlet.{ DispatcherType, Filter }
+import javax.servlet.http.{ HttpServlet }
 import java.util.EnumSet
 import org.eclipse.jetty.servlet._
 import java.util
@@ -31,7 +31,7 @@ trait JettyContainer extends Container {
     addFilter(app, path, dispatches)
 
   def addServlet(servlet: HttpServlet, path: String) { addServlet(servlet, path, servlet.getClass.getName) }
-  def addServlet(servlet: HttpServlet, path: String, name: String){
+  def addServlet(servlet: HttpServlet, path: String, name: String) {
     val holder = new ServletHolder(name, servlet)
 
     servlet match {

@@ -3,7 +3,7 @@ package skinny.engine.test
 import java.util
 import java.util.EnumSet
 import javax.servlet.http.HttpServlet
-import javax.servlet.{DispatcherType, Filter}
+import javax.servlet.{ DispatcherType, Filter }
 
 import org.eclipse.jetty.servlet._
 import skinny.engine.async.AsyncSupported

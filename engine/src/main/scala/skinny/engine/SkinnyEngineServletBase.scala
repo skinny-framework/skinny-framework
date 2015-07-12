@@ -1,14 +1,14 @@
 package skinny.engine
 
-import java.{util => ju}
+import java.{ util => ju }
 import javax.servlet.ServletContext
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import skinny.engine.implicits.SessionImplicits
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.DefaultMap
-import scala.language.{implicitConversions, reflectiveCalls}
+import scala.language.{ implicitConversions, reflectiveCalls }
 
 /**
  * ServletBase implements the SkinnyEngine DSL with the Servlet API, and can be

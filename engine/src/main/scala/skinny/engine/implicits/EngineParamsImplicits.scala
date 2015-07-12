@@ -4,7 +4,7 @@ import scala.language.implicitConversions
 
 import java.util.Date
 
-import skinny.engine.{MultiParams, Params, SkinnyEngineException}
+import skinny.engine.{ MultiParams, Params, SkinnyEngineException }
 
 /**
  * Add some implicits
