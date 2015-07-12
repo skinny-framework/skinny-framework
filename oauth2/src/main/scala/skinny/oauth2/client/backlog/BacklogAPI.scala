@@ -1,12 +1,12 @@
 package skinny.oauth2.client.backlog
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.oauth2.client.{ BearerRequest, OAuth2Client, OAuth2Token }
 import skinny.util.JSONStringOps
 
 import scala.util.control.NonFatal
 
-case class BacklogAPI(spaceID: String) extends Logging {
+case class BacklogAPI(spaceID: String) extends LoggerProvider {
 
   def myself(token: OAuth2Token): Option[BacklogUser] = {
     try {

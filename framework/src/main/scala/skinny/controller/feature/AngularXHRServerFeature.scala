@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.Logging
-import skinny.engine.SkinnyScalatraBase
+import skinny.engine.SkinnyEngineBase
+import skinny.logging.LoggerProvider
 
 /**
  * Server side implementation for Angular apps.
@@ -11,6 +11,6 @@ trait AngularXHRServerFeature
     with JSONParamsAutoBinderFeature
     with AngularXSRFProtectionFeature {
 
-  self: SkinnyScalatraBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with Logging =>
+  self: SkinnyEngineBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
 }

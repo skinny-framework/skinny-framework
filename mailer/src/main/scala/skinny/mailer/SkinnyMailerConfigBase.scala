@@ -2,13 +2,13 @@ package skinny.mailer
 
 import com.typesafe.config.Config
 import skinny.SkinnyEnv
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.TypesafeConfigReader
 
 /**
  * Basic trait for SkinnyMailer configuration.
  */
-trait SkinnyMailerConfigBase extends Logging {
+trait SkinnyMailerConfigBase extends LoggerProvider {
 
   /**
    * Name for this configuration which will be use in the namespace "{env}.mailer.{name}".

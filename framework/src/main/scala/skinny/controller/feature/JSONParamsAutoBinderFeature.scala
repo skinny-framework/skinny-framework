@@ -6,9 +6,9 @@ import org.json4s.Xml._
 import org.json4s._
 import org.slf4j.LoggerFactory
 import skinny.engine.json.JsonSupport
-import skinny.engine.{ EngineParams, Params, ApiFormats, SkinnyScalatraBase }
+import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
 import skinny.engine.routing.MatchedRoute
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletRequest
  * When you'd like to avoid merging JSON request body into params in some actions, please separate controllers.
  */
 trait JSONParamsAutoBinderFeature
-    extends SkinnyScalatraBase
+    extends SkinnyEngineBase
     with JSONFeature
-    //with JacksonJsonSupport
-    with ApiFormats with Logging {
+    with ApiFormats
+    with LoggerProvider {
 
   /**
    * Merge parsedBody (JValue) into params if possible.

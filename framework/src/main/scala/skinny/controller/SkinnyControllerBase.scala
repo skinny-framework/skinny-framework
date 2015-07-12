@@ -4,10 +4,11 @@ import javax.servlet.http.HttpServletRequest
 
 import skinny._
 import skinny.controller.feature._
-import skinny.engine.{ SkinnyScalatraBase, ApiFormats, UrlGeneratorSupport }
+import skinny.engine.{ SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
 import skinny.engine.response.ResponseStatus
 import skinny.engine.routing.Route
 import skinny.filter.SkinnyFilterActivation
+import skinny.logging.LoggerProvider
 import skinny.validator.implicits.ParametersGetAsImplicits
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.routing.implicits.RoutesAsImplicits
@@ -21,7 +22,7 @@ import org.json4s.JsonAST.JInt
 import org.json4s.JDecimal
 
 trait SkinnyControllerBase
-    extends SkinnyScalatraBase
+    extends SkinnyEngineBase
     with ApiFormats
     with EnvFeature
     with QueryParamsFeature
@@ -45,7 +46,7 @@ trait SkinnyControllerBase
     with ParametersGetAsImplicits
     with ParamsPermitImplicits
     with SkinnyFilterActivation
-    with Logging {
+    with LoggerProvider {
 
   /**
    * Default charset.

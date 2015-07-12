@@ -7,11 +7,11 @@ import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
 import skinny.I18n
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.DateTimeUtil
 import javax.servlet.http.HttpServletRequest
 
-object RequestScopeFeature extends Logging {
+object RequestScopeFeature extends LoggerProvider {
 
   /**
    * Key for request scope.
@@ -73,7 +73,7 @@ object RequestScopeFeature extends Logging {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends SkinnyEngineBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
+trait RequestScopeFeature extends SkinnyEngineBase with SnakeCasedParamKeysFeature with LocaleFeature with LoggerProvider {
 
   // ---------------------------------------------------
   // Notice: Due to org.scalatra.DynamicScope's implicit conversion, we need to specify request explicitly.

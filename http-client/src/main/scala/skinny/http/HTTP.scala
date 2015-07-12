@@ -22,13 +22,13 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.{ Future, ExecutionContext }
 import scala.util.control.NonFatal
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern.using
 
 /**
  * HTTP/1.1
  */
-object HTTP extends Logging {
+object HTTP extends LoggerProvider {
 
   val DEFAULT_CHARSET = "UTF-8"
   private[this] val RESPONSE_CONTENT_TYPE_REGEXP = "[^;]+;\\s*charset=(.+)".r

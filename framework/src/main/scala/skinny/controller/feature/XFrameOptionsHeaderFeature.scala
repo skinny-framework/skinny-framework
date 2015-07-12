@@ -1,13 +1,13 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyScalatraBase
+import skinny.engine.SkinnyEngineBase
 
 /**
  * X-Frame-Options header support
  *
  * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
  */
-trait XFrameOptionsHeaderFeature { self: SkinnyScalatraBase with BeforeAfterActionFeature =>
+trait XFrameOptionsHeaderFeature { self: SkinnyEngineBase with BeforeAfterActionFeature =>
 
   // NOTE: There are three possible values for the X-Frame-Options headers.
   // - "deny" which prevents any domain from framing the content.

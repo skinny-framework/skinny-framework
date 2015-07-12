@@ -1,12 +1,12 @@
 package skinny.test
 
 import com.typesafe.config.ConfigFactory
+import skinny.logging.LoggerProvider
 import scala.collection.JavaConverters._
 import scalikejdbc._
 import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
 import skinny.util.{ DateTimeUtil, JavaReflectAPI }
-import skinny.logging.Logging
 
 import scala.util.Try
 
@@ -15,7 +15,7 @@ import scala.util.Try
  *
  * @see "https://github.com/thoughtbot/factory_girl"
  */
-case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends Logging {
+case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends LoggerProvider {
 
   private[this] val c = mapper.column
 

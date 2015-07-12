@@ -1,6 +1,6 @@
 package skinny.oauth2.client.google
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.oauth2.client._
 import skinny.util.JSONStringOps
 
@@ -9,7 +9,7 @@ import scala.util.control.NonFatal
 /**
  * Google Plus API.
  */
-trait GooglePlusAPI extends Logging {
+trait GooglePlusAPI extends LoggerProvider {
 
   def me(token: OAuth2Token): Option[GoogleUser] = {
     try {

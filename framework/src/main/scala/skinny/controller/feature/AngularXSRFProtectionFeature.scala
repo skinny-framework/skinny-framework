@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyScalatraBase
-import skinny.logging.Logging
+import skinny.engine.SkinnyEngineBase
+import skinny.logging.LoggerProvider
 
 /**
  * Angular.js Cross Site Request Forgery (XSRF) Protection support.
@@ -10,7 +10,7 @@ import skinny.logging.Logging
  */
 trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
 
-  self: SkinnyScalatraBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with Logging =>
+  self: SkinnyEngineBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
   /**
    * Enabled if true.

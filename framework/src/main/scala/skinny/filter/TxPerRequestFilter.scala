@@ -1,12 +1,12 @@
 package skinny.filter
 
 import scalikejdbc._
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
 /**
  * A filter which enables controller wired with a single transactional DB session.
  */
-trait TxPerRequestFilter extends SkinnyFilter with Logging {
+trait TxPerRequestFilter extends SkinnyFilter with LoggerProvider {
 
   beforeAction()(beginTxPerRequest)
 

@@ -1,7 +1,7 @@
 package skinny.session.jdbc
 
 import skinny.orm._
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import scalikejdbc._
 
 case class SkinnySessionAttribute(skinnySessionId: Long, name: String, value: Option[Any], session: Option[SkinnySession] = None)
@@ -10,7 +10,7 @@ case class SkinnySessionAttribute(skinnySessionId: Long, name: String, value: Op
   def entityIdentity = (skinnySessionId, name)
 }
 
-object SkinnySessionAttribute extends SkinnyTable[SkinnySessionAttribute] with Logging {
+object SkinnySessionAttribute extends SkinnyTable[SkinnySessionAttribute] with LoggerProvider {
   override def tableName = "skinny_session_attributes"
   override def defaultAlias = createAlias("ska")
   override def defaultJoinColumnFieldName = "skinnySessionId"

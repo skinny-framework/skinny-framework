@@ -1,5 +1,19 @@
 package skinny.engine
 
+import scala.language.implicitConversions
+import scala.language.reflectiveCalls
+
+import scala.annotation.tailrec
+import scala.util.control.Exception._
+import scala.util.matching.Regex
+import scala.util.{ Failure, Success, Try }
+
+import java.io.{ File, FileInputStream }
+import java.util.concurrent.atomic.AtomicInteger
+import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
+import javax.servlet.{ ServletRegistration, Filter, ServletContext }
+
+import skinny.SkinnyEnv
 import skinny.engine.async.FutureSupport
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
@@ -10,21 +24,8 @@ import skinny.engine.multipart.FileCharset
 import skinny.engine.response.{ ResponseStatus, ActionResult, Found }
 import skinny.engine.routing._
 import skinny.engine.util.UriDecoder
-
-import scala.language.implicitConversions
-import scala.language.reflectiveCalls
-
-import java.io.{ File, FileInputStream }
-import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
-import javax.servlet.{ ServletRegistration, Filter, ServletContext }
-
-import SkinnyEngineBase._
+import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern._
-
-import scala.annotation.tailrec
-import scala.util.control.Exception._
-import scala.util.matching.Regex
-import scala.util.{ Failure, Success, Try }
 
 object SkinnyEngineBase {
 
@@ -100,14 +101,14 @@ trait SkinnyEngineBase
     with CoreDsl
     with DynamicScope
     with Initializable
+    with LoggerProvider
     with ServletApiImplicits
     with EngineParamsImplicits
     with DefaultImplicits
     with RicherStringImplicits
     with SessionImplicits {
 
-  @deprecated("Use servletContext instead", "1.4")
-  def applicationContext: ServletContext = servletContext
+  import SkinnyEngineBase._
 
   /**
    * The routes registered in this kernel.
@@ -161,22 +162,23 @@ trait SkinnyEngineBase
    * $ 4. Executes the after filters with `runFilters`.
    * $ 5. The action result is passed to `renderResponse`.
    */
-  protected def executeRoutes(): Unit = {
+  protected def executeRoutes() {
     var result: Any = null
     var rendered = true
 
     def runActions = {
-      val prehandleException = request.get(PrehandleExceptionKey)
+      val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
         val (rq, rs) = (request, response)
-        onCompleted { _ =>
+        SkinnyEngineBase.onCompleted { _ =>
           withRequestResponse(rq, rs) {
+            val className = this.getClass.toString
             this match {
-              case f: Filter if !rq.contains("skinny.engine.SkinnyEngineFilter.afterFilters.Run") =>
-                rq("skinny.engine.SkinnyEngineFilter.afterFilters.Run") = new {}
+              case f: Filter if !rq.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
+                rq(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
                 runFilters(routes.afterFilters)
-              case f: HttpServlet if !rq.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
-                rq("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
+              case f: HttpServlet if !rq.contains("org.scalatra.ScalatraServlet.afterFilters.Run") =>
+                rq("org.scalatra.ScalatraServlet.afterFilters.Run") = new {}
                 runFilters(routes.afterFilters)
               case _ =>
             }
@@ -200,11 +202,11 @@ trait SkinnyEngineBase
         result = errorHandler(e)
         rendered = false
       }, e => {
-        runCallbacks(Failure(e))
+        SkinnyEngineBase.runCallbacks(Failure(e))
         try {
           renderUncaughtException(e)
         } finally {
-          runRenderCallbacks(Failure(e))
+          SkinnyEngineBase.runRenderCallbacks(Failure(e))
         }
       })
     })
@@ -356,7 +358,24 @@ trait SkinnyEngineBase
     case t => throw t
   }
 
+  /**
+   * Count execution of error filter registration.
+   */
+  private[this] lazy val errorMethodCallCountAtSkinnyScalatraBase: AtomicInteger = new AtomicInteger(0)
+
+  /**
+   * Detects error filter leak issue as an error.
+   */
+  protected def detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase: Boolean = false
+
+  // https://github.com/scalatra/scalatra/blob/v2.3.1/core/src/main/scala/org/scalatra/ScalatraBase.scala#L333-L335
   def error(handler: ErrorHandler): Unit = {
+    val count = errorMethodCallCountAtSkinnyScalatraBase.incrementAndGet()
+    if (count > 500) {
+      val message = s"skinny's error filter registration for this controller has been evaluated $count times, this behavior will cause memory leak."
+      if (detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase) throw new RuntimeException(message)
+      else logger.warn(message)
+    }
     errorHandler = handler orElse errorHandler
   }
 
@@ -655,6 +674,7 @@ trait SkinnyEngineBase
    * @return the path plus the query string, if any.  The path is run through
    *         `response.encodeURL` to add any necessary session tracking parameters.
    */
+  // TODO: Scalatra 2.3.1 still has this issue. Remove this override when it will be fixed in the future
   def url(
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,
@@ -664,25 +684,32 @@ trait SkinnyEngineBase
     withSessionId: Boolean = true)(
       implicit request: HttpServletRequest, response: HttpServletResponse): String = {
 
-    val newPath = path match {
-      case x if x.startsWith("/") && includeContextPath && includeServletPath =>
-        ensureSlash(routeBasePath) + ensureContextPathsStripped(ensureSlash(path))
-      case x if x.startsWith("/") && includeContextPath =>
-        ensureSlash(contextPath) + ensureContextPathStripped(ensureSlash(path))
-      case x if x.startsWith("/") && includeServletPath => request.getServletPath.blankOption map {
-        ensureSlash(_) + ensureServletPathStripped(ensureSlash(path))
-      } getOrElse "/"
-      case _ if absolutize => ensureContextPathsStripped(ensureSlash(path))
-      case _ => path
-    }
+    try {
+      val newPath = path match {
+        case x if x.startsWith("/") && includeContextPath && includeServletPath =>
+          ensureSlash(routeBasePath) + ensureContextPathsStripped(ensureSlash(path))
+        case x if x.startsWith("/") && includeContextPath =>
+          ensureSlash(contextPath) + ensureContextPathStripped(ensureSlash(path))
+        case x if x.startsWith("/") && includeServletPath => request.getServletPath.blankOption map {
+          ensureSlash(_) + ensureServletPathStripped(ensureSlash(path))
+        } getOrElse "/"
+        case _ if absolutize => ensureContextPathsStripped(ensureSlash(path))
+        case _ => path
+      }
 
-    val pairs = params map {
-      case (key, None) => key.urlEncode + "="
-      case (key, Some(value)) => key.urlEncode + "=" + value.toString.urlEncode
-      case (key, value) => key.urlEncode + "=" + value.toString.urlEncode
+      val pairs = params map {
+        case (key, None) => key.urlEncode + "="
+        case (key, Some(value)) => key.urlEncode + "=" + value.toString.urlEncode
+        case (key, value) => key.urlEncode + "=" + value.toString.urlEncode
+      }
+      val queryString = if (pairs.isEmpty) "" else pairs.mkString("?", "&", "")
+      if (withSessionId) addSessionId(newPath + queryString) else newPath + queryString
+    } catch {
+      case e: NullPointerException =>
+        // work around for Scalatra issue
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
     }
-    val queryString = if (pairs.isEmpty) "" else pairs.mkString("?", "&", "")
-    if (withSessionId) addSessionId(newPath + queryString) else newPath + queryString
   }
 
   private[this] def ensureContextPathsStripped(path: String)(implicit request: HttpServletRequest): String = {

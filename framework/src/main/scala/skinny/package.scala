@@ -54,5 +54,6 @@ package object skinny {
   val TypeConverterSupport = implicits.TypeConverterSupport
 
   type Logging = skinny.logging.Logging
+  type LoggerProvider = skinny.logging.LoggerProvider
 
 }

@@ -3,10 +3,10 @@ package skinny.engine
 import javax.servlet.{ ServletContext, ServletContextEvent, ServletContextListener }
 
 import skinny.engine.implicits.RicherStringImplicits
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import SkinnyEngineListener._
 
-class SkinnyEngineListener extends ServletContextListener with Logging {
+class SkinnyEngineListener extends ServletContextListener with LoggerProvider {
 
   import RicherStringImplicits._
 

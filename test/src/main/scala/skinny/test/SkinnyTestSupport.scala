@@ -3,12 +3,12 @@ package skinny.test
 import skinny.controller.{ SkinnySessionInjectorController, SessionInjectorController }
 import skinny.SkinnyEnv
 import skinny.engine.test.SkinnyEngineTests
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
 /**
  * Skinny framework testing support
  */
-trait SkinnyTestSupport extends Logging { self: SkinnyEngineTests =>
+trait SkinnyTestSupport extends LoggerProvider { self: SkinnyEngineTests =>
 
   // set skinny.env as "test"
   System.setProperty(SkinnyEnv.PropertyKey, "test")

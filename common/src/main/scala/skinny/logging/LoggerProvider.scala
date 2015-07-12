@@ -16,4 +16,5 @@ trait LoggerProvider {
    * Get the name associated with this logger.
    */
   protected def loggerName = logger.name
+
 }
