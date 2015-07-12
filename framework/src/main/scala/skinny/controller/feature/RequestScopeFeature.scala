@@ -1,8 +1,8 @@
 package skinny.controller.feature
 
 import java.lang.reflect.Modifier
-import org.scalatra.ScalatraBase
 import skinny.controller.{ KeyAndErrorMessages, Params }
+import skinny.engine.SkinnyEngineBase
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
@@ -73,7 +73,7 @@ object RequestScopeFeature extends Logging {
 /**
  * Request scope support.
  */
-trait RequestScopeFeature extends ScalatraBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
+trait RequestScopeFeature extends SkinnyEngineBase with SnakeCasedParamKeysFeature with LocaleFeature with Logging {
 
   // ---------------------------------------------------
   // Notice: Due to org.scalatra.DynamicScope's implicit conversion, we need to specify request explicitly.

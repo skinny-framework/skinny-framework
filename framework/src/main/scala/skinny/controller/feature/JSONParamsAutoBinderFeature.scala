@@ -4,9 +4,10 @@ import java.io.{ InputStreamReader, InputStream }
 
 import org.json4s.Xml._
 import org.json4s._
-import org.scalatra.json.{ JacksonJsonSupport, JsonSupport }
-import org.scalatra._
 import org.slf4j.LoggerFactory
+import skinny.engine.json.JsonSupport
+import skinny.engine.{ EngineParams, Params, ApiFormats, SkinnyScalatraBase }
+import skinny.engine.routing.MatchedRoute
 import skinny.logging.Logging
 import javax.servlet.http.HttpServletRequest
 
@@ -29,7 +30,7 @@ trait JSONParamsAutoBinderFeature
       try {
         val jsonParams: Map[String, Seq[String]] = parsedBody.extract[Map[String, String]].mapValues(v => Seq(v))
         val mergedParams: Map[String, Seq[String]] = getMergedMultiParams(multiParams, jsonParams)
-        new ScalatraParams(mergedParams)
+        new EngineParams(mergedParams)
       } catch {
         case e: Exception =>
           logger.debug(s"Failed to parse JSON body because ${e.getMessage}")

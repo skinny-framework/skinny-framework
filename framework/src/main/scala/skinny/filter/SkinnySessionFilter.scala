@@ -1,11 +1,13 @@
 package skinny.filter
 
+import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
+import skinny.engine.flash.{ FlashMapSupport, FlashMap }
+
 import scala.language.implicitConversions
 
 import skinny.session._
 import skinny.controller.feature._
-import org.scalatra._
-import org.scalatra.FlashMapSupport._
+import FlashMapSupport._
 import java.util.Locale
 import javax.servlet.http.HttpServletRequest
 
@@ -87,7 +89,7 @@ trait SkinnySessionFilter extends SkinnyFilter {
   }
 
   override protected def prepareCsrfToken() = {
-    skinnySession.getAttributeOrElseUpdate(csrfKey, GenerateId())
+    skinnySession.getAttributeOrElseUpdate(csrfKey, CsrfTokenGenerator())
   }
 
   // --------------------------------------

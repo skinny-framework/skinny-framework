@@ -1,6 +1,6 @@
 package skinny.controller
 
-import org.scalatra.HttpMethod
+import skinny.engine.constant.HttpMethod
 
 /**
  * Action definition.

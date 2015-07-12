@@ -17,6 +17,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val jettyVersion = "9.2.11.v20150529"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
+  lazy val scalaTestVersion = "2.2.5"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -95,7 +96,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     common,
-    engine % Provided,
+    engine,
     json,
     validator,
     orm,
@@ -133,12 +134,12 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty"  %  "jetty-webapp"     % jettyVersion % Compile,
         "org.apache.httpcomponents" % "httpclient" % "4.3.6"      % Compile,
         "org.apache.httpcomponents" % "httpmime"   % "4.3.6"      % Compile,
-        "org.scalatest"      %% "scalatest"        % "2.2.5"      % Compile
+        "org.scalatest"      %% "scalatest"        % scalaTestVersion % Compile
       )
     )
   ).dependsOn(
     common, 
-    engine % Provided
+    engine
   )
 
   lazy val worker = Project(id = "worker", base = file("worker"),
@@ -158,10 +159,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty" %  "jetty-server"      % jettyVersion  % Compile
       )
     ) ++ _jettyOrbitHack
-  ).dependsOn(
-    framework,
-    engine % Provided
-  )
+  ).dependsOn(framework)
 
   lazy val assets = Project(id = "assets", base = file("assets"),
     settings = baseSettings ++ Seq(
@@ -173,8 +171,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val task = Project(id = "task", base = file("task"),
@@ -215,8 +212,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val thymeleaf = Project(id = "thymeleaf", base = file("thymeleaf"),
@@ -230,8 +226,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val velocity = Project(id = "velocity", base = file("velocity"),
@@ -248,8 +243,7 @@ object SkinnyFrameworkBuild extends Build {
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val scaldi = Project(id = "scaldi", base = file("scaldi"),
@@ -266,8 +260,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val json = Project(id = "json", base = file("json"),
@@ -293,9 +286,8 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework, 
-    engine % Provided,
-    engineTest % Provided,
-    oauth2
+    oauth2,
+    engineTest % Test
   )
 
   lazy val twitterController = Project(id = "twitterController", base = file("twitter-controller"),
@@ -307,8 +299,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest % Test
   )
 
   lazy val logback = Project(id = "logback", base = file("logback"),
@@ -344,15 +335,11 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= scalatraDependencies ++ mailDependencies ++ testDependencies ++ Seq(
         "org.mockito"     %  "mockito-core"       % mockitoVersion        % Compile  exclude("org.slf4j", "slf4j-api"),
         "org.scalikejdbc" %% "scalikejdbc-test"   % scalikeJDBCVersion    % Compile  exclude("org.slf4j", "slf4j-api")
-        // Switched to scalatra-test-legacy
-        // "org.scalatra"    %% "scalatra-specs2"    % compatibleScalatraVersion % Provided,
-        // "org.scalatra"    %% "scalatra-scalatest" % compatibleScalatraVersion % Provided
       )
     ) ++ _jettyOrbitHack
   ).dependsOn(
     framework,
-    engine % Provided,
-    engineTest % Provided
+    engineTest
   )
 
   // -----------------------------
@@ -378,15 +365,13 @@ object SkinnyFrameworkBuild extends Build {
     ) 
   ).dependsOn(
     framework, 
-    engine,
-    engineTest,
     assets, 
     logback, 
     thymeleaf, 
     freemarker, 
     velocity, 
     factoryGirl, 
-    test, 
+    test % Test, 
     task, 
     scaldi, 
     oauth2Controller, 
@@ -435,13 +420,13 @@ object SkinnyFrameworkBuild extends Build {
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"            % Provided
   )
   lazy val testDependencies = Seq(
-    "org.scalatest"           %% "scalatest"       % "2.2.5"        % Test,
-    "org.mockito"             %  "mockito-core"    % mockitoVersion % Test,
-    "ch.qos.logback"          %  "logback-classic" % logbackVersion % Test,
-    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"          % Test,
-    "com.h2database"          %  "h2"              % h2Version      % Test,
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.6"        % Test,
-    "com.h2database"          %  "h2"              % h2Version      % Test
+    "org.scalatest"           %% "scalatest"       % scalaTestVersion % Test,
+    "org.mockito"             %  "mockito-core"    % mockitoVersion   % Test,
+    "ch.qos.logback"          %  "logback-classic" % logbackVersion   % Test,
+    "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"            % Test,
+    "com.h2database"          %  "h2"              % h2Version        % Test,
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.6"          % Test,
+    "com.h2database"          %  "h2"              % h2Version        % Test
   )
 
   def _publishTo(v: String) = {

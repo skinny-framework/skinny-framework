@@ -1,8 +1,10 @@
 package skinny.routing.implicits
 
+import skinny.engine.constant.{ Get, HttpMethod }
+import skinny.engine.routing.Route
+
 import scala.language.implicitConversions
 
-import org.scalatra._
 import skinny.controller._
 import skinny.routing.RichRoute
 

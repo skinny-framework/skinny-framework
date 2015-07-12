@@ -13,8 +13,8 @@ sbt \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
-  skinnyScalatra/publishLocal \
-  skinnyScalatraTest/publishLocal \
+  engine/publishLocal \
+  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   standalone/publishLocal \
@@ -37,8 +37,8 @@ sbt \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
-  skinnyScalatra/publishLocal \
-  skinnyScalatraTest/publishLocal \
+  engine/publishLocal \
+  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   standalone/publishLocal \

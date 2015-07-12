@@ -1,9 +1,11 @@
 package skinny.controller.feature
 
+import skinny.engine.SkinnyEngineBase
+
 /**
  * Supports snake_case'd keys for parameter names.
  */
-trait SnakeCasedParamKeysFeature extends org.scalatra.ScalatraBase {
+trait SnakeCasedParamKeysFeature extends SkinnyEngineBase {
 
   /**
    * Defines use snake_case'd keys.

@@ -176,14 +176,14 @@ trait ControllerGenerator extends CodeGenerator {
 
     s"""package ${toNamespace("integrationtest", namespaces)}
         |
-        |import org.scalatra.test.scalatest._
+        |import skinny.test.scalatest._
         |import org.scalatest._
         |import skinny._
         |import skinny.test._
         |import org.joda.time._
         |import _root_.${controllerPackage}.Controllers
         |
-        |class ${toClassName(name)}Controller_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+        |class ${toClassName(name)}Controller_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
         |  addFilter(Controllers.${toControllerName(namespaces, name)}, "/*")
         |
         |  it should "show index page" in {

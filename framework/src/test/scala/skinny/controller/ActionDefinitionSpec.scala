@@ -1,7 +1,7 @@
 package skinny.controller
 
 import org.scalatest._
-import org.scalatra.HttpMethod
+import skinny.engine.constant.HttpMethod
 
 class ActionDefinitionSpec extends FlatSpec with Matchers {
 

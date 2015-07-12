@@ -1,8 +1,9 @@
 package skinny
 
-import org.scalatra.{ UrlGenerator, Route }
 import javax.servlet.http.HttpServletRequest
 import skinny.controller.ThreadLocalRequest
+import skinny.engine.routing.Route
+import skinny.engine.util.UrlGenerator
 
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.

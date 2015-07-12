@@ -1,13 +1,14 @@
 package skinny.controller.feature
 
 import skinny.controller.ActionDefinition
-import org.scalatra._
+import skinny.engine.SkinnyEngineBase
+import skinny.engine.constant.HttpMethod
 
 /**
  * Action definitions for this controller.
  * These definitions will be used for beforeAction/afterAction's only/except.
  */
-trait ActionDefinitionFeature extends ScalatraBase {
+trait ActionDefinitionFeature extends SkinnyEngineBase {
 
   /**
    * Note: Same action method name should be registered several times.

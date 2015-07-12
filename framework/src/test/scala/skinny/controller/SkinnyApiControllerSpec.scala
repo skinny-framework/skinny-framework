@@ -4,7 +4,6 @@ import org.scalatra.test.scalatest._
 import scalikejdbc._
 import skinny.orm.SkinnyCRUDMapper
 import skinny.Routes
-import org.scalatra.{ BadRequest, Created }
 
 class SkinnyApiControllerSpec extends ScalatraFlatSpec {
 

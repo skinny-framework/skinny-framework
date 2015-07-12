@@ -2,12 +2,12 @@ package skinny.controller.feature
 
 import javax.servlet.http.HttpServletRequest
 
-import org.scalatra._
+import skinny.engine._
 
 /**
  * Provides queryParams/queryMultiParams.
  */
-trait QueryParamsFeature extends ScalatraBase {
+trait QueryParamsFeature extends SkinnyEngineBase {
 
   /**
    * Returns query string multi parameters as a Map value.
@@ -19,6 +19,6 @@ trait QueryParamsFeature extends ScalatraBase {
   /**
    * Returns query string parameters as a Map value.
    */
-  def queryParams(implicit request: HttpServletRequest): Params = new ScalatraParams(queryMultiParams)
+  def queryParams(implicit request: HttpServletRequest): Params = new EngineParams(queryMultiParams)
 
 }

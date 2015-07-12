@@ -2,14 +2,15 @@ package skinny.controller.implicits
 
 import scala.language.implicitConversions
 
+import skinny.engine.{ Params, SkinnyEngineBase }
 import skinny.StrongParameters
 
 /**
  * Implicit conversions for enabling Params acts as factory of strong parameters.
  */
-trait ParamsPermitImplicits { self: org.scalatra.ScalatraBase =>
+trait ParamsPermitImplicits { self: SkinnyEngineBase =>
 
-  implicit def convertParamsToStrongParameters(params: org.scalatra.Params): StrongParameters = {
+  implicit def convertParamsToStrongParameters(params: Params): StrongParameters = {
     StrongParameters(params)
   }
 

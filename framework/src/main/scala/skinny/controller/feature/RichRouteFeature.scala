@@ -1,14 +1,16 @@
 package skinny.controller.feature
 
 import skinny.controller.Constants
-import org.scalatra._
 import skinny._
 import javax.servlet.{ FilterRegistration, Filter, DispatcherType }
+import skinny.engine.{ RouteTransformer, SkinnyEngineBase }
+import skinny.engine.constant.HttpMethod
+import skinny.engine.routing.Route
 
 /**
  * RichRoute support.
  */
-trait RichRouteFeature extends ScalatraBase { self: SkinnyControllerBase =>
+trait RichRouteFeature extends SkinnyEngineBase { self: SkinnyControllerBase =>
 
   /**
    * Override to append HTTP method information to Route objects.

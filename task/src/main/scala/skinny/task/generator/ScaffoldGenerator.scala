@@ -409,7 +409,7 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     s"""package ${namespace}
         |
-        |import org.scalatra.test.scalatest._
+        |import skinny.test.scalatest._
         |import org.scalatest._
         |import skinny._
         |import skinny.test._
@@ -417,7 +417,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |import _root_.${controllerPackage}.Controllers
         |import ${toNamespace(modelPackage, namespaces)}._
         |
-        |class ${controllerClassName}_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
+        |class ${controllerClassName}_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
         |  addFilter(Controllers.${controllerName}, "/*")
         |
         |  override def afterAll() {

@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.util.TimeLogging
-import org.scalatra.ScalatraContext
 import skinny.controller.SkinnyControllerBase
 
 /**
@@ -10,7 +10,7 @@ import skinny.controller.SkinnyControllerBase
 trait TimeLoggingFeature extends TimeLogging with SensitiveParametersFeature { self: SkinnyControllerBase =>
 
   def warnElapsedTimeWithRequest[A](millis: Long, additionalLines: Seq[String] = Nil)(action: => A)(
-    implicit context: ScalatraContext): A = {
+    implicit context: SkinnyEngineContext): A = {
     warnElapsedTime(millis, additionalLines ++ {
       val req = context.request
       val params: Seq[String] = req.parameters.toSeq

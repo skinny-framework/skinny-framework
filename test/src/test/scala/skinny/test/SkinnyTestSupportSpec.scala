@@ -1,13 +1,13 @@
 package skinny.test
 
-import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny._
 import skinny.controller.SkinnyController
 import skinny.filter.SkinnySessionFilter
+import skinny.test.scalatest.SkinnyFlatSpec
 
 case class Foo(str: String, value: Int) extends java.io.Serializable
 
-class SkinnyTestSupportSpec extends ScalatraFlatSpec with SkinnyTestSupport
+class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
     with Serializable {
 
   object SessionInjectorTest extends SkinnyController with Routes

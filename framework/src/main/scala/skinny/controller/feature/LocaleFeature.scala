@@ -2,12 +2,12 @@ package skinny.controller.feature
 
 import java.util.Locale
 import javax.servlet.http.HttpServletRequest
-import org.scalatra.ScalatraBase
+import skinny.engine.SkinnyEngineBase
 
 /**
  * Easy-to-use default/session-based Locale configuration.
  */
-trait LocaleFeature extends ScalatraBase {
+trait LocaleFeature extends SkinnyEngineBase {
 
   /**
    * Returns default locale.

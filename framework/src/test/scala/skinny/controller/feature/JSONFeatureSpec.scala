@@ -1,8 +1,8 @@
 package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
-import org.scalatra.{ AsyncResult, FutureSupport }
 import skinny.controller.{ SkinnyController, SkinnyServlet }
+import skinny.engine.async.{ FutureSupport, AsyncResult }
 
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, ExecutionContext, Future }

@@ -1,7 +1,8 @@
 package skinny.controller.feature
 
+import skinny.engine.SkinnyScalatraBase
+import skinny.engine.csrf.CsrfTokenSupport
 import skinny.logging.Logging
-import org.scalatra._
 
 object CSRFProtectionFeature {
 

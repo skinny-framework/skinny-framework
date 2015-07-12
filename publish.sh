@@ -12,8 +12,8 @@ sbt ++2.11.7 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
-  skinnyScalatra/publishSigned \
-  skinnyScalatraTest/publishSigned \
+  engine/publishSigned \
+  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   standalone/publishSigned \
@@ -36,8 +36,8 @@ sbt ++2.11.7 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
-  skinnyScalatra/publishSigned \
-  skinnyScalatraTest/publishSigned \
+  engine/publishSigned \
+  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   standalone/publishSigned \

@@ -2,11 +2,10 @@ package skinny.controller.feature
 
 import skinny.controller._
 
-import org.scalatra.test.scalatest.ScalatraFlatSpec
-
 import skinny.Routes
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class VelocityTemplateEngineFeatureSpec extends ScalatraFlatSpec {
+class VelocityTemplateEngineFeatureSpec extends SkinnyFlatSpec {
 
   behavior of "VelocityTemplateEngineFeature"
 

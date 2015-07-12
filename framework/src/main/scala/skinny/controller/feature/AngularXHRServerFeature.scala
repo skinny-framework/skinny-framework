@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import org.scalatra.SkinnyScalatraBase
 import skinny.Logging
+import skinny.engine.SkinnyScalatraBase
 
 /**
  * Server side implementation for Angular apps.

@@ -2,10 +2,10 @@ package skinny.engine
 
 import java.util.concurrent.atomic.AtomicInteger
 import javax.servlet.Filter
-import javax.servlet.http.{HttpServlet, HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
 
 import skinny.SkinnyEnv
-import skinny.engine.control.{HaltException, PassException}
+import skinny.engine.control.{ HaltException, PassException }
 import skinny.logging.Logging
 
 import scala.util.Failure
@@ -28,10 +28,10 @@ trait SkinnyScalatraBase extends SkinnyEngineBase with Logging {
     var rendered = true
 
     def runActions = {
-      val prehandleException = request.get(PrehandleExceptionKey)
+      val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
         val (rq, rs) = (request, response)
-        onCompleted { _ =>
+        SkinnyEngineBase.onCompleted { _ =>
           withRequestResponse(rq, rs) {
             val className = this.getClass.toString
             this match {
@@ -64,11 +64,11 @@ trait SkinnyScalatraBase extends SkinnyEngineBase with Logging {
         result = errorHandler(e)
         rendered = false
       }, e => {
-        runCallbacks(Failure(e))
+        SkinnyEngineBase.runCallbacks(Failure(e))
         try {
           renderUncaughtException(e)
         } finally {
-          runRenderCallbacks(Failure(e))
+          SkinnyEngineBase.runRenderCallbacks(Failure(e))
         }
       })
     })

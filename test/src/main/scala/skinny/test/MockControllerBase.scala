@@ -4,13 +4,12 @@ import javax.servlet.http._
 import javax.servlet.ServletContext
 import org.json4s._
 import org.mockito.Mockito._
-import org.scalatra._
+import skinny.engine.EngineParams
 import skinny.util.JSONStringOps
 import scala.collection.concurrent.TrieMap
 import skinny.controller.SkinnyControllerBase
 import skinny.controller.feature.{ JSONParamsAutoBinderFeature, RequestScopeFeature }
 import javax.servlet.http.HttpServletResponse
-import javax.servlet.ServletOutputStream
 
 /**
  * Mock Controller Base.
@@ -61,10 +60,10 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   private[this] val _params = TrieMap[String, Seq[String]]()
-  private def _scalatraParams = new ScalatraParams(_params.toMap)
+  private def _scalatraParams = new EngineParams(_params.toMap)
   override def params(implicit request: HttpServletRequest) = {
     val mergedParams = (super.params ++ _scalatraParams).mapValues(v => Seq(v))
-    new ScalatraParams(if (_parsedBody.isDefined) {
+    new EngineParams(if (_parsedBody.isDefined) {
       getMergedMultiParams(mergedParams, parsedBody.extract[Map[String, String]].mapValues(v => Seq(v)))
     } else {
       mergedParams

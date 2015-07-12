@@ -1,8 +1,7 @@
 package skinny.controller
 
-import org.scalatra.Route
-import org.scalatra.util.conversion.TypeConverter
 import skinny._
+import skinny.engine.routing.Route
 
 /**
  * Routes for Skinny API resource.

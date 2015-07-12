@@ -2,11 +2,11 @@ package sample
 
 import skinny._
 import skinny.controller.feature.ScaldiFeature
-import org.scalatra.test.scalatest.ScalatraFlatSpec
 import service.EchoService
 import model.AppName
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class ConfigInjectionSpec extends ScalatraFlatSpec {
+class ConfigInjectionSpec extends SkinnyFlatSpec {
 
   System.setProperty(SkinnyEnv.PropertyKey, SkinnyEnv.Test)
 

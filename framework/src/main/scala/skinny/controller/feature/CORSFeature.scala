@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import org.scalatra.SkinnyScalatraBase
+import skinny.engine.SkinnyScalatraBase
 
 /**
  * CORS(Cross-Origin Resource Sharing) support.

@@ -1,9 +1,9 @@
 package skinny.controller.feature
 
+import skinny.engine.SkinnyEngineBase
 import skinny.validator._
 import skinny.validator.NewValidation
 import skinny.validator.MapValidator
-import org.scalatra.ScalatraBase
 import skinny.I18n
 import java.util.Locale
 import skinny.controller.{ KeyAndErrorMessages, Params }
@@ -14,7 +14,7 @@ import skinny.util.StringUtil.toCamelCase
  */
 trait ValidationFeature {
 
-  self: ScalatraBase with RequestScopeFeature with LocaleFeature =>
+  self: SkinnyEngineBase with RequestScopeFeature with LocaleFeature =>
 
   /**
    * Creates new validation form.

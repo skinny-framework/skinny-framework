@@ -1,8 +1,8 @@
 package skinny.controller
 
-import org.scalatra.test.scalatest._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class SessionInjectorControllerSpec extends ScalatraFlatSpec {
+class SessionInjectorControllerSpec extends SkinnyFlatSpec {
 
   addFilter(SessionInjectorController, "/*")
 

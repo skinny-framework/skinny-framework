@@ -1,7 +1,8 @@
 package skinny.controller.feature
 
-import org.scalatra._
 import skinny.SkinnyEnv
+import skinny.engine.SkinnyScalatraBase
+import skinny.engine.response.{ SeeOther, Found, MovedPermanently, ActionResult }
 
 /**
  * Explicit redirect method support.

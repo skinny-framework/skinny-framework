@@ -1,9 +1,9 @@
 package skinny.standalone
 
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.servlet.{ DefaultServlet, ServletContextHandler }
+import org.eclipse.jetty.servlet.DefaultServlet
 import org.eclipse.jetty.webapp.WebAppContext
-import org.scalatra.servlet.ScalatraListener
+import skinny.engine.SkinnyEngineListener
 
 /**
  * Jetty server launcher for standalone apps.
@@ -25,7 +25,7 @@ object JettyLauncher {
       val location = domain.getCodeSource.getLocation
       location.toExternalForm
     })
-    context.addEventListener(new ScalatraListener)
+    context.addEventListener(new SkinnyEngineListener)
     context.addServlet(classOf[DefaultServlet], "/")
     server.setHandler(context)
     server.start

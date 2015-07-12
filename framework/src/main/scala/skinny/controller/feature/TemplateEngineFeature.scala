@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import org.scalatra._
 import skinny.Format
+import skinny.engine.response.ResponseStatus
 import skinny.logging.Logging
 import skinny.exception.ViewTemplateNotFoundException
 import skinny.controller.SkinnyControllerBase

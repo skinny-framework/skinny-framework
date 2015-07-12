@@ -1,9 +1,11 @@
 package skinny.controller
 
+import skinny.engine.SkinnyEngineFilter
+
 /**
  * Skinny controller.
  */
 class SkinnyController
-  extends org.scalatra.ScalatraFilter
+  extends SkinnyEngineFilter
   with SkinnyControllerBase
   with SkinnyWebPageControllerFeatures

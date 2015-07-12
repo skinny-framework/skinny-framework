@@ -1,7 +1,7 @@
 package skinny.bootstrap
 
-import org.scalatra.LifeCycle
 import javax.servlet.ServletContext
+import skinny.engine.LifeCycle
 import skinny.worker._
 
 /**
@@ -13,9 +13,6 @@ trait SkinnyLifeCycle extends LifeCycle {
    * Enables Skinny-ORM configuration if true.
    */
   def dbSettingsEnabled: Boolean = true
-
-  @deprecated("Use #dbSettingsEnabled instead", since = "1.0.0")
-  def dbSettingsRequired: Boolean = dbSettingsEnabled
 
   /**
    * Enables SkinnyWorkerService if true.

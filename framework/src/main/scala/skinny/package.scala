@@ -1,3 +1,6 @@
+import skinny.engine.implicits
+import skinny.engine.implicits.TypeConverterSupport
+
 /**
  * Skinny framework for rapid web app development in Scala.
  *
@@ -46,9 +49,9 @@ package object skinny {
   @deprecated("Use SkinnyMapper or SkinnyCRUDMapper instead because this mapper has ID.", since = "1.0.14")
   type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
 
-  type TypeConverter[A, B] = org.scalatra.util.conversion.TypeConverter[A, B]
-  type TypeConverterSupport = org.scalatra.util.conversion.TypeConverterSupport
-  val TypeConverterSupport = org.scalatra.util.conversion.TypeConverterSupport
+  type TypeConverter[A, B] = skinny.engine.implicits.TypeConverter[A, B]
+  type TypeConverterSupport = skinny.engine.implicits.TypeConverterSupport
+  val TypeConverterSupport = implicits.TypeConverterSupport
 
   type Logging = skinny.logging.Logging
 

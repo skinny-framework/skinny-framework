@@ -1,6 +1,6 @@
 package skinny.controller
 
-import org.scalatra.ScalatraFilter
+import skinny.engine.SkinnyEngineFilter
 
 /**
  * SkinnyController as a Servlet for REST APIs.
@@ -9,4 +9,4 @@ import org.scalatra.ScalatraFilter
  */
 trait SkinnyApiController
   extends SkinnyControllerBase
-  with ScalatraFilter
+  with SkinnyEngineFilter
