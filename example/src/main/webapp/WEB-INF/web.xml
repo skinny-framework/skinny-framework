@@ -5,7 +5,7 @@
          version="3.0">
 
     <listener>
-        <listener-class>org.scalatra.servlet.ScalatraListener</listener-class>
+        <listener-class>skinny.engine.SkinnyEngineListener</listener-class>
     </listener>
 
     <session-config>

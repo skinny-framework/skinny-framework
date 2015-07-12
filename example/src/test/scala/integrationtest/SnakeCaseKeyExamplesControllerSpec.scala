@@ -1,11 +1,11 @@
 package integrationtest
 
 import _root_.controller.SnakeCaseKeyExamplesController
-import org.scalatra.test.scalatest._
-import skinny._, test._
-import model._
+import _root_.model._
+import skinny._, skinny.test._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class SnakeCaseKeyExamplesControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+class SnakeCaseKeyExamplesControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
   addFilter(SnakeCaseKeyExamplesController, "/*")
 
   def snakeCaseKeyExample = FactoryGirl(SnakeCaseKeyExample).create()

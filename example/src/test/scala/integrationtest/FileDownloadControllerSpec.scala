@@ -1,11 +1,11 @@
 package integrationtest
 
 import controller.Controllers
-import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 import unit.DBSettings
 
-class FileDownloadControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+class FileDownloadControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
 
   addFilter(Controllers.fileDownload, "/*")
 

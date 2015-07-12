@@ -1,12 +1,12 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
 import skinny.test._
+import skinny.test.scalatest.SkinnyFlatSpec
 import skinny.util.JSONStringOps._
 import model._
 import controller.Controllers
 
-class CompaniesControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.companies, "/*")
 

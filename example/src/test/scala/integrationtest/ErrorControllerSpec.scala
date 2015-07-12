@@ -1,12 +1,12 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
 import controller.ErrorController
 import model.Company
+import skinny.test.scalatest.SkinnyFlatSpec
 import unit.DBSettings
 
-class ErrorControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+class ErrorControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
 
   addFilter(ErrorController, "/*")
 
