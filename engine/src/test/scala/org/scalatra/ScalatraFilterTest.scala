@@ -5,13 +5,14 @@ import javax.servlet.http.HttpServletRequest
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.{ SkinnyEngineServlet, SkinnyEngineFilter }
 
 /*
  * There are four types of servlet mappings: path, extension, default, and exact-match.  Test them all, as they can all
  * cause different splits of pathInfo vs. servletPath.
  */
 
-class ScalatraFilterTestFilter extends ScalatraFilter {
+class ScalatraFilterTestFilter extends SkinnyEngineFilter {
   get("/path-mapped/filtered") {
     "filter"
   }
@@ -45,7 +46,7 @@ class ScalatraFilterTestFilter extends ScalatraFilter {
   }
 }
 
-class ScalatraFilterTestPathMappedServlet extends ScalatraServlet {
+class ScalatraFilterTestPathMappedServlet extends SkinnyEngineServlet {
   get("/filtered") {
     "path-mapped"
   }
@@ -55,7 +56,7 @@ class ScalatraFilterTestPathMappedServlet extends ScalatraServlet {
   }
 }
 
-class ScalatraFilterTestExtensionMappedServlet extends ScalatraServlet {
+class ScalatraFilterTestExtensionMappedServlet extends SkinnyEngineServlet {
   get("/filtered.do") {
     "extension-mapped"
   }
@@ -68,7 +69,7 @@ class ScalatraFilterTestExtensionMappedServlet extends ScalatraServlet {
   override def requestPath(implicit request: HttpServletRequest) = request.getServletPath
 }
 
-class ScalatraFilterTestDefaultServlet extends ScalatraServlet {
+class ScalatraFilterTestDefaultServlet extends SkinnyEngineServlet {
   get("/filtered") {
     "default"
   }
@@ -81,7 +82,7 @@ class ScalatraFilterTestDefaultServlet extends ScalatraServlet {
   override def requestPath(implicit request: HttpServletRequest) = request.getServletPath
 }
 
-class ScalatraFilterTestExactMatchServlet extends ScalatraServlet {
+class ScalatraFilterTestExactMatchServlet extends SkinnyEngineServlet {
   get("/exact-match/filtered") {
     "exact match"
   }

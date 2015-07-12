@@ -1,6 +1,9 @@
 package org.scalatra
 
-class UrlGeneratorTestServlet extends ScalatraServlet {
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.routing.{ PathPattern, RouteMatcher }
+
+class UrlGeneratorTestServlet extends SkinnyEngineServlet {
   val cat: String = "meea"
 
   val simpleString = get("/foo") {}

@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-object RouteRegistryTestServlet extends ScalatraServlet {
+object RouteRegistryTestServlet extends SkinnyEngineServlet {
   get("/foo") {}
   post("/foo/:bar") {}
   put("""^/foo.../bar$""".r) {}

@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-class RoutePrecedenceTestBaseServlet extends ScalatraServlet {
+class RoutePrecedenceTestBaseServlet extends SkinnyEngineServlet {
   get("/override-route") {
     "base"
   }

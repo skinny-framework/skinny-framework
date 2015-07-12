@@ -1,8 +1,10 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.csrf.CsrfTokenSupport
 
-class CsrfTokenServlet extends ScalatraServlet with CsrfTokenSupport {
+class CsrfTokenServlet extends SkinnyEngineServlet with CsrfTokenSupport {
   get("/renderForm") {
     <html>
       <body>

@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatest.{ FunSuite, Matchers }
+import skinny.engine.routing.{ PathPattern, SinatraPathPatternParser }
 
 class SinatraPathPatternParserTest extends FunSuite with Matchers {
   test("should match exactly on a simple path") {

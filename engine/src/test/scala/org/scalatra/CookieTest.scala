@@ -3,6 +3,7 @@ package org.scalatra
 import java.util.Date
 
 import org.scalatest._
+import skinny.engine.cookie.{ CookieOptions, Cookie }
 
 class CookieTest extends WordSpec with Matchers with BeforeAndAfterAll {
 

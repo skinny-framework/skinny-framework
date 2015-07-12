@@ -6,8 +6,10 @@ package org.scalatra
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.routing.RouteMatcher
 
-class RouteTestServlet extends ScalatraServlet {
+class RouteTestServlet extends SkinnyEngineServlet {
   get("/foo") {
     "matched simple string route"
   }
@@ -123,7 +125,7 @@ class RouteTestServlet extends ScalatraServlet {
 class RouteTest extends ScalatraFunSuite {
   addServlet(classOf[RouteTestServlet], "/*")
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     get("/") { "root" }
   }, "/subcontext/*")
 

@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatest.{ FunSuite, Matchers }
+import skinny.engine.routing.{ PathPattern, RailsPathPatternParser }
 
 /**
  * Test cases adapted from  https://github.com/josh/rack-mount/blob/d44e02ec8a6318fdda8ea53a30aac654e228e07b/test/test_strexp.rb

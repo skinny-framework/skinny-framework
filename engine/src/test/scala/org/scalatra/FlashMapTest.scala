@@ -5,6 +5,7 @@ import java.io.{ ByteArrayOutputStream, ObjectOutputStream }
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{ BeforeAndAfterEach, FunSuite, Matchers }
+import skinny.engine.flash.FlashMap
 
 @RunWith(classOf[JUnitRunner])
 class FlashMapTest extends FunSuite with Matchers with BeforeAndAfterEach {

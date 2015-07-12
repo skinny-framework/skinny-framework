@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-class SessionTestServlet extends ScalatraServlet {
+class SessionTestServlet extends SkinnyEngineServlet {
   get("/session") {
     session.getOrElse("val", "None")
   }

@@ -1,10 +1,13 @@
 package org.scalatra
 
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.routing.RailsPathPatternParser
+
 import scala.language.implicitConversions
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
 
-class RailsLikeRouteTestServlet extends ScalatraServlet {
+class RailsLikeRouteTestServlet extends SkinnyEngineServlet {
   implicit override def string2RouteMatcher(path: String) =
     RailsPathPatternParser(path)
 

@@ -1,11 +1,12 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest._
+import skinny.engine.SkinnyEngineServlet
 
 class UrlSupportTest extends ScalatraFunSuite {
   override def contextPath = "/context"
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     get("/") {
       if (params.contains("session")) session // trigger a jsessionid
       this.url(params("url"), params - "url", absolutize = false)

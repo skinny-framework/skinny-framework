@@ -3,10 +3,12 @@ package org.scalatra
 import java.net.HttpCookie
 
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.csrf.XsrfTokenSupport
 
 import scala.collection.JavaConverters._
 
-class XsrfTokenServlet extends ScalatraServlet with XsrfTokenSupport {
+class XsrfTokenServlet extends SkinnyEngineServlet with XsrfTokenSupport {
 
   xsrfGuard()
 

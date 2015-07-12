@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.specs2._
+import skinny.engine.SkinnyEngineServlet
 
-class MyScalatraServlet extends ScalatraServlet {
+class MyScalatraServlet extends SkinnyEngineServlet {
 
   get("/render/:aNumber") {
     val intValue: Option[Int] = params.getAs[Int]("aNumber")

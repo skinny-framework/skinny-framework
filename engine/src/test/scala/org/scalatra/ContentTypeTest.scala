@@ -1,5 +1,7 @@
 package org.scalatra
 
+import skinny.engine.SkinnyEngineServlet
+
 import scala.language.postfixOps
 
 import java.nio.charset.Charset
@@ -10,13 +12,13 @@ import _root_.akka.util.Timeout
 import org.eclipse.jetty.servlet.ServletHolder
 import org.scalatest.BeforeAndAfterAll
 import org.scalatra.test.scalatest.ScalatraFunSuite
-import org.scalatra.util.RicherString._
+import skinny.engine.implicits.RicherStringImplicits._
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.xml.Text
 
-class ContentTypeTestServlet(system: ActorSystem) extends ScalatraServlet {
+class ContentTypeTestServlet(system: ActorSystem) extends SkinnyEngineServlet {
   get("/json") {
     contentType = "application/json; charset=utf-8"
     """{msg: "test"}"""

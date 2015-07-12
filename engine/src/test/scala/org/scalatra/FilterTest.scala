@@ -2,9 +2,10 @@ package org.scalatra
 
 import org.scalatest.BeforeAndAfterEach
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.{ SkinnyEngineFilter, SkinnyEngineServlet }
 
 class ScalatraExpectedFilterException extends RuntimeException
-class FilterTestServlet extends ScalatraServlet {
+class FilterTestServlet extends SkinnyEngineServlet {
   var beforeCount = 0
   var afterCount = 0
 
@@ -47,7 +48,7 @@ class FilterTestServlet extends ScalatraServlet {
 
 // Ugh... what should we call this?  Sinatra calls before/after "filter", which is not related to a
 // javax.servlet.Filter.
-class FilterTestFilter extends ScalatraFilter {
+class FilterTestFilter extends SkinnyEngineFilter {
   var beforeCount = 0
 
   before() {
@@ -62,7 +63,7 @@ class FilterTestFilter extends ScalatraFilter {
 
 }
 
-class MultipleFilterTestServlet extends ScalatraServlet {
+class MultipleFilterTestServlet extends SkinnyEngineServlet {
   before() {
     response.writer.print("one\n")
   }

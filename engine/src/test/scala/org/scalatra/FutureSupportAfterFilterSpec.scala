@@ -2,10 +2,12 @@ package org.scalatra
 
 import _root_.akka.actor.ActorSystem
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.async.FutureSupport
 
 import scala.concurrent.Future
 
-class FutureSupportAfterFilterServlet extends ScalatraServlet with FutureSupport {
+class FutureSupportAfterFilterServlet extends SkinnyEngineServlet with FutureSupport {
   val system = ActorSystem()
   var actionTime: Long = _
   var afterTime: Long = _

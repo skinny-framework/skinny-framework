@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.ScalatraSpec
+import skinny.engine.SkinnyEngineFilter
 
-class EnvironmentFilter extends ScalatraFilter {
+class EnvironmentFilter extends SkinnyEngineFilter {
   get("/*/environment") {
     environment
   }
@@ -26,7 +27,7 @@ class EnvironmentFilterSpec extends ScalatraSpec {
   val devFilterHolder = addFilter(classOf[EnvironmentFilter], "/dev/*")
 
   val prodFilterHolder = addFilter(classOf[EnvironmentFilter], "/prod/*")
-  prodFilterHolder.setInitParameter(EnvironmentKey, "production")
+  prodFilterHolder.setInitParameter(skinny.engine.EnvironmentKey, "production")
 
   def env(environment: String, expected: String) =
     get("/%s/environment".format(environment)) {

@@ -1,8 +1,10 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.ScalatraSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.response.{ ActionResult, ResponseStatus }
 
-class HaltTestServlet extends ScalatraServlet {
+class HaltTestServlet extends SkinnyEngineServlet {
   before() {
     status = 501
     response.setHeader("Before-Header", "before")

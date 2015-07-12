@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatest.{ FunSuite, Matchers }
+import skinny.engine.routing.SinatraRouteMatcher
 
 class SinatraLikeUrlGeneratorTest extends FunSuite with Matchers {
 

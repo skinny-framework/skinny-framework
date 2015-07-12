@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.ScalatraSpec
+import skinny.engine.{ SkinnyEngineServlet, SkinnyEngineFilter }
 
 class NotFoundSpec extends ScalatraSpec {
   def is = s2"""
@@ -22,16 +23,16 @@ class NotFoundSpec extends ScalatraSpec {
       should pass in a filter by default $methodNotAllowedFilterPass
   """
 
-  addFilter(new ScalatraFilter {
+  addFilter(new SkinnyEngineFilter {
     post("/filtered/get") { "wrong method" }
   }, "/filtered/*")
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     get("/fall-through") { "fell through" }
     get("/get") { "servlet get" }
   }, "/filtered/*")
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     get("/get") { "foo" }
     post("/no-get") { "foo" }
     put("/no-get") { "foo" }
@@ -41,7 +42,7 @@ class NotFoundSpec extends ScalatraSpec {
     }
   }, "/default/*")
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     post("/no-get") { "foo" }
     put("/no-get") { "foo" }
 
@@ -49,7 +50,7 @@ class NotFoundSpec extends ScalatraSpec {
     methodNotAllowed { _ => "custom method not allowed" }
   }, "/custom/*")
 
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     post("/no-get") { "foo" }
     notFound { "fell through" }
     methodNotAllowed { _ => pass() }

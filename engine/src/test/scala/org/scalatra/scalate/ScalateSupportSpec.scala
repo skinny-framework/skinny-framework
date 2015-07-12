@@ -3,6 +3,9 @@ package scalate
 
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.scalatra.test.specs2.ScalatraSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.flash.FlashMapSupport
+import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
 
 class ScalateSupportSpec extends ScalatraSpec {
   def is =
@@ -33,7 +36,7 @@ class ScalateSupportSpec extends ScalatraSpec {
       "set status to 500 when rendering 500.scaml" ! e24 ^ br ^
       end
 
-  addServlet(new ScalatraServlet with ScalateSupport with ScalateUrlGeneratorSupport with FlashMapSupport {
+  addServlet(new SkinnyEngineServlet with ScalateSupport with ScalateUrlGeneratorSupport with FlashMapSupport {
 
     get("/barf") {
       throw new RuntimeException

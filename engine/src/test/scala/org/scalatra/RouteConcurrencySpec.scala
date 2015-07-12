@@ -1,12 +1,14 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraWordSpec
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.constant.HttpMethod
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
 
-class RouteConcurrencyServlet extends ScalatraServlet {
+class RouteConcurrencyServlet extends SkinnyEngineServlet {
   for {
     i <- 0 until 250
     x = Future { get(false) { "/" } }

@@ -1,6 +1,8 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.{ SkinnyEngineServlet, RouteTransformer }
+import skinny.engine.routing.Route
 
 class RouteMetadataSpec extends MutableScalatraSpec {
   addServlet(RouteMetadataSpec.servlet, "/*")
@@ -29,7 +31,7 @@ object RouteMetadataSpec {
     route.copy(metadata = route.metadata + (key -> value))
   }
 
-  def servlet = new ScalatraServlet {
+  def servlet = new SkinnyEngineServlet {
     val zero: Route = get("/zero/:key") {
       zero.metadata.size.toString
     }

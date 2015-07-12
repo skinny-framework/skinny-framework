@@ -1,9 +1,10 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.{ SkinnyEngineServlet, SkinnyEngineBase }
 
-class AfterTestServlet extends ScalatraServlet with AfterTestAppBase
-trait AfterTestAppBase extends ScalatraBase {
+class AfterTestServlet extends SkinnyEngineServlet with AfterTestAppBase
+trait AfterTestAppBase extends SkinnyEngineBase {
 
   after() {
     response.setStatus(204)
@@ -28,6 +29,7 @@ trait AfterTestAppBase extends ScalatraBase {
 class AfterServletTest extends AfterTest {
   mount(classOf[AfterTestServlet], "/*")
 }
+
 abstract class AfterTest extends ScalatraFunSuite {
 
   test("afterAll is applied to all paths") {

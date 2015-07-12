@@ -1,13 +1,14 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
 object DefaultRouteTest {
   val existingRoute = "/existing-route"
   val nonExistentRoute = "/no-such-route"
 }
 
-class DefaultRouteTestServlet extends ScalatraServlet {
+class DefaultRouteTestServlet extends SkinnyEngineServlet {
   import org.scalatra.DefaultRouteTest._
 
   get(existingRoute) {

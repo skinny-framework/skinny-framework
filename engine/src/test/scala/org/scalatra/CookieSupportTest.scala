@@ -3,8 +3,10 @@ package org.scalatra
 import java.net.HttpCookie
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.cookie.CookieOptions
 
-class CookieSupportServlet extends ScalatraServlet {
+class CookieSupportServlet extends SkinnyEngineServlet {
 
   get("/getcookie") {
     cookies.get("anothercookie") foreach { cookie =>

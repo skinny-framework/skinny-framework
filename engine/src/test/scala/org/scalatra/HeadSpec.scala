@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.ScalatraSpec
+import skinny.engine.SkinnyEngineServlet
 
 class HeadSpec extends ScalatraSpec {
   def is =
@@ -18,7 +19,7 @@ A HEAD request should"
   }
 }
 
-class HeadSpecServlet extends ScalatraServlet {
+class HeadSpecServlet extends SkinnyEngineServlet {
   get("/") {
     response.addHeader("X-Powered-By", "caffeine")
     "poof -- watch me disappear"

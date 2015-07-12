@@ -3,8 +3,9 @@ package org.scalatra
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-class RequestBodyTestServlet extends ScalatraServlet {
+class RequestBodyTestServlet extends SkinnyEngineServlet {
   post("/request-body") {
     val body = request.body
     val body2 = request.body

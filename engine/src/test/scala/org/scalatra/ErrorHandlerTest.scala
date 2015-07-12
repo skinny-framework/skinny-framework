@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
 class ErrorHandlerTest extends ScalatraFunSuite {
   trait TestException extends RuntimeException
@@ -8,7 +9,7 @@ class ErrorHandlerTest extends ScalatraFunSuite {
   case class Exception2() extends TestException
   case class Exception3() extends TestException
 
-  class BaseServlet extends ScalatraServlet {
+  class BaseServlet extends SkinnyEngineServlet {
     get("/1") {
       status = 418
       throw new Exception1

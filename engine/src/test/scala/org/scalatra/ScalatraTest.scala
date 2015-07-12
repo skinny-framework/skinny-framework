@@ -1,13 +1,15 @@
 package org.scalatra
 
+import skinny.engine.SkinnyEngineServlet
+
 import scala.language.postfixOps
 
 import java.io.File
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
-import org.scalatra.util.io.withTempFile
+import skinny.engine.util.io.withTempFile
 
-class ScalatraTestServlet extends ScalatraServlet {
+class ScalatraTestServlet extends SkinnyEngineServlet {
   get("/") {
     "root"
   }

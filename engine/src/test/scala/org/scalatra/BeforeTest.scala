@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-class BeforeTestServlet extends ScalatraServlet {
+class BeforeTestServlet extends SkinnyEngineServlet {
 
   before() {
     response.setStatus(204)

@@ -1,12 +1,15 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.{ SkinnyEngineFilter, SkinnyEngineServlet, UrlGeneratorSupport }
+import skinny.engine.routing.Route
+import skinny.engine.util.UrlGenerator
 
-class UrlGeneratorContextTestServlet extends ScalatraServlet with UrlGeneratorSupport {
+class UrlGeneratorContextTestServlet extends SkinnyEngineServlet with UrlGeneratorSupport {
   val servletRoute: Route = get("/foo") { url(servletRoute) }
 }
 
-class UrlGeneratorContextTestFilter extends ScalatraFilter {
+class UrlGeneratorContextTestFilter extends SkinnyEngineFilter {
   val filterRoute: Route = get("/filtered/foo") {
     UrlGenerator.url(filterRoute)
   }

@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
-class GetResponseStatusSupportTestServlet extends ScalatraServlet {
+class GetResponseStatusSupportTestServlet extends SkinnyEngineServlet {
   before() {
     session // Establish a session before we commit the response
   }

@@ -1,8 +1,9 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraWordSpec
+import skinny.engine.SkinnyEngineServlet
 
-class RemoveRouteServlet extends ScalatraServlet {
+class RemoveRouteServlet extends SkinnyEngineServlet {
   val foo = get("/foo") { "foo" }
 
   post("/remove") {

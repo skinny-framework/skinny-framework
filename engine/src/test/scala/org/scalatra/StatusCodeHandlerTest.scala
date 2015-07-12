@@ -1,6 +1,7 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
 class StatusCodeHandlerTest extends ScalatraFunSuite {
 
@@ -10,7 +11,7 @@ class StatusCodeHandlerTest extends ScalatraFunSuite {
 
   case class Exception2() extends TestException
 
-  class BaseServlet extends ScalatraServlet {
+  class BaseServlet extends SkinnyEngineServlet {
     get("/401") {
       status = 401
     }

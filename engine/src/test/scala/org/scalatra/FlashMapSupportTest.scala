@@ -3,8 +3,10 @@ package org.scalatra
 import javax.servlet.http.HttpServletRequest
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.{ SkinnyEngineFilter, SkinnyEngineServlet }
+import skinny.engine.flash.FlashMapSupport
 
-class FlashMapSupportTestServlet extends ScalatraServlet with FlashMapSupport {
+class FlashMapSupportTestServlet extends SkinnyEngineServlet with FlashMapSupport {
   post("/message") {
     flash("message") = "posted"
   }
@@ -28,14 +30,14 @@ class FlashMapSupportTestServlet extends ScalatraServlet with FlashMapSupport {
   }
 }
 
-class FlashMapSupportSecondTestServlet extends ScalatraServlet with FlashMapSupport {
+class FlashMapSupportSecondTestServlet extends SkinnyEngineServlet with FlashMapSupport {
   post("/redirect") {
     flash("message") = "redirected"
     redirect("/first/message")
   }
 }
 
-class FlashMapSupportTestFilter extends ScalatraFilter with FlashMapSupport {
+class FlashMapSupportTestFilter extends SkinnyEngineFilter with FlashMapSupport {
   get("/filter") {
     flash.get("message") foreach { x => response.setHeader("message", x.toString) }
   }
@@ -104,7 +106,7 @@ class FlashMapSupportTest extends ScalatraFunSuite {
   }
 
   test("sweeps unused entries if flag is true") {
-    println("TEST: sweeps unused entries if flag is true")
+    //println("TEST: sweeps unused entries if flag is true")
     session {
       post("/message") {}
 

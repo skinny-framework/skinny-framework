@@ -3,13 +3,14 @@ package org.scalatra
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import org.scalatra.util.conversion.TypeConverter
-import org.scalatra.util.{ MapWithIndifferentAccess, MultiMap, MultiMapHeadView }
 import org.specs2.mutable.Specification
+import skinny.engine.Params
+import skinny.engine.data.{ MapWithIndifferentAccess, MultiMapHeadView, MultiMap }
+import skinny.engine.implicits.{ TypeConverter, EngineParamsImplicits }
 
 class ParamsExtensionSpec extends Specification {
 
-  import org.scalatra.ScalatraParamsImplicits._
+  import EngineParamsImplicits._
 
   case class FakeParams(params: Map[String, String]) extends MultiMapHeadView[String, String] with MapWithIndifferentAccess[String] {
     protected def multiMap = MultiMap(params.map(e => (e._1, List(e._2).toSeq)))

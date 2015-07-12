@@ -1,5 +1,9 @@
 package org.scalatra
 
+import skinny.engine.{ ContentTypeInferrer, SkinnyEngineServlet }
+import skinny.engine.async.{ FutureSupport, AsyncResult }
+import skinny.engine.response._
+
 import scala.language.postfixOps
 
 import java.util.concurrent.Executors
@@ -13,7 +17,7 @@ import org.scalatra.test.specs2.MutableScalatraSpec
 import scala.concurrent._
 import scala.concurrent.duration._
 
-class FutureSupportServlet extends ScalatraServlet with FutureSupport {
+class FutureSupportServlet extends SkinnyEngineServlet with FutureSupport {
   val system = ActorSystem()
   protected implicit val executor = system.dispatcher
   override def asyncTimeout = 2 seconds

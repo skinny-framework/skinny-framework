@@ -1,10 +1,12 @@
 package org.scalatra
 
+import skinny.engine.SkinnyEngineServlet
+
 import scala.language.postfixOps
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
 
-class ScalatraSuiteTestServlet extends ScalatraServlet {
+class ScalatraSuiteTestServlet extends SkinnyEngineServlet {
   before() {
     contentType = "text/html; charset=utf-8"
   }

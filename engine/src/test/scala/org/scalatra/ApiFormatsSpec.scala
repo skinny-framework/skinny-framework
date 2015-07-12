@@ -1,10 +1,13 @@
 package org.scalatra
 
+import skinny.engine.{ SkinnyEngineServlet, ApiFormats }
+import skinny.engine.routing.{ RailsPathPatternParser, RouteMatcher }
+
 import scala.language.implicitConversions
 
 import org.scalatra.test.specs2.MutableScalatraSpec
 
-class ApiFormatsServlet extends ScalatraServlet with ApiFormats {
+class ApiFormatsServlet extends SkinnyEngineServlet with ApiFormats {
   override protected implicit def string2RouteMatcher(path: String): RouteMatcher = RailsPathPatternParser(path)
 
   get("/hello(.:format)") {

@@ -3,6 +3,7 @@ package org.scalatra
 import java.util.NoSuchElementException
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
 import scala.io.Codec
 
@@ -10,7 +11,7 @@ object ParamsTestServlet {
   val NoSuchElement = "No Such Element"
 }
 
-class ParamsTestServlet extends ScalatraServlet {
+class ParamsTestServlet extends SkinnyEngineServlet {
   import org.scalatra.ParamsTestServlet._
 
   get("/multiParams/:key") {

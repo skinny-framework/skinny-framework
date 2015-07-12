@@ -3,9 +3,12 @@ package org.scalatra.scalate
 import java.util.concurrent.{ ExecutorService, Executors, ThreadFactory }
 
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
-import org.scalatra._
 import org.scalatra.test.specs2.MutableScalatraSpec
 import org.specs2.specification.{ Fragments, Step }
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.async.{ FutureSupport, AsyncResult }
+import skinny.engine.flash.FlashMapSupport
+import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
@@ -21,7 +24,7 @@ object DaemonThreadFactory {
   def newPool() = Executors.newCachedThreadPool(new DaemonThreadFactory)
 }
 
-class ScalateFuturesSupportServlet(exec: ExecutorService) extends ScalatraServlet with ScalateSupport with ScalateUrlGeneratorSupport with FlashMapSupport with FutureSupport {
+class ScalateFuturesSupportServlet(exec: ExecutorService) extends SkinnyEngineServlet with ScalateSupport with ScalateUrlGeneratorSupport with FlashMapSupport with FutureSupport {
   protected implicit val executor = ExecutionContext.fromExecutorService(exec)
 
   get("/barf") {
@@ -84,7 +87,6 @@ class ScalateFuturesSupportServlet(exec: ExecutorService) extends ScalatraServle
 
     new AsyncResult {
       val is = Future {
-        println("Rendering reverse routing template")
         layoutTemplate("/urlGenerationWithParams.jade", ("a" -> params("a")), ("b" -> params("b")))
       }
     }
@@ -206,7 +208,6 @@ class ScalateFuturesSupportSpec extends MutableScalatraSpec {
   }
 
   def e7 = {
-    println("reverse route params")
     get("/url-generation-with-params/jedi/vs/sith") {
       body must_== "/url-generation-with-params/jedi/vs/sith\n"
     }

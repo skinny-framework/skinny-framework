@@ -3,9 +3,10 @@ package org.scalatra
 import javax.servlet.http.{ Cookie => ServletCookie }
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.SkinnyEngineServlet
 
 class RequestCookiesTest extends ScalatraFunSuite {
-  addServlet(new ScalatraServlet {
+  addServlet(new SkinnyEngineServlet {
     get("/multi-cookies") {
       Seq("one", "two", "three") map { key =>
         response.setHeader(key, request.multiCookies(key).mkString(":"))

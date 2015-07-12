@@ -1,13 +1,16 @@
 package org.scalatra
 package scalate
 
+import skinny.engine.SkinnyEngineServlet
+import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
+
 import scala.language.reflectiveCalls
 
 import org.specs2.mutable._
 
 class ScalateUrlGeneratorSupportTest extends Specification {
 
-  val servlet = new ScalatraServlet with ScalateSupport with ScalateUrlGeneratorSupport {
+  val servlet = new SkinnyEngineServlet with ScalateSupport with ScalateUrlGeneratorSupport {
 
     val cat: String = "meea"
 

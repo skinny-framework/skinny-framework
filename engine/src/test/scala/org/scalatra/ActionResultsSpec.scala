@@ -3,11 +3,13 @@ package org.scalatra
 import java.io.ByteArrayOutputStream
 
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.{ SkinnyEngineBase, SkinnyEngineServlet }
+import skinny.engine.response._
 
-class ActionResultServlet extends ScalatraServlet with ActionResultTestBase
+class ActionResultServlet extends SkinnyEngineServlet with ActionResultTestBase
 
 trait ActionResultTestBase {
-  self: ScalatraBase =>
+  self: SkinnyEngineBase =>
   error {
     case e => BadRequest("something went wrong")
   }
