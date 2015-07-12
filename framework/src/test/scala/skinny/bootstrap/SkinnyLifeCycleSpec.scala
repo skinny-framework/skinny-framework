@@ -33,7 +33,6 @@ class SkinnyLifeCycleSpec extends FunSpec with Matchers {
   describe("#dbSettingsEnabled") {
     it("should be available") {
       lifeCycle.dbSettingsEnabled should equal(true)
-      lifeCycle.dbSettingsRequired should equal(true)
     }
   }
 
