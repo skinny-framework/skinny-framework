@@ -1,14 +1,16 @@
 package skinny.controller
 
 import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyTestSupport
 
-class SessionInjectorControllerSpec extends SkinnyFlatSpec {
+class SessionInjectorControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(SessionInjectorController, "/*")
 
   it should "renew session attributes" in {
     session {
       put("/session", "hoge" -> SessionInjectorController.serialize("aaa")) {
+        logBodyUnless(200)
         status should equal(200)
       }
       get("/session.json") {
