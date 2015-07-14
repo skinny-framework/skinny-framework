@@ -9,12 +9,13 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "2.0.0-SNAPSHOT"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
-  lazy val json4SVersion = "3.2.11"
+  lazy val json4SVersion = "3.3.0.RC3"
   lazy val scalikeJDBCVersion = "2.2.7"
   lazy val h2Version = "1.4.187"
   lazy val kuromojiVersion = "5.2.1"
   lazy val mockitoVersion = "1.10.19"
-  lazy val jettyVersion = "9.2.11.v20150529"
+  // Jetty 9.3 dropped Java 7
+  lazy val jettyVersion = "9.2.12.v20150709"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
   lazy val scalaTestVersion = "2.2.5"
@@ -118,7 +119,7 @@ object SkinnyFrameworkBuild extends Build {
         ) ++ testDependencies ++ Seq(
           "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
-          "com.typesafe.akka" %% "akka-actor"         % "2.3.9"                   % Test
+          "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
         )
       }
     ) ++ _jettyOrbitHack
@@ -130,10 +131,10 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= servletApiDependencies ++ Seq(
         // TODO: sbt occasionally fails to reselve junit when specifying 4.12
         "junit"              %  "junit"            % "4.11"       % Compile,
-        "org.apache.commons" %  "commons-lang3"    % "3.3.2"      % Compile,
+        "org.apache.commons" %  "commons-lang3"    % "3.4"        % Compile,
         "org.eclipse.jetty"  %  "jetty-webapp"     % jettyVersion % Compile,
-        "org.apache.httpcomponents" % "httpclient" % "4.3.6"      % Compile,
-        "org.apache.httpcomponents" % "httpmime"   % "4.3.6"      % Compile,
+        "org.apache.httpcomponents" % "httpclient" % "4.5"        % Compile,
+        "org.apache.httpcomponents" % "httpmime"   % "4.5"        % Compile,
         "org.scalatest"      %% "scalatest"        % scalaTestVersion % Compile
       )
     )
@@ -207,7 +208,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-freemarker",
       libraryDependencies ++= scalatraDependencies ++ Seq(
         "commons-beanutils" %  "commons-beanutils"  % "1.9.2"   % Compile,
-        "org.freemarker"    %  "freemarker"         % "2.3.22"  % Compile
+        "org.freemarker"    %  "freemarker"         % "2.3.23"  % Compile
       ) ++ testDependencies
     ) ++ _jettyOrbitHack
   ).dependsOn(
@@ -253,7 +254,7 @@ object SkinnyFrameworkBuild extends Build {
         Seq(
           sv match { 
             case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
-            case _ =>                          "org.scaldi" %% "scaldi" % "0.5.4"
+            case _ =>                          "org.scaldi" %% "scaldi" % "0.5.6"
           }
         ) ++ testDependencies
       }
