@@ -1,16 +1,12 @@
-package skinny.engine.async
+package skinny.engine.routing
 
 import javax.servlet.AsyncEvent
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-import skinny.engine.{ RouteTransformer, Action, SkinnyEngineServletBase }
-import skinny.engine.routing.Route
+import skinny.engine.async.AsyncSupported
+import skinny.engine.{ Action, RouteTransformer, SkinnyEngineBase }
 
-object AsyncSupport {
-  val ExecutionContextKey = "skinny.engine.ExecutionContext"
-}
-
-trait AsyncSupport extends SkinnyEngineServletBase with AsyncSupported {
+trait AsyncRoutingDsl extends AsyncSupported { self: SkinnyEngineBase =>
 
   /**
    * Takes a block and converts it to an action that can be run asynchronously.

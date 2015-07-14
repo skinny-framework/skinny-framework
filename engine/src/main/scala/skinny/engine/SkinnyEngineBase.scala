@@ -4,6 +4,8 @@ import scala.language.implicitConversions
 import scala.language.reflectiveCalls
 
 import scala.annotation.tailrec
+import scala.collection.immutable.DefaultMap
+import scala.collection.JavaConverters._
 import scala.util.control.Exception._
 import scala.util.matching.Regex
 import scala.util.{ Failure, Success, Try }
@@ -95,11 +97,11 @@ object SkinnyEngineBase {
 }
 
 /**
- * The base implementation of the SkinnyEngine DSL.  Intended to be portable
- * to all supported backends.
+ * The base implementation of the SkinnyEngine DSL.
+ * Intended to be portable to all supported backends.
  */
 trait SkinnyEngineBase
-    extends CoreDsl
+    extends CoreRoutingDsl
     with LoggerProvider
     with DynamicScope
     with Initializable
@@ -138,6 +140,12 @@ trait SkinnyEngineBase
    * `executeRoutes()`.
    */
   override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
+    // As default, the servlet tries to decode params with ISO_8859-1.
+    // It causes an EOFException if params are actually encoded with the
+    // other code (such as UTF-8)
+    if (request.getCharacterEncoding == null) {
+      request.setCharacterEncoding(defaultCharacterEncoding)
+    }
     request(CookieSupport.SweetCookiesKey) = new SweetCookies(request, response)
     response.characterEncoding = Some(defaultCharacterEncoding)
     withRequestResponse(request, response) {
@@ -611,6 +619,7 @@ trait SkinnyEngineBase
    * @see skinny.engine.SkinnyEngineKernel#removeRoute
    */
   protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
+    // TODO: still NPE work around here only when testing
     val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext))
     routes.prependRoute(method, route)
     route
@@ -730,8 +739,12 @@ trait SkinnyEngineBase
   }
 
   private[this] def ensureSlash(candidate: String): String = {
-    val p = if (candidate.startsWith("/")) candidate else "/" + candidate
-    if (p.endsWith("/")) p.dropRight(1) else p
+    if (candidate == null) {
+      ""
+    } else {
+      val p = if (candidate.startsWith("/")) candidate else "/" + candidate
+      if (p.endsWith("/")) p.dropRight(1) else p
+    }
   }
 
   protected def isHttps(implicit ctx: SkinnyEngineContext): Boolean = {
@@ -834,6 +847,32 @@ trait SkinnyEngineBase
 
   protected def addSessionId(uri: String)(implicit ctx: SkinnyEngineContext): String = {
     ctx.response.encodeURL(uri)
+  }
+
+  type ConfigT <: {
+
+    def getServletContext(): ServletContext
+
+    def getInitParameter(name: String): String
+
+    def getInitParameterNames(): java.util.Enumeration[String]
+
+  }
+
+  protected implicit def configWrapper(config: ConfigT) = new Config {
+
+    override def context: ServletContext = config.getServletContext
+
+    object initParameters extends DefaultMap[String, String] {
+
+      override def get(key: String): Option[String] = Option(config.getInitParameter(key))
+
+      override def iterator: Iterator[(String, String)] = {
+        for (name <- config.getInitParameterNames.asScala.toIterator)
+          yield (name, config.getInitParameter(name))
+      }
+    }
+
   }
 
 }

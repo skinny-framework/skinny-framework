@@ -5,13 +5,14 @@ import javax.servlet.{ AsyncEvent, AsyncListener }
 
 import skinny.engine._
 import skinny.engine.control.HaltException
+import skinny.engine.routing.AsyncRoutingDsl
 
 import scala.concurrent.duration._
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.language.postfixOps
 import scala.util.{ Failure, Success }
 
-trait FutureSupport extends AsyncSupport {
+trait FutureSupport extends SkinnyEngineBase with AsyncRoutingDsl {
 
   implicit protected def executor: ExecutionContext
 

@@ -7,7 +7,7 @@ import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.servlet.ServletRenderContext
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
-import skinny.engine.{ ApiFormats, MultiParams, Params, SkinnyEngineServletBase }
+import skinny.engine.{ ApiFormats, MultiParams, Params, SkinnyEngineBase }
 import skinny.engine.flash.FlashMapSupport
 import skinny.engine.multipart.{ FileMultiParams, FileItem, FileUploadSupport }
 import skinny.engine.routing.Route
@@ -17,7 +17,7 @@ import skinny.engine.util.UrlGenerator
  * A render context integrated with SkinnyEngine.  Exposes a few extra standard bindings to the template.
  */
 class SkinnyEngineRenderContext(
-    protected val base: SkinnyEngineServletBase,
+    protected val base: SkinnyEngineBase,
     implicit val context: SkinnyEngineContext,
     engine: TemplateEngine,
     out: PrintWriter,

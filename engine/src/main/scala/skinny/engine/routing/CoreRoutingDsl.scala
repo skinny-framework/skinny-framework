@@ -1,15 +1,14 @@
-package skinny.engine
+package skinny.engine.routing
 
+import skinny.engine._
 import skinny.engine.constant.HttpMethod
-import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.Control
 import skinny.engine.implicits.ServletApiImplicits
-import skinny.engine.routing.Route
 
 /**
  * The core SkinnyEngine DSL.
  */
-trait CoreDsl extends Handler with Control with ServletApiImplicits {
+trait CoreRoutingDsl extends Handler with Control with ServletApiImplicits {
 
   /**
    * Adds a filter to run before the route.  The filter only runs if each

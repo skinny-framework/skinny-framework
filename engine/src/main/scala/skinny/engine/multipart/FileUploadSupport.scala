@@ -5,7 +5,7 @@ import javax.servlet.http._
 
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.data.MultiMapHeadView
-import skinny.engine.{ SkinnyEngineBase, SkinnyEngineServletBase }
+import skinny.engine.SkinnyEngineBase
 
 import scala.collection.JavaConverters._
 
@@ -59,7 +59,7 @@ import scala.collection.JavaConverters._
  * of Jetty.
  */
 trait FileUploadSupport
-    extends SkinnyEngineServletBase
+    extends SkinnyEngineBase
     with HasMultipartConfig {
 
   import FileUploadSupport._
