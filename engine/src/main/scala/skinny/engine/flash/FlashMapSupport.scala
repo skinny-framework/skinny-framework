@@ -2,6 +2,7 @@ package skinny.engine.flash
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ Handler, SkinnyEngineBase }
 
 object FlashMapSupport {
@@ -37,8 +38,8 @@ trait FlashMapSupport extends Handler {
 
   abstract override def handle(req: HttpServletRequest, res: HttpServletResponse): Unit = {
     withRequest(req) {
-      val f = flash
-      val isOutermost = !request.contains(LockKey)
+      val f = flash(skinnyEngineContext)
+      val isOutermost = !req.contains(LockKey)
 
       SkinnyEngineBase onCompleted { _ =>
         /*
@@ -69,31 +70,31 @@ trait FlashMapSupport extends Handler {
    * Override to implement custom session retriever, or sanity checks if session is still active
    * @param f
    */
-  def flashMapSetSession(f: FlashMap): Unit = {
+  def flashMapSetSession(f: FlashMap)(implicit ctx: SkinnyEngineContext): Unit = {
     try {
       // Save flashMap to Session after (a session could stop existing during a request, so catch exception)
-      session(SessionKey) = f
+      session(ctx)(SessionKey) = f
     } catch {
       case e: Throwable =>
     }
   }
 
-  private[this] def getFlash(req: HttpServletRequest): FlashMap =
-    req.get(SessionKey).map(_.asInstanceOf[FlashMap]).getOrElse {
-      val map = session.get(SessionKey).map {
+  private[this] def getFlash(implicit ctx: SkinnyEngineContext): FlashMap =
+    ctx.request.get(SessionKey).map(_.asInstanceOf[FlashMap]).getOrElse {
+      val map = session(ctx).get(SessionKey).map {
         _.asInstanceOf[FlashMap]
       }.getOrElse(new FlashMap)
 
-      req.setAttribute(SessionKey, map)
+      ctx.request.setAttribute(SessionKey, map)
       map
     }
 
   /**
    * Returns the [[FlashMap]] instance for the current request.
    */
-  def flash(implicit request: HttpServletRequest): FlashMap = getFlash(request)
+  def flash(implicit ctx: SkinnyEngineContext): FlashMap = getFlash(ctx)
 
-  def flash(key: String)(implicit request: HttpServletRequest): Any = getFlash(request)(key)
+  def flash(key: String)(implicit ctx: SkinnyEngineContext): Any = getFlash(ctx)(key)
 
   /**
    * Determines whether unused flash entries should be swept.  The default is false.

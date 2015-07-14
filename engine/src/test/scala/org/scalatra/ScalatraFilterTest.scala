@@ -1,10 +1,9 @@
 package org.scalatra
 
-import javax.servlet.http.HttpServletRequest
-
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ SkinnyEngineServlet, SkinnyEngineFilter }
 
 /*
@@ -66,7 +65,7 @@ class ScalatraFilterTestExtensionMappedServlet extends SkinnyEngineServlet {
   }
 
   // Non path-mapped servlets need this to work
-  override def requestPath(implicit request: HttpServletRequest) = request.getServletPath
+  override def requestPath(implicit ctx: SkinnyEngineContext) = ctx.request.getServletPath
 }
 
 class ScalatraFilterTestDefaultServlet extends SkinnyEngineServlet {
@@ -79,7 +78,7 @@ class ScalatraFilterTestDefaultServlet extends SkinnyEngineServlet {
   }
 
   // Non path-mapped servlets need this to work
-  override def requestPath(implicit request: HttpServletRequest) = request.getServletPath
+  override def requestPath(implicit ctx: SkinnyEngineContext) = ctx.request.getServletPath
 }
 
 class ScalatraFilterTestExactMatchServlet extends SkinnyEngineServlet {
@@ -92,7 +91,7 @@ class ScalatraFilterTestExactMatchServlet extends SkinnyEngineServlet {
   }
 
   // Non path-mapped servlets need this to work
-  override def requestPath(implicit request: HttpServletRequest) = request.getServletPath
+  override def requestPath(implicit ctx: SkinnyEngineContext) = ctx.request.getServletPath
 }
 
 @RunWith(classOf[JUnitRunner])

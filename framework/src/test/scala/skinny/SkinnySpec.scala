@@ -1,12 +1,17 @@
 package skinny
 
+import javax.servlet.http.HttpServletRequest
+import skinny.engine.context.SkinnyEngineContext
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import scala.collection.mutable.HashMap
+import org.scalatest.mock.MockitoSugar
 
-class SkinnySpec extends ScalatraFlatSpec {
+class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   behavior of "Skinny"
 
   val requestScope = new HashMap[String, Any]
+  val request = mock[HttpServletRequest]
+
   requestScope.put("contextPath", "/foo")
   requestScope.put("params", Params(Map("foo" -> "bar")))
   requestScope.put("multiParams", MultiParams(Map("foo" -> Seq("bar"))))
@@ -14,7 +19,7 @@ class SkinnySpec extends ScalatraFlatSpec {
   val i18n = I18n()
   requestScope.put("i18n", i18n)
 
-  val skinnyObject = Skinny(requestScope)
+  val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request), requestScope)
 
   it should "have #contextPath" in {
     skinnyObject.contextPath should equal("/foo")
@@ -99,7 +104,8 @@ class SkinnySpec extends ScalatraFlatSpec {
   object Controller extends SkinnyController with Routes {
     val indexUrl = get("/")("ok").as('index)
     get("/redirect") {
-      val urlString = skinny.Skinny(requestScope(request)).url(indexUrl, "id" -> "123")
+      val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request), requestScope)
+      val urlString = skinnyObject.url(indexUrl, "id" -> "123")
       urlString should equal("/?id=123")
       redirect302(url(indexUrl))
     }

@@ -32,6 +32,12 @@ class FutureSupportServlet extends SkinnyEngineServlet with FutureSupport {
     }
   }
 
+  get("/redirect2") {
+    AsyncResult {
+      redirect("redirected")
+    }
+  }
+
   get("/async-oh-noes") {
     new AsyncResult {
       override val is = Future {
@@ -157,6 +163,19 @@ class FutureSupportSpec extends MutableScalatraSpec {
 
     "redirect with the redirect method" in {
       get("/redirect") {
+        if (status != 302) {
+          println(body)
+        }
+        status must_== 302
+        response.header("Location") must_== (baseUrl + "/redirected")
+      }
+    }
+
+    "redirect with the redirect method 2" in {
+      get("/redirect2") {
+        if (status != 302) {
+          println(body)
+        }
         status must_== 302
         response.header("Location") must_== (baseUrl + "/redirected")
       }

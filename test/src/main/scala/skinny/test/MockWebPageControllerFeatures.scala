@@ -2,6 +2,7 @@ package skinny.test
 
 import skinny.Format
 import skinny.controller.SkinnyWebPageControllerFeatures
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Mock of SkinnyWebPageControllerFeatures.
@@ -9,10 +10,12 @@ import skinny.controller.SkinnyWebPageControllerFeatures
 trait MockWebPageControllerFeatures { self: MockControllerBase with SkinnyWebPageControllerFeatures =>
 
   var renderCall: Option[RenderCall] = None
-  override def render(path: String)(implicit format: Format = Format.HTML): String = {
+
+  override def render(path: String)(
+    implicit ctx: SkinnyEngineContext = skinnyEngineContext, format: Format = Format.HTML): String = {
     // If Content-Type is already set, never overwrite it.
-    if (contentType == null) {
-      contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse("")
+    if (contentType(ctx) == null) {
+      (contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse(""))(ctx)
     }
     renderCall = Option(RenderCall(path))
     "Valid response body won't be returned from MockController. " +

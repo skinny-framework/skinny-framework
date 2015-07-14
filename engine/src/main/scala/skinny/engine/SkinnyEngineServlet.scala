@@ -3,6 +3,7 @@ package skinny.engine
 import javax.servlet._
 import javax.servlet.http._
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.{ RicherStringImplicits, ServletApiImplicits }
 import skinny.engine.util.UriDecoder
 
@@ -72,13 +73,15 @@ trait SkinnyEngineServlet
    * All other servlet mappings likely want to return request.getServletPath.
    * Custom implementations are allowed for unusual cases.
    */
-  def requestPath(implicit request: HttpServletRequest): String = SkinnyEngineServlet.requestPath(request)
+  override def requestPath(implicit ctx: SkinnyEngineContext): String = {
+    SkinnyEngineServlet.requestPath(ctx.request)
+  }
 
-  protected def routeBasePath(implicit request: HttpServletRequest): String = {
+  override protected def routeBasePath(implicit ctx: SkinnyEngineContext): String = {
     require(config != null, "routeBasePath requires the servlet to be initialized")
-    require(request != null, "routeBasePath requires an active request to determine the servlet path")
+    require(ctx.request != null, "routeBasePath requires an active request to determine the servlet path")
 
-    servletContext.getContextPath + request.getServletPath
+    servletContext.getContextPath + ctx.request.getServletPath
   }
 
   /**
@@ -88,31 +91,33 @@ trait SkinnyEngineServlet
    * This action can be overridden by a notFound block.
    */
   protected var doNotFound: Action = () => {
-    serveStaticResource() getOrElse resourceNotFound()
+    serveStaticResource()(skinnyEngineContext)
+      .getOrElse(resourceNotFound()(skinnyEngineContext))
   }
 
   /**
-   * Attempts to find a static resource matching the request path.  Override
-   * to return None to stop this.
+   * Attempts to find a static resource matching the request path.
+   * Override to return None to stop this.
    */
-  protected def serveStaticResource(): Option[Any] = {
-    servletContext.resource(request) map { _ =>
-      servletContext.getNamedDispatcher("default").forward(request, response)
+  protected def serveStaticResource()(
+    implicit ctx: SkinnyEngineContext): Option[Any] = {
+    servletContext.resource(ctx.request) map { _ =>
+      servletContext.getNamedDispatcher("default").forward(ctx.request, ctx.response)
     }
   }
 
   /**
-   * Called by default notFound if no routes matched and no static resource
-   * could be found.
+   * Called by default notFound if no routes matched and no static resource could be found.
    */
-  protected def resourceNotFound(): Any = {
-    response.setStatus(404)
+  protected def resourceNotFound()(
+    implicit ctx: SkinnyEngineContext): Any = {
+    ctx.response.setStatus(404)
     if (isDevelopmentMode) {
       val error = "Requesting \"%s %s\" on servlet \"%s\" but only have: %s"
-      response.getWriter println error.format(
-        request.getMethod,
-        Option(request.getPathInfo) getOrElse "/",
-        request.getServletPath,
+      ctx.response.getWriter println error.format(
+        ctx.request.getMethod,
+        Option(ctx.request.getPathInfo) getOrElse "/",
+        ctx.request.getServletPath,
         routes.entryPoints.mkString("<ul><li>", "</li><li>", "</li></ul>"))
     }
   }

@@ -9,7 +9,7 @@ import skinny.engine.routing.Route
 /**
  * The core SkinnyEngine DSL.
  */
-trait CoreDsl extends Handler with Control with SkinnyEngineContext with ServletApiImplicits {
+trait CoreDsl extends Handler with Control with ServletApiImplicits {
 
   /**
    * Adds a filter to run before the route.  The filter only runs if each

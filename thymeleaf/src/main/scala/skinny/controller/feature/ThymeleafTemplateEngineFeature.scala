@@ -6,6 +6,7 @@ import org.thymeleaf.context.WebContext
 import org.thymeleaf.dialect.IDialect
 import org.thymeleaf.templateresolver._
 import nz.net.ultraq.thymeleaf.LayoutDialect
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Thymeleaf template engine support.
@@ -87,9 +88,10 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
     format == Format.HTML
   }
 
-  override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
+  override protected def renderWithTemplate(path: String)(
+    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
     val context = new WebContext(request, response, servletContext)
-    requestScope().foreach {
+    requestScope(ctx).foreach {
       case (key, value) => context.setVariable(key, value)
     }
     thymeleafTemplateEngine.process(templatePath(path), context)

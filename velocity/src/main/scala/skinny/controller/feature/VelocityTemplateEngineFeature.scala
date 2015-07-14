@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.{ SkinnyEnv, Format }
-import java.io.IOException
+import skinny.engine.context.SkinnyEngineContext
+import skinny._
 import skinny.view.velocity._
 
 /**
@@ -20,7 +20,8 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
     List(templatePath(path))
   }
 
-  protected def templatePath(path: String)(implicit format: Format = Format.HTML): String = {
+  protected def templatePath(path: String)(
+    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
     s"${path}.${format.name}.${velocityExtension}".replaceAll("//", "/")
   }
 
@@ -28,8 +29,9 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
     velocity.templateExists(templatePath(path))
   }
 
-  override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
-    velocity.render(templatePath(path), requestScope.toMap, request, response)
+  override protected def renderWithTemplate(path: String)(
+    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    velocity.render(templatePath(path)(ctx, format), requestScope(ctx).toMap, ctx.request, ctx.response)
   }
 
 }

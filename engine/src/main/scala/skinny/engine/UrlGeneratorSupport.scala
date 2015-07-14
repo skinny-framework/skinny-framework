@@ -1,7 +1,6 @@
 package skinny.engine
 
-import javax.servlet.http.HttpServletRequest
-
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.routing.{ ReversibleRouteMatcher, Route }
 
 /**
@@ -19,8 +18,8 @@ trait UrlGeneratorSupport {
    * @throws IllegalStateException if the route's base path cannot be
    * determined.  This may occur outside of an HTTP request's lifecycle.
    */
-  def url(route: Route, params: Tuple2[String, String]*)(implicit req: HttpServletRequest): String =
-    url(route, params.toMap, Seq.empty)
+  def url(route: Route, params: Tuple2[String, String]*)(implicit ctx: SkinnyEngineContext): String =
+    url(route, params.toMap, Seq.empty)(ctx)
 
   /**
    * Calculate a URL for a reversible route and some splats.
@@ -33,8 +32,8 @@ trait UrlGeneratorSupport {
    * @throws IllegalStateException if the route's base path cannot be
    * determined.  This may occur outside of an HTTP request's lifecycle.
    */
-  def url(route: Route, splat: String, moreSplats: String*)(implicit req: HttpServletRequest): String =
-    url(route, Map[String, String](), splat +: moreSplats)
+  def url(route: Route, splat: String, moreSplats: String*)(implicit ctx: SkinnyEngineContext): String =
+    url(route, Map[String, String](), splat +: moreSplats)(ctx)
 
   /**
    * Calculate a URL for a reversible route, some params, and some splats.
@@ -50,10 +49,10 @@ trait UrlGeneratorSupport {
   def url(
     route: Route,
     params: Map[String, String],
-    splats: Iterable[String])(implicit req: HttpServletRequest): String =
+    splats: Iterable[String])(implicit ctx: SkinnyEngineContext): String =
     route.reversibleMatcher match {
       case Some(matcher: ReversibleRouteMatcher) =>
-        route.contextPath(req) + matcher.reverse(params, splats.toList)
+        route.contextPath(ctx.request) + matcher.reverse(params, splats.toList)
       case _ =>
         throw new Exception("Route \"%s\" is not reversible" format (route))
     }

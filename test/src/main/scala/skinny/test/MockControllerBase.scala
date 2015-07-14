@@ -5,6 +5,7 @@ import javax.servlet.ServletContext
 import org.json4s._
 import org.mockito.Mockito._
 import skinny.engine.EngineParams
+import skinny.engine.context.SkinnyEngineContext
 import skinny.util.JSONStringOps
 import scala.collection.concurrent.TrieMap
 import skinny.controller.SkinnyControllerBase
@@ -20,8 +21,8 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
 
   private val _requestScope = TrieMap[String, Any]()
 
-  override def servletContext: ServletContext = mock(classOf[ServletContext])
   override def contextPath = ""
+
   override def initParameter(name: String): Option[String] = None
 
   override implicit val request: HttpServletRequest = {
@@ -33,6 +34,12 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   override implicit val response: HttpServletResponse = {
     val res = new MockHttpServletResponse
     res
+  }
+
+  override implicit val servletContext: ServletContext = mock(classOf[ServletContext])
+
+  override implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
+    SkinnyEngineContext.build()(ctx, request, response)
   }
 
   override def halt[T: Manifest](
@@ -61,10 +68,10 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
 
   private[this] val _params = TrieMap[String, Seq[String]]()
   private def _scalatraParams = new EngineParams(_params.toMap)
-  override def params(implicit request: HttpServletRequest) = {
-    val mergedParams = (super.params ++ _scalatraParams).mapValues(v => Seq(v))
+  override def params(implicit ctx: SkinnyEngineContext) = {
+    val mergedParams = (super.params(ctx) ++ _scalatraParams).mapValues(v => Seq(v))
     new EngineParams(if (_parsedBody.isDefined) {
-      getMergedMultiParams(mergedParams, parsedBody.extract[Map[String, String]].mapValues(v => Seq(v)))
+      getMergedMultiParams(mergedParams, parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v)))
     } else {
       mergedParams
     })
@@ -75,7 +82,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   private[this] var _parsedBody: Option[JValue] = None
-  override def parsedBody(implicit request: HttpServletRequest): JValue = {
+  override def parsedBody(implicit ctx: SkinnyEngineContext): JValue = {
     _parsedBody.getOrElse(JNothing)
   }
 
@@ -85,6 +92,6 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
 
   // initialize this controller
 
-  initializeRequestScopeAttributes
+  initializeRequestScopeAttributes(skinnyEngineContext)
 
 }

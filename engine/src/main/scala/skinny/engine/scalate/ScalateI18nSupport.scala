@@ -4,6 +4,7 @@ import java.io.PrintWriter
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import org.fusesource.scalate.{ Binding, RenderContext }
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.i18n.{ Messages, I18nSupport }
 
 trait ScalateI18nSupport extends ScalateSupport with I18nSupport {
@@ -23,11 +24,12 @@ trait ScalateI18nSupport extends ScalateSupport with I18nSupport {
    * #{messages("hello")}
    */
   override protected def createRenderContext(
-    req: HttpServletRequest = request,
-    resp: HttpServletResponse = response,
-    out: PrintWriter = response.getWriter): RenderContext = {
-    val context = super.createRenderContext(req, resp, out)
-    context.attributes("messages") = messages(request)
+    req: HttpServletRequest = mainThreadRequest,
+    resp: HttpServletResponse = mainThreadResponse,
+    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
+
+    val context = super.createRenderContext(req, resp, out)(ctx)
+    context.attributes("messages") = messages(req)
     context
   }
 }

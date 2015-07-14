@@ -3,9 +3,7 @@ package controller
 import org.scalatest._
 import skinny.controller.{ SkinnyController, Params }
 import skinny.controller.feature.RequestScopeFeature._
-import skinny.validator._
 import skinny.test._
-import skinny.Skinny
 import org.joda.time._
 
 class SkinnyControllerSpec extends FunSpec with Matchers {
@@ -46,7 +44,8 @@ class SkinnyControllerSpec extends FunSpec with Matchers {
 
       it("should set params for model") {
         val ctrl = new SkinnyController with MockController
-        ctrl.setAsParams(model)(ctrl.request)
+        ctrl.setAsParams(model)
+        implicit val context = ctrl.context
 
         val params = ctrl.getFromRequestScope[Params](ATTR_PARAMS).get
 
@@ -102,7 +101,8 @@ class SkinnyControllerSpec extends FunSpec with Matchers {
         val ctrl = new SkinnyController with MockController {
           override def useSnakeCasedParamKeys = true
         }
-        ctrl.setAsParams(model)(ctrl.request)
+        ctrl.setAsParams(model)
+        implicit val context = ctrl.context
 
         val params = ctrl.getFromRequestScope[Params](ATTR_PARAMS).get
 

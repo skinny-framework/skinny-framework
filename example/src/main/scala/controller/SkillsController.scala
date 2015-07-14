@@ -22,7 +22,9 @@ object SkillsController extends SkinnyResource with ApplicationController
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 
-  def urlSample = url(SkillsController.indexUrl, "page" -> "1")
+  def showUrlExample: String = url(indexUrl, "page" -> "1")
+
+  get("/skills/url")(showUrlExample)
 
   // #158 SkinnySessionFilter#skinnySession become infinite loop
   def skinnySessionBug = {

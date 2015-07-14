@@ -1,8 +1,8 @@
 package skinny.controller.feature
 
 import java.util.Locale
-import javax.servlet.http.HttpServletRequest
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Easy-to-use default/session-based Locale configuration.
@@ -25,8 +25,8 @@ trait LocaleFeature extends SkinnyEngineBase {
    *
    * @param locale locale string
    */
-  protected def setCurrentLocale(locale: String)(implicit req: HttpServletRequest = request): Unit = {
-    session(req).put(sessionLocaleKey, locale)
+  protected def setCurrentLocale(locale: String)(implicit ctx: SkinnyEngineContext): Unit = {
+    session(ctx).put(sessionLocaleKey, locale)
   }
 
   /**
@@ -34,9 +34,9 @@ trait LocaleFeature extends SkinnyEngineBase {
    *
    * @return current locale
    */
-  protected def currentLocale(implicit req: HttpServletRequest = request): Option[Locale] = {
+  protected def currentLocale(implicit ctx: SkinnyEngineContext): Option[Locale] = {
     // avoid creating a session
-    sessionOption(req)
+    sessionOption(ctx)
       .flatMap(_.get(sessionLocaleKey))
       .map(locale => new Locale(locale.toString))
       .orElse(defaultLocale)

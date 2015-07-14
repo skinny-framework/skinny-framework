@@ -45,9 +45,9 @@ trait XsrfTokenSupport { this: SkinnyEngineBase =>
    * the session key of the same name.
    */
   protected def isForged: Boolean =
-    !request.requestMethod.isSafe &&
+    !mainThreadRequest.requestMethod.isSafe &&
       session.get(xsrfKey) != params.get(xsrfKey) &&
-      !HeaderNames.map(request.headers.get).contains(session.get(xsrfKey))
+      !HeaderNames.map(mainThreadRequest.headers.get).contains(session.get(xsrfKey))
 
   /**
    * Take an action when a forgery is detected. The default action

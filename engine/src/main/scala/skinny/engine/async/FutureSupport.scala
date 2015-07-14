@@ -17,6 +17,7 @@ trait FutureSupport extends AsyncSupport {
 
   override def asynchronously(f: => Any): Action = () => Future(f)
 
+  // TODO: fix this
   // Still thinking of the best way to specify this before making it public.
   // In the meantime, this gives us enough control for our test.
   // IPC: it may not be perfect but I need to be able to configure this timeout in an application
@@ -24,9 +25,10 @@ trait FutureSupport extends AsyncSupport {
   @deprecated("Override the `timeout` method on a `skinny.engine.AsyncResult` instead.", "1.4")
   protected def asyncTimeout: Duration = 30 seconds
 
-  override protected def isAsyncExecutable(result: Any): Boolean =
+  override protected def isAsyncExecutable(result: Any): Boolean = {
     classOf[Future[_]].isAssignableFrom(result.getClass) ||
       classOf[AsyncResult].isAssignableFrom(result.getClass)
+  }
 
   override protected def renderResponse(actionResult: Any): Unit = {
     actionResult match {
@@ -38,7 +40,7 @@ trait FutureSupport extends AsyncSupport {
 
   private[this] def handleFuture(f: Future[_], timeout: Duration): Unit = {
     val gotResponseAlready = new AtomicBoolean(false)
-    val context = request.startAsync(request, response)
+    val context = mainThreadRequest.startAsync(mainThreadRequest, mainThreadResponse)
     if (timeout.isFinite()) context.setTimeout(timeout.toMillis) else context.setTimeout(-1)
 
     def renderFutureResult(f: Future[_]): Unit = {

@@ -4,6 +4,7 @@ import java.io.PrintWriter
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import org.fusesource.scalate.Binding
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.routing.Route
 
 trait ScalateUrlGeneratorSupport extends ScalateSupport {
@@ -24,10 +25,10 @@ trait ScalateUrlGeneratorSupport extends ScalateSupport {
   }
 
   override protected def createRenderContext(
-    req: HttpServletRequest = request,
-    res: HttpServletResponse = response,
-    out: PrintWriter = response.getWriter) = {
-    val context = super.createRenderContext(req, res, out)
+    req: HttpServletRequest = mainThreadRequest,
+    res: HttpServletResponse = mainThreadResponse,
+    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext) = {
+    val context = super.createRenderContext(req, res, out)(ctx)
     for ((name, route) <- this.reflectRoutes) {
       context.attributes.update(name, route)
     }

@@ -10,7 +10,9 @@ import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.fusesource.scalate.servlet.ServletTemplateEngine
 import org.fusesource.scalate.support.TemplateFinder
 import org.fusesource.scalate.{ Binding, RenderContext, TemplateEngine }
+
 import skinny.engine.SkinnyEngineServletBase
+import skinny.engine.context.SkinnyEngineContext
 
 import scala.collection.concurrent.{ Map => CMap, TrieMap }
 import scala.collection.mutable
@@ -118,8 +120,16 @@ trait ScalateSupport extends SkinnyEngineServletBase {
    * If you return something other than a SkinnyEngineRenderContext, you will
    * also want to redefine that binding.
    */
-  protected def createRenderContext(req: HttpServletRequest = request, resp: HttpServletResponse = response, out: PrintWriter = response.getWriter): RenderContext = {
-    new SkinnyEngineRenderContext(this, templateEngine, out, req, resp)
+  protected def createRenderContext(
+    req: HttpServletRequest = mainThreadRequest,
+    resp: HttpServletResponse = mainThreadResponse,
+    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
+    new SkinnyEngineRenderContext(this, ctx, templateEngine, out, req, resp)
+  }
+
+  implicit def skinnyEngineRenderContext: SkinnyEngineRenderContext = {
+    new SkinnyEngineRenderContext(
+      this, skinnyEngineContext, templateEngine, mainThreadResponse.getWriter, mainThreadRequest, mainThreadResponse)
   }
 
   /**
@@ -128,8 +138,9 @@ trait ScalateSupport extends SkinnyEngineServletBase {
    * are urged to consider layoutTemplate instead.
    */
   @deprecated("not idiomatic Scalate; consider layoutTemplate instead", "1.4")
-  def renderTemplate(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse) =
-    createRenderContext(request, response, response.writer).render(path, Map(attributes: _*))
+  def renderTemplate(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineRenderContext) =
+    createRenderContext(ctx.request, ctx.response, response.writer).render(path, Map(attributes: _*))
 
   /**
    * Flag whether the Scalate error page is enabled.  If true, uncaught
@@ -140,17 +151,13 @@ trait ScalateSupport extends SkinnyEngineServletBase {
   protected def isScalateErrorPageEnabled = true
 
   abstract override def handle(req: HttpServletRequest, res: HttpServletResponse) {
-    //    try {
     super.handle(req, res)
-    //    }
-    //    catch {
-    //      case e if isScalateErrorPageEnabled => renderScalateErrorPage(req, res, e)
-    //    }
   }
 
-  override protected def renderUncaughtException(e: Throwable)(implicit request: HttpServletRequest, response: HttpServletResponse) {
-    if (isScalateErrorPageEnabled) renderScalateErrorPage(request, response, e)
-    else super.renderUncaughtException(e)
+  override protected def renderUncaughtException(e: Throwable)(
+    implicit ctx: SkinnyEngineContext): Unit = {
+    if (isScalateErrorPageEnabled) renderScalateErrorPage(ctx.request, ctx.response, e)
+    else super.renderUncaughtException(e)(ctx)
   }
 
   // Hack: Have to pass it the request and response, because we're outside the
@@ -206,26 +213,34 @@ trait ScalateSupport extends SkinnyEngineServletBase {
   /**
    * Convenience method for `layoutTemplateAs("jade")`.
    */
-  protected def jade(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String =
-    layoutTemplateAs(Set("jade"))(path, attributes: _*)
+  protected def jade(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
+    layoutTemplateAs(Set("jade"))(path, attributes: _*)(ctx, renderCtx)
+  }
 
   /**
    * Convenience method for `layoutTemplateAs("scaml")`.
    */
-  protected def scaml(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String =
-    layoutTemplateAs(Set("scaml"))(path, attributes: _*)
+  protected def scaml(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
+    layoutTemplateAs(Set("scaml"))(path, attributes: _*)(ctx, renderCtx)
+  }
 
   /**
    * Convenience method for `layoutTemplateAs("ssp")`.
    */
-  protected def ssp(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String =
-    layoutTemplateAs(Set("ssp"))(path, attributes: _*)
+  protected def ssp(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
+    layoutTemplateAs(Set("ssp"))(path, attributes: _*)(ctx, renderCtx)
+  }
 
   /**
    * Convenience method for `layoutTemplateAs("mustache")`.
    */
-  protected def mustache(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String =
-    layoutTemplateAs(Set("mustache"))(path, attributes: _*)
+  protected def mustache(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
+    layoutTemplateAs(Set("mustache"))(path, attributes: _*)(ctx, renderCtx)
+  }
 
   /**
    * Finds and renders a template with the current layout strategy,
@@ -236,16 +251,19 @@ trait ScalateSupport extends SkinnyEngineServletBase {
    * @param attributes Attributes to path to the render context.  Disable
    * layouts by passing `layout -> ""`.
    */
-  protected def layoutTemplateAs(ext: Set[String])(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String = {
+  protected def layoutTemplateAs(ext: Set[String])(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
     val uri = findTemplate(path, ext).getOrElse(path)
     val buffer = new StringWriter()
     val out = new PrintWriter(buffer)
-    val context = createRenderContext(request, response, out)
-    val attrs = templateAttributes ++ (defaultLayoutPath map (p => Map("layout" -> p) ++ Map(attributes: _*)) getOrElse Map(attributes: _*))
-
-    attrs foreach {
-      case (k, v) => context.attributes(k) = v
+    val context = createRenderContext(ctx.request, ctx.response, out)(ctx)
+    val attrs = {
+      templateAttributes(ctx) ++
+        (defaultLayoutPath map (p => Map("layout" -> p) ++
+          Map(attributes: _*)) getOrElse Map(attributes: _*))
     }
+
+    attrs foreach { case (k, v) => context.attributes(k) = v }
     templateEngine.layout(uri, context)
     buffer.toString
   }
@@ -258,8 +276,10 @@ trait ScalateSupport extends SkinnyEngineServletBase {
    * @param attributes Attributes to path to the render context.  Disable
    * layouts by passing `layout -> ""`.
    */
-  protected def layoutTemplate(path: String, attributes: (String, Any)*)(implicit request: HttpServletRequest, response: HttpServletResponse): String =
-    layoutTemplateAs(templateEngine.extensions)(path, attributes: _*)
+  protected def layoutTemplate(path: String, attributes: (String, Any)*)(
+    implicit ctx: SkinnyEngineContext, renderCtx: SkinnyEngineRenderContext): String = {
+    layoutTemplateAs(templateEngine.extensions)(path, attributes: _*)(ctx, renderCtx)
+  }
 
   /**
    * Finds a template for a path.  Delegates to a TemplateFinder, and if
@@ -278,9 +298,13 @@ trait ScalateSupport extends SkinnyEngineServletBase {
    * will be set to any render context created with the `createRenderContext`
    * method.
    */
-  protected def templateAttributes(implicit request: HttpServletRequest): mutable.Map[String, Any] =
-    request.getOrElseUpdate(ScalateSupport.TemplateAttributesKey, mutable.Map.empty).asInstanceOf[mutable.Map[String, Any]]
+  protected def templateAttributes(implicit ctx: SkinnyEngineContext): mutable.Map[String, Any] = {
+    ctx.request.getOrElseUpdate(ScalateSupport.TemplateAttributesKey, mutable.Map.empty)
+      .asInstanceOf[mutable.Map[String, Any]]
+  }
 
-  protected def templateAttributes(key: String)(implicit request: HttpServletRequest): Any =
-    templateAttributes(request)(key)
+  protected def templateAttributes(key: String)(implicit ctx: SkinnyEngineContext): Any = {
+    templateAttributes(ctx)(key)
+  }
+
 }

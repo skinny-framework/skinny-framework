@@ -171,7 +171,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     framework,
-    engineTest % Test
+    test % Test
   )
 
   lazy val task = Project(id = "task", base = file("task"),

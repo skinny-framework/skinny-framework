@@ -1,13 +1,14 @@
 package skinny.filter
 
-import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
-import skinny.engine.flash.{ FlashMapSupport, FlashMap }
-
 import scala.language.implicitConversions
 
-import skinny.session._
 import skinny.controller.feature._
+import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
+import skinny.engine.flash.{ FlashMapSupport, FlashMap }
+import skinny.session._
 import FlashMapSupport._
+
 import java.util.Locale
 import javax.servlet.http.HttpServletRequest
 
@@ -54,23 +55,23 @@ trait SkinnySessionFilter extends SkinnyFilter {
   // --------------------------------------
   // Accessing SkinnySession
 
-  def skinnySession(implicit req: HttpServletRequest): SkinnyHttpSession = {
-    getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(req).getOrElse {
+  def skinnySession(implicit ctx: SkinnyEngineContext): SkinnyHttpSession = {
+    getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(ctx).getOrElse {
       initializeSkinnySession
     }
   }
 
-  def skinnySession[A](key: String)(implicit req: HttpServletRequest): Option[A] = skinnySession(req).getAs[A](key)
+  def skinnySession[A](key: String)(implicit ctx: SkinnyEngineContext): Option[A] = skinnySession(ctx).getAs[A](key)
 
-  def skinnySession[A](key: Symbol)(implicit req: HttpServletRequest): Option[A] = skinnySession[A](key.name)(req)
+  def skinnySession[A](key: Symbol)(implicit ctx: SkinnyEngineContext): Option[A] = skinnySession[A](key.name)(ctx)
 
   // --------------------------------------
   // override FlashMapSupport
   // NOTICE: This API doesn't support Future ops
 
-  override def flashMapSetSession(f: FlashMap) {
+  override def flashMapSetSession(f: FlashMap)(implicit ctx: SkinnyEngineContext): Unit = {
     try {
-      skinnySession.setAttribute(SessionKey, f)
+      skinnySession(ctx).setAttribute(SessionKey, f)
     } catch {
       case e: Throwable => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
     }
@@ -95,12 +96,12 @@ trait SkinnySessionFilter extends SkinnyFilter {
   // --------------------------------------
   // override SessionLocaleFeature
 
-  override def setCurrentLocale(locale: String)(implicit req: HttpServletRequest): Unit = {
-    skinnySession(req).setAttribute(sessionLocaleKey, locale)
+  override def setCurrentLocale(locale: String)(implicit ctx: SkinnyEngineContext): Unit = {
+    skinnySession(ctx).setAttribute(sessionLocaleKey, locale)
   }
 
-  override def currentLocale(implicit req: HttpServletRequest): Option[Locale] = {
-    skinnySession(req)
+  override def currentLocale(implicit ctx: SkinnyEngineContext): Option[Locale] = {
+    skinnySession(ctx)
       .getAttribute(sessionLocaleKey)
       .map(l => new Locale(l.toString))
       .orElse(defaultLocale)

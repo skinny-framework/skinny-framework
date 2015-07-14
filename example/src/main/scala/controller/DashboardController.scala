@@ -2,6 +2,7 @@ package controller
 
 import org.joda.time._
 import model._
+import skinny.engine.context.SkinnyEngineContext
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -10,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.servlet.http.HttpServletRequest
 
 case class DashboardOps(controller: DashboardController) {
-  def setCurrentUser(implicit req: HttpServletRequest) = {
+  def setCurrentUser(implicit ctx: SkinnyEngineContext) = {
     val userId = controller.currentUserId.getOrElse(controller.halt(401))
     controller.set("currentUser" -> controller.adminUserService.getCurrentUser(userId))
   }
@@ -35,29 +36,17 @@ class DashboardController extends ApplicationController {
   val ops = DashboardOps(this)
 
   def index = warnElapsedTimeWithRequest(500) {
-    if (currentUserId(request).isEmpty) session += "userId" -> 1
+    if (currentUserId.isEmpty) session += "userId" -> 1
 
-    val scope: scala.collection.concurrent.Map[String, Any] = requestScope()
-
+    val scope: scala.collection.concurrent.Map[String, Any] = requestScope
     awaitFutures(5.seconds)(
-
       // simply define operation inside of this controller
-      futureWithRequest { implicit req =>
-        // [error] example/src/main/scala/controller/DashboardController.scala:43: ambiguous implicit values:
-        // [error]  both value req of type javax.servlet.http.HttpServletRequest
-        // [error]  and method request in class DashboardController of type => javax.servlet.http.HttpServletRequest
-        // [error]  match expected type javax.servlet.http.HttpServletRequest
-        // [error]         set("hourlyStats", accessService.getHourlyStatsForGraph(new LocalDate))
-        // [error]            ^
-        // [error] one error found
-
-        //set("hourlyStats", accessService.getHourlyStatsForGraph(new LocalDate))
-        set("hourlyStats", accessService.getHourlyStatsForGraph(new LocalDate))(req)
+      Future {
+        set("hourlyStats", accessService.getHourlyStatsForGraph(new LocalDate))
       },
-
-      // separate operation to outside of this controller
-      futureWithRequest(req => ops.setCurrentUser(req)),
-
+      Future {
+        ops.setCurrentUser
+      },
       // just use Future directly
       Future {
         // When using Future directly, you must be aware of Scalatra's DynamicScope's thread local request.
@@ -68,7 +57,7 @@ class DashboardController extends ApplicationController {
     render("/dashboard/index")
   }
 
-  private[controller] def currentUserId(implicit req: HttpServletRequest): Option[Long] = session(req).getAs[Long]("userId")
+  private[controller] def currentUserId: Option[Long] = session.getAs[Long]("userId")
 
   class AdminUserService extends skinny.util.TimeLogging {
 

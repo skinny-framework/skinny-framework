@@ -48,12 +48,15 @@ trait JsonOutput[T] extends ApiFormats with JsonMethods[T] {
 
     case jv: JValue if format == "xml" =>
       contentType = formats("xml")
-      writeJsonAsXml(transformResponseBody(jv), response.writer)
+      writeJsonAsXml(
+        transformResponseBody(jv),
+        mainThreadResponse.writer,
+        mainThreadResponse.characterEncoding.getOrElse(Codec.UTF8.name))
 
     case jv: JValue =>
       // JSON is always UTF-8
-      response.characterEncoding = Some(Codec.UTF8.name)
-      val writer = response.writer
+      mainThreadResponse.characterEncoding = Some(Codec.UTF8.name)
+      val writer = mainThreadResponse.writer
 
       val jsonpCallback = for {
         paramName <- jsonpCallbackParameterNames
@@ -76,12 +79,12 @@ trait JsonOutput[T] extends ApiFormats with JsonMethods[T] {
       }
   }: RenderPipeline) orElse super.renderPipeline
 
-  protected def writeJsonAsXml(json: JValue, writer: Writer) {
+  protected def writeJsonAsXml(json: JValue, writer: Writer, characterEncoding: String) {
     if (json != JNothing)
       XML.write(
-        response.writer,
+        writer,
         xmlRootNode.copy(child = toXml(json)),
-        response.characterEncoding.get,
+        characterEncoding,
         xmlDecl = true,
         doctype = null)
   }

@@ -1,6 +1,7 @@
 package skinny.controller.feature
 
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.context.SkinnyEngineContext
 import skinny.validator._
 import skinny.validator.NewValidation
 import skinny.validator.MapValidator
@@ -59,11 +60,11 @@ trait ValidationFeature {
    * @param params params
    * @param prefix key prefix for error message
    * @param validations validations
-   * @param locale current locale
    * @return validator
    */
   def validationWithPrefix(params: Params, prefix: String, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    implicit ctx: SkinnyEngineContext): MapValidator = {
+    implicit val locale: Locale = currentLocale(ctx).orNull[Locale]
 
     if (params == null) {
       throw new IllegalStateException("You cannot call #validation when Scalatra's #params is absent.")
@@ -72,8 +73,8 @@ trait ValidationFeature {
     val validator = new MapValidator(params.underlying, Validations(params.underlying, validations)) {
       override def validate(): Boolean = {
         if (hasErrors) {
-          status = 400
-          setParams()
+          (status = 400)(ctx)
+          setParams(ctx)
         }
         super.validate()
       }
@@ -82,21 +83,17 @@ trait ValidationFeature {
     validator
       .success { _ => }
       .failure { (inputs, errors: Errors) =>
-        val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
-        val i18n = I18n(locale)
-        def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
-
         // errorMessages
         val errorMessages: Seq[String] = {
           ValidationFeature.buildErrorMessagesWithPrefix(prefix, validations, errors)
         }
-        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, errorMessages)
+        set(RequestScopeFeature.ATTR_ERROR_MESSAGES, errorMessages)(ctx)
 
         // keyAndErrorMessages
         val keyAndErrorMessages: KeyAndErrorMessages = {
           ValidationFeature.buildKeyAndErrorMessagesWithPrefix(prefix, validations, errors)
         }
-        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, keyAndErrorMessages)
+        set(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES, keyAndErrorMessages)(ctx)
 
       }.apply()
 

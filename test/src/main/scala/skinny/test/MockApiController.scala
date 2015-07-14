@@ -1,6 +1,6 @@
 package skinny.test
 
-import skinny.SkinnyApiController
+import skinny.controller.SkinnyApiController
 
 /**
  * Mock of SkinnyApiController.

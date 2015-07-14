@@ -1,6 +1,7 @@
 package skinny.engine.scalate
 
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.context.SkinnyEngineContext
 
 trait ScalateRenderSupport { self: SkinnyEngineBase with ScalateSupport =>
 
@@ -20,8 +21,10 @@ trait ScalateRenderSupport { self: SkinnyEngineBase with ScalateSupport =>
     params: Map[String, Any] = Map(),
     responseContentType: String = "text/html",
     cacheMaxAge: Int = none,
-    statusCode: Int = 200) {
-    contentType = responseContentType
+    statusCode: Int = 200)(implicit ctx: SkinnyEngineContext): Unit = {
+    val response = ctx.response
+
+    (contentType = responseContentType)(ctx)
     response.setHeader("Cache-Control", "public, max-age=%d" format cacheMaxAge)
     response.setStatus(statusCode)
     renderResponseBody(templateEngine.layout("%s/%s.%s".format(templateBaseDirectory, file, scalateExtension), params))

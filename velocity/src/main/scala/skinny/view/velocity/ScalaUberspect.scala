@@ -1,6 +1,5 @@
 package skinny.view.velocity
 
-import java.lang.reflect.Method
 import org.apache.velocity.util.introspection.{ Info, UberspectImpl, VelMethod, VelPropertyGet }
 import scala.collection.JavaConverters._
 

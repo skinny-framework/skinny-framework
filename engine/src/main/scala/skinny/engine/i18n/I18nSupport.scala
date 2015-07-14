@@ -20,8 +20,8 @@ trait I18nSupport { this: SkinnyEngineBase =>
   import I18nSupport._
 
   before() {
-    request(LocaleKey) = resolveLocale
-    request(MessagesKey) = provideMessages(locale)
+    mainThreadRequest(LocaleKey) = resolveLocale
+    mainThreadRequest(MessagesKey) = provideMessages(locale)
   }
 
   def locale(implicit request: HttpServletRequest): Locale = {
@@ -90,7 +90,7 @@ trait I18nSupport { this: SkinnyEngineBase =>
    * @return first preferred found locale or None
    */
   private def resolveHttpLocaleFromUserAgent: Option[Locale] = {
-    request.headers.get("Accept-Language") map { s =>
+    mainThreadRequest.headers.get("Accept-Language") map { s =>
       val locales = s.split(",").map(s => {
         def splitLanguageCountry(s: String): Locale = {
           val langCountry = s.split("-")
@@ -109,7 +109,7 @@ trait I18nSupport { this: SkinnyEngineBase =>
         }
       })
       // save all found locales for later user
-      request.setAttribute(UserLocalesKey, locales)
+      mainThreadRequest.setAttribute(UserLocalesKey, locales)
       // We assume that all accept-languages are stored in order of quality
       // (so first language is preferred)
       locales.head
