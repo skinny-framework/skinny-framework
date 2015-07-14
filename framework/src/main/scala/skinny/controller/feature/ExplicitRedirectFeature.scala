@@ -1,12 +1,13 @@
 package skinny.controller.feature
 
-import org.scalatra._
 import skinny.SkinnyEnv
+import skinny.engine.SkinnyEngineBase
+import skinny.engine.response.{ SeeOther, Found, MovedPermanently, ActionResult }
 
 /**
  * Explicit redirect method support.
  */
-trait ExplicitRedirectFeature extends SkinnyScalatraBase {
+trait ExplicitRedirectFeature extends SkinnyEngineBase {
 
   /**
    * Responds as "301 Moved Permanently"

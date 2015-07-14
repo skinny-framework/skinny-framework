@@ -1,7 +1,7 @@
 package skinny.util
 
-import skinny.logging.Logging
 import skinny.SkinnyEnv
+import skinny.logging.LoggerProvider
 
 object TimeLogging extends TimeLogging
 
@@ -23,7 +23,7 @@ object TimeLogging extends TimeLogging
  * }
  * }}}
  */
-trait TimeLogging extends Logging {
+trait TimeLogging extends LoggerProvider {
 
   protected def stackTraceDepthForTimeLogging: Int = 5
 

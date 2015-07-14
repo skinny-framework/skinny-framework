@@ -1,10 +1,10 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
-import skinny.test.SkinnyTestSupport
 import controller.Controllers
+import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class ThymeleafControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class ThymeleafControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(Controllers.thymeleaf, "/*")
 

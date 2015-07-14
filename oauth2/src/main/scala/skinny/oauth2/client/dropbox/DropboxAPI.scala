@@ -1,6 +1,6 @@
 package skinny.oauth2.client.dropbox
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.oauth2.client._
 import skinny.util.JSONStringOps
 import scala.util.control.NonFatal
@@ -8,7 +8,7 @@ import scala.util.control.NonFatal
 /**
  * Dropbox API client.
  */
-trait DropboxAPI extends Logging {
+trait DropboxAPI extends LoggerProvider {
 
   def accountInfo(token: OAuth2Token): Option[DropboxUser] = {
     try {

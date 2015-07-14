@@ -1,12 +1,13 @@
 package skinny.controller.feature
 
-import org.scalatra.scalate._
 import org.fusesource.scalate.{ TemplateEngine, RenderContext }
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
+import skinny.engine.scalate.ScalateSupport
+
 import scala.annotation.tailrec
-import java.io.{ StringWriter, PrintWriter }
+import java.io.PrintWriter
 import java.text.DecimalFormat
 
 /**

@@ -1,14 +1,14 @@
 package skinny.controller
 
 import org.scalatra.test.scalatest._
-import org.scalatra.{ FlashMap => ScalatraFlash }
+import skinny.engine.flash.FlashMap
 
 class FlashSpec extends ScalatraFlatSpec {
 
   behavior of "Flash"
 
   it should "wrap scalatra's flash" in {
-    val scalatraFlash = new ScalatraFlash()
+    val scalatraFlash = new FlashMap()
     scalatraFlash += ("name" -> "skinny")
     scalatraFlash += ("lang" -> Option("scala"))
     scalatraFlash += ("nil" -> Option(None))

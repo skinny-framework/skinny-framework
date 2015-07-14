@@ -4,13 +4,13 @@ import org.apache.lucene.analysis.ja.JapaneseAnalyzer
 import org.apache.lucene.analysis.ja.tokenattributes.ReadingAttribute
 import org.apache.lucene.analysis.ja.util.ToStringUtil
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern._
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Try
 
-case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends SkinnyJapaneseAnalyzer with Logging {
+case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends SkinnyJapaneseAnalyzer with LoggerProvider {
 
   private[this] val KATAKANA_CHARS_TO_BE_AS_IS = Seq('゠', '・', 'ー', 'ヽ', 'ヾ', 'ヿ')
 

@@ -1,7 +1,7 @@
 package skinny.filter
 
 import skinny.controller._
-import org.scalatra._
+import skinny.engine._
 
 /**
  * Activates skinny filters.

@@ -1,14 +1,14 @@
 package skinny.injection
 
 import scaldi.{ Injector, MutableInjectorAggregation, Module }
-import skinny.{ Logging, SkinnyConfig, SkinnyEnv }
+import skinny.{ SkinnyConfig, SkinnyEnv }
 import scala.collection.concurrent.TrieMap
 import scala.util.control.NonFatal
 
 /**
  * The singleton holder of Scaldi components for SkinnyEnv.
  */
-object SkinnyScaldi extends SkinnyScaldi with Logging {
+object SkinnyScaldi extends SkinnyScaldi {
 
   private[this] val scaldiInjectors: TrieMap[String, MutableInjectorAggregation] = TrieMap()
 

@@ -2,13 +2,13 @@ package skinny.mailer.feature
 
 import javax.mail._
 import java.util.Properties
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.mailer.JavaMailOps
 
 /**
  * Provides Java Mail Session and Transport instance.
  */
-trait JavaMailSessionFeature extends Logging {
+trait JavaMailSessionFeature extends LoggerProvider {
 
   self: ConfigFeature with SmtpConfigFeature with ExtraConfigFeature =>
 

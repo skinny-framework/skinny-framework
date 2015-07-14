@@ -1,18 +1,19 @@
 package skinny.controller.feature
 
 import skinny.controller.Flash
-import org.scalatra._
+import skinny.engine.SkinnyEngineBase
+import skinny.engine.flash.FlashMapSupport
 
 /**
  * Easy-to-use Flash support.
  */
 trait FlashFeature extends FlashMapSupport {
 
-  self: org.scalatra.ScalatraBase with RequestScopeFeature =>
+  self: SkinnyEngineBase with RequestScopeFeature =>
 
   // just set Flash object to request scope
   before() {
-    if (requestScope(RequestScopeFeature.ATTR_FLASH).isEmpty) {
+    if (requestScope.get(RequestScopeFeature.ATTR_FLASH).isEmpty) {
       set(RequestScopeFeature.ATTR_FLASH, Flash(flash))
     }
   }

@@ -1,12 +1,11 @@
 package integrationtest
 
-import controller.{ Controllers, ErrorController }
-import model.Company
-import org.scalatra.test.scalatest._
+import controller.Controllers
 import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 import unit.DBSettings
 
-class FileUploadControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport with DBSettings {
+class FileUploadControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
 
   addServlet(Controllers.fileUpload, "/*")
 

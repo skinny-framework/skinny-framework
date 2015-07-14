@@ -1,8 +1,8 @@
 package controller
 
-import org.scalatra.test.scalatest._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class CustomLayoutControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class CustomLayoutControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.customLayout, "/*")
 

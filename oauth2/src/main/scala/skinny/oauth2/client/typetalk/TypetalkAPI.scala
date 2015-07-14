@@ -1,12 +1,12 @@
 package skinny.oauth2.client.typetalk
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.oauth2.client.{ BearerRequest, OAuth2Client, OAuth2Token }
 import skinny.util.JSONStringOps
 
 import scala.util.control.NonFatal
 
-trait TypetalkAPI extends Logging {
+trait TypetalkAPI extends LoggerProvider {
 
   def profile(token: OAuth2Token): Option[TypetalkUser] = {
     try {

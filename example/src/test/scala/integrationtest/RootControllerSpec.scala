@@ -2,10 +2,10 @@ package integrationtest
 
 import _root_.controller._
 import service._
-import org.scalatra.test.scalatest._
 import skinny._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class RootControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class RootControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   class EchoServiceMock extends EchoService {
     override def echo(s: String): String = s.toUpperCase

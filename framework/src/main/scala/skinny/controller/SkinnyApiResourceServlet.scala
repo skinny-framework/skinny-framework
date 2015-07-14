@@ -1,6 +1,6 @@
 package skinny.controller
 
-import org.scalatra.util.conversion.{ Conversions, TypeConverter }
+import skinny.engine.implicits.{ TypeConverter, TypeConverters }
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.
@@ -8,7 +8,7 @@ import org.scalatra.util.conversion.{ Conversions, TypeConverter }
  */
 trait SkinnyApiResourceServlet extends SkinnyApiResourceServletWithId[Long] {
 
-  implicit override val scalatraParamsIdTypeConverter: TypeConverter[String, Long] = Conversions.stringToLong
+  implicit override val scalatraParamsIdTypeConverter: TypeConverter[String, Long] = TypeConverters.stringToLong
 }
 
 trait SkinnyApiResourceServletWithId[Id]

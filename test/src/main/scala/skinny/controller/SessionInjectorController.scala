@@ -5,6 +5,7 @@ import java.io._
 import skinny._
 import skinny.util.LoanPattern._
 import sun.misc.{ BASE64Decoder, BASE64Encoder }
+import skinny.logging.LoggerProvider
 
 import scala.util.control.NonFatal
 
@@ -19,7 +20,7 @@ private[skinny] object SessionInjectorController extends SessionInjectorControll
 /**
  * Session injector for testing & debugging.
  */
-trait SessionInjectorController extends SkinnyController with Logging {
+trait SessionInjectorController extends SkinnyController with LoggerProvider {
 
   /**
    * Shows whole session attributes.

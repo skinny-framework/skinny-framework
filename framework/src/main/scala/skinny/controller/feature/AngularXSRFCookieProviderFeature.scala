@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import org.scalatra.GenerateId
+import skinny.engine.csrf.CsrfTokenGenerator
 
 /**
  * Angular.js Cross Site Request Forgery (XSRF) Protection support.
@@ -13,7 +13,7 @@ trait AngularXSRFCookieProviderFeature { self: BeforeAfterActionFeature =>
 
   beforeAction() {
     if (cookies.get(xsrfCookieName).isEmpty) {
-      cookies += (xsrfCookieName -> GenerateId())
+      cookies += (xsrfCookieName -> CsrfTokenGenerator())
     }
   }
 

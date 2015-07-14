@@ -4,7 +4,7 @@ import skinny.orm._
 import scalikejdbc._
 import org.joda.time.DateTime
 import java.io._
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
 /**
  * SkinnySession JDBC implmenetation.
@@ -14,7 +14,7 @@ case class SkinnySession(
     createdAt: DateTime,
     expireAt: DateTime,
     servletSessions: Seq[ServletSession] = Nil,
-    attributes: Seq[SkinnySessionAttribute] = Nil) extends Logging {
+    attributes: Seq[SkinnySessionAttribute] = Nil) extends LoggerProvider {
 
   import SkinnySession._
 
@@ -97,7 +97,7 @@ case class SkinnySession(
 /**
  * SkinnySession JDBC implmenetation.
  */
-object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with Logging {
+object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider {
 
   sealed trait LastOperation
   case object Set extends LastOperation

@@ -1,11 +1,11 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
-import skinny.test._
 import model._
 import controller.Controllers
+import skinny.test.FactoryGirl
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class ProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class ProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.programmers, "/*")
 

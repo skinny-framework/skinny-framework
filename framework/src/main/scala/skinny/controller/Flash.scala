@@ -1,5 +1,7 @@
 package skinny.controller
 
+import skinny.engine.flash.FlashMap
+
 import scala.language.dynamics
 
 /**
@@ -7,7 +9,7 @@ import scala.language.dynamics
  *
  * @param underlying scalatra's FlashMap
  */
-case class Flash(underlying: org.scalatra.FlashMap) extends Dynamic {
+case class Flash(underlying: FlashMap) extends Dynamic {
 
   /**
    * Returns value if exists.

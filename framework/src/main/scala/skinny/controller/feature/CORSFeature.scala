@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import org.scalatra.SkinnyScalatraBase
+import skinny.engine.SkinnyEngineBase
 
 /**
  * CORS(Cross-Origin Resource Sharing) support.
@@ -8,7 +8,7 @@ import org.scalatra.SkinnyScalatraBase
  * http://www.w3.org/TR/cors/
  * http://enable-cors.org/
  */
-trait CORSFeature { self: SkinnyScalatraBase with BeforeAfterActionFeature =>
+trait CORSFeature { self: SkinnyEngineBase with BeforeAfterActionFeature =>
 
   beforeAction() {
     response.setHeader("Access-Control-Allow-Origin", "*")

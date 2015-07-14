@@ -1,14 +1,14 @@
 package skinny.oauth2.client.facebook
 
 import skinny.oauth2.client._
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.JSONStringOps
 import scala.util.control.NonFatal
 
 /**
  * Facebook Graph API client.
  */
-trait FacebookGraphAPI extends Logging {
+trait FacebookGraphAPI extends LoggerProvider {
 
   def me(token: OAuth2Token): Option[FacebookUser] = {
     try {

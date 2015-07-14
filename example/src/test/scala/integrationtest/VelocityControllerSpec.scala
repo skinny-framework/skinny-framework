@@ -1,10 +1,10 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
 import skinny.test.SkinnyTestSupport
 import controller.Controllers
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class VelocityControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class VelocityControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(Controllers.velocity, "/*")
 

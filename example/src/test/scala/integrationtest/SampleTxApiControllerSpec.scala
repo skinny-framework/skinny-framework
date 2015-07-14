@@ -1,9 +1,9 @@
 package integrationtest
 
 import _root_.controller._
-import org.scalatra.test.scalatest._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class SampleTxApiControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class SampleTxApiControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.sampleTxApi, "/*")
 

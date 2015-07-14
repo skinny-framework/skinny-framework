@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sbt ++2.11.6 \
+sbt ++2.11.7 \
   clean \
   common/publishSigned \
   assets/publishSigned \
@@ -12,6 +12,8 @@ sbt ++2.11.6 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
+  engine/publishSigned \
+  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   standalone/publishSigned \
@@ -34,6 +36,8 @@ sbt ++2.11.6 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
+  engine/publishSigned \
+  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   standalone/publishSigned \

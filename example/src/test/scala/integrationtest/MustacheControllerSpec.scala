@@ -1,12 +1,10 @@
 package integrationtest
 
 import _root_.controller.Controllers
-import service._
-import org.scalatra.test.scalatest._
-import skinny._
 import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class MustacheControllerSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class MustacheControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(Controllers.mustache, "/*")
 

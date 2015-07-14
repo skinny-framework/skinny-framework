@@ -1,10 +1,10 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
-import skinny.test.SkinnyTestSupport
 import _root_.controller.Controllers
+import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class RootController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class RootController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
   Controllers.root.mount(servletContextHandler.getServletContext)
 
   it should "show top page" in {

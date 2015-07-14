@@ -1,9 +1,9 @@
 package integrationtest
 
 import controller.Controllers
-import org.scalatra.test.scalatest._
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class ScaldiControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class ScaldiControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.scaldi, "/*")
 

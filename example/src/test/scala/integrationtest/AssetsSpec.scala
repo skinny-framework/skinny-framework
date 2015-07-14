@@ -1,11 +1,10 @@
 package integrationtest
 
-import org.scalatra.test.scalatest._
-import skinny._
 import skinny.controller._
 import skinny.test.SkinnyTestSupport
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class AssetsSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(AssetsController, "/*")
 

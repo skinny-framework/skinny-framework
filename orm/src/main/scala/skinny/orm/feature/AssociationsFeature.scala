@@ -1,8 +1,9 @@
 package skinny.orm.feature
 
+import skinny.logging.LoggerProvider
+
 import scala.language.existentials
 
-import skinny.logging.Logging
 import skinny.orm._
 import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.feature.associations._
@@ -48,7 +49,7 @@ trait AssociationsFeature[Entity]
     extends SkinnyMapperBase[Entity]
     with ConnectionPoolFeature
     with AutoSessionFeature
-    with Logging { self: SQLSyntaxSupport[Entity] =>
+    with LoggerProvider { self: SQLSyntaxSupport[Entity] =>
 
   import AssociationsFeature._
 

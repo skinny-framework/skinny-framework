@@ -2,9 +2,8 @@ package skinny.session
 
 import javax.servlet._
 import javax.servlet.http._
-import org.joda.time.DateTime
 import skinny.filter.SkinnySessionFilter
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.session.jdbc.SkinnySession
 import skinny.session.servlet._
 
@@ -18,7 +17,7 @@ import skinny.session.servlet._
  *      ....
  * }}}
  */
-class SkinnySessionInitializer extends Filter with Logging {
+class SkinnySessionInitializer extends Filter with LoggerProvider {
 
   // just default settings, this might be updated by yourself
   def except: Seq[String] = Seq("/assets/")

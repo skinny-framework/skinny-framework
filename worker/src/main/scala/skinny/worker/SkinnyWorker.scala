@@ -1,8 +1,8 @@
 package skinny.worker
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
-trait SkinnyWorker extends Runnable with Logging {
+trait SkinnyWorker extends Runnable with LoggerProvider {
 
   def execute(): Unit
 

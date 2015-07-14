@@ -4,10 +4,11 @@ import java.io.{ InputStreamReader, InputStream }
 
 import org.json4s.Xml._
 import org.json4s._
-import org.scalatra.json.{ JacksonJsonSupport, JsonSupport }
-import org.scalatra._
 import org.slf4j.LoggerFactory
-import skinny.logging.Logging
+import skinny.engine.json.JsonSupport
+import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
+import skinny.engine.routing.MatchedRoute
+import skinny.logging.LoggerProvider
 import javax.servlet.http.HttpServletRequest
 
 /**
@@ -16,10 +17,10 @@ import javax.servlet.http.HttpServletRequest
  * When you'd like to avoid merging JSON request body into params in some actions, please separate controllers.
  */
 trait JSONParamsAutoBinderFeature
-    extends SkinnyScalatraBase
+    extends SkinnyEngineBase
     with JSONFeature
-    //with JacksonJsonSupport
-    with ApiFormats with Logging {
+    with ApiFormats
+    with LoggerProvider {
 
   /**
    * Merge parsedBody (JValue) into params if possible.
@@ -29,7 +30,7 @@ trait JSONParamsAutoBinderFeature
       try {
         val jsonParams: Map[String, Seq[String]] = parsedBody.extract[Map[String, String]].mapValues(v => Seq(v))
         val mergedParams: Map[String, Seq[String]] = getMergedMultiParams(multiParams, jsonParams)
-        new ScalatraParams(mergedParams)
+        new EngineParams(mergedParams)
       } catch {
         case e: Exception =>
           logger.debug(s"Failed to parse JSON body because ${e.getMessage}")

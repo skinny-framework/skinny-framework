@@ -1,7 +1,8 @@
 package skinny.controller.feature
 
-import skinny.logging.Logging
-import org.scalatra._
+import skinny.engine.SkinnyEngineBase
+import skinny.engine.csrf.CsrfTokenSupport
+import skinny.logging.LoggerProvider
 
 object CSRFProtectionFeature {
 
@@ -15,7 +16,7 @@ object CSRFProtectionFeature {
  */
 trait CSRFProtectionFeature extends CsrfTokenSupport {
 
-  self: SkinnyScalatraBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with Logging =>
+  self: SkinnyEngineBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
   /**
    * Overrides Scalatra's default key name.

@@ -3,7 +3,7 @@ package skinny.session
 import javax.servlet.http.HttpServletRequest
 import skinny.controller.feature.RequestScopeFeature
 import skinny.filter.SkinnySessionFilter
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.session.jdbc.SkinnySession
 
 /**
@@ -27,7 +27,7 @@ trait SkinnyHttpSession {
 
 }
 
-object SkinnyHttpSession extends Logging {
+object SkinnyHttpSession extends LoggerProvider {
 
   def getOrCreate(request: HttpServletRequest): SkinnyHttpSession = {
     val jsessionIdCookieName: String = request.getServletContext.getSessionCookieConfig.getName

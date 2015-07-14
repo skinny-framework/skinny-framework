@@ -5,9 +5,9 @@ import scaldi.Module
 import service.{ EchoService, EchoServiceImpl }
 import skinny._
 import skinny.controller.feature.ScaldiFeature
-import org.scalatra.test.scalatest.ScalatraFlatSpec
+import skinny.test.scalatest.SkinnyFlatSpec
 
-class OverrideInjectionSpec extends ScalatraFlatSpec {
+class OverrideInjectionSpec extends SkinnyFlatSpec {
 
   System.setProperty(SkinnyEnv.PropertyKey, SkinnyEnv.Test)
 

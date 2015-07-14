@@ -1,6 +1,6 @@
 package skinny.oauth2.client.github
 
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.oauth2.client._
 import skinny.util.JSONStringOps
 import scala.util.control.NonFatal
@@ -8,7 +8,7 @@ import scala.util.control.NonFatal
 /**
  * GitHub API client.
  */
-trait GitHubAPI extends Logging {
+trait GitHubAPI extends LoggerProvider {
 
   def user(token: OAuth2Token): Option[GitHubUser] = {
     try {

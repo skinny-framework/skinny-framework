@@ -6,12 +6,12 @@ import javax.mail.Message.RecipientType
 import javax.mail.internet.{ InternetAddress, MimeBodyPart, MimeMultipart, MimeMessage }
 import java.io.InputStream
 import org.joda.time.DateTime
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
 /**
  * Enriched MimeMessage .
  */
-trait RichMimeMessage extends Logging {
+trait RichMimeMessage extends LoggerProvider {
 
   lazy val mimeMultipart = new MimeMultipart("mixed")
 

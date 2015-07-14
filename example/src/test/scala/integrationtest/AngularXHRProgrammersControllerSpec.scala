@@ -2,11 +2,11 @@ package integrationtest
 
 import controller.{ AngularXHRProgrammersController, Controllers }
 import model._
-import org.scalatra.test.scalatest._
+import skinny.test.scalatest.SkinnyFlatSpec
 import skinny.util.AngularJSONStringOps._
 import skinny.test._
 
-class AngularXHRProgrammersControllerSpec extends ScalatraFlatSpec with unit.SkinnyTesting {
+class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   addFilter(Controllers.angularApp, "/*")
   addFilter(AngularXHRProgrammersController, "/*")

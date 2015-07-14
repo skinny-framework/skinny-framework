@@ -2,7 +2,7 @@ package skinny
 
 import java.text.MessageFormat
 import java.util.Locale
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 import skinny.util.TypesafeConfigReader
 import scala.collection.concurrent.TrieMap
 
@@ -17,7 +17,7 @@ object I18n {
  *
  * @param locale locale
  */
-case class I18n(locale: Locale = null) extends Logging {
+case class I18n(locale: Locale = null) extends LoggerProvider {
 
   /**
    * Messages loaded from "src/main/resources/messages_{locale}.conf".

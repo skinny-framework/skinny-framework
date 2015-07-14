@@ -1,7 +1,8 @@
 package skinny.routing
 
-import org.scalatra._
 import skinny.controller.{ ActionDefinition, Constants, SkinnyControllerBase }
+import skinny.engine.constant.HttpMethod
+import skinny.engine.routing.Route
 import skinny.exception.RouteMetadataException
 
 /**

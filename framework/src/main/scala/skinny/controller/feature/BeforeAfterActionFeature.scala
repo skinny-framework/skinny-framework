@@ -1,13 +1,13 @@
 package skinny.controller.feature
 
-import org.scalatra.ScalatraBase
+import skinny.engine.SkinnyEngineBase
 
 /**
  * beforeAction/afterAction support.
  *
  * @see http://guides.rubyonrails.org/action_controller_overview.html
  */
-trait BeforeAfterActionFeature extends ScalatraBase {
+trait BeforeAfterActionFeature extends SkinnyEngineBase {
 
   self: RichRouteFeature with ActionDefinitionFeature with RequestScopeFeature =>
 

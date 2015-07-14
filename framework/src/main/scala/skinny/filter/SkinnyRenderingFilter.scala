@@ -1,7 +1,7 @@
 package skinny.filter
 
-import org.scalatra.ErrorHandler
 import skinny.controller.SkinnyWebPageControllerFeatures
+import skinny.engine.ErrorHandler
 
 /**
  * Skinny Rendering Filter.

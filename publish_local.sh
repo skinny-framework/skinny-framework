@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sbt \
-  ++2.11.6 \
+  ++2.11.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -13,6 +13,8 @@ sbt \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
+  engine/publishLocal \
+  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   standalone/publishLocal \
@@ -35,6 +37,8 @@ sbt \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
+  engine/publishLocal \
+  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   standalone/publishLocal \

@@ -2,14 +2,13 @@ package skinny.mailer
 
 import javax.mail._
 import javax.mail.internet.MimeMessage
-import scala.io.Source
 import scala.collection.JavaConverters._
-import skinny.logging.Logging
+import skinny.logging.LoggerProvider
 
 /**
  * Operations about javax.mail APIs.
  */
-object JavaMailOps extends Logging {
+object JavaMailOps extends LoggerProvider {
 
   def loggingTransport(session: Session): Transport = {
     new Transport(session, null) {

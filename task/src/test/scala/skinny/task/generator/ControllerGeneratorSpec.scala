@@ -72,14 +72,14 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest.admin
           |
-          |import org.scalatra.test.scalatest._
+          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |import _root_.controller.Controllers
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport {
+          |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
           |  addFilter(Controllers.adminMembers, "/*")
           |
           |  it should "show index page" in {

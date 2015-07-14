@@ -132,7 +132,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest
           |
-          |import org.scalatra.test.scalatest._
+          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
@@ -140,7 +140,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |import _root_.controller.Controllers
           |import model._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
+          |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.members, "/*")
           |
           |  override def afterAll() {
@@ -267,7 +267,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest.admin
           |
-          |import org.scalatra.test.scalatest._
+          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
@@ -275,7 +275,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
+          |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
           |
           |  override def afterAll() {
@@ -426,7 +426,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest.admin
           |
-          |import org.scalatra.test.scalatest._
+          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
@@ -434,7 +434,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class GroupMembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
+          |class GroupMembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminGroupMembers, "/*")
           |
           |  override def afterAll() {
@@ -568,7 +568,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest.admin
           |
-          |import org.scalatra.test.scalatest._
+          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
@@ -576,7 +576,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |import _root_.controller.Controllers
           |import model.admin._
           |
-          |class MembersController_IntegrationTestSpec extends ScalatraFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
+          |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
           |
           |  override def afterAll() {
