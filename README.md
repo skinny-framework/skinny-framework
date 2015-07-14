@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/skinny-framework/skinny-framework.svg?branch=master)](https://travis-ci.org/skinny-framework/skinny-framework)
 
-[![Coverage Status](https://coveralls.io/repos/skinny-framework/skinny-framework/badge.png?branch=master)](https://coveralls.io/r/skinny-framework/skinny-framework?branch=master)
-
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/skinny-framework/skinny-framework?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Skinny is a full-stack web app framework, which is built on [Scalatra](http://scalatra.org) and additional components are integrated. 
