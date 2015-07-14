@@ -2,7 +2,7 @@ package skinny.util
 
 import org.json4s._
 import org.json4s.jackson.Json4sScalaModule
-import com.fasterxml.jackson.databind.{ DeserializationFeature, ObjectMapper }
+import com.fasterxml.jackson.databind.{ ObjectWriter, DeserializationFeature, ObjectMapper }
 
 import scala.util.control.Exception._
 
@@ -43,7 +43,7 @@ trait JSONStringOps {
   private[this] def render(value: JValue): JValue = value
 
   private[this] def pretty(d: JValue): String = {
-    val writer = mapper.writerWithDefaultPrettyPrinter()
+    val writer: ObjectWriter = mapper.writerWithDefaultPrettyPrinter()
     writer.writeValueAsString(d)
   }
 
