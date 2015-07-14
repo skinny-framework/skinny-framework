@@ -7,7 +7,7 @@ import skinny.routing.Routes
 class SkinnyFilterActivationSpec extends ScalatraFlatSpec with skinny.Logging {
 
   object Controller extends SkinnyApiController with SkinnyFilterActivation with Routes {
-    override def detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase = true
+    override def detectTooManyErrorFilterRegistrationAsAnErrorAtSkinnyEngineBase = true
     def index = "ok"
     get("/")(index).as('index)
   }

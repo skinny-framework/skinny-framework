@@ -1,54 +1,29 @@
 package skinny.engine.routing
 
+import javax.servlet.http.HttpServletRequest
+
 import skinny.engine._
-import skinny.engine.constant.HttpMethod
-import skinny.engine.control.Control
+import skinny.engine.base.{ ServletContextAccessor, DynamicScope, RouteRegistryAccessor, Handler }
+import skinny.engine.constant._
+import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.control.HaltPassControl
 import skinny.engine.implicits.ServletApiImplicits
 
 /**
  * The core SkinnyEngine DSL.
  */
-trait CoreRoutingDsl extends Handler with Control with ServletApiImplicits {
+trait CoreRoutingDsl
+    extends Handler
+    with HaltPassControl
+    with DynamicScope
+    with RouteRegistryAccessor
+    with ServletContextAccessor
+    with ServletApiImplicits {
 
   /**
-   * Adds a filter to run before the route.  The filter only runs if each
-   * routeMatcher returns Some.  If the routeMatchers list is empty, the
-   * filter runs for all routes.
+   * The base path for URL generation
    */
-  def before(transformers: RouteTransformer*)(block: => Any): Unit
-
-  /**
-   * Adds a filter to run after the route.  The filter only runs if each
-   * routeMatcher returns Some.  If the routeMatchers list is empty, the
-   * filter runs for all routes.
-   */
-  def after(transformers: RouteTransformer*)(block: => Any): Unit
-
-  /**
-   * Defines a block to run if no matching routes are found, or if all
-   * matching routes pass.
-   */
-  def notFound(block: => Any): Unit
-
-  /**
-   * Defines a block to run if matching routes are found only for other
-   * methods.  The set of matching methods is passed to the block.
-   */
-  def methodNotAllowed(block: Set[HttpMethod] => Any): Unit
-
-  /**
-   * Defines an error handler for exceptions thrown in either the before
-   * block or a route action.
-   *
-   * If the error handler does not match, the result falls through to the
-   * previously defined error handler.  The default error handler simply
-   * rethrows the exception.
-   *
-   * The error handler is run before the after filters, and the result is
-   * rendered like a standard response.  It is the error handler's
-   * responsibility to set any appropriate status code.
-   */
-  def error(handler: ErrorHandler): Unit
+  protected def routeBasePath(implicit ctx: SkinnyEngineContext): String
 
   /**
    * The SkinnyEngine DSL core methods take a list of [[skinny.engine.routing.RouteMatcher]]
@@ -83,37 +58,70 @@ trait CoreRoutingDsl extends Handler with Control with ServletApiImplicits {
    * }}}
    *
    */
-  def get(transformers: RouteTransformer*)(block: => Any): Route
+  def get(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Get, transformers, action)
+
+  def post(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Post, transformers, action)
+
+  def put(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Put, transformers, action)
+
+  def delete(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Delete, transformers, action)
+
+  def options(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Options, transformers, action)
+
+  def head(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Head, transformers, action)
+
+  def patch(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Patch, transformers, action)
 
   /**
-   * @see get
+   * Prepends a new route for the given HTTP method.
+   *
+   * Can be overriden so that subtraits can use their own logic.
+   * Possible examples:
+   * $ - restricting protocols
+   * $ - namespace routes based on class name
+   * $ - raising errors on overlapping entries.
+   *
+   * This is the method invoked by get(), post() etc.
+   *
+   * @see skinny.engine.SkinnyEngineKernel#removeRoute
    */
-  def post(transformers: RouteTransformer*)(block: => Any): Route
+  protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
+    // TODO: still NPE work around here only when testing
+    val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext(servletContext)))
+    routes.prependRoute(method, route)
+    route
+  }
+
+  private[this] def addStatusRoute(codes: Range, action: => Any): Unit = {
+    val route = Route(Seq.empty, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext(servletContext)))
+    routes.addStatusRoute(codes, route)
+  }
 
   /**
-   * @see get
+   * Defines a block to run if no matching routes are found, or if all
+   * matching routes pass.
    */
-  def put(transformers: RouteTransformer*)(block: => Any): Route
+  def notFound(block: => Any): Unit
 
   /**
-   * @see get
+   * Defines a block to run if matching routes are found only for other
+   * methods.  The set of matching methods is passed to the block.
    */
-  def delete(transformers: RouteTransformer*)(block: => Any): Route
+  def methodNotAllowed(block: Set[HttpMethod] => Any): Unit
 
   /**
-   * @see get
+   * Defines an error handler for exceptions thrown in either the before
+   * block or a route action.
+   *
+   * If the error handler does not match, the result falls through to the
+   * previously defined error handler.  The default error handler simply
+   * rethrows the exception.
+   *
+   * The error handler is run before the after filters, and the result is
+   * rendered like a standard response.  It is the error handler's
+   * responsibility to set any appropriate status code.
    */
-  def options(transformers: RouteTransformer*)(block: => Any): Route
-
-  /**
-   * @see head
-   */
-  def head(transformers: RouteTransformer*)(block: => Any): Route
-
-  /**
-   * @see patch
-   */
-  def patch(transformers: RouteTransformer*)(block: => Any): Route
+  def error(handler: ErrorHandler): Unit
 
   /**
    * Error handler for HTTP response status code range. You can intercept every response code previously
@@ -125,7 +133,9 @@ trait CoreRoutingDsl extends Handler with Control with ServletApiImplicits {
    * }* }}}
    * }}
    */
-  def trap(codes: Range)(block: => Any): Unit
+  def trap(codes: Range)(block: => Any): Unit = {
+    addStatusRoute(codes, block)
+  }
 
   /**
    * @see error

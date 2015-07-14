@@ -8,6 +8,10 @@ object Cookie {
   import java.text.SimpleDateFormat
   import java.util.{ Date, Locale, TimeZone }
 
+  val SweetCookiesKey = "skinny.engine.SweetCookies"
+
+  val CookieOptionsKey = "skinny.engine.CookieOptions"
+
   private object DateUtil {
 
     @volatile private[this] var _currentTimeMillis: Option[Long] = None

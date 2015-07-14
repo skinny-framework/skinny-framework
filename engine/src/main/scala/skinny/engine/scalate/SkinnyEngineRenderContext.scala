@@ -5,10 +5,10 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse, HttpSession
 
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.servlet.ServletRenderContext
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
 import skinny.engine.{ ApiFormats, MultiParams, Params, SkinnyEngineBase }
-import skinny.engine.flash.FlashMapSupport
 import skinny.engine.multipart.{ FileMultiParams, FileItem, FileUploadSupport }
 import skinny.engine.routing.Route
 import skinny.engine.util.UrlGenerator

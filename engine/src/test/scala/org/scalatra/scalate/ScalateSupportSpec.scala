@@ -4,7 +4,7 @@ package scalate
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.scalatra.test.specs2.ScalatraSpec
 import skinny.engine.SkinnyEngineServlet
-import skinny.engine.flash.FlashMapSupport
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
 
 class ScalateSupportSpec extends ScalatraSpec {

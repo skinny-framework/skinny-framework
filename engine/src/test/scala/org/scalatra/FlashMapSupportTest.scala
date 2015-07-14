@@ -3,8 +3,8 @@ package org.scalatra
 import javax.servlet.http.HttpServletRequest
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.{ SkinnyEngineFilter, SkinnyEngineServlet }
-import skinny.engine.flash.FlashMapSupport
 
 class FlashMapSupportTestServlet extends SkinnyEngineServlet with FlashMapSupport {
   post("/message") {

@@ -1,17 +1,18 @@
 package skinny.engine.implicits
 
+import scala.language.implicitConversions
+
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.cookie.CookieSupport._
-import skinny.engine.cookie.{ CookieOptions, SweetCookies }
+import skinny.engine.cookie.{ Cookie, CookieOptions, SweetCookies }
 
 trait CookiesImplicits extends ServletApiImplicits {
 
   implicit def cookieOptions(implicit ctx: SkinnyEngineContext): CookieOptions = {
-    ctx.servletContext.get(CookieOptionsKey).orNull.asInstanceOf[CookieOptions]
+    ctx.servletContext.get(Cookie.CookieOptionsKey).orNull.asInstanceOf[CookieOptions]
   }
 
   def cookies(implicit ctx: SkinnyEngineContext): SweetCookies = {
-    ctx.request.get(SweetCookiesKey).orNull.asInstanceOf[SweetCookies]
+    ctx.request.get(Cookie.SweetCookiesKey).orNull.asInstanceOf[SweetCookies]
   }
 
 }

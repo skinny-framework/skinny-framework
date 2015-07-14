@@ -16,7 +16,7 @@ import scala.util.DynamicVariable
  *
  * http://www.riffraff.info/2009/4/11/step-a-scala-web-picoframework
  */
-trait DynamicScope { self: SkinnyEngineBase =>
+trait DynamicScope { self: ServletContextAccessor =>
 
   /**
    * The currently scoped request.  Valid only inside the `handle` method.

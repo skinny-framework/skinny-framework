@@ -194,6 +194,12 @@ case class RichRequest(r: HttpServletRequest) extends AttributesMap {
   private def cachedBody: Option[String] =
     get(cachedBodyKey).flatMap(_.asInstanceOf[String].blankOption)
 
+  def isHttps: Boolean = {
+    // also respect load balancer version of the protocol
+    val h = r.getHeader("X-Forwarded-Proto").blankOption
+    r.isSecure || (h.isDefined && h.forall(_ equalsIgnoreCase "HTTPS"))
+  }
+
   /**
    * Returns true if the request is an AJAX request
    */

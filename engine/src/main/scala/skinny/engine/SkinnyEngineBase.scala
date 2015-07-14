@@ -4,25 +4,17 @@ import scala.language.implicitConversions
 import scala.language.reflectiveCalls
 
 import scala.annotation.tailrec
-import scala.collection.immutable.DefaultMap
-import scala.collection.JavaConverters._
-import scala.util.control.Exception._
-import scala.util.matching.Regex
 import scala.util.{ Failure, Success, Try }
 
 import java.io.{ File, FileInputStream }
-import java.util.concurrent.atomic.AtomicInteger
-import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse }
-import javax.servlet.{ ServletRegistration, Filter, ServletContext }
-
-import skinny.SkinnyEnv
+import javax.servlet.http.{ HttpServlet, HttpServletRequest }
+import javax.servlet.{ ServletRegistration, Filter }
 
 import skinny.engine.async.FutureSupport
 import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.{ PassException, HaltException }
-import skinny.engine.cookie.{ CookieSupport, CookieOptions, SweetCookies }
 import skinny.engine.implicits._
 import skinny.engine.multipart.FileCharset
 import skinny.engine.response.{ ResponseStatus, ActionResult, Found }
@@ -101,15 +93,23 @@ object SkinnyEngineBase {
  * Intended to be portable to all supported backends.
  */
 trait SkinnyEngineBase
-    extends CoreRoutingDsl
+    extends CoreHandler
+    with CoreRoutingDsl
     with LoggerProvider
     with DynamicScope
     with Initializable
+    with RouteRegistryAccessor
+    with ErrorHandlerAccessor
+    with ServletContextAccessor
+    with EnvironmentAccessor
     with ParamsAccessor
     with RequestFormatAccessor
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
+    with BeforeAfterDsl
+    with UrlGenerator
     with ServletApiImplicits
+    with RouteMatcherImplicits
     with CookiesImplicits
     with EngineParamsImplicits
     with DefaultImplicits
@@ -119,44 +119,9 @@ trait SkinnyEngineBase
   import SkinnyEngineBase._
 
   /**
-   * The routes registered in this kernel.
+   * true if async supported
    */
-  lazy val routes: RouteRegistry = new RouteRegistry
-
-  /**
-   * The default character encoding for requests and responses.
-   */
-  protected val defaultCharacterEncoding: String = "UTF-8"
-
-  /**
-   * Handles a request and renders a response.
-   *
-   * $ 1. If the request lacks a character encoding, `defaultCharacterEncoding`
-   * is set to the request.
-   *
-   * $ 2. Sets the response's character encoding to `defaultCharacterEncoding`.
-   *
-   * $ 3. Binds the current `request`, `response`, and `multiParams`, and calls
-   * `executeRoutes()`.
-   */
-  override def handle(request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    // As default, the servlet tries to decode params with ISO_8859-1.
-    // It causes an EOFException if params are actually encoded with the
-    // other code (such as UTF-8)
-    if (request.getCharacterEncoding == null) {
-      request.setCharacterEncoding(defaultCharacterEncoding)
-    }
-    request(CookieSupport.SweetCookiesKey) = new SweetCookies(request, response)
-    response.characterEncoding = Some(defaultCharacterEncoding)
-    withRequestResponse(request, response) {
-      executeRoutes()
-    }
-  }
-
-  /**
-   * The servlet context in which this kernel runs.
-   */
-  implicit def servletContext: ServletContext = config.context
+  protected def isAsyncExecutable(result: Any): Boolean = false
 
   /**
    * Executes routes in the context of the current request and response.
@@ -191,8 +156,8 @@ trait SkinnyEngineBase
               case f: Filter if !rq.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
                 rq(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
                 runFilters(routes.afterFilters)
-              case f: HttpServlet if !rq.contains("org.scalatra.ScalatraServlet.afterFilters.Run") =>
-                rq("org.scalatra.ScalatraServlet.afterFilters.Run") = new {}
+              case f: HttpServlet if !rq.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
+                rq("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
                 runFilters(routes.afterFilters)
               case _ =>
             }
@@ -211,24 +176,35 @@ trait SkinnyEngineBase
       }
     }
 
-    cradleHalt(result = runActions, e => {
-      cradleHalt({
-        result = errorHandler(e)
-        rendered = false
-      }, e => {
-        SkinnyEngineBase.runCallbacks(Failure(e))
-        try {
-          renderUncaughtException(e)(skinnyEngineContext)
-        } finally {
-          SkinnyEngineBase.runRenderCallbacks(Failure(e))
+    cradleHalt(
+      body = {
+        result = runActions
+      },
+      errorHandler = { error =>
+        {
+          cradleHalt(
+            body = {
+              result = currentErrorHandler.apply(error)
+              rendered = false
+            },
+            errorHandler =
+              e => {
+                SkinnyEngineBase.runCallbacks(Failure(e))
+                try {
+                  renderUncaughtException(e)(skinnyEngineContext)
+                } finally {
+                  SkinnyEngineBase.runRenderCallbacks(Failure(e))
+                }
+              }
+          )
         }
-      })
-    })
+      }
+    )
 
     if (!rendered) renderResponse(result)
   }
 
-  private[this] def cradleHalt(body: => Any, error: Throwable => Any): Any = {
+  private[this] def cradleHalt(body: => Any, errorHandler: Throwable => Any): Any = {
     try body
     catch {
       case e: HaltException => {
@@ -239,10 +215,10 @@ trait SkinnyEngineBase
           }
         } catch {
           case e: HaltException => renderHaltException(e)
-          case e: Throwable => error(e)
+          case e: Throwable => errorHandler.apply(e)
         }
       }
-      case e: Throwable => error(e)
+      case e: Throwable => errorHandler.apply(e)
     }
   }
 
@@ -254,13 +230,11 @@ trait SkinnyEngineBase
     }
   }
 
-  protected def isAsyncExecutable(result: Any): Boolean = false
-
   /**
-   * Invokes each filters with `invoke`.  The results of the filters
-   * are discarded.
+   * Invokes each filters with `invoke`.
+   * The results of the filters are discarded.
    */
-  protected def runFilters(filters: Traversable[Route]): Unit = {
+  private[this] def runFilters(filters: Traversable[Route]): Unit = {
     for {
       route <- filters
       matchedRoute <- route(requestPath)
@@ -268,8 +242,8 @@ trait SkinnyEngineBase
   }
 
   /**
-   * Lazily invokes routes with `invoke`.  The results of the routes
-   * are returned as a stream.
+   * Lazily invokes routes with `invoke`.
+   * The results of the routes are returned as a stream.
    */
   protected def runRoutes(routes: Traversable[Route]): Stream[Any] = {
     for {
@@ -280,13 +254,13 @@ trait SkinnyEngineBase
     } yield actionResult
   }
 
-  private[skinny] def saveMatchedRoute(matchedRoute: MatchedRoute): MatchedRoute = {
+  private[this] def saveMatchedRoute(matchedRoute: MatchedRoute): MatchedRoute = {
     mainThreadRequest("skinny.engine.MatchedRoute") = matchedRoute
     setMultiparams(Some(matchedRoute), multiParams)
     matchedRoute
   }
 
-  private[skinny] def matchedRoute(implicit ctx: SkinnyEngineContext): Option[MatchedRoute] = {
+  private[this] def matchedRoute(implicit ctx: SkinnyEngineContext): Option[MatchedRoute] = {
     ctx.request.get("skinny.engine.MatchedRoute").map(_.asInstanceOf[MatchedRoute])
   }
 
@@ -306,20 +280,12 @@ trait SkinnyEngineBase
     }
   }
 
-  private def liftAction(action: Action): Option[Any] = {
+  private[this] def liftAction(action: Action): Option[Any] = {
     try {
       Some(action())
     } catch {
       case e: PassException => None
     }
-  }
-
-  def before(transformers: RouteTransformer*)(fun: => Any): Unit = {
-    routes.appendBeforeFilter(Route(transformers, () => fun))
-  }
-
-  def after(transformers: RouteTransformer*)(fun: => Any): Unit = {
-    routes.appendAfterFilter(Route(transformers, () => fun))
   }
 
   /**
@@ -340,7 +306,7 @@ trait SkinnyEngineBase
    * and an `Allow` header containing a comma-delimited list of the allowed
    * methods.
    */
-  protected var doMethodNotAllowed: (Set[HttpMethod] => Any) = {
+  private[this] var doMethodNotAllowed: (Set[HttpMethod] => Any) = {
     allow =>
       status = 405
       mainThreadResponse.headers("Allow") = allow.mkString(", ")
@@ -361,35 +327,6 @@ trait SkinnyEngineBase
       matchedHandler <- handler(requestPath)
       handlerResult <- invoke(matchedHandler)
     } yield handlerResult
-  }
-
-  /**
-   * The error handler function, called if an exception is thrown during
-   * before filters or the routes.
-   */
-  protected var errorHandler: ErrorHandler = {
-    case t => throw t
-  }
-
-  /**
-   * Count execution of error filter registration.
-   */
-  private[this] lazy val errorMethodCallCountAtSkinnyScalatraBase: AtomicInteger = new AtomicInteger(0)
-
-  /**
-   * Detects error filter leak issue as an error.
-   */
-  protected def detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase: Boolean = false
-
-  // https://github.com/scalatra/scalatra/blob/v2.3.1/core/src/main/scala/org/scalatra/ScalatraBase.scala#L333-L335
-  def error(handler: ErrorHandler): Unit = {
-    val count = errorMethodCallCountAtSkinnyScalatraBase.incrementAndGet()
-    if (count > 500) {
-      val message = s"skinny's error filter registration for this controller has been evaluated $count times, this behavior will cause memory leak."
-      if (detectTooManyErrorFilterRegistrationnAsAnErrorAtSkinnyScalatraBase) throw new RuntimeException(message)
-      else logger.warn(message)
-    }
-    errorHandler = handler orElse errorHandler
   }
 
   protected def withRouteMultiParams[S](matchedRoute: Option[MatchedRoute])(thunk: => S): S = {
@@ -417,11 +354,11 @@ trait SkinnyEngineBase
    * $ - Call the render pipeline on the result.
    */
   protected def renderResponse(actionResult: Any): Unit = {
-    if (contentType == null)
+    if (contentType == null) {
       contentTypeInferrer.lift(actionResult) foreach {
         contentType = _
       }
-
+    }
     renderResponseBody(actionResult)
   }
 
@@ -512,50 +449,6 @@ trait SkinnyEngineBase
       mainThreadResponse.writer.print(x.toString)
   }
 
-  /**
-   * Pluggable way to convert a path expression to a route matcher.
-   * The default implementation is compatible with Sinatra's route syntax.
-   *
-   * @param path a path expression
-   * @return a route matcher based on `path`
-   */
-  protected implicit def string2RouteMatcher(path: String): RouteMatcher = {
-    new SinatraRouteMatcher(path)
-  }
-
-  /**
-   * Path pattern is decoupled from requests.  This adapts the PathPattern to
-   * a RouteMatcher by supplying the request path.
-   */
-  protected implicit def pathPatternParser2RouteMatcher(pattern: PathPattern): RouteMatcher = {
-    new PathPatternRouteMatcher(pattern)
-  }
-
-  /**
-   * Converts a regular expression to a route matcher.
-   *
-   * @param regex the regular expression
-   * @return a route matcher based on `regex`
-   * @see [[RegexRouteMatcher]]
-   */
-  protected implicit def regex2RouteMatcher(regex: Regex): RouteMatcher = {
-    new RegexRouteMatcher(regex)
-  }
-
-  /**
-   * Converts a boolean expression to a route matcher.
-   *
-   * @param block a block that evaluates to a boolean
-   *
-   * @return a route matcher based on `block`.  The route matcher should
-   *         return `Some` if the block is true and `None` if the block is false.
-   *
-   * @see [[BooleanBlockRouteMatcher]]
-   */
-  protected implicit def booleanBlock2RouteMatcher(block: => Boolean): RouteMatcher = {
-    new BooleanBlockRouteMatcher(block)
-  }
-
   protected def renderHaltException(e: HaltException): Unit = {
     try {
       var rendered = false
@@ -587,44 +480,6 @@ trait SkinnyEngineBase
     case _ => mainThreadResponse.status.code
   }
 
-  def get(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Get, transformers, action)
-
-  def post(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Post, transformers, action)
-
-  def put(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Put, transformers, action)
-
-  def delete(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Delete, transformers, action)
-
-  def trap(codes: Range)(block: => Any): Unit = {
-    addStatusRoute(codes, block)
-  }
-
-  def options(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Options, transformers, action)
-
-  def head(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Head, transformers, action)
-
-  def patch(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Patch, transformers, action)
-
-  /**
-   * Prepends a new route for the given HTTP method.
-   *
-   * Can be overriden so that subtraits can use their own logic.
-   * Possible examples:
-   * $ - restricting protocols
-   * $ - namespace routes based on class name
-   * $ - raising errors on overlapping entries.
-   *
-   * This is the method invoked by get(), post() etc.
-   *
-   * @see skinny.engine.SkinnyEngineKernel#removeRoute
-   */
-  protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
-    // TODO: still NPE work around here only when testing
-    val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext))
-    routes.prependRoute(method, route)
-    route
-  }
-
   /**
    * Removes _all_ the actions of a given route for a given HTTP method.
    * If addRoute is overridden then this should probably be overriden too.
@@ -639,125 +494,9 @@ trait SkinnyEngineBase
     removeRoute(HttpMethod(method), route)
   }
 
-  protected[skinny] def addStatusRoute(codes: Range, action: => Any): Unit = {
+  private[this] def addStatusRoute(codes: Range, action: => Any): Unit = {
     val route = Route(Seq.empty, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext))
     routes.addStatusRoute(codes, route)
-  }
-
-  /**
-   * The configuration, typically a ServletConfig or FilterConfig.
-   */
-  var config: ConfigT = _
-
-  /**
-   * Initializes the kernel.  Used to provide context that is unavailable
-   * when the instance is constructed, for example the servlet lifecycle.
-   * Should set the `config` variable to the parameter.
-   *
-   * @param config the configuration.
-   */
-  def initialize(config: ConfigT): Unit = {
-    this.config = config
-    val path = contextPath match {
-      case "" => "/" // The root servlet is "", but the root cookie path is "/"
-      case p => p
-    }
-    servletContext(CookieSupport.CookieOptionsKey) = CookieOptions(path = path)
-  }
-
-  def relativeUrl(
-    path: String,
-    params: Iterable[(String, Any)] = Iterable.empty,
-    includeContextPath: Boolean = true,
-    includeServletPath: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
-    url(path, params, includeContextPath, includeServletPath, absolutize = false)(ctx)
-  }
-
-  /**
-   * Returns a context-relative, session-aware URL for a path and specified parameters.
-   * Finally, the result is run through `response.encodeURL` for a session
-   * ID, if necessary.
-   *
-   * @param path the base path.  If a path begins with '/', then the context
-   *             path will be prepended to the result
-   *
-   * @param params params, to be appended in the form of a query string
-   *
-   * @return the path plus the query string, if any.  The path is run through
-   *         `response.encodeURL` to add any necessary session tracking parameters.
-   */
-  // TODO: 2.0.0 still has this issue. Remove this override when it will be fixed in the future
-  def url(
-    path: String,
-    params: Iterable[(String, Any)] = Iterable.empty,
-    includeContextPath: Boolean = true,
-    includeServletPath: Boolean = true,
-    absolutize: Boolean = true,
-    withSessionId: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
-    try {
-      val newPath = path match {
-        case x if x.startsWith("/") && includeContextPath && includeServletPath =>
-          ensureSlash(routeBasePath(ctx)) + ensureContextPathsStripped(ensureSlash(path))(ctx)
-        case x if x.startsWith("/") && includeContextPath =>
-          ensureSlash(contextPath) + ensureContextPathStripped(ensureSlash(path))
-        case x if x.startsWith("/") && includeServletPath => ctx.request.getServletPath.blankOption map {
-          ensureSlash(_) + ensureServletPathStripped(ensureSlash(path))(ctx)
-        } getOrElse "/"
-        case _ if absolutize => ensureContextPathsStripped(ensureSlash(path))(ctx)
-        case _ => path
-      }
-
-      val pairs = params map {
-        case (key, None) => key.urlEncode + "="
-        case (key, Some(value)) => key.urlEncode + "=" + value.toString.urlEncode
-        case (key, value) => key.urlEncode + "=" + value.toString.urlEncode
-      }
-      val queryString = if (pairs.isEmpty) "" else pairs.mkString("?", "&", "")
-      if (withSessionId) addSessionId(newPath + queryString)(ctx) else newPath + queryString
-    } catch {
-      case e: NullPointerException =>
-        // work around for Scalatra issue
-        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
-        else throw e
-    }
-  }
-
-  private[this] def ensureContextPathsStripped(path: String)(implicit ctx: SkinnyEngineContext): String = {
-    ((ensureContextPathStripped _) andThen (p => ensureServletPathStripped(p)(ctx)))(path)
-  }
-
-  private[this] def ensureServletPathStripped(path: String)(implicit ctx: SkinnyEngineContext): String = {
-    val sp = ensureSlash(Option(ctx.request.getServletPath).flatMap(_.blankOption).getOrElse(""))
-    val np = if (path.startsWith(sp + "/")) path.substring(sp.length) else path
-    ensureSlash(np)
-  }
-
-  private[this] def ensureContextPathStripped(path: String): String = {
-    val cp = ensureSlash(contextPath)
-    val np = if (path.startsWith(cp + "/")) path.substring(cp.length) else path
-    ensureSlash(np)
-  }
-
-  private[this] def ensureSlash(candidate: String): String = {
-    if (candidate == null) {
-      ""
-    } else {
-      val p = if (candidate.startsWith("/")) candidate else "/" + candidate
-      if (p.endsWith("/")) p.dropRight(1) else p
-    }
-  }
-
-  protected def isHttps(implicit ctx: SkinnyEngineContext): Boolean = {
-    val request = ctx.request
-    // also respect load balancer version of the protocol
-    val h = request.getHeader("X-Forwarded-Proto").blankOption
-    request.isSecure || (h.isDefined && h.forall(_ equalsIgnoreCase "HTTPS"))
-  }
-
-  protected def needsHttps: Boolean = {
-    allCatch.withApply(_ => false) {
-      servletContext.getInitParameter(ForceHttpsKey).blankOption.map(_.toBoolean) getOrElse false
-    }
   }
 
   /**
@@ -768,111 +507,9 @@ trait SkinnyEngineBase
   }
 
   /**
-   * The base path for URL generation
-   */
-  protected def routeBasePath(implicit ctx: SkinnyEngineContext): String
-
-  /**
-   * Builds a full URL from the given relative path. Takes into account the port configuration, https, ...
-   *
-   * @param path a relative path
-   *
-   * @return the full URL
-   */
-  def fullUrl(
-    path: String,
-    params: Iterable[(String, Any)] = Iterable.empty,
-    includeContextPath: Boolean = true,
-    includeServletPath: Boolean = true,
-    withSessionId: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
-    if (path.startsWith("http")) path
-    else {
-      val p = url(path, params, includeContextPath, includeServletPath, withSessionId)(ctx)
-      if (p.startsWith("http")) p else buildBaseUrl(ctx) + ensureSlash(p)
-    }
-  }
-
-  private[this] def buildBaseUrl(implicit ctx: SkinnyEngineContext): String = {
-    "%s://%s".format(
-      if (needsHttps || isHttps(ctx)) "https" else "http",
-      serverAuthority(ctx)
-    )
-  }
-
-  private[this] def serverAuthority(implicit ctx: SkinnyEngineContext): String = {
-    val p = serverPort(ctx)
-    val h = serverHost(ctx)
-    if (p == 80 || p == 443) h else h + ":" + p.toString
-  }
-
-  def serverHost(implicit ctx: SkinnyEngineContext): String = {
-    initParameter(HostNameKey).flatMap(_.blankOption) getOrElse ctx.request.getServerName
-  }
-
-  def serverPort(implicit ctx: SkinnyEngineContext): Int = {
-    initParameter(PortKey).flatMap(_.blankOption).map(_.toInt) getOrElse ctx.request.getServerPort
-  }
-
-  def contextPath: String = servletContext.contextPath
-
-  /**
-   * Gets an init parameter from the config.
-   *
-   * @param name the name of the key
-   *
-   * @return an option containing the value of the parameter if defined, or
-   *         `None` if the parameter is not set.
-   */
-  def initParameter(name: String): Option[String] = {
-    config.initParameters.get(name) orElse {
-      servletContext.initParameters.get(name)
-    }
-  }
-
-  def environment: String = {
-    sys.props.get(EnvironmentKey) orElse initParameter(EnvironmentKey) getOrElse "DEVELOPMENT"
-  }
-
-  /**
-   * A boolean flag representing whether the kernel is in development mode.
-   * The default is true if the `environment` begins with "dev", case-insensitive.
-   */
-  def isDevelopmentMode: Boolean = environment.toUpperCase.startsWith("DEV")
-
-  /**
    * The effective path against which routes are matched.  The definition
    * varies between servlets and filters.
    */
   def requestPath(implicit ctx: SkinnyEngineContext): String
-
-  protected def addSessionId(uri: String)(implicit ctx: SkinnyEngineContext): String = {
-    ctx.response.encodeURL(uri)
-  }
-
-  type ConfigT <: {
-
-    def getServletContext(): ServletContext
-
-    def getInitParameter(name: String): String
-
-    def getInitParameterNames(): java.util.Enumeration[String]
-
-  }
-
-  protected implicit def configWrapper(config: ConfigT) = new Config {
-
-    override def context: ServletContext = config.getServletContext
-
-    object initParameters extends DefaultMap[String, String] {
-
-      override def get(key: String): Option[String] = Option(config.getInitParameter(key))
-
-      override def iterator: Iterator[(String, String)] = {
-        for (name <- config.getInitParameterNames.asScala.toIterator)
-          yield (name, config.getInitParameter(name))
-      }
-    }
-
-  }
 
 }

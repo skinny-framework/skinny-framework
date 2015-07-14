@@ -2,6 +2,8 @@ package skinny.engine
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.base.Handler
+
 /**
  * SkinnyEngine handler for gzipped responses.
  */

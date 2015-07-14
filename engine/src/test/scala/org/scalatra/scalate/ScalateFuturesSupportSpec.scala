@@ -7,7 +7,7 @@ import org.scalatra.test.specs2.MutableScalatraSpec
 import org.specs2.specification.{ Fragments, Step }
 import skinny.engine.SkinnyEngineServlet
 import skinny.engine.async.{ FutureSupport, AsyncResult }
-import skinny.engine.flash.FlashMapSupport
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
 
 import scala.concurrent.{ ExecutionContext, Future }
