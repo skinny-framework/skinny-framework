@@ -53,6 +53,7 @@ object Route {
   def apply(transformers: Seq[RouteTransformer], action: Action): Route =
     apply(transformers, action, (_: HttpServletRequest) => "")
 
+  // TODO: remove HttpServletRequest
   def apply(transformers: Seq[RouteTransformer], action: Action, contextPath: HttpServletRequest => String): Route = {
     val route = Route(action = action, contextPath = contextPath)
     transformers.foldLeft(route) { (route, transformer) => transformer(route) }

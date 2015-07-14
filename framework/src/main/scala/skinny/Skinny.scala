@@ -1,14 +1,14 @@
 package skinny
 
-import javax.servlet.http.HttpServletRequest
-import skinny.controller.ThreadLocalRequest
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.routing.Route
 import skinny.engine.util.UrlGenerator
 
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.
  */
-case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
+case class Skinny(context: SkinnyEngineContext,
+    requestScope: collection.mutable.Map[String, Any]) {
 
   import skinny.controller.feature.RequestScopeFeature._
 
@@ -67,7 +67,7 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
    * - no need to call #toString for params
    * - extract value from Option automatically
    */
-  def url(route: Route, params: (String, Any)*)(implicit req: HttpServletRequest = ThreadLocalRequest.get()): String = {
+  def url(route: Route, params: (String, Any)*): String = {
     // extract Option's raw value (basically Scalatra params returns Option value)
     def convertOptionalValue(v: Any): String = v match {
       case null => "" // Scalatra's UrlGenerator doesn't expect null value at least in Scalatra 2.2
@@ -83,7 +83,7 @@ case class Skinny(requestScope: collection.mutable.Map[String, Any]) {
           .filter { case (k, v) => k != null && v != null }
           .toMap[String, String],
         Nil
-      )
+      )(context)
     } catch {
       case e: NullPointerException =>
         // work around for Scalatra issue 

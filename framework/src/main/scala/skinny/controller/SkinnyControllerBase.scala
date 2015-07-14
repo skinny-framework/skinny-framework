@@ -1,9 +1,8 @@
 package skinny.controller
 
-import javax.servlet.http.HttpServletRequest
-
 import skinny._
 import skinny.controller.feature._
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
 import skinny.engine.response.ResponseStatus
 import skinny.engine.routing.Route
@@ -97,7 +96,8 @@ trait SkinnyControllerBase
    * @tparam A response type
    * @return body if possible
    */
-  protected def haltWithBody[A](httpStatus: Int)(implicit format: Format = Format.HTML): A = {
+  protected def haltWithBody[A](httpStatus: Int)(
+    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): A = {
     halt(httpStatus, renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message)))
   }
 
@@ -166,11 +166,10 @@ trait SkinnyControllerBase
   override def url(
     route: Route,
     params: Map[String, String],
-    splats: Iterable[String])(
-      implicit req: HttpServletRequest): String = {
+    splats: Iterable[String])(implicit ctx: SkinnyEngineContext): String = {
 
     try {
-      super.url(route, params, splats)(req)
+      super.url(route, params, splats)(ctx)
     } catch {
       case e: NullPointerException =>
         // work around for Scalatra issue

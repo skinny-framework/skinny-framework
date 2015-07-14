@@ -5,6 +5,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse, HttpSession
 
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.servlet.ServletRenderContext
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
 import skinny.engine.{ ApiFormats, MultiParams, Params, SkinnyEngineServletBase }
 import skinny.engine.flash.FlashMapSupport
@@ -16,58 +17,56 @@ import skinny.engine.util.UrlGenerator
  * A render context integrated with SkinnyEngine.  Exposes a few extra standard bindings to the template.
  */
 class SkinnyEngineRenderContext(
-    protected val kernel: SkinnyEngineServletBase,
+    protected val base: SkinnyEngineServletBase,
+    implicit val context: SkinnyEngineContext,
     engine: TemplateEngine,
     out: PrintWriter,
     req: HttpServletRequest,
-    res: HttpServletResponse) extends ServletRenderContext(engine, out, req, res, kernel.servletContext) {
+    res: HttpServletResponse) extends ServletRenderContext(engine, out, req, res, base.servletContext) {
 
-  def flash: scala.collection.Map[String, Any] = kernel match {
-    case flashMapSupport: FlashMapSupport => flashMapSupport.flash(request)
+  def flash: scala.collection.Map[String, Any] = base match {
+    case flashMapSupport: FlashMapSupport => flashMapSupport.flash(context)
     case _ => Map.empty
   }
 
-  def session: HttpSession = kernel.session(request)
+  def session: HttpSession = base.session(context)
 
-  def sessionOption: Option[HttpSession] = kernel.sessionOption(request)
+  def sessionOption: Option[HttpSession] = base.sessionOption(context)
 
-  def params: Params = kernel.params(request)
+  def params: Params = base.params(context)
 
-  def multiParams: MultiParams = kernel.multiParams(request)
+  def multiParams: MultiParams = base.multiParams(context)
 
-  def format: String = kernel match {
-    case af: ApiFormats => af.format(request, response)
+  def format: String = base match {
+    case af: ApiFormats => af.format(context)
     case _ => ""
   }
 
-  @deprecated("`format` now means the same as `responseFormat`, `responseFormat` will be removed eventually", "1.4")
-  def responseFormat: String = format
-
-  def fileMultiParams: FileMultiParams = kernel match {
-    case fu: FileUploadSupport => fu.fileMultiParams(request)
+  def fileMultiParams: FileMultiParams = base match {
+    case fu: FileUploadSupport => fu.fileMultiParams(context)
     case _ => new FileMultiParams()
   }
 
-  def fileParams: scala.collection.Map[String, FileItem] = kernel match {
-    case fu: FileUploadSupport => fu.fileParams(request)
+  def fileParams: scala.collection.Map[String, FileItem] = base match {
+    case fu: FileUploadSupport => fu.fileParams(context)
     case _ => Map.empty
   }
 
-  def csrfKey = kernel match {
+  def csrfKey = base match {
     case csrfTokenSupport: CsrfTokenSupport => csrfTokenSupport.csrfKey
     case _ => ""
   }
 
-  def csrfToken = kernel match {
+  def csrfToken = base match {
     case csrfTokenSupport: CsrfTokenSupport => csrfTokenSupport.csrfToken(request)
     case _ => ""
   }
-  def xsrfKey = kernel match {
+  def xsrfKey = base match {
     case csrfTokenSupport: XsrfTokenSupport => csrfTokenSupport.xsrfKey
     case _ => ""
   }
 
-  def xsrfToken = kernel match {
+  def xsrfToken = base match {
     case csrfTokenSupport: XsrfTokenSupport => csrfTokenSupport.xsrfToken(request)
     case _ => ""
   }
@@ -82,7 +81,9 @@ class SkinnyEngineRenderContext(
    * @throws IllegalStateException if the route's base path cannot be
    * determined.  This may occur outside of an HTTP request's lifecycle.
    */
-  def url(route: Route, params: (String, String)*): String = UrlGenerator.url(route, params: _*)(request)
+  def url(route: Route, params: (String, String)*): String = {
+    UrlGenerator.url(route, params: _*)(context)
+  }
 
   /**
    * Calculate a URL for a reversible route and some splats.
@@ -95,7 +96,9 @@ class SkinnyEngineRenderContext(
    * @throws IllegalStateException if the route's base path cannot be
    * determined.  This may occur outside of an HTTP request's lifecycle.
    */
-  def url(route: Route, splat: String, moreSplats: String*): String = UrlGenerator.url(route, splat, moreSplats: _*)(request)
+  def url(route: Route, splat: String, moreSplats: String*): String = {
+    UrlGenerator.url(route, splat, moreSplats: _*)(context)
+  }
 
   /**
    * Calculate a URL for a reversible route, some params, and some splats.
@@ -111,5 +114,7 @@ class SkinnyEngineRenderContext(
   def url(
     route: Route,
     params: Map[String, String],
-    splats: Iterable[String]): String = UrlGenerator.url(route, params, splats)(request)
+    splats: Iterable[String]): String = {
+    UrlGenerator.url(route, params, splats)(context)
+  }
 }

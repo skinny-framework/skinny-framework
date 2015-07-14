@@ -4,6 +4,7 @@ import java.util.Locale.ENGLISH
 import java.util.concurrent.ConcurrentHashMap
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.RicherStringImplicits
 import skinny.engine.routing.MatchedRoute
 import skinny.engine.util.UriDecoder
@@ -92,22 +93,24 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
    */
   def defaultAcceptedFormats: List[Symbol] = List.empty
 
-  @deprecated("`format` now means the same as `responseFormat`, `responseFormat` will be removed eventually", "1.4")
-  def responseFormat(implicit request: HttpServletRequest, response: HttpServletResponse): String = format
+  @deprecated("`format` now means the same as `responseFormat`, `responseFormat` will be removed eventually", "2.0.0")
+  def responseFormat(implicit ctx: SkinnyEngineContext): String = {
+    format(ctx)
+  }
 
   /**
    * The list of media types accepted by the current request.  Parsed from the
    * `Accept` header.
    */
-  def acceptHeader(implicit request: HttpServletRequest): List[String] = parseAcceptHeader
+  def acceptHeader(implicit request: HttpServletRequest): List[String] = parseAcceptHeader(request)
 
-  private[this] def getFromParams(implicit request: HttpServletRequest): Option[String] = {
-    params.get("format").find(p ⇒ formats.contains(p.toLowerCase(ENGLISH)))
+  private[this] def getFromParams(implicit ctx: SkinnyEngineContext): Option[String] = {
+    params(ctx).get("format").find(p ⇒ formats.contains(p.toLowerCase(ENGLISH)))
   }
 
   private[this] def getFromAcceptHeader(implicit request: HttpServletRequest): Option[String] = {
-    val hdrs = request.contentType.fold(acceptHeader)(contentType =>
-      (acceptHeader ::: List(contentType)).distinct
+    val hdrs = request.contentType.fold(acceptHeader(request))(contentType =>
+      (acceptHeader(request) ::: List(contentType)).distinct
     )
     formatForMimeTypes(hdrs: _*)
   }
@@ -170,12 +173,15 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
     conditions.isEmpty || (conditions filter { s => formats.get(s).isDefined } contains contentType)
   }
 
-  private def getFormat(implicit request: HttpServletRequest, response: HttpServletResponse): String = {
-    getFromResponseHeader orElse getFromParams orElse getFromAcceptHeader getOrElse defaultFormat.name
+  private def getFormat(implicit ctx: SkinnyEngineContext): String = {
+    getFromResponseHeader(ctx.response)
+      .orElse(getFromParams(ctx))
+      .orElse(getFromAcceptHeader(ctx.request))
+      .getOrElse(defaultFormat.name)
   }
 
   protected override def withRouteMultiParams[S](matchedRoute: Option[MatchedRoute])(thunk: => S): S = {
-    val originalParams: MultiParams = multiParams
+    val originalParams: MultiParams = multiParams(skinnyEngineContext)
     val routeParams: Map[String, Seq[String]] = {
       matchedRoute.map(_.multiParams).getOrElse(Map.empty).map {
         case (key, values) =>
@@ -183,21 +189,21 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
       }
     }
     if (routeParams.contains("format")) {
-      request(FormatKey) = routeParams.apply("format").head
+      mainThreadRequest(FormatKey) = routeParams.apply("format").head
     }
-    request(MultiParamsKey) = originalParams ++ routeParams
+    mainThreadRequest(MultiParamsKey) = originalParams ++ routeParams
 
     try {
       thunk
     } finally {
-      request(MultiParamsKey) = originalParams
+      mainThreadRequest(MultiParamsKey) = originalParams
     }
   }
 
-  def requestFormat(implicit request: HttpServletRequest): String = {
-    request.contentType
+  def requestFormat(implicit ctx: SkinnyEngineContext): String = {
+    ctx.request.contentType
       .flatMap(t => t.split(";").headOption flatMap mimeTypes.get)
-      .getOrElse(format)
+      .getOrElse(format(ctx))
   }
 
   /**
@@ -207,10 +213,10 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
    * $ - the format from the `Content-Type` header, as looked up in `mimeTypes`
    * $ - the default format
    */
-  def format(implicit request: HttpServletRequest, response: HttpServletResponse): String = {
-    request.get(FormatKey).fold({
-      val fmt = getFormat
-      request(FormatKey) = fmt
+  def format(implicit ctx: SkinnyEngineContext): String = {
+    ctx.request.get(FormatKey).fold({
+      val fmt = getFormat(ctx)
+      ctx.request(FormatKey) = fmt
       fmt
     })(_.asInstanceOf[String])
   }

@@ -3,6 +3,7 @@ package skinny.engine
 import javax.servlet._
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.util.UriDecoder
 
 import scala.util.DynamicVariable
@@ -40,7 +41,8 @@ trait SkinnyEngineFilter extends Filter with SkinnyEngineServletBase {
 
   // What goes in servletPath and what goes in pathInfo depends on how the underlying servlet is mapped.
   // Unlike the SkinnyEngine servlet, we'll use both here by default.  Don't like it?  Override it.
-  def requestPath(implicit request: HttpServletRequest): String = {
+  override def requestPath(implicit ctx: SkinnyEngineContext): String = {
+    val request = ctx.request
     def getRequestPath: String = request.getRequestURI match {
       case requestURI: String =>
         var uri = requestURI
@@ -65,15 +67,16 @@ trait SkinnyEngineFilter extends Filter with SkinnyEngineServletBase {
     }
   }
 
-  protected def routeBasePath(implicit request: HttpServletRequest): String = {
-    if (servletContext == null)
+  override protected def routeBasePath(implicit ctx: SkinnyEngineContext): String = {
+    if (ctx.servletContext == null) {
       throw new IllegalStateException("routeBasePath requires an initialized servlet context to determine the context path")
-    servletContext.getContextPath
+    }
+    ctx.servletContext.getContextPath
   }
 
-  protected var doNotFound: Action = () => filterChain.doFilter(request, response)
+  protected var doNotFound: Action = () => filterChain.doFilter(mainThreadRequest, mainThreadResponse)
 
-  methodNotAllowed { _ => filterChain.doFilter(request, response) }
+  methodNotAllowed { _ => filterChain.doFilter(mainThreadRequest, mainThreadResponse) }
 
   type ConfigT = FilterConfig
 

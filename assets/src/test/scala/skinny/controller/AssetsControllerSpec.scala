@@ -1,7 +1,6 @@
 package skinny.controller
 
-import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
-import javax.servlet.{ Filter, ServletContext }
+import javax.servlet.ServletContext
 
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar
@@ -9,23 +8,22 @@ import org.mockito.Mockito._
 import org.mockito.Matchers.anyString
 import org.mockito.internal.stubbing.answers._
 import skinny.SkinnyEnv
+import skinny.engine.context.SkinnyEngineContext
+import skinny.test.MockController
 
 class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
   class MockPassException extends Throwable
 
-  def newController = new AssetsController() {
-    override def request = mock[HttpServletRequest]
-    override def response = mock[HttpServletResponse]
+  def newController = new AssetsController with MockController {
 
-    private val _servletContext = {
+    override val servletContext: ServletContext = {
       val sc = mock[ServletContext]
       when(sc.getRealPath(anyString())).thenAnswer(new ReturnsArgumentAt(0))
       sc
     }
-    override def servletContext: ServletContext = _servletContext
 
     var _path: String = ""
-    override def multiParams(key: String)(implicit request: HttpServletRequest): Seq[String] = {
+    override def multiParams(key: String)(implicit ctx: SkinnyEngineContext): Seq[String] = {
       if (key == "splat") Seq(_path) else Seq.empty
     }
 

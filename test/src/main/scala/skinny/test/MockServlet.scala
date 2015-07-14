@@ -1,7 +1,7 @@
 package skinny.test
 
-import javax.servlet.http._
-import skinny._
+import skinny.controller.SkinnyServlet
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Mock of SkinnyServlet.
@@ -33,9 +33,9 @@ trait MockServlet extends SkinnyServlet with MockControllerBase with MockWebPage
   //  at skinny.controller.SkinnyServlet.initializeRequestScopeAttributes(SkinnyServlet.scala:8)
   //  at skinny.test.MockControllerBase$class.$init$(MockControllerBase.scala:89)
 
-  override def requestPath(implicit request: HttpServletRequest): String = {
+  override def requestPath(implicit ctx: SkinnyEngineContext = skinnyEngineContext): String = {
     try {
-      super.requestPath(request)
+      super.requestPath(ctx)
     } catch {
       case e: NullPointerException =>
         logger.debug("[work around] skipped NPE when resolving requestPath", e)

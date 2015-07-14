@@ -1,10 +1,11 @@
 package skinny.engine.json
 
 import java.io.{ InputStream, InputStreamReader }
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 
 import org.json4s.Xml._
 import org.json4s._
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.RicherStringImplicits
 import org.slf4j.LoggerFactory
 
@@ -28,20 +29,26 @@ trait JsonSupport[T] extends JsonOutput[T] {
 
   private[this] val _defaultCacheRequestBody = true
   protected def cacheRequestBodyAsString: Boolean = _defaultCacheRequestBody
-  protected def parseRequestBody(format: String)(implicit request: HttpServletRequest) = try {
-    val ct = request.contentType getOrElse ""
+  protected def parseRequestBody(format: String)(implicit ctx: SkinnyEngineContext) = try {
+    val ct = ctx.request.contentType getOrElse ""
     if (format == "json") {
       val bd = {
-        if (ct == "application/x-www-form-urlencoded") multiParams.keys.headOption map readJsonFromBody getOrElse JNothing
-        else if (cacheRequestBodyAsString) readJsonFromBody(request.body)
-        else readJsonFromStreamWithCharset(request.inputStream, request.characterEncoding getOrElse defaultCharacterEncoding)
+        if (ct == "application/x-www-form-urlencoded") {
+          multiParams(ctx).keys.headOption
+            .map(readJsonFromBody)
+            .getOrElse(JNothing)
+        } else if (cacheRequestBodyAsString) readJsonFromBody(ctx.request.body)
+        else readJsonFromStreamWithCharset(ctx.request.inputStream, ctx.request.characterEncoding getOrElse defaultCharacterEncoding)
       }
       transformRequestBody(bd)
     } else if (format == "xml") {
       val bd = {
-        if (ct == "application/x-www-form-urlencoded") multiParams.keys.headOption map readXmlFromBody getOrElse JNothing
-        else if (cacheRequestBodyAsString) readXmlFromBody(request.body)
-        else readXmlFromStream(request.inputStream)
+        if (ct == "application/x-www-form-urlencoded") {
+          multiParams(ctx).keys.headOption
+            .map(readXmlFromBody)
+            .getOrElse(JNothing)
+        } else if (cacheRequestBodyAsString) readXmlFromBody(ctx.request.body)
+        else readXmlFromStream(ctx.request.inputStream)
       }
       transformRequestBody(bd)
     } else JNothing
@@ -82,24 +89,28 @@ trait JsonSupport[T] extends JsonOutput[T] {
 
   override protected def invoke(matchedRoute: MatchedRoute) = {
     withRouteMultiParams(Some(matchedRoute)) {
-      val mt = request.contentType.fold("application/x-www-form-urlencoded")(_.split(";").head)
+      val mt = mainThreadRequest.contentType.fold("application/x-www-form-urlencoded")(_.split(";").head)
       val fmt = mimeTypes get mt getOrElse "html"
       if (shouldParseBody(fmt)) {
-        request(ParsedBodyKey) = parseRequestBody(fmt).asInstanceOf[AnyRef]
+        mainThreadRequest(ParsedBodyKey) = parseRequestBody(fmt).asInstanceOf[AnyRef]
       }
       super.invoke(matchedRoute)
     }
   }
 
-  protected def shouldParseBody(fmt: String)(implicit request: HttpServletRequest) =
-    (fmt == "json" || fmt == "xml") && !request.requestMethod.isSafe && parsedBody == JNothing
+  protected def shouldParseBody(fmt: String)(
+    implicit ctx: SkinnyEngineContext) = {
+    (fmt == "json" || fmt == "xml") &&
+      !ctx.request.requestMethod.isSafe &&
+      parsedBody(ctx) == JNothing
+  }
 
-  def parsedBody(implicit request: HttpServletRequest): JValue = request.get(ParsedBodyKey).fold({
-    val fmt = requestFormat
+  def parsedBody(implicit ctx: SkinnyEngineContext): JValue = ctx.request.get(ParsedBodyKey).fold({
+    val fmt = requestFormat(ctx)
     var bd: JValue = JNothing
     if (fmt == "json" || fmt == "xml") {
-      bd = parseRequestBody(fmt)
-      request(ParsedBodyKey) = bd.asInstanceOf[AnyRef]
+      bd = parseRequestBody(fmt)(ctx)
+      ctx.request(ParsedBodyKey) = bd.asInstanceOf[AnyRef]
     }
     bd
   })(_.asInstanceOf[JValue])

@@ -2,6 +2,8 @@ package skinny.controller.feature
 
 import skinny.controller.SkinnyControllerBase
 import javax.servlet.http.HttpServletRequest
+import skinny.engine.context.SkinnyEngineContext
+
 import scala.concurrent._
 import scala.concurrent.duration.Duration
 
@@ -46,9 +48,24 @@ trait FutureOpsFeature { self: SkinnyControllerBase =>
    * @tparam A response type
    * @return response value
    */
+  @deprecated("Use futureWithContext instead", since = "2.0.0")
   def futureWithRequest[A](op: (HttpServletRequest) => A)(
     implicit ec: ExecutionContext, req: HttpServletRequest): Future[A] = {
     Future { op(req) }
+  }
+
+  /**
+   *  Creates a future with implicit context.
+   *
+   * @param op operation inside this future
+   * @param ec execution context
+   * @param context context
+   * @tparam A response type
+   * @return response value
+   */
+  def futureWithContext[A](op: (SkinnyEngineContext) => A)(
+    implicit ec: ExecutionContext, context: SkinnyEngineContext): Future[A] = {
+    Future { op(context) }
   }
 
   /**

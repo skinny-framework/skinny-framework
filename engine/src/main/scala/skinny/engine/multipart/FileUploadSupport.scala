@@ -3,6 +3,7 @@ package skinny.engine.multipart
 import java.util.{ HashMap => JHashMap, Map => JMap }
 import javax.servlet.http._
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.data.MultiMapHeadView
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineServletBase }
 
@@ -171,26 +172,26 @@ trait FileUploadSupport
     wrapped
   }
 
-  def fileMultiParams(implicit request: HttpServletRequest): FileMultiParams = {
-    extractMultipartParams(request).fileParams
+  def fileMultiParams(implicit ctx: SkinnyEngineContext): FileMultiParams = {
+    extractMultipartParams(ctx.request).fileParams
   }
 
-  def fileMultiParams(key: String)(implicit request: HttpServletRequest): Seq[FileItem] = {
-    fileMultiParams(request)(key)
+  def fileMultiParams(key: String)(implicit ctx: SkinnyEngineContext): Seq[FileItem] = {
+    fileMultiParams(ctx)(key)
   }
 
   /**
    * @return a Map, keyed on the names of multipart file upload parameters,
    *         of all multipart files submitted with the request
    */
-  def fileParams(implicit request: HttpServletRequest): MultiMapHeadView[String, FileItem] = {
+  def fileParams(implicit ctx: SkinnyEngineContext): MultiMapHeadView[String, FileItem] = {
     new MultiMapHeadView[String, FileItem] {
-      protected def multiMap = fileMultiParams
+      protected def multiMap = fileMultiParams(ctx)
     }
   }
 
-  def fileParams(key: String)(implicit request: HttpServletRequest): FileItem = {
-    fileParams(request)(key)
+  def fileParams(key: String)(implicit ctx: SkinnyEngineContext): FileItem = {
+    fileParams(ctx)(key)
   }
 }
 

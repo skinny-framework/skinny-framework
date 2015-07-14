@@ -11,7 +11,7 @@ class RequestScopeFeatureSpec extends ScalatraFlatSpec {
   object Controller extends SkinnyController with Routes {
     def echo = {
       set("name" -> params.getAs[String]("name").getOrElse("Anonymous"))
-      requestScope("name" -> params.getAs[String]("name").getOrElse("Anonymous"))(request)
+      requestScope("name" -> params.getAs[String]("name").getOrElse("Anonymous"))
       RequestScopeFeature.getAs[String](request, "name").getOrElse("Anonymous")
     }
     def nameModel = {

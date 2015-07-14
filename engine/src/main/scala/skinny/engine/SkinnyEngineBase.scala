@@ -14,7 +14,9 @@ import javax.servlet.http.{ HttpServlet, HttpServletRequest, HttpServletResponse
 import javax.servlet.{ ServletRegistration, Filter, ServletContext }
 
 import skinny.SkinnyEnv
+
 import skinny.engine.async.FutureSupport
+import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.{ PassException, HaltException }
@@ -48,40 +50,40 @@ object SkinnyEngineBase {
   val RenderCallbacks: String = s"$KeyPrefix.renderCallbacks"
   val IsAsyncKey: String = s"$KeyPrefix.isAsync"
 
-  def isAsyncResponse(implicit request: HttpServletRequest): Boolean = request.get(IsAsyncKey).exists(_ => true)
+  def isAsyncResponse(implicit ctx: SkinnyEngineContext): Boolean = ctx.request.get(IsAsyncKey).exists(_ => true)
 
-  def onSuccess(fn: Any => Unit)(implicit request: HttpServletRequest): Unit = addCallback(_.foreach(fn))
+  def onSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.foreach(fn))
 
-  def onFailure(fn: Throwable => Unit)(implicit request: HttpServletRequest): Unit = addCallback(_.failed.foreach(fn))
+  def onFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.failed.foreach(fn))
 
-  def onCompleted(fn: Try[Any] => Unit)(implicit request: HttpServletRequest): Unit = addCallback(fn)
+  def onCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(fn)
 
-  def onRenderedSuccess(fn: Any => Unit)(implicit request: HttpServletRequest): Unit = addRenderCallback(_.foreach(fn))
+  def onRenderedSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.foreach(fn))
 
-  def onRenderedFailure(fn: Throwable => Unit)(implicit request: HttpServletRequest): Unit = addRenderCallback(_.failed.foreach(fn))
+  def onRenderedFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.failed.foreach(fn))
 
-  def onRenderedCompleted(fn: Try[Any] => Unit)(implicit request: HttpServletRequest): Unit = addRenderCallback(fn)
+  def onRenderedCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(fn)
 
-  def callbacks(implicit request: HttpServletRequest): List[(Try[Any]) => Unit] =
-    request.getOrElse(Callbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
+  def callbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] =
+    ctx.request.getOrElse(Callbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
 
-  def addCallback(callback: Try[Any] => Unit)(implicit request: HttpServletRequest): Unit = {
-    request(Callbacks) = callback :: callbacks
+  def addCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
+    ctx.request(Callbacks) = callback :: callbacks
   }
 
-  def runCallbacks(data: Try[Any])(implicit request: HttpServletRequest): Unit = {
+  def runCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
     callbacks.reverse foreach (_(data))
   }
 
-  def renderCallbacks(implicit request: HttpServletRequest): List[(Try[Any]) => Unit] = {
-    request.getOrElse(RenderCallbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
+  def renderCallbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] = {
+    ctx.request.getOrElse(RenderCallbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
   }
 
-  def addRenderCallback(callback: Try[Any] => Unit)(implicit request: HttpServletRequest): Unit = {
-    request(RenderCallbacks) = callback :: renderCallbacks
+  def addRenderCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
+    ctx.request(RenderCallbacks) = callback :: renderCallbacks
   }
 
-  def runRenderCallbacks(data: Try[Any])(implicit request: HttpServletRequest): Unit = {
+  def runRenderCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
     renderCallbacks.reverse foreach (_(data))
   }
 
@@ -97,12 +99,16 @@ object SkinnyEngineBase {
  * to all supported backends.
  */
 trait SkinnyEngineBase
-    extends SkinnyEngineContext
-    with CoreDsl
+    extends CoreDsl
+    with LoggerProvider
     with DynamicScope
     with Initializable
-    with LoggerProvider
+    with ParamsAccessor
+    with RequestFormatAccessor
+    with ResponseContentTypeAccessor
+    with ResponseStatusAccessor
     with ServletApiImplicits
+    with CookiesImplicits
     with EngineParamsImplicits
     with DefaultImplicits
     with RicherStringImplicits
@@ -142,7 +148,7 @@ trait SkinnyEngineBase
   /**
    * The servlet context in which this kernel runs.
    */
-  def servletContext: ServletContext = config.context
+  implicit def servletContext: ServletContext = config.context
 
   /**
    * Executes routes in the context of the current request and response.
@@ -167,9 +173,9 @@ trait SkinnyEngineBase
     var rendered = true
 
     def runActions = {
-      val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
+      val prehandleException = mainThreadRequest.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
-        val (rq, rs) = (request, response)
+        val (rq, rs) = (mainThreadRequest, mainThreadResponse)
         SkinnyEngineBase.onCompleted { _ =>
           withRequestResponse(rq, rs) {
             val className = this.getClass.toString
@@ -185,7 +191,7 @@ trait SkinnyEngineBase
           }
         }
         runFilters(routes.beforeFilters)
-        val actionResult = runRoutes(routes(request.requestMethod)).headOption
+        val actionResult = runRoutes(routes(mainThreadRequest.requestMethod)).headOption
         // Give the status code handler a chance to override the actionResult
         val r = handleStatusCode(status) getOrElse {
           actionResult orElse matchOtherMethods() getOrElse doNotFound()
@@ -204,7 +210,7 @@ trait SkinnyEngineBase
       }, e => {
         SkinnyEngineBase.runCallbacks(Failure(e))
         try {
-          renderUncaughtException(e)
+          renderUncaughtException(e)(skinnyEngineContext)
         } finally {
           SkinnyEngineBase.runRenderCallbacks(Failure(e))
         }
@@ -232,12 +238,11 @@ trait SkinnyEngineBase
     }
   }
 
-  protected def renderUncaughtException(e: Throwable)(
-    implicit request: HttpServletRequest, response: HttpServletResponse): Unit = {
-    status = 500
+  protected def renderUncaughtException(e: Throwable)(implicit ctx: SkinnyEngineContext): Unit = {
+    (status = 500)(ctx)
     if (isDevelopmentMode) {
-      contentType = "text/plain"
-      e.printStackTrace(response.getWriter)
+      (contentType = "text/plain")(ctx)
+      e.printStackTrace(ctx.response.getWriter)
     }
   }
 
@@ -268,13 +273,13 @@ trait SkinnyEngineBase
   }
 
   private[skinny] def saveMatchedRoute(matchedRoute: MatchedRoute): MatchedRoute = {
-    request("skinny.engine.MatchedRoute") = matchedRoute
+    mainThreadRequest("skinny.engine.MatchedRoute") = matchedRoute
     setMultiparams(Some(matchedRoute), multiParams)
     matchedRoute
   }
 
-  private[skinny] def matchedRoute(implicit request: HttpServletRequest): Option[MatchedRoute] = {
-    request.get("skinny.engine.MatchedRoute").map(_.asInstanceOf[MatchedRoute])
+  private[skinny] def matchedRoute(implicit ctx: SkinnyEngineContext): Option[MatchedRoute] = {
+    ctx.request.get("skinny.engine.MatchedRoute").map(_.asInstanceOf[MatchedRoute])
   }
 
   /**
@@ -330,7 +335,7 @@ trait SkinnyEngineBase
   protected var doMethodNotAllowed: (Set[HttpMethod] => Any) = {
     allow =>
       status = 405
-      response.headers("Allow") = allow.mkString(", ")
+      mainThreadResponse.headers("Allow") = allow.mkString(", ")
   }
 
   def methodNotAllowed(f: Set[HttpMethod] => Any): Unit = {
@@ -338,7 +343,7 @@ trait SkinnyEngineBase
   }
 
   private[this] def matchOtherMethods(): Option[Any] = {
-    val allow = routes.matchingMethodsExcept(request.requestMethod, requestPath)
+    val allow = routes.matchingMethodsExcept(mainThreadRequest.requestMethod, requestPath)
     if (allow.isEmpty) None else liftAction(() => doMethodNotAllowed(allow))
   }
 
@@ -385,17 +390,17 @@ trait SkinnyEngineBase
     try {
       thunk
     } finally {
-      request(MultiParamsKey) = originalParams
+      mainThreadRequest(MultiParamsKey) = originalParams
     }
   }
 
   protected def setMultiparams[S](matchedRoute: Option[MatchedRoute], originalParams: MultiParams)(
-    implicit request: HttpServletRequest): Unit = {
+    implicit ctx: SkinnyEngineContext): Unit = {
     val routeParams = matchedRoute.map(_.multiParams).getOrElse(Map.empty).map {
       case (key, values) =>
         key -> values.map(s => if (s.nonBlank) UriDecoder.secondStep(s) else s)
     }
-    request(MultiParamsKey) = originalParams ++ routeParams
+    ctx.request(MultiParamsKey) = originalParams ++ routeParams
   }
 
   /**
@@ -450,7 +455,7 @@ trait SkinnyEngineBase
       case e: Throwable =>
         runCallbacks(Failure(e))
         try {
-          renderUncaughtException(e)
+          renderUncaughtException(e)(skinnyEngineContext)
         } finally {
           runRenderCallbacks(Failure(e))
         }
@@ -466,37 +471,37 @@ trait SkinnyEngineBase
     case 404 =>
       doNotFound()
     case ActionResult(status, x: Int, resultHeaders) =>
-      response.status = status
+      mainThreadResponse.status = status
       resultHeaders foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => mainThreadResponse.addHeader(name, value)
       }
-      response.writer.print(x.toString)
+      mainThreadResponse.writer.print(x.toString)
     case status: Int =>
-      response.status = ResponseStatus(status)
+      mainThreadResponse.status = ResponseStatus(status)
     case bytes: Array[Byte] =>
-      if (contentType != null && contentType.startsWith("text")) response.setCharacterEncoding(FileCharset(bytes).name)
-      response.outputStream.write(bytes)
+      if (contentType != null && contentType.startsWith("text")) mainThreadResponse.setCharacterEncoding(FileCharset(bytes).name)
+      mainThreadResponse.outputStream.write(bytes)
     case is: java.io.InputStream =>
       using(is) {
-        util.io.copy(_, response.outputStream)
+        util.io.copy(_, mainThreadResponse.outputStream)
       }
     case file: File =>
-      if (contentType startsWith "text") response.setCharacterEncoding(FileCharset(file).name)
+      if (contentType startsWith "text") mainThreadResponse.setCharacterEncoding(FileCharset(file).name)
       using(new FileInputStream(file)) {
-        in => util.io.zeroCopy(in, response.outputStream)
+        in => util.io.zeroCopy(in, mainThreadResponse.outputStream)
       }
     // If an action returns Unit, it assumes responsibility for the response
     case _: Unit | Unit | null =>
     // If an action returns Unit, it assumes responsibility for the response
     case ActionResult(ResponseStatus(404, _), _: Unit | Unit, _) => doNotFound()
     case actionResult: ActionResult =>
-      response.status = actionResult.status
+      mainThreadResponse.status = actionResult.status
       actionResult.headers.foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => mainThreadResponse.addHeader(name, value)
       }
       actionResult.body
     case x =>
-      response.writer.print(x.toString)
+      mainThreadResponse.writer.print(x.toString)
   }
 
   /**
@@ -552,26 +557,26 @@ trait SkinnyEngineBase
           renderResponse(doNotFound())
           rendered = true
         case HaltException(Some(status), Some(reason), _, _) =>
-          response.status = ResponseStatus(status, reason)
+          mainThreadResponse.status = ResponseStatus(status, reason)
         case HaltException(Some(status), None, _, _) =>
-          response.status = ResponseStatus(status)
+          mainThreadResponse.status = ResponseStatus(status)
         case HaltException(None, _, _, _) => // leave status line alone
       }
       e.headers foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => mainThreadResponse.addHeader(name, value)
       }
       if (!rendered) renderResponse(e.body)
     } catch {
       case e: Throwable =>
         runCallbacks(Failure(e))
-        renderUncaughtException(e)
+        renderUncaughtException(e)(skinnyEngineContext)
         runCallbacks(Failure(e))
     }
   }
 
   protected def extractStatusCode(e: HaltException): Int = e match {
     case HaltException(Some(status), _, _, _) => status
-    case _ => response.status.code
+    case _ => mainThreadResponse.status.code
   }
 
   def get(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Get, transformers, action)
@@ -606,7 +611,7 @@ trait SkinnyEngineBase
    * @see skinny.engine.SkinnyEngineKernel#removeRoute
    */
   protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
-    val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(req))
+    val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext))
     routes.prependRoute(method, route)
     route
   }
@@ -626,7 +631,7 @@ trait SkinnyEngineBase
   }
 
   protected[skinny] def addStatusRoute(codes: Range, action: => Any): Unit = {
-    val route = Route(Seq.empty, () => action, (req: HttpServletRequest) => routeBasePath(req))
+    val route = Route(Seq.empty, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext))
     routes.addStatusRoute(codes, route)
   }
 
@@ -655,14 +660,12 @@ trait SkinnyEngineBase
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,
     includeContextPath: Boolean = true,
-    includeServletPath: Boolean = true)(
-      implicit request: HttpServletRequest, response: HttpServletResponse): String = {
-    url(path, params, includeContextPath, includeServletPath, absolutize = false)
+    includeServletPath: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
+    url(path, params, includeContextPath, includeServletPath, absolutize = false)(ctx)
   }
 
   /**
-   * Returns a context-relative, session-aware URL for a path and specified
-   * parameters.
+   * Returns a context-relative, session-aware URL for a path and specified parameters.
    * Finally, the result is run through `response.encodeURL` for a session
    * ID, if necessary.
    *
@@ -674,26 +677,24 @@ trait SkinnyEngineBase
    * @return the path plus the query string, if any.  The path is run through
    *         `response.encodeURL` to add any necessary session tracking parameters.
    */
-  // TODO: Scalatra 2.3.1 still has this issue. Remove this override when it will be fixed in the future
+  // TODO: 2.0.0 still has this issue. Remove this override when it will be fixed in the future
   def url(
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,
     includeContextPath: Boolean = true,
     includeServletPath: Boolean = true,
     absolutize: Boolean = true,
-    withSessionId: Boolean = true)(
-      implicit request: HttpServletRequest, response: HttpServletResponse): String = {
-
+    withSessionId: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
     try {
       val newPath = path match {
         case x if x.startsWith("/") && includeContextPath && includeServletPath =>
-          ensureSlash(routeBasePath) + ensureContextPathsStripped(ensureSlash(path))
+          ensureSlash(routeBasePath(ctx)) + ensureContextPathsStripped(ensureSlash(path))(ctx)
         case x if x.startsWith("/") && includeContextPath =>
           ensureSlash(contextPath) + ensureContextPathStripped(ensureSlash(path))
-        case x if x.startsWith("/") && includeServletPath => request.getServletPath.blankOption map {
-          ensureSlash(_) + ensureServletPathStripped(ensureSlash(path))
+        case x if x.startsWith("/") && includeServletPath => ctx.request.getServletPath.blankOption map {
+          ensureSlash(_) + ensureServletPathStripped(ensureSlash(path))(ctx)
         } getOrElse "/"
-        case _ if absolutize => ensureContextPathsStripped(ensureSlash(path))
+        case _ if absolutize => ensureContextPathsStripped(ensureSlash(path))(ctx)
         case _ => path
       }
 
@@ -703,7 +704,7 @@ trait SkinnyEngineBase
         case (key, value) => key.urlEncode + "=" + value.toString.urlEncode
       }
       val queryString = if (pairs.isEmpty) "" else pairs.mkString("?", "&", "")
-      if (withSessionId) addSessionId(newPath + queryString) else newPath + queryString
+      if (withSessionId) addSessionId(newPath + queryString)(ctx) else newPath + queryString
     } catch {
       case e: NullPointerException =>
         // work around for Scalatra issue
@@ -712,12 +713,12 @@ trait SkinnyEngineBase
     }
   }
 
-  private[this] def ensureContextPathsStripped(path: String)(implicit request: HttpServletRequest): String = {
-    ((ensureContextPathStripped _) andThen (ensureServletPathStripped _))(path)
+  private[this] def ensureContextPathsStripped(path: String)(implicit ctx: SkinnyEngineContext): String = {
+    ((ensureContextPathStripped _) andThen (p => ensureServletPathStripped(p)(ctx)))(path)
   }
 
-  private[this] def ensureServletPathStripped(path: String)(implicit request: HttpServletRequest): String = {
-    val sp = ensureSlash(request.getServletPath.blankOption getOrElse "")
+  private[this] def ensureServletPathStripped(path: String)(implicit ctx: SkinnyEngineContext): String = {
+    val sp = ensureSlash(Option(ctx.request.getServletPath).flatMap(_.blankOption).getOrElse(""))
     val np = if (path.startsWith(sp + "/")) path.substring(sp.length) else path
     ensureSlash(np)
   }
@@ -733,7 +734,8 @@ trait SkinnyEngineBase
     if (p.endsWith("/")) p.dropRight(1) else p
   }
 
-  protected def isHttps(implicit request: HttpServletRequest): Boolean = {
+  protected def isHttps(implicit ctx: SkinnyEngineContext): Boolean = {
+    val request = ctx.request
     // also respect load balancer version of the protocol
     val h = request.getHeader("X-Forwarded-Proto").blankOption
     request.isSecure || (h.isDefined && h.forall(_ equalsIgnoreCase "HTTPS"))
@@ -748,14 +750,14 @@ trait SkinnyEngineBase
   /**
    * Sends a redirect response and immediately halts the current action.
    */
-  def redirect(uri: String)(implicit request: HttpServletRequest, response: HttpServletResponse): Nothing = {
-    halt(Found(fullUrl(uri, includeServletPath = false)))
+  def redirect(uri: String)(implicit ctx: SkinnyEngineContext): Nothing = {
+    halt(Found(fullUrl(uri, includeServletPath = false)(ctx)))
   }
 
   /**
    * The base path for URL generation
    */
-  protected def routeBasePath(implicit request: HttpServletRequest): String
+  protected def routeBasePath(implicit ctx: SkinnyEngineContext): String
 
   /**
    * Builds a full URL from the given relative path. Takes into account the port configuration, https, ...
@@ -769,40 +771,39 @@ trait SkinnyEngineBase
     params: Iterable[(String, Any)] = Iterable.empty,
     includeContextPath: Boolean = true,
     includeServletPath: Boolean = true,
-    withSessionId: Boolean = true)(
-      implicit request: HttpServletRequest, response: HttpServletResponse): String = {
+    withSessionId: Boolean = true)(implicit ctx: SkinnyEngineContext): String = {
     if (path.startsWith("http")) path
     else {
-      val p = url(path, params, includeContextPath, includeServletPath, withSessionId)
-      if (p.startsWith("http")) p else buildBaseUrl + ensureSlash(p)
+      val p = url(path, params, includeContextPath, includeServletPath, withSessionId)(ctx)
+      if (p.startsWith("http")) p else buildBaseUrl(ctx) + ensureSlash(p)
     }
   }
 
-  private[this] def buildBaseUrl(implicit request: HttpServletRequest): String = {
+  private[this] def buildBaseUrl(implicit ctx: SkinnyEngineContext): String = {
     "%s://%s".format(
-      if (needsHttps || isHttps) "https" else "http",
-      serverAuthority
+      if (needsHttps || isHttps(ctx)) "https" else "http",
+      serverAuthority(ctx)
     )
   }
 
-  private[this] def serverAuthority(implicit request: HttpServletRequest): String = {
-    val p = serverPort
-    val h = serverHost
+  private[this] def serverAuthority(implicit ctx: SkinnyEngineContext): String = {
+    val p = serverPort(ctx)
+    val h = serverHost(ctx)
     if (p == 80 || p == 443) h else h + ":" + p.toString
   }
 
-  def serverHost(implicit request: HttpServletRequest): String = {
-    initParameter(HostNameKey).flatMap(_.blankOption) getOrElse request.getServerName
+  def serverHost(implicit ctx: SkinnyEngineContext): String = {
+    initParameter(HostNameKey).flatMap(_.blankOption) getOrElse ctx.request.getServerName
   }
 
-  def serverPort(implicit request: HttpServletRequest): Int = {
-    initParameter(PortKey).flatMap(_.blankOption).map(_.toInt) getOrElse request.getServerPort
+  def serverPort(implicit ctx: SkinnyEngineContext): Int = {
+    initParameter(PortKey).flatMap(_.blankOption).map(_.toInt) getOrElse ctx.request.getServerPort
   }
 
-  protected def contextPath: String = servletContext.contextPath
+  def contextPath: String = servletContext.contextPath
 
   /**
-   * Gets an init paramter from the config.
+   * Gets an init parameter from the config.
    *
    * @param name the name of the key
    *
@@ -829,34 +830,10 @@ trait SkinnyEngineBase
    * The effective path against which routes are matched.  The definition
    * varies between servlets and filters.
    */
-  def requestPath(implicit request: HttpServletRequest): String
+  def requestPath(implicit ctx: SkinnyEngineContext): String
 
-  protected def addSessionId(uri: String)(implicit response: HttpServletResponse): String = response.encodeURL(uri)
-
-  def multiParams(key: String)(implicit request: HttpServletRequest): Seq[String] = multiParams(request)(key)
-
-  /**
-   * The current multiparams.  Multiparams are a result of merging the
-   * standard request params (query string or post params) with the route
-   * parameters extracted from the route matchers of the current route.
-   * The default value for an unknown param is the empty sequence.  Invalid
-   * outside `handle`.
-   */
-  def multiParams(implicit request: HttpServletRequest): MultiParams = {
-    val read = request.contains("MultiParamsRead")
-    val found = request.get(MultiParamsKey) map (
-      _.asInstanceOf[MultiParams] ++ (if (read) Map.empty else request.multiParameters)
-    )
-    val multi = found getOrElse request.multiParameters
-    request("MultiParamsRead") = new {}
-    request(MultiParamsKey) = multi
-    multi.withDefaultValue(Seq.empty)
+  protected def addSessionId(uri: String)(implicit ctx: SkinnyEngineContext): String = {
+    ctx.response.encodeURL(uri)
   }
-
-  def params(key: String)(implicit request: HttpServletRequest): String = params(request)(key)
-
-  def params(key: Symbol)(implicit request: HttpServletRequest): String = params(request)(key)
-
-  def params(implicit request: HttpServletRequest): Params = new EngineParams(multiParams)
 
 }

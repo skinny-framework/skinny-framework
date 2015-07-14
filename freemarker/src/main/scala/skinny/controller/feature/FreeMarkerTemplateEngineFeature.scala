@@ -1,6 +1,7 @@
 package skinny.controller.feature
 
-import skinny.{ SkinnyEnv, Format }
+import skinny.engine.context.SkinnyEngineContext
+import skinny.Format
 import java.io.IOException
 import skinny.view.freemarker._
 
@@ -33,13 +34,14 @@ trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
       freeMarker.config.getTemplate(templatePath(path)) != null
     } catch {
       case e: IOException =>
-        e.printStackTrace()
+        logger.error("Failed to find template", e)
         false
     }
   }
 
-  override protected def renderWithTemplate(path: String)(implicit format: Format = Format.HTML): String = {
-    freeMarker.render(templatePath(path), requestScope.toMap)
+  override protected def renderWithTemplate(path: String)(
+    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    freeMarker.render(templatePath(path), requestScope(ctx).toMap)
   }
 
 }

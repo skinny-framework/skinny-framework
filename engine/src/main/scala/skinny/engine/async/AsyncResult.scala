@@ -1,21 +1,36 @@
 package skinny.engine.async
 
+import scala.language.postfixOps
+
 import javax.servlet.ServletContext
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import skinny.engine.context.SkinnyEngineContext
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
-import scala.language.postfixOps
+
+object AsyncResult {
+
+  def apply(action: Any)(
+    implicit ctx: SkinnyEngineContext, executionContext: ExecutionContext): AsyncResult = {
+    withFuture(Future(action))
+  }
+
+  def withFuture(future: Future[_])(implicit ctx: SkinnyEngineContext): AsyncResult = {
+    new AsyncResult {
+      override val is = future
+    }
+  }
+
+}
 
 abstract class AsyncResult(
-  implicit override val skinnyEngineContext: SkinnyEngineContext)
-    extends SkinnyEngineContext {
+    implicit val skinnyEngineContext: SkinnyEngineContext) {
 
-  implicit val request: HttpServletRequest = skinnyEngineContext.request
+  val request: HttpServletRequest = skinnyEngineContext.readOnlyRequest
 
-  implicit val response: HttpServletResponse = skinnyEngineContext.response
+  val response: HttpServletResponse = skinnyEngineContext.response
 
   val servletContext: ServletContext = skinnyEngineContext.servletContext
 

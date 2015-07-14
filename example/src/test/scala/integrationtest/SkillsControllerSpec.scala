@@ -14,7 +14,10 @@ class SkillsControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
   }
 
   it should "have correct url" in {
-    SkillsController.urlSample should equal("/skills?page=1")
+    get("/skills/url") {
+      status should equal(200)
+      body should equal("/skills?page=1")
+    }
   }
 
   it should "show skills" in {
