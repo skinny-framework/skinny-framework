@@ -1,6 +1,7 @@
 package skinny.engine.flash
 
 import java.util.concurrent.{ ConcurrentHashMap, ConcurrentSkipListSet }
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.data.MutableMapWithIndifferentAccess
 import scala.collection.JavaConverters._
 

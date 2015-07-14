@@ -7,7 +7,7 @@ import skinny.engine.response.ActionResult
 /**
  * A collection of methods that affect the control flow of routes.
  */
-trait Control {
+trait HaltPassControl {
 
   /**
    * Immediately halts processing of a request.  Can be called from either a

@@ -2,7 +2,7 @@ package skinny.controller.feature
 
 import skinny.controller.Flash
 import skinny.engine.SkinnyEngineBase
-import skinny.engine.flash.FlashMapSupport
+import skinny.engine.base.FlashMapSupport
 
 /**
  * Easy-to-use Flash support.

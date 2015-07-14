@@ -55,7 +55,7 @@ object SkinnyEngineServlet {
  */
 trait SkinnyEngineServlet
     extends HttpServlet
-    with SkinnyEngineServletBase
+    with SkinnyEngineBase
     with Initializable {
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {

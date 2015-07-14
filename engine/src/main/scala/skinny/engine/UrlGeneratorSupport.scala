@@ -1,5 +1,6 @@
 package skinny.engine
 
+import skinny.SkinnyEnv
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.routing.{ ReversibleRouteMatcher, Route }
 
@@ -49,12 +50,23 @@ trait UrlGeneratorSupport {
   def url(
     route: Route,
     params: Map[String, String],
-    splats: Iterable[String])(implicit ctx: SkinnyEngineContext): String =
-    route.reversibleMatcher match {
-      case Some(matcher: ReversibleRouteMatcher) =>
-        route.contextPath(ctx.request) + matcher.reverse(params, splats.toList)
-      case _ =>
-        throw new Exception("Route \"%s\" is not reversible" format (route))
+    splats: Iterable[String])(implicit ctx: SkinnyEngineContext): String = {
+
+    try {
+      route.reversibleMatcher match {
+        case Some(matcher: ReversibleRouteMatcher) =>
+          route.contextPath(ctx.request) + matcher.reverse(params, splats.toList)
+        case _ =>
+          throw new Exception("Route \"%s\" is not reversible" format (route))
+      }
+    } catch {
+      // ----
+      // Scalatra issue #368 work around
+      case e: NullPointerException =>
+        // work around for Scalatra issue
+        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
+        else throw e
     }
+  }
 
 }

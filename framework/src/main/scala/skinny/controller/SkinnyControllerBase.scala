@@ -160,22 +160,4 @@ trait SkinnyControllerBase
   private[this] class XmlElem(name: String, value: String)
     extends Elem(null, name, xml.Null, TopScope, Text(value).isEmpty, Text(value))
 
-  // ----
-  // Scalatra issue #368 work around
-
-  override def url(
-    route: Route,
-    params: Map[String, String],
-    splats: Iterable[String])(implicit ctx: SkinnyEngineContext): String = {
-
-    try {
-      super.url(route, params, splats)(ctx)
-    } catch {
-      case e: NullPointerException =>
-        // work around for Scalatra issue
-        if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
-        else throw e
-    }
-  }
-
 }

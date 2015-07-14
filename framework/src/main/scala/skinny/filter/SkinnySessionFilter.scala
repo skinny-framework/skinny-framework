@@ -1,11 +1,13 @@
 package skinny.filter
 
+import skinny.engine.base.FlashMapSupport
+
 import scala.language.implicitConversions
 
 import skinny.controller.feature._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
-import skinny.engine.flash.{ FlashMapSupport, FlashMap }
+import skinny.engine.flash.FlashMap
 import skinny.session._
 import FlashMapSupport._
 

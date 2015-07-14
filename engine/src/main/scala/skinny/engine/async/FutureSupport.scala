@@ -1,17 +1,19 @@
 package skinny.engine.async
 
+import scala.language.postfixOps
+
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.servlet.{ AsyncEvent, AsyncListener }
 
 import skinny.engine._
 import skinny.engine.control.HaltException
+import skinny.engine.routing.AsyncRoutingDsl
 
 import scala.concurrent.duration._
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.language.postfixOps
 import scala.util.{ Failure, Success }
 
-trait FutureSupport extends AsyncSupport {
+trait FutureSupport extends SkinnyEngineBase with AsyncRoutingDsl {
 
   implicit protected def executor: ExecutionContext
 
@@ -60,7 +62,7 @@ trait FutureSupport extends AsyncSupport {
                     renderHaltException(e)
                   case e =>
                     try {
-                      renderResponse(errorHandler(e))
+                      renderResponse(currentErrorHandler.apply(e))
                     } catch {
                       case e: Throwable =>
                         SkinnyEngineBase.runCallbacks(Failure(e))
@@ -97,7 +99,7 @@ trait FutureSupport extends AsyncSupport {
               case e: HaltException => renderHaltException(e)
               case e =>
                 try {
-                  renderResponse(errorHandler(e))
+                  renderResponse(currentErrorHandler.apply(e))
                 } catch {
                   case e: Throwable =>
                     SkinnyEngineBase.runCallbacks(Failure(e))

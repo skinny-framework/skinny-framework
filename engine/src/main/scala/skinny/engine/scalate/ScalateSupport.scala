@@ -11,7 +11,7 @@ import org.fusesource.scalate.servlet.ServletTemplateEngine
 import org.fusesource.scalate.support.TemplateFinder
 import org.fusesource.scalate.{ Binding, RenderContext, TemplateEngine }
 
-import skinny.engine.SkinnyEngineServletBase
+import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext
 
 import scala.collection.concurrent.{ Map => CMap, TrieMap }
@@ -48,7 +48,7 @@ object ScalateSupport {
  * ScalateSupport creates and configures a template engine and provides
  * helper methods and bindings to integrate with the ServletBase.
  */
-trait ScalateSupport extends SkinnyEngineServletBase {
+trait ScalateSupport extends SkinnyEngineBase {
 
   /**
    * The template engine used by the methods in this support class.  It

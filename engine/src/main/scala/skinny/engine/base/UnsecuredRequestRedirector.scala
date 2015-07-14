@@ -1,4 +1,4 @@
-package skinny.engine
+package skinny.engine.base
 
 import java.net.URI
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }

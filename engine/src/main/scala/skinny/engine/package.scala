@@ -1,17 +1,17 @@
 package skinny
 
 import skinny.engine.async.FutureSupport
-import skinny.engine.control.Control
+import skinny.engine.base.FlashMapSupport
+import skinny.engine.control.HaltPassControl
 import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
 import skinny.engine.data.{ MapWithIndifferentAccess, MultiMapHeadView, MultiMap }
-import skinny.engine.flash.FlashMapSupport
 import skinny.engine.multipart.FileUploadSupport
 import skinny.engine.routing.Route
 
 import scala.language.implicitConversions
 
 package object engine
-    extends Control // make halt and pass visible to helpers outside the DSL
+    extends HaltPassControl // make halt and pass visible to helpers outside the DSL
     //  with DefaultValues // make defaults visible
     {
 

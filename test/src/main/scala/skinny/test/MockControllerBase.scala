@@ -36,7 +36,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
     res
   }
 
-  override implicit val servletContext: ServletContext = mock(classOf[ServletContext])
+  override implicit def servletContext: ServletContext = mock(classOf[ServletContext])
 
   override implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
     SkinnyEngineContext.build()(ctx, request, response)

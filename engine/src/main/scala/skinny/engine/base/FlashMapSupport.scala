@@ -1,9 +1,11 @@
-package skinny.engine.flash
+package skinny.engine.base
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.{ Handler, SkinnyEngineBase }
+import skinny.engine.flash.FlashMap
+import skinny.engine.implicits.{ ServletApiImplicits, SessionImplicits }
 
 object FlashMapSupport {
 
@@ -31,8 +33,12 @@ object FlashMapSupport {
  * }}}
  * @see FlashMap
  */
-trait FlashMapSupport extends Handler {
-  this: SkinnyEngineBase =>
+trait FlashMapSupport
+    extends Handler
+    with ServletContextAccessor
+    with DynamicScope
+    with ServletApiImplicits
+    with SessionImplicits {
 
   import FlashMapSupport._
 
