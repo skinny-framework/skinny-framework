@@ -4,6 +4,7 @@ import java.io.Writer
 
 import org.json4s.Xml._
 import org.json4s._
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ RenderPipeline, ApiFormats }
 
 import scala.io.Codec
@@ -42,42 +43,42 @@ trait JsonOutput[T] extends ApiFormats with JsonMethods[T] {
 
   protected def transformResponseBody(body: JValue) = body
 
-  override protected def renderPipeline = ({
+  override protected def renderPipeline(implicit ctx: SkinnyEngineContext) = ({
 
     case JsonResult(jv) => jv
 
-    case jv: JValue if format == "xml" =>
-      contentType = formats("xml")
+    case jv: JValue if format(ctx) == "xml" =>
+      (contentType = formats("xml"))(ctx)
       writeJsonAsXml(
         transformResponseBody(jv),
-        response.writer,
-        response.characterEncoding.getOrElse(Codec.UTF8.name))
+        ctx.response.writer,
+        ctx.response.characterEncoding.getOrElse(Codec.UTF8.name))
 
     case jv: JValue =>
       // JSON is always UTF-8
-      response.characterEncoding = Some(Codec.UTF8.name)
-      val writer = response.writer
+      ctx.response.characterEncoding = Some(Codec.UTF8.name)
+      val writer = ctx.response.writer
 
       val jsonpCallback = for {
         paramName <- jsonpCallbackParameterNames
-        callback <- params.get(paramName)
+        callback <- params(ctx).get(paramName)
       } yield callback
 
       jsonpCallback match {
         case some :: _ =>
           // JSONP is not JSON, but JavaScript.
-          contentType = formats("js")
+          (contentType = formats("js"))(ctx)
           // Status must always be 200 on JSONP, since it's loaded in a <script> tag.
-          status = 200
+          (status = 200)(ctx)
           if (rosettaFlashGuard) writer.write("/**/")
           writer.write("%s(%s);".format(some, compact(render(transformResponseBody(jv)))))
         case _ =>
-          contentType = formats("json")
+          (contentType = formats("json"))(ctx)
           if (jsonVulnerabilityGuard) writer.write(VulnerabilityPrelude)
           writeJson(transformResponseBody(jv), writer)
           ()
       }
-  }: RenderPipeline) orElse super.renderPipeline
+  }: RenderPipeline) orElse super.renderPipeline(ctx)
 
   protected def writeJsonAsXml(json: JValue, writer: Writer, characterEncoding: String) {
     if (json != JNothing)

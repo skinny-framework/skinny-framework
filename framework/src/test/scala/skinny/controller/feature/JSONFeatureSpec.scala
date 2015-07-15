@@ -18,7 +18,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
   object SampleController extends SkinnyServlet with FutureSupport {
 
-    implicit val executor = ExecutionContext.Implicits.global
+    implicit val executionContext = ExecutionContext.Implicits.global
 
     get("/sync") {
       responseAsJSON(Sample(1, "Alice"))

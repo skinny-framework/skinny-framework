@@ -34,7 +34,6 @@ trait SkinnyControllerBase
     with RequestScopeFeature
     with ChunkedResponseFeature
     with BeforeAfterActionFeature
-    with FutureOpsFeature
     with LocaleFeature
     with ValidationFeature
     with JSONOperations

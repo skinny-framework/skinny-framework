@@ -223,7 +223,12 @@ class StableHttpServletRequest(
 object StableHttpServletRequest {
 
   def apply(req: HttpServletRequest): StableHttpServletRequest = {
-    if (req.isInstanceOf[StableHttpServletRequest]) req.asInstanceOf[StableHttpServletRequest]
-    else new StableHttpServletRequest(req)
+    if (req == null) {
+      throw new IllegalStateException("Use AsyncResult { ... } or futureWithContext { implicit ctx => ... } instead.")
+    } else if (req.isInstanceOf[StableHttpServletRequest]) {
+      req.asInstanceOf[StableHttpServletRequest]
+    } else {
+      new StableHttpServletRequest(req)
+    }
   }
 }

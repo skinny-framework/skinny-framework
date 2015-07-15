@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.0-SNAPSHOT"
+  lazy val currentVersion = "2.0.0.M1-20150716"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.3.0.RC3"
@@ -23,6 +23,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
     version := currentVersion,
+    dependencyOverrides += "org.slf4j" %  "slf4j-api"  % slf4jApiVersion,
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -388,7 +389,9 @@ object SkinnyFrameworkBuild extends Build {
   lazy val fullExclusionRules = Seq(
     ExclusionRule("org.slf4j", "slf4j-api"),
     ExclusionRule("joda-time", "joda-time"),
-    ExclusionRule("org.joda",  "joda-convert")
+    ExclusionRule("org.joda",  "joda-convert"),
+    ExclusionRule("log4j",     "log4j"),
+    ExclusionRule("org.slf4j", "slf4j-log4j12")
   )
   lazy val json4sDependencies = Seq(
     "org.json4s"    %% "json4s-jackson"     % json4SVersion    % Compile  excludeAll(fullExclusionRules: _*),
@@ -399,7 +402,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalatra.rl"                  %% "rl"                % "0.4.10",
     "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3",
     "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   excludeAll(fullExclusionRules: _*),
-    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   exclude("org.slf4j", "slf4j-log4j12") exclude("log4j", "log4j")
+    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   excludeAll(fullExclusionRules: _*)
   )
 
   lazy val scalikejdbcDependencies = Seq(
