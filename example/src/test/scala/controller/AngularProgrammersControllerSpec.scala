@@ -1,7 +1,7 @@
 package controller
 
 import org.scalatest._
-import skinny.Format
+import skinny.engine.Format
 import skinny.test.MockApiController
 import unit.DBSettings
 

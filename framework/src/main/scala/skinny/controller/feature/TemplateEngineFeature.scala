@@ -2,6 +2,7 @@ package skinny.controller.feature
 
 import skinny.Format
 import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.json.JSONOperations
 import skinny.engine.response.ResponseStatus
 import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException
@@ -13,7 +14,7 @@ import skinny.controller.SkinnyControllerBase
 trait TemplateEngineFeature
     extends SkinnyControllerBase
     with RequestScopeFeature
-    with JSONFeature
+    with JSONOperations
     with LoggerProvider {
 
   /**

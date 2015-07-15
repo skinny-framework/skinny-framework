@@ -1,14 +1,13 @@
-package skinny.controller.feature
+package skinny.engine.json
 
-import skinny.Format
-import skinny.engine.SkinnyEngineBase
+import skinny.engine.{ Format, SkinnyEngineBase }
 import skinny.engine.context.SkinnyEngineContext
 import skinny.util.JSONStringOps
 
 /**
  * JSON response support.
  */
-trait JSONFeature extends JSONStringOps { self: SkinnyEngineBase =>
+trait JSONOperations extends JSONStringOps { self: SkinnyEngineBase =>
 
   /**
    * Returns JSON response.

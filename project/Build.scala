@@ -123,7 +123,10 @@ object SkinnyFrameworkBuild extends Build {
         )
       }
     ) ++ _jettyOrbitHack
-  ).dependsOn(common)
+  ).dependsOn(
+    common,
+    json
+  )
 
   lazy val engineTest = Project(id = "engineTest", base = file("engine-test"),
     settings = baseSettings ++ Seq(

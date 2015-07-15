@@ -1,4 +1,4 @@
-package skinny
+package skinny.engine
 
 /**
  * Response body format.

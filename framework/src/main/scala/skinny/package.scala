@@ -9,6 +9,9 @@ import skinny.engine.implicits.TypeConverterSupport
  */
 package object skinny {
 
+  type Format = skinny.engine.Format
+  val Format = skinny.engine.Format
+
   type SkinnyLifeCycle = bootstrap.SkinnyLifeCycle
   type ServletContext = javax.servlet.ServletContext
 
