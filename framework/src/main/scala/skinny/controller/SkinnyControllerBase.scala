@@ -143,6 +143,7 @@ trait SkinnyControllerBase
       case JObject(fields) => new XmlNode(name, fields flatMap { case (n, v) => _toXml(n, v) })
       case JArray(xs) => xs flatMap { v => _toXml(name, v) }
       case JInt(x) => new XmlElem(name, x.toString)
+      case JLong(x) => new XmlElem(name, x.toString)
       case JDouble(x) => new XmlElem(name, x.toString)
       case JDecimal(x) => new XmlElem(name, x.toString)
       case JString(x) => new XmlElem(name, x)

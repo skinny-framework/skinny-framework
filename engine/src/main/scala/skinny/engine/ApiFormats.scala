@@ -189,14 +189,14 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
       }
     }
     if (routeParams.contains("format")) {
-      mainThreadRequest(FormatKey) = routeParams.apply("format").head
+      request(context)(FormatKey) = routeParams.apply("format").head
     }
-    mainThreadRequest(MultiParamsKey) = originalParams ++ routeParams
+    request(context)(MultiParamsKey) = originalParams ++ routeParams
 
     try {
       thunk
     } finally {
-      mainThreadRequest(MultiParamsKey) = originalParams
+      request(context)(MultiParamsKey) = originalParams
     }
   }
 

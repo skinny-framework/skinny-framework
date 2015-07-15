@@ -26,7 +26,7 @@ trait JSONParamsAutoBinderFeature
    * Merge parsedBody (JValue) into params if possible.
    */
   override def params(implicit ctx: SkinnyEngineContext): Params = {
-    if (request.get(JsonSupport.ParsedBodyKey).isDefined) {
+    if (request(ctx).get(JsonSupport.ParsedBodyKey).isDefined) {
       try {
         val jsonParams: Map[String, Seq[String]] = parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v))
         val mergedParams: Map[String, Seq[String]] = getMergedMultiParams(multiParams(ctx), jsonParams)
@@ -81,8 +81,8 @@ trait JSONParamsAutoBinderFeature
           multiParams(ctx).keys.headOption
             .map(readXmlFromBody)
             .getOrElse(JNothing)
-        } else if (cacheRequestBodyAsString) readXmlFromBody(request.body)
-        else readXmlFromStream(request.inputStream)
+        } else if (cacheRequestBodyAsString) readXmlFromBody(request(ctx).body)
+        else readXmlFromStream(request(ctx).inputStream)
       }
       transformRequestBody(bd)
     } else JNothing

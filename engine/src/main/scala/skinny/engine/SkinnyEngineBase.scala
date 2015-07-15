@@ -96,7 +96,7 @@ trait SkinnyEngineBase
     extends CoreHandler
     with CoreRoutingDsl
     with LoggerProvider
-    with DynamicScope
+    with SkinnyEngineContextInitializer
     with Initializable
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
@@ -146,9 +146,9 @@ trait SkinnyEngineBase
     var rendered = true
 
     def runActions = {
-      val prehandleException = mainThreadRequest.get(SkinnyEngineBase.PrehandleExceptionKey)
+      val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
-        val (rq, rs) = (mainThreadRequest, mainThreadResponse)
+        val (rq, rs) = (request, response)
         SkinnyEngineBase.onCompleted { _ =>
           withRequestResponse(rq, rs) {
             val className = this.getClass.toString
@@ -164,7 +164,7 @@ trait SkinnyEngineBase
           }
         }
         runFilters(routes.beforeFilters)
-        val actionResult = runRoutes(routes(mainThreadRequest.requestMethod)).headOption
+        val actionResult = runRoutes(routes(request.requestMethod)).headOption
         // Give the status code handler a chance to override the actionResult
         val r = handleStatusCode(status) getOrElse {
           actionResult orElse matchOtherMethods() getOrElse doNotFound()
@@ -189,7 +189,7 @@ trait SkinnyEngineBase
             },
             errorHandler =
               e => {
-                SkinnyEngineBase.runCallbacks(Failure(e))
+                SkinnyEngineBase.runCallbacks(Failure(e))(skinnyEngineContext)
                 try {
                   renderUncaughtException(e)(skinnyEngineContext)
                 } finally {
@@ -255,7 +255,7 @@ trait SkinnyEngineBase
   }
 
   private[this] def saveMatchedRoute(matchedRoute: MatchedRoute): MatchedRoute = {
-    mainThreadRequest("skinny.engine.MatchedRoute") = matchedRoute
+    request(context)("skinny.engine.MatchedRoute") = matchedRoute
     setMultiparams(Some(matchedRoute), multiParams)
     matchedRoute
   }
@@ -309,7 +309,7 @@ trait SkinnyEngineBase
   private[this] var doMethodNotAllowed: (Set[HttpMethod] => Any) = {
     allow =>
       status = 405
-      mainThreadResponse.headers("Allow") = allow.mkString(", ")
+      response.headers("Allow") = allow.mkString(", ")
   }
 
   def methodNotAllowed(f: Set[HttpMethod] => Any): Unit = {
@@ -317,7 +317,7 @@ trait SkinnyEngineBase
   }
 
   private[this] def matchOtherMethods(): Option[Any] = {
-    val allow = routes.matchingMethodsExcept(mainThreadRequest.requestMethod, requestPath)
+    val allow = routes.matchingMethodsExcept(request.requestMethod, requestPath)
     if (allow.isEmpty) None else liftAction(() => doMethodNotAllowed(allow))
   }
 
@@ -335,7 +335,7 @@ trait SkinnyEngineBase
     try {
       thunk
     } finally {
-      mainThreadRequest(MultiParamsKey) = originalParams
+      request(context)(MultiParamsKey) = originalParams
     }
   }
 
@@ -416,37 +416,37 @@ trait SkinnyEngineBase
     case 404 =>
       doNotFound()
     case ActionResult(status, x: Int, resultHeaders) =>
-      mainThreadResponse.status = status
+      response.status = status
       resultHeaders foreach {
-        case (name, value) => mainThreadResponse.addHeader(name, value)
+        case (name, value) => response.addHeader(name, value)
       }
-      mainThreadResponse.writer.print(x.toString)
+      response.writer.print(x.toString)
     case status: Int =>
-      mainThreadResponse.status = ResponseStatus(status)
+      response.status = ResponseStatus(status)
     case bytes: Array[Byte] =>
-      if (contentType != null && contentType.startsWith("text")) mainThreadResponse.setCharacterEncoding(FileCharset(bytes).name)
-      mainThreadResponse.outputStream.write(bytes)
+      if (contentType != null && contentType.startsWith("text")) response.setCharacterEncoding(FileCharset(bytes).name)
+      response.outputStream.write(bytes)
     case is: java.io.InputStream =>
       using(is) {
-        util.io.copy(_, mainThreadResponse.outputStream)
+        util.io.copy(_, response.outputStream)
       }
     case file: File =>
-      if (contentType startsWith "text") mainThreadResponse.setCharacterEncoding(FileCharset(file).name)
+      if (contentType startsWith "text") response.setCharacterEncoding(FileCharset(file).name)
       using(new FileInputStream(file)) {
-        in => util.io.zeroCopy(in, mainThreadResponse.outputStream)
+        in => util.io.zeroCopy(in, response.outputStream)
       }
     // If an action returns Unit, it assumes responsibility for the response
     case _: Unit | Unit | null =>
     // If an action returns Unit, it assumes responsibility for the response
     case ActionResult(ResponseStatus(404, _), _: Unit | Unit, _) => doNotFound()
     case actionResult: ActionResult =>
-      mainThreadResponse.status = actionResult.status
+      response.status = actionResult.status
       actionResult.headers.foreach {
-        case (name, value) => mainThreadResponse.addHeader(name, value)
+        case (name, value) => response.addHeader(name, value)
       }
       actionResult.body
     case x =>
-      mainThreadResponse.writer.print(x.toString)
+      response.writer.print(x.toString)
   }
 
   protected def renderHaltException(e: HaltException): Unit = {
@@ -458,13 +458,13 @@ trait SkinnyEngineBase
           renderResponse(doNotFound())
           rendered = true
         case HaltException(Some(status), Some(reason), _, _) =>
-          mainThreadResponse.status = ResponseStatus(status, reason)
+          response.status = ResponseStatus(status, reason)
         case HaltException(Some(status), None, _, _) =>
-          mainThreadResponse.status = ResponseStatus(status)
+          response.status = ResponseStatus(status)
         case HaltException(None, _, _, _) => // leave status line alone
       }
       e.headers foreach {
-        case (name, value) => mainThreadResponse.addHeader(name, value)
+        case (name, value) => response.addHeader(name, value)
       }
       if (!rendered) renderResponse(e.body)
     } catch {
@@ -477,7 +477,7 @@ trait SkinnyEngineBase
 
   protected def extractStatusCode(e: HaltException): Int = e match {
     case HaltException(Some(status), _, _, _) => status
-    case _ => mainThreadResponse.status.code
+    case _ => response.status.code
   }
 
   /**

@@ -101,7 +101,7 @@ trait RequestScopeFeature
       set(ATTR_SKINNY, skinny.Skinny(ctx, requestScope(ctx)))(ctx)
       // requestPath/contextPath
       val requestPathWithContext = contextPath + requestPath(ctx)
-      val queryStringPart = Option(request.getQueryString).map(qs => "?" + qs).getOrElse("")
+      val queryStringPart = Option(request(ctx).getQueryString).map(qs => "?" + qs).getOrElse("")
       set(ATTR_CONTEXT_PATH -> contextPath)(ctx)
       set(ATTR_REQUEST_PATH -> requestPathWithContext)(ctx)
       set(ATTR_REQUEST_PATH_WITH_QUERY_STRING -> s"${requestPathWithContext}${queryStringPart}")(ctx)

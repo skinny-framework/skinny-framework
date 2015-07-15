@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest
 
 import CsrfTokenSupport._
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Provides cross-site request forgery protection.
@@ -34,9 +35,9 @@ trait CsrfTokenSupport { this: SkinnyEngineBase =>
    * the session key of the same name.
    */
   protected def isForged: Boolean =
-    !mainThreadRequest.requestMethod.isSafe &&
+    !request.requestMethod.isSafe &&
       session.get(csrfKey) != params.get(csrfKey) &&
-      !CsrfTokenSupport.HeaderNames.map(mainThreadRequest.headers.get).contains(session.get(csrfKey))
+      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(session.get(csrfKey))
 
   /**
    * Take an action when a forgery is detected. The default action
@@ -64,7 +65,7 @@ trait CsrfTokenSupport { this: SkinnyEngineBase =>
   /**
    * Returns the token from the session.
    */
-  protected[skinny] def csrfToken(implicit request: HttpServletRequest): String =
-    request.getSession.getAttribute(csrfKey).asInstanceOf[String]
+  protected[skinny] def csrfToken(implicit context: SkinnyEngineContext): String =
+    context.request.getSession.getAttribute(csrfKey).asInstanceOf[String]
 
 }

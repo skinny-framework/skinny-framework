@@ -121,15 +121,15 @@ trait ScalateSupport extends SkinnyEngineBase {
    * also want to redefine that binding.
    */
   protected def createRenderContext(
-    req: HttpServletRequest = mainThreadRequest,
-    resp: HttpServletResponse = mainThreadResponse,
-    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
+    req: HttpServletRequest,
+    resp: HttpServletResponse,
+    out: PrintWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
     new SkinnyEngineRenderContext(this, ctx, templateEngine, out, req, resp)
   }
 
   implicit def skinnyEngineRenderContext: SkinnyEngineRenderContext = {
     new SkinnyEngineRenderContext(
-      this, skinnyEngineContext, templateEngine, mainThreadResponse.getWriter, mainThreadRequest, mainThreadResponse)
+      this, skinnyEngineContext, templateEngine, response.getWriter, request, response)
   }
 
   /**

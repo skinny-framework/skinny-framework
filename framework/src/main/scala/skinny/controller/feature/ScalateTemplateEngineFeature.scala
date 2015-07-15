@@ -64,9 +64,8 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
   /**
    * Creates a RenderContext instance for Skinny app.
    */
-  override protected def createRenderContext(
-    req: HttpServletRequest = request, resp: HttpServletResponse = response, out: PrintWriter = response.getWriter)(
-      implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
+  override protected def createRenderContext(req: HttpServletRequest, resp: HttpServletResponse, out: PrintWriter)(
+    implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
     val context = super.createRenderContext(req, resp, out)(ctx)
     context.numberFormat = scalateRenderContextNumberFormat
     context
@@ -197,7 +196,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @param path the layout template path, including extension, e.g. "custom.jade"
    */
   def layout(path: String)(implicit ctx: SkinnyEngineContext): ScalateTemplateEngineFeature = {
-    if (request != null) {
+    if (request(ctx) != null) {
       val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
       templateAttributes(ctx) += ("layout" -> s"/WEB-INF/layouts/${_path}")
       this

@@ -19,17 +19,6 @@ case class DashboardOps(controller: DashboardController) {
 
 class DashboardController extends ApplicationController {
 
-  override implicit def request: HttpServletRequest = {
-    val stackTraces = Thread.currentThread().getStackTrace.drop(2).take(20)
-    if (stackTraces.exists(_.toString.contains("Future.scala"))) {
-      println()
-      stackTraces.foreach(s => println("  " + s))
-      println()
-      throw new RuntimeException("#request within Future detected")
-    }
-    super.request
-  }
-
   val adminUserService = new AdminUserService
   val accessService = new AccessLogService
   val alertService = new AlertService

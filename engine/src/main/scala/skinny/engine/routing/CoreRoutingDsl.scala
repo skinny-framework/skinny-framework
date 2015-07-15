@@ -3,7 +3,7 @@ package skinny.engine.routing
 import javax.servlet.http.HttpServletRequest
 
 import skinny.engine._
-import skinny.engine.base.{ ServletContextAccessor, DynamicScope, RouteRegistryAccessor, Handler }
+import skinny.engine.base.{ ServletContextAccessor, SkinnyEngineContextInitializer, RouteRegistryAccessor, Handler }
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.HaltPassControl
@@ -15,7 +15,7 @@ import skinny.engine.implicits.ServletApiImplicits
 trait CoreRoutingDsl
     extends Handler
     with HaltPassControl
-    with DynamicScope
+    with SkinnyEngineContextInitializer
     with RouteRegistryAccessor
     with ServletContextAccessor
     with ServletApiImplicits {

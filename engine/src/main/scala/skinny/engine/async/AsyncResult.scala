@@ -28,11 +28,11 @@ object AsyncResult {
 abstract class AsyncResult(
     implicit val skinnyEngineContext: SkinnyEngineContext) {
 
-  val request: HttpServletRequest = skinnyEngineContext.readOnlyRequest
+  val request: HttpServletRequest = skinnyEngineContext.toStable().request
 
-  val response: HttpServletResponse = skinnyEngineContext.response
+  val response: HttpServletResponse = skinnyEngineContext.toStable().response
 
-  val servletContext: ServletContext = skinnyEngineContext.servletContext
+  val servletContext: ServletContext = skinnyEngineContext.toStable().servletContext
 
   // This is a Duration instead of a timeout because a duration has the concept of infinity
   implicit def timeout: Duration = 30 seconds
