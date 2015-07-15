@@ -1,88 +1,229 @@
 package skinny.engine.request
 
-import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper }
+import java.security.Principal
+import javax.servlet.http._
+import scala.collection.JavaConverters._
+
+import scala.util.Try
 
 /**
- * Read-only immutable wrapper for an [[HttpServletRequest]] that can, for the most part, be
- * passed around to different threads.
+ * Stable HttpServletRequest
  *
- * This is necessary because ServletContainers will "recycle" a request once the original HTTP
- * thread is returned, meaning that a lot of attributes are wet to null (in the case of Jetty).
+ * HttpServletRequest object can be recycled.
  *
- * Limitations of this class include the following:
- *
- *   - it is mostly immutable (methods on the original request are not given stable values,
- *     nor are methods that return non-primitive types)
- *   - changes made to the original object or this object may not be reflected across threads
- *
- * @param underlying the original HttpServletRequest to wrap
+ * see also: https://github.com/scalatra/scalatra/pull/514
+ * see also: http://jetty.4.x6.nabble.com/jetty-users-getContextPath-returns-null-td4962387.html
+ * see also: https://bugs.eclipse.org/bugs/show_bug.cgi?id=433321
  */
-case class StableHttpServletRequest(
+class StableHttpServletRequest(
   private val underlying: HttpServletRequest)
     extends HttpServletRequestWrapper(underlying) {
 
-  // TODO: detect write operation from non main thread
+  private[this] def tryOriginalFirst[A](action: => A, fallback: A): A = {
+    val tried = Try(action)
+    if (tried.isFailure || tried.filter(_ != null).toOption.isEmpty) fallback
+    else tried.get
+  }
 
-  override val getAuthType: String = underlying.getAuthType
+  private[this] val _getAuthType = underlying.getAuthType
 
-  override val getMethod: String = underlying.getMethod
+  override def getAuthType: String = tryOriginalFirst(underlying.getAuthType, _getAuthType)
 
-  override val getPathInfo: String = underlying.getPathInfo
+  private[this] val _getMethod = underlying.getMethod
 
-  override val getPathTranslated: String = underlying.getPathTranslated
+  override def getMethod: String = tryOriginalFirst(underlying.getMethod, _getMethod)
 
-  override val getContextPath: String = underlying.getContextPath
+  private[this] val _getPathInfo = underlying.getPathInfo
 
-  override val getQueryString: String = underlying.getQueryString
+  override def getPathInfo: String = tryOriginalFirst(underlying.getPathInfo, _getPathInfo)
 
-  override val getRemoteUser: String = underlying.getRemoteUser
+  private[this] val _getPathTranslated = underlying.getPathTranslated
 
-  override val getRequestedSessionId: String = underlying.getRequestedSessionId
+  override def getPathTranslated: String = tryOriginalFirst(underlying.getPathTranslated, _getPathTranslated)
 
-  override val getRequestURI: String = underlying.getRequestURI
+  private[this] val _getContextPath = underlying.getContextPath
 
-  override val getServletPath: String = underlying.getServletPath
+  override def getContextPath: String = tryOriginalFirst(underlying.getContextPath, _getContextPath)
 
-  override val isRequestedSessionIdValid: Boolean = underlying.isRequestedSessionIdValid
+  private[this] val _getQueryString = underlying.getQueryString
 
-  override val isRequestedSessionIdFromCookie: Boolean = underlying.isRequestedSessionIdFromCookie
+  override def getQueryString: String = tryOriginalFirst(underlying.getQueryString, _getQueryString)
 
-  override val isRequestedSessionIdFromURL: Boolean = underlying.isRequestedSessionIdFromURL
+  private[this] val _getRemoteUser = underlying.getRemoteUser
 
-  override val isRequestedSessionIdFromUrl: Boolean = underlying.isRequestedSessionIdFromURL
+  override def getRemoteUser: String = tryOriginalFirst(underlying.getRemoteUser, _getRemoteUser)
 
-  override val getCharacterEncoding: String = underlying.getCharacterEncoding
+  private[this] val _getRequestedSessionId = underlying.getRequestedSessionId
 
-  override val getContentLength: Int = underlying.getContentLength
+  override def getRequestedSessionId: String = tryOriginalFirst(underlying.getRequestedSessionId, _getRequestedSessionId)
 
-  override val getContentType: String = underlying.getContentType
+  private[this] val _getRequestURI = underlying.getRequestURI
 
-  override val getContentLengthLong: Long = underlying.getContentLengthLong
+  override def getRequestURI: String = tryOriginalFirst(underlying.getRequestURI, _getRequestURI)
 
-  override val getProtocol: String = underlying.getProtocol
+  private[this] val _getServletPath = underlying.getServletPath
 
-  override val getServerName: String = underlying.getServerName
+  override def getServletPath: String = tryOriginalFirst(underlying.getServletPath, _getServletPath)
 
-  override val getScheme: String = underlying.getScheme
+  private[this] val _isRequestedSessionIdValid = underlying.isRequestedSessionIdValid
 
-  override val getServerPort: Int = underlying.getServerPort
+  override def isRequestedSessionIdValid: Boolean = tryOriginalFirst(underlying.isRequestedSessionIdValid, _isRequestedSessionIdValid)
 
-  override val getRemoteAddr: String = underlying.getRemoteAddr
+  private[this] val _isRequestedSessionIdFromCookie = underlying.isRequestedSessionIdFromCookie
 
-  override val getRemoteHost: String = underlying.getRemoteHost
+  override def isRequestedSessionIdFromCookie: Boolean = tryOriginalFirst(underlying.isRequestedSessionIdFromCookie, _isRequestedSessionIdFromCookie)
 
-  override val isSecure: Boolean = underlying.isSecure
+  private[this] val _isRequestedSessionIdFromURL = underlying.isRequestedSessionIdFromURL
 
-  override val getRemotePort: Int = underlying.getRemotePort
+  override def isRequestedSessionIdFromURL: Boolean = tryOriginalFirst(underlying.isRequestedSessionIdFromURL, _isRequestedSessionIdFromURL)
 
-  override val getLocalName: String = underlying.getLocalName
+  override def isRequestedSessionIdFromUrl: Boolean = isRequestedSessionIdFromURL
 
-  override val getLocalAddr: String = underlying.getLocalAddr
+  private[this] val _getCharacterEncoding = underlying.getCharacterEncoding
 
-  override val getLocalPort: Int = underlying.getLocalPort
+  override def getCharacterEncoding: String = tryOriginalFirst(underlying.getCharacterEncoding, _getCharacterEncoding)
 
-  override val isAsyncStarted: Boolean = underlying.isAsyncStarted
+  private[this] val _getContentLength = underlying.getContentLength
 
-  override val isAsyncSupported: Boolean = underlying.isAsyncSupported
+  override def getContentLength: Int = tryOriginalFirst(underlying.getContentLength, _getContentLength)
 
+  private[this] val _getContentType = underlying.getContentType
+
+  override def getContentType: String = tryOriginalFirst(underlying.getContentType, _getContentType)
+
+  private[this] val _getContentLengthLong = underlying.getContentLengthLong
+
+  override def getContentLengthLong: Long = tryOriginalFirst(underlying.getContentLengthLong, _getContentLengthLong)
+
+  private[this] val _getProtocol = underlying.getProtocol
+
+  override def getProtocol: String = tryOriginalFirst(underlying.getProtocol, _getProtocol)
+
+  // java.lang.IllegalStateException: No uri on Jetty when testing
+  private[this] val _getServerName = Try(underlying.getServerName).getOrElse(null)
+
+  override def getServerName: String = tryOriginalFirst(underlying.getServerName, _getServerName)
+
+  private[this] val _getScheme = underlying.getScheme
+
+  override def getScheme: String = tryOriginalFirst(underlying.getScheme, _getScheme)
+
+  // java.lang.IllegalStateException: No uri on Jetty when testing
+  private[this] val _getServerPort = Try(underlying.getServerPort).getOrElse(-1)
+
+  override def getServerPort: Int = tryOriginalFirst(underlying.getServerPort, _getServerPort)
+
+  private[this] val _getRemoteAddr = underlying.getRemoteAddr
+
+  override def getRemoteAddr: String = tryOriginalFirst(underlying.getRemoteAddr, _getRemoteAddr)
+
+  private[this] val _getRemoteHost = underlying.getRemoteHost
+
+  override def getRemoteHost: String = tryOriginalFirst(underlying.getRemoteHost, _getRemoteHost)
+
+  private[this] val _isSecure = underlying.isSecure
+
+  override def isSecure: Boolean = tryOriginalFirst(underlying.isSecure, _isSecure)
+
+  private[this] val _getRemotePort = underlying.getRemotePort
+
+  override def getRemotePort: Int = tryOriginalFirst(underlying.getRemotePort, _getRemotePort)
+
+  private[this] val _getLocalName = underlying.getLocalName
+
+  override def getLocalName: String = tryOriginalFirst(underlying.getLocalName, _getLocalName)
+
+  private[this] val _getLocalAddr = underlying.getLocalAddr
+
+  override def getLocalAddr: String = tryOriginalFirst(underlying.getLocalAddr, _getLocalAddr)
+
+  private[this] val _getLocalPort = underlying.getLocalPort
+
+  override def getLocalPort: Int = tryOriginalFirst(underlying.getLocalPort, _getLocalPort)
+
+  private[this] val _isAsyncStarted = underlying.isAsyncStarted
+
+  override def isAsyncStarted: Boolean = tryOriginalFirst(underlying.isAsyncStarted, _isAsyncStarted)
+
+  private[this] val _isAsyncSupported = underlying.isAsyncSupported
+
+  override def isAsyncSupported: Boolean = tryOriginalFirst(underlying.isAsyncSupported, _isAsyncSupported)
+
+  private[this] val _getHeaderNames = underlying.getHeaderNames
+
+  override def getHeaderNames: java.util.Enumeration[String] = tryOriginalFirst(underlying.getHeaderNames, _getHeaderNames)
+
+  private[this] val _cachedGetHeader: Map[String, String] = {
+    Option(underlying.getHeaderNames)
+      .map(_.asScala.map(name => name -> underlying.getHeader(name)).filterNot { case (_, v) => v == null }.toMap)
+      .getOrElse(Map.empty)
+  }
+
+  private[this] val _cachedGetHeaders: Map[String, java.util.Enumeration[String]] = {
+    Option(underlying.getHeaderNames)
+      .map(_.asScala.map(name => name -> underlying.getHeaders(name)).filterNot { case (_, v) => v == null }.toMap)
+      .getOrElse(Map.empty)
+  }
+
+  override def getHeader(name: String): String = tryOriginalFirst(underlying.getHeader(name), _cachedGetHeader.get(name).orNull[String])
+
+  // java.lang.IllegalStateException: No uri on Jetty when testing
+  private[this] val _getRequestURL = Try(underlying.getRequestURL).getOrElse(new StringBuffer)
+
+  override def getRequestURL: StringBuffer = tryOriginalFirst(underlying.getRequestURL, _getRequestURL)
+
+  private[this] val _getCookies = underlying.getCookies
+
+  override def getCookies: Array[Cookie] = tryOriginalFirst(underlying.getCookies, _getCookies)
+
+  private[this] val _getUserPrincipal = underlying.getUserPrincipal
+
+  override def getUserPrincipal: Principal = tryOriginalFirst(underlying.getUserPrincipal, _getUserPrincipal)
+
+  override def getIntHeader(name: String): Int = {
+    tryOriginalFirst(underlying.getIntHeader(name),
+      // an integer expressing the value of the request header or -1 if the request doesn't have a header of this name
+      _cachedGetHeader.get(name).map(_.toInt).getOrElse(-1))
+  }
+
+  override def getHeaders(name: String): java.util.Enumeration[String] = {
+    tryOriginalFirst(underlying.getHeaders(name),
+      // If the request does not have any headers of that name return an empty enumeration
+      _cachedGetHeaders.get(name).getOrElse(java.util.Collections.emptyEnumeration[String]()))
+  }
+
+  override def getDateHeader(name: String): Long = {
+    tryOriginalFirst(underlying.getDateHeader(name),
+      // -1 if the named header was not included with the request
+      _cachedGetHeader.get(name).map(_.toLong).getOrElse(-1L))
+  }
+
+  // Don't override getParts
+  // javax.servlet.ServletException: Content-Type != multipart/form-data
+
+  //  private[this] val _getParts = underlying.getParts
+  //  override def getParts: java.util.Collection[Part] = tryOriginalFirst(underlying.getParts, _getParts)
+  //  override def getPart(name: String): Part = {
+  //    tryOriginalFirst(underlying.getPart(name), _getParts.asScala.find(_.getName == name).orNull)
+  //  }
+
+  // override def changeSessionId(): String = underlying.changeSessionId()
+  // override def authenticate(response: HttpServletResponse): Boolean = underlying.authenticate(response)
+  // override def logout(): Unit = underlying.logout()
+  // override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = underlying.upgrade(handlerClass)
+
+  // override def getSession(create: Boolean): HttpSession = underlying.getSession(create)
+  // override def getSession: HttpSession = underlying.getSession
+
+  // override def isUserInRole(role: String): Boolean = underlying.isUserInRole(role)
+  // override def login(username: String, password: String): Unit = underlying.login(username, password)
+
+}
+
+object StableHttpServletRequest {
+
+  def apply(req: HttpServletRequest): StableHttpServletRequest = {
+    if (req.isInstanceOf[StableHttpServletRequest]) req.asInstanceOf[StableHttpServletRequest]
+    else new StableHttpServletRequest(req)
+  }
 }

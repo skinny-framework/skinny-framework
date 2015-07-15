@@ -36,7 +36,7 @@ object FlashMapSupport {
 trait FlashMapSupport
     extends Handler
     with ServletContextAccessor
-    with DynamicScope
+    with SkinnyEngineContextInitializer
     with ServletApiImplicits
     with SessionImplicits {
 
@@ -44,10 +44,11 @@ trait FlashMapSupport
 
   abstract override def handle(req: HttpServletRequest, res: HttpServletResponse): Unit = {
     withRequest(req) {
-      val f = flash(skinnyEngineContext)
+      val context = SkinnyEngineContext.build(servletContext, req, res)
+      val f = flash(context)
       val isOutermost = !req.contains(LockKey)
 
-      SkinnyEngineBase onCompleted { _ =>
+      SkinnyEngineBase.onCompleted { _ =>
         /*
          * http://github.com/scalatra/scalatra/issues/41
          * http://github.com/scalatra/scalatra/issues/57
@@ -58,8 +59,8 @@ trait FlashMapSupport
         if (isOutermost) {
           f.sweep()
         }
-        flashMapSetSession(f)
-      }
+        flashMapSetSession(f)(context)
+      }(context)
 
       if (isOutermost) {
         req(LockKey) = "locked"

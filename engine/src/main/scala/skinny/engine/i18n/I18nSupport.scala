@@ -1,8 +1,8 @@
 package skinny.engine.i18n
 
 import java.util.Locale
-import javax.servlet.http.HttpServletRequest
 
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineException }
 
 object I18nSupport {
@@ -20,33 +20,33 @@ trait I18nSupport { this: SkinnyEngineBase =>
   import I18nSupport._
 
   before() {
-    mainThreadRequest(LocaleKey) = resolveLocale
-    mainThreadRequest(MessagesKey) = provideMessages(locale)
+    request(context)(LocaleKey) = resolveLocale
+    request(context)(MessagesKey) = provideMessages(locale)
   }
 
-  def locale(implicit request: HttpServletRequest): Locale = {
-    if (request == null) {
+  def locale(implicit ctx: SkinnyEngineContext): Locale = {
+    if (request(ctx) == null) {
       throw new SkinnyEngineException("There needs to be a request in scope to call locale")
     } else {
-      request.get(LocaleKey).map(_.asInstanceOf[Locale]).orNull
+      request(ctx).get(LocaleKey).map(_.asInstanceOf[Locale]).orNull
     }
   }
 
-  def userLocales(implicit request: HttpServletRequest): Array[Locale] = {
-    if (request == null) {
+  def userLocales(implicit ctx: SkinnyEngineContext): Array[Locale] = {
+    if (request(ctx) == null) {
       throw new SkinnyEngineException("There needs to be a request in scope to call userLocales")
     } else {
-      request.get(UserLocalesKey).map(_.asInstanceOf[Array[Locale]]).orNull
+      request(ctx).get(UserLocalesKey).map(_.asInstanceOf[Array[Locale]]).orNull
     }
   }
 
-  def messages(key: String)(implicit request: HttpServletRequest): String = messages(request)(key)
+  def messages(key: String)(implicit ctx: SkinnyEngineContext): String = messages(ctx)(key)
 
-  def messages(implicit request: HttpServletRequest): Messages = {
-    if (request == null) {
+  def messages(implicit ctx: SkinnyEngineContext): Messages = {
+    if (request(ctx) == null) {
       throw new SkinnyEngineException("There needs to be a request in scope to call messages")
     } else {
-      request.get(MessagesKey).map(_.asInstanceOf[Messages]).orNull
+      request(ctx).get(MessagesKey).map(_.asInstanceOf[Messages]).orNull
     }
   }
 
@@ -56,12 +56,12 @@ trait I18nSupport { this: SkinnyEngineBase =>
    * @param locale Locale used to create instance
    * @return a new instance of Messages, override to provide own implementation
    */
-  def provideMessages(locale: Locale): Messages = Messages(locale)
+  def provideMessages(locale: Locale)(implicit ctx: SkinnyEngineContext): Messages = Messages(locale)
 
   /*
   * Resolve Locale based on HTTP request parameter or Cookie
   */
-  private def resolveLocale: Locale = resolveHttpLocale getOrElse defaultLocale
+  private def resolveLocale(implicit ctx: SkinnyEngineContext): Locale = resolveHttpLocale(ctx) getOrElse defaultLocale
 
   /*
    * Get locale either from HTTP param, Cookie or Accept-Language header.
@@ -74,13 +74,13 @@ trait I18nSupport { this: SkinnyEngineBase =>
    * Locale strings are transformed to [[java.util.Locale]]
    *
    */
-  private def resolveHttpLocale: Option[Locale] = {
-    (params.get(LocaleKey) match {
+  private def resolveHttpLocale(implicit ctx: SkinnyEngineContext): Option[Locale] = {
+    (params(ctx).get(LocaleKey) match {
       case Some(localeValue) =>
-        cookies.set(LocaleKey, localeValue)
+        cookies(ctx).set(LocaleKey, localeValue)
         Some(localeValue)
-      case _ => cookies.get(LocaleKey)
-    }).map(localeFromString(_)) orElse resolveHttpLocaleFromUserAgent
+      case _ => cookies(ctx).get(LocaleKey)
+    }).map(localeFromString(_)(ctx)) orElse resolveHttpLocaleFromUserAgent(ctx)
   }
 
   /**
@@ -89,8 +89,8 @@ trait I18nSupport { this: SkinnyEngineBase =>
    *
    * @return first preferred found locale or None
    */
-  private def resolveHttpLocaleFromUserAgent: Option[Locale] = {
-    mainThreadRequest.headers.get("Accept-Language") map { s =>
+  private def resolveHttpLocaleFromUserAgent(implicit ctx: SkinnyEngineContext): Option[Locale] = {
+    request(ctx).headers.get("Accept-Language") map { s =>
       val locales = s.split(",").map(s => {
         def splitLanguageCountry(s: String): Locale = {
           val langCountry = s.split("-")
@@ -109,7 +109,7 @@ trait I18nSupport { this: SkinnyEngineBase =>
         }
       })
       // save all found locales for later user
-      mainThreadRequest.setAttribute(UserLocalesKey, locales)
+      request(ctx).setAttribute(UserLocalesKey, locales)
       // We assume that all accept-languages are stored in order of quality
       // (so first language is preferred)
       locales.head
@@ -120,7 +120,7 @@ trait I18nSupport { this: SkinnyEngineBase =>
    * Reads a locale from a String
    * @param in a string like en_GB or de_DE
    */
-  private def localeFromString(in: String): Locale = {
+  private def localeFromString(in: String)(implicit ctx: SkinnyEngineContext): Locale = {
     val token = in.split("_")
     new Locale(token.head, token.last)
   }

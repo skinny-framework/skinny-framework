@@ -44,14 +44,14 @@ trait FutureOpsFeature { self: SkinnyControllerBase =>
    *
    * @param op operation inside this future
    * @param ec execution context
-   * @param req request
+   * @param ctx skinny engine context
    * @tparam A response type
    * @return response value
    */
   @deprecated("Use futureWithContext instead", since = "2.0.0")
   def futureWithRequest[A](op: (HttpServletRequest) => A)(
-    implicit ec: ExecutionContext, req: HttpServletRequest): Future[A] = {
-    Future { op(req) }
+    implicit ec: ExecutionContext, ctx: SkinnyEngineContext): Future[A] = {
+    Future { op(ctx.request) }
   }
 
   /**

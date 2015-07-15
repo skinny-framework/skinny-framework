@@ -24,7 +24,13 @@ object DaemonThreadFactory {
   def newPool() = Executors.newCachedThreadPool(new DaemonThreadFactory)
 }
 
-class ScalateFuturesSupportServlet(exec: ExecutorService) extends SkinnyEngineServlet with ScalateSupport with ScalateUrlGeneratorSupport with FlashMapSupport with FutureSupport {
+class ScalateFuturesSupportServlet(exec: ExecutorService)
+    extends SkinnyEngineServlet
+    with ScalateSupport
+    with ScalateUrlGeneratorSupport
+    with FlashMapSupport
+    with FutureSupport {
+
   protected implicit val executor = ExecutionContext.fromExecutorService(exec)
 
   get("/barf") {

@@ -50,13 +50,13 @@ trait JsonOutput[T] extends ApiFormats with JsonMethods[T] {
       contentType = formats("xml")
       writeJsonAsXml(
         transformResponseBody(jv),
-        mainThreadResponse.writer,
-        mainThreadResponse.characterEncoding.getOrElse(Codec.UTF8.name))
+        response.writer,
+        response.characterEncoding.getOrElse(Codec.UTF8.name))
 
     case jv: JValue =>
       // JSON is always UTF-8
-      mainThreadResponse.characterEncoding = Some(Codec.UTF8.name)
-      val writer = mainThreadResponse.writer
+      response.characterEncoding = Some(Codec.UTF8.name)
+      val writer = response.writer
 
       val jsonpCallback = for {
         paramName <- jsonpCallbackParameterNames

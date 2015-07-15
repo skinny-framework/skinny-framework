@@ -25,21 +25,24 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
 
   override def initParameter(name: String): Option[String] = None
 
-  override implicit val request: HttpServletRequest = {
+  private[this] lazy val mockRequest = {
     val req = new MockHttpServletRequest
     req.setAttribute(RequestScopeFeature.REQUEST_SCOPE_KEY, _requestScope)
     req
   }
 
-  override implicit val response: HttpServletResponse = {
-    val res = new MockHttpServletResponse
-    res
+  private[this] lazy val mockResponse = {
+    new MockHttpServletResponse
   }
+
+  override def request(implicit ctx: SkinnyEngineContext): HttpServletRequest = mockRequest
+
+  override def response(implicit ctx: SkinnyEngineContext): HttpServletResponse = mockResponse
 
   override implicit def servletContext: ServletContext = mock(classOf[ServletContext])
 
   override implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
-    SkinnyEngineContext.build()(ctx, request, response)
+    SkinnyEngineContext.build(ctx, mockRequest, mockResponse)
   }
 
   override def halt[T: Manifest](

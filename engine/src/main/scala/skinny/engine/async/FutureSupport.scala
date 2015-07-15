@@ -42,7 +42,7 @@ trait FutureSupport extends SkinnyEngineBase with AsyncRoutingDsl {
 
   private[this] def handleFuture(f: Future[_], timeout: Duration): Unit = {
     val gotResponseAlready = new AtomicBoolean(false)
-    val context = mainThreadRequest.startAsync(mainThreadRequest, mainThreadResponse)
+    val context = request.startAsync(request, response)
     if (timeout.isFinite()) context.setTimeout(timeout.toMillis) else context.setTimeout(-1)
 
     def renderFutureResult(f: Future[_]): Unit = {

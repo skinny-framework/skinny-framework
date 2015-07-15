@@ -8,7 +8,7 @@ import skinny.engine.implicits.ServletApiImplicits
 trait CoreHandler
     extends Handler
     with ServletApiImplicits
-    with DynamicScope { self: ServletContextAccessor =>
+    with SkinnyEngineContextInitializer { self: ServletContextAccessor =>
 
   /**
    * The default character encoding for requests and responses.

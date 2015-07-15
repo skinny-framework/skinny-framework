@@ -17,7 +17,7 @@ trait ContentEncodingSupport extends Handler { self: SkinnyEngineBase =>
 
   /** Encodes the response if necessary. */
   private def encodedResponse(req: HttpServletRequest, res: HttpServletResponse): HttpServletResponse = {
-    ContentNegotiation.preferredEncoding.map { encoding =>
+    ContentNegotiation.preferredEncoding(req).map { encoding =>
       val encoded = encoding(res)
       SkinnyEngineBase.onRenderedCompleted { _ => encoded.end() }
       encoded

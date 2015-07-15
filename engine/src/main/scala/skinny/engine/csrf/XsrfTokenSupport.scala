@@ -1,7 +1,6 @@
 package skinny.engine.csrf
 
-import javax.servlet.http.HttpServletRequest
-
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ RouteTransformer, SkinnyEngineBase }
 
 object XsrfTokenSupport {
@@ -27,8 +26,8 @@ trait XsrfTokenSupport { this: SkinnyEngineBase =>
   /**
    * Returns the token from the session.
    */
-  def xsrfToken(implicit request: HttpServletRequest): String =
-    request.getSession.getAttribute(xsrfKey).asInstanceOf[String]
+  def xsrfToken(implicit ctx: SkinnyEngineContext): String =
+    ctx.request.getSession.getAttribute(xsrfKey).asInstanceOf[String]
 
   def xsrfGuard(only: RouteTransformer*): Unit = {
     before((only.toSeq ++ Seq[RouteTransformer](isForged)): _*) { handleForgery() }
@@ -45,9 +44,9 @@ trait XsrfTokenSupport { this: SkinnyEngineBase =>
    * the session key of the same name.
    */
   protected def isForged: Boolean =
-    !mainThreadRequest.requestMethod.isSafe &&
+    !request.requestMethod.isSafe &&
       session.get(xsrfKey) != params.get(xsrfKey) &&
-      !HeaderNames.map(mainThreadRequest.headers.get).contains(session.get(xsrfKey))
+      !HeaderNames.map(request.headers.get).contains(session.get(xsrfKey))
 
   /**
    * Take an action when a forgery is detected. The default action

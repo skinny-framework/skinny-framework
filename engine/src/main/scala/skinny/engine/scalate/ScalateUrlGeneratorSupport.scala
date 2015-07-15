@@ -25,9 +25,9 @@ trait ScalateUrlGeneratorSupport extends ScalateSupport {
   }
 
   override protected def createRenderContext(
-    req: HttpServletRequest = mainThreadRequest,
-    res: HttpServletResponse = mainThreadResponse,
-    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext) = {
+    req: HttpServletRequest,
+    res: HttpServletResponse,
+    out: PrintWriter)(implicit ctx: SkinnyEngineContext) = {
     val context = super.createRenderContext(req, res, out)(ctx)
     for ((name, route) <- this.reflectRoutes) {
       context.attributes.update(name, route)

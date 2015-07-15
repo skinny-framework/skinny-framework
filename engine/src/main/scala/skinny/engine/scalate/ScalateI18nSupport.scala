@@ -24,12 +24,12 @@ trait ScalateI18nSupport extends ScalateSupport with I18nSupport {
    * #{messages("hello")}
    */
   override protected def createRenderContext(
-    req: HttpServletRequest = mainThreadRequest,
-    resp: HttpServletResponse = mainThreadResponse,
-    out: PrintWriter = mainThreadResponse.getWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
+    req: HttpServletRequest,
+    resp: HttpServletResponse,
+    out: PrintWriter)(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
 
     val context = super.createRenderContext(req, resp, out)(ctx)
-    context.attributes("messages") = messages(req)
+    context.attributes("messages") = messages(ctx)
     context
   }
 }

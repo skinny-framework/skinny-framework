@@ -58,7 +58,7 @@ class SkinnyEngineRenderContext(
   }
 
   def csrfToken = base match {
-    case csrfTokenSupport: CsrfTokenSupport => csrfTokenSupport.csrfToken(request)
+    case csrfTokenSupport: CsrfTokenSupport => csrfTokenSupport.csrfToken(context)
     case _ => ""
   }
   def xsrfKey = base match {
@@ -67,7 +67,7 @@ class SkinnyEngineRenderContext(
   }
 
   def xsrfToken = base match {
-    case csrfTokenSupport: XsrfTokenSupport => csrfTokenSupport.xsrfToken(request)
+    case csrfTokenSupport: XsrfTokenSupport => csrfTokenSupport.xsrfToken(context)
     case _ => ""
   }
 

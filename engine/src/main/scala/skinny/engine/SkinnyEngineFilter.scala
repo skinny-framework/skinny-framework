@@ -74,9 +74,9 @@ trait SkinnyEngineFilter extends Filter with SkinnyEngineBase {
     ctx.servletContext.getContextPath
   }
 
-  protected var doNotFound: Action = () => filterChain.doFilter(mainThreadRequest, mainThreadResponse)
+  protected var doNotFound: Action = () => filterChain.doFilter(request, response)
 
-  methodNotAllowed { _ => filterChain.doFilter(mainThreadRequest, mainThreadResponse) }
+  methodNotAllowed { _ => filterChain.doFilter(request, response) }
 
   type ConfigT = FilterConfig
 
