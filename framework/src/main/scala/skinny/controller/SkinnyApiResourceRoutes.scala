@@ -12,7 +12,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with Routes { sel
    * Set Content-Type response header which is suitable for specified extension.
    */
   protected def setContentTypeFromSkinnyApiResourceExtParam: Unit = {
-    params.get("ext").foreach(f => setContentTypeIfAbsent()(Format(f)))
+    params.get("ext").foreach(f => setContentTypeIfAbsent()(engine.Format(f)))
   }
 
   /**
@@ -118,7 +118,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with Routes { sel
   val updatePatchExtUrl = updatePatchApiUrl
 
   protected def updateApiAction = {
-    params.get("ext").map(ext => Format(ext)).map { implicit format =>
+    params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>
       format match {
         case Format.HTML => haltWithBody(404)
         case _ =>
@@ -146,7 +146,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with Routes { sel
   val deleteExtUrl = destroyApiUrl
 
   protected def deleteApiAction = {
-    params.get("ext").map(ext => Format(ext)).map { implicit format =>
+    params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>
       format match {
         case Format.HTML => haltWithBody(404)
         case _ =>

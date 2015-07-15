@@ -3,6 +3,7 @@ package skinny.controller
 import skinny._
 import skinny.controller.feature._
 import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.json.JSONOperations
 import skinny.engine.{ SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
 import skinny.engine.response.ResponseStatus
 import skinny.engine.routing.Route
@@ -36,7 +37,7 @@ trait SkinnyControllerBase
     with FutureOpsFeature
     with LocaleFeature
     with ValidationFeature
-    with JSONFeature
+    with JSONOperations
     with TimeLoggingFeature
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature

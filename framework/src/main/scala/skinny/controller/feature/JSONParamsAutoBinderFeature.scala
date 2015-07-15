@@ -6,7 +6,7 @@ import org.json4s.Xml._
 import org.json4s._
 import org.slf4j.LoggerFactory
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.json.JsonSupport
+import skinny.engine.json.{JSONOperations, JsonSupport}
 import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
 import skinny.engine.routing.MatchedRoute
 import skinny.logging.LoggerProvider
@@ -18,7 +18,7 @@ import skinny.logging.LoggerProvider
  */
 trait JSONParamsAutoBinderFeature
     extends SkinnyEngineBase
-    with JSONFeature
+    with JSONOperations
     with ApiFormats
     with LoggerProvider {
 

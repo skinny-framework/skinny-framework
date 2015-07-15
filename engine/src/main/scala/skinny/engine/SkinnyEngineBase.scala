@@ -1,5 +1,7 @@
 package skinny.engine
 
+import skinny.engine.json.JSONOperations
+
 import scala.language.implicitConversions
 import scala.language.reflectiveCalls
 
@@ -108,6 +110,7 @@ trait SkinnyEngineBase
     with ResponseStatusAccessor
     with BeforeAfterDsl
     with UrlGenerator
+    with JSONOperations
     with ServletApiImplicits
     with RouteMatcherImplicits
     with CookiesImplicits
