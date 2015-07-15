@@ -2,7 +2,7 @@ package skinny.controller.feature
 
 import org.scalatra.test.scalatest._
 import skinny.controller.{ SkinnyController, SkinnyServlet }
-import skinny.engine.async.{ FutureSupport, AsyncResult }
+import skinny.engine.async.AsyncResult
 
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, ExecutionContext, Future }
@@ -16,9 +16,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
   behavior of "JSONFeature"
 
-  object SampleController extends SkinnyServlet with FutureSupport {
-
-    implicit val executionContext = ExecutionContext.Implicits.global
+  object SampleController extends SkinnyServlet {
 
     get("/sync") {
       responseAsJSON(Sample(1, "Alice"))
