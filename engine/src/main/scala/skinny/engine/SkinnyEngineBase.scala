@@ -6,13 +6,16 @@ import scala.language.implicitConversions
 import scala.language.reflectiveCalls
 
 import scala.annotation.tailrec
+import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.duration._
 import scala.util.{ Failure, Success, Try }
 
 import java.io.{ File, FileInputStream }
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.servlet.http.{ HttpServlet, HttpServletRequest }
-import javax.servlet.{ ServletRegistration, Filter }
+import javax.servlet._
 
-import skinny.engine.async.FutureSupport
+import skinny.engine.async.{ AsyncOperations, AsyncResult }
 import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
@@ -41,7 +44,8 @@ object SkinnyEngineBase {
   val PortKey: String = "skinny.engine.Port"
   val ForceHttpsKey: String = "skinny.engine.ForceHttps"
 
-  private[this] val KeyPrefix: String = classOf[FutureSupport].getName
+  private[this] val KeyPrefix: String = getClass.getName
+
   val Callbacks: String = s"$KeyPrefix.callbacks"
   val RenderCallbacks: String = s"$KeyPrefix.renderCallbacks"
   val IsAsyncKey: String = s"$KeyPrefix.isAsync"
@@ -109,7 +113,9 @@ trait SkinnyEngineBase
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
     with BeforeAfterDsl
+    with AsyncRoutingDsl
     with UrlGenerator
+    with AsyncOperations
     with JSONOperations
     with ServletApiImplicits
     with RouteMatcherImplicits
@@ -124,7 +130,10 @@ trait SkinnyEngineBase
   /**
    * true if async supported
    */
-  protected def isAsyncExecutable(result: Any): Boolean = false
+  protected def isAsyncExecutable(result: Any): Boolean = {
+    classOf[Future[_]].isAssignableFrom(result.getClass) ||
+      classOf[AsyncResult].isAssignableFrom(result.getClass)
+  }
 
   /**
    * Executes routes in the context of the current request and response.
@@ -356,13 +365,18 @@ trait SkinnyEngineBase
    * $ - If the content type is still null, call the contentTypeInferrer.
    * $ - Call the render pipeline on the result.
    */
-  protected def renderResponse(actionResult: Any): Unit = {
-    if (contentType == null) {
-      contentTypeInferrer.lift(actionResult) foreach {
-        contentType = _
-      }
+  protected def renderResponse(actionResult: Any)(implicit ctx: SkinnyEngineContext): Unit = {
+    actionResult match {
+      case r: AsyncResult => handleFuture(r.is, r.timeout)(ctx)
+      case f: Future[_] => handleFuture(f, defaultFutureTimeout)(ctx)
+      case a =>
+        if (contentType(ctx) == null) {
+          contentTypeInferrer.lift(actionResult) foreach { ct =>
+            (contentType = ct)(ctx)
+          }
+        }
+        renderResponseBody(actionResult)(ctx)
     }
-    renderResponseBody(actionResult)
   }
 
   /**
@@ -391,21 +405,21 @@ trait SkinnyEngineBase
    *
    * @see #renderPipeline
    */
-  protected def renderResponseBody(actionResult: Any): Unit = {
+  protected def renderResponseBody(actionResult: Any)(implicit ctx: SkinnyEngineContext): Unit = {
     @tailrec def loop(ar: Any): Any = ar match {
-      case _: Unit | Unit => runRenderCallbacks(Success(actionResult))
-      case a => loop(renderPipeline.lift(a).getOrElse(()))
+      case _: Unit | Unit => runRenderCallbacks(Success(actionResult))(ctx)
+      case a => loop(renderPipeline(ctx).lift(a).getOrElse(()))
     }
     try {
-      runCallbacks(Success(actionResult))
+      runCallbacks(Success(actionResult))(ctx)
       loop(actionResult)
     } catch {
       case e: Throwable =>
-        runCallbacks(Failure(e))
+        runCallbacks(Failure(e))(ctx)
         try {
-          renderUncaughtException(e)(skinnyEngineContext)
+          renderUncaughtException(e)(ctx)
         } finally {
-          runRenderCallbacks(Failure(e))
+          runRenderCallbacks(Failure(e))(ctx)
         }
     }
   }
@@ -415,66 +429,70 @@ trait SkinnyEngineBase
    * called recursively until it returns ().  () indicates that the
    * response has been rendered.
    */
-  protected def renderPipeline: RenderPipeline = {
+  protected def renderPipeline(implicit ctx: SkinnyEngineContext): RenderPipeline = {
     case 404 =>
       doNotFound()
     case ActionResult(status, x: Int, resultHeaders) =>
-      response.status = status
+      ctx.response.status = status
       resultHeaders foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => ctx.response.addHeader(name, value)
       }
-      response.writer.print(x.toString)
+      ctx.response.writer.print(x.toString)
     case status: Int =>
-      response.status = ResponseStatus(status)
+      ctx.response.status = ResponseStatus(status)
     case bytes: Array[Byte] =>
-      if (contentType != null && contentType.startsWith("text")) response.setCharacterEncoding(FileCharset(bytes).name)
-      response.outputStream.write(bytes)
+      if (contentType(ctx) != null && contentType(ctx).startsWith("text")) {
+        ctx.response.setCharacterEncoding(FileCharset(bytes).name)
+      }
+      ctx.response.outputStream.write(bytes)
     case is: java.io.InputStream =>
       using(is) {
-        util.io.copy(_, response.outputStream)
+        util.io.copy(_, ctx.response.outputStream)
       }
     case file: File =>
-      if (contentType startsWith "text") response.setCharacterEncoding(FileCharset(file).name)
+      if (contentType(ctx).startsWith("text")) {
+        ctx.response.setCharacterEncoding(FileCharset(file).name)
+      }
       using(new FileInputStream(file)) {
-        in => util.io.zeroCopy(in, response.outputStream)
+        in => util.io.zeroCopy(in, ctx.response.outputStream)
       }
     // If an action returns Unit, it assumes responsibility for the response
     case _: Unit | Unit | null =>
     // If an action returns Unit, it assumes responsibility for the response
     case ActionResult(ResponseStatus(404, _), _: Unit | Unit, _) => doNotFound()
     case actionResult: ActionResult =>
-      response.status = actionResult.status
+      ctx.response.status = actionResult.status
       actionResult.headers.foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => ctx.response.addHeader(name, value)
       }
       actionResult.body
     case x =>
-      response.writer.print(x.toString)
+      ctx.response.writer.print(x.toString)
   }
 
-  protected def renderHaltException(e: HaltException): Unit = {
+  protected def renderHaltException(e: HaltException)(implicit ctx: SkinnyEngineContext): Unit = {
     try {
       var rendered = false
       e match {
         case HaltException(Some(404), _, _, _: Unit | Unit) |
           HaltException(_, _, _, ActionResult(ResponseStatus(404, _), _: Unit | Unit, _)) =>
-          renderResponse(doNotFound())
+          renderResponse(doNotFound())(ctx)
           rendered = true
         case HaltException(Some(status), Some(reason), _, _) =>
-          response.status = ResponseStatus(status, reason)
+          ctx.response.status = ResponseStatus(status, reason)
         case HaltException(Some(status), None, _, _) =>
-          response.status = ResponseStatus(status)
+          ctx.response.status = ResponseStatus(status)
         case HaltException(None, _, _, _) => // leave status line alone
       }
       e.headers foreach {
-        case (name, value) => response.addHeader(name, value)
+        case (name, value) => ctx.response.addHeader(name, value)
       }
-      if (!rendered) renderResponse(e.body)
+      if (!rendered) renderResponse(e.body)(ctx)
     } catch {
       case e: Throwable =>
-        runCallbacks(Failure(e))
+        runCallbacks(Failure(e))(ctx)
         renderUncaughtException(e)(skinnyEngineContext)
-        runCallbacks(Failure(e))
+        runCallbacks(Failure(e))(ctx)
     }
   }
 
@@ -514,5 +532,83 @@ trait SkinnyEngineBase
    * varies between servlets and filters.
    */
   def requestPath(implicit ctx: SkinnyEngineContext): String
+
+  implicit protected def executionContext: ExecutionContext = ExecutionContext.global
+
+  override def asynchronously(f: => Any): Action = () => Future(f)
+
+  // If you need to run long-live operations, override this value
+  protected def defaultFutureTimeout: Duration = 10.seconds
+
+  private[this] def handleFuture(f: Future[_], timeout: Duration)(implicit ctx: SkinnyEngineContext): Unit = {
+    val gotResponseAlready = new AtomicBoolean(false)
+    val context: AsyncContext = ctx.request.startAsync(ctx.request, ctx.response)
+    if (timeout.isFinite()) context.setTimeout(timeout.toMillis) else context.setTimeout(-1)
+
+    def renderFutureResult(f: Future[_]): Unit = {
+      f onComplete {
+        // Loop until we have a non-future result
+        case Success(f2: Future[_]) => renderFutureResult(f2)
+        case Success(r: AsyncResult) => renderFutureResult(r.is)
+        case t => {
+          if (gotResponseAlready.compareAndSet(false, true)) {
+            withinAsyncContext(context) {
+              try {
+                t map { result =>
+                  renderResponse(result)(ctx)
+                } recover {
+                  case e: HaltException =>
+                    renderHaltException(e)(ctx)
+                  case e =>
+                    try {
+                      renderResponse(currentErrorHandler.apply(e))(ctx)
+                    } catch {
+                      case e: Throwable =>
+                        SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
+                        renderUncaughtException(e)(ctx)
+                        SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
+                    }
+                }
+              } finally {
+                context.complete()
+              }
+            }
+          }
+        }
+      }
+    }
+
+    context.addListener(new AsyncListener {
+      def onTimeout(event: AsyncEvent): Unit = {
+        onAsyncEvent(event) {
+          if (gotResponseAlready.compareAndSet(false, true)) {
+            renderHaltException(HaltException(Some(504), None, Map.empty, "Gateway timeout"))(ctx)
+            event.getAsyncContext.complete()
+          }
+        }
+      }
+      def onComplete(event: AsyncEvent): Unit = {}
+      def onError(event: AsyncEvent): Unit = {
+        onAsyncEvent(event) {
+          if (gotResponseAlready.compareAndSet(false, true)) {
+            event.getThrowable match {
+              case e: HaltException => renderHaltException(e)(ctx)
+              case e =>
+                try {
+                  renderResponse(currentErrorHandler.apply(e))(ctx)
+                } catch {
+                  case e: Throwable =>
+                    SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
+                    renderUncaughtException(e)(ctx)
+                    SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
+                }
+            }
+          }
+        }
+      }
+      def onStartAsync(event: AsyncEvent): Unit = {}
+    })
+    renderFutureResult(f)
+  }
 
 }

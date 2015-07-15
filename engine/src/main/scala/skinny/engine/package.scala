@@ -1,6 +1,5 @@
 package skinny
 
-import skinny.engine.async.FutureSupport
 import skinny.engine.base.FlashMapSupport
 import skinny.engine.control.HaltPassControl
 import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
@@ -41,10 +40,5 @@ package object engine
   val EnvironmentKey = "skinny.engine.environment"
 
   val MultiParamsKey = "skinny.engine.MultiParams"
-
-  type FuturesAndFlashStack = FutureSupport with FlashMapSupport
-  type FuturesAndFlashStackWithCsrf = FuturesAndFlashStack with CsrfTokenSupport
-  type FuturesAndFlashStackWithXsrf = FuturesAndFlashStack with XsrfTokenSupport
-  type FileUploadStack = FutureSupport with FlashMapSupport with FileUploadSupport
 
 }

@@ -1,43 +1,13 @@
-package skinny.controller.feature
+package skinny.engine.async
 
-import skinny.controller.SkinnyControllerBase
 import javax.servlet.http.HttpServletRequest
+
 import skinny.engine.context.SkinnyEngineContext
 
-import scala.concurrent._
 import scala.concurrent.duration.Duration
+import scala.concurrent.{ Await, Future, ExecutionContext }
 
-/**
- * Provides seamless Future operations within SkinnyController.
- * This trait enables accessing request, session and RequestScope from Future operations safely.
- *
- * {{{
- *   import scala.concurrent._
- *   import scala.concurrent.duration._
- *   import scala.concurrent.ExecutionContext.Implicits.global
- *
- *   class SomeControllerOps(controller: SomeController) {
- *     def setOther(implicit req: HttpServletRequest) = {
- *       controller.set("bar", Seq(1,2,3)) // implicit request is not ambiguous here
- *     }
- *   }
- *
- *   class SomeController extends ApplicationController {
- *     def index = {
- *       val ops = new SomeControllerOps(this)
- *       awaitFutures(5.seconds)(
- *         futureWithRequest { implicit req =>
- *           // Explicitly specify HttpServletRequest here
- *           set("foo" -> FooService.getSomething()))(req)
- *         },
- *         futureWithRequest(req => ops.setOther(req))
- *       )
- *       render("/some/index")
- *     }
- *   }
- * }}}
- */
-trait FutureOpsFeature { self: SkinnyControllerBase =>
+trait AsyncOperations {
 
   /**
    * Creates a future with implicit request.

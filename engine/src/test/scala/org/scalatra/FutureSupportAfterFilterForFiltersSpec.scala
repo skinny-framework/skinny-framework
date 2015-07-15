@@ -3,16 +3,15 @@ package org.scalatra
 import _root_.akka.actor.ActorSystem
 import org.scalatra.test.specs2.MutableScalatraSpec
 import skinny.engine.SkinnyEngineFilter
-import skinny.engine.async.FutureSupport
 
 import scala.concurrent.Future
 
-class FutureSupportAfterFilterFilter extends SkinnyEngineFilter with FutureSupport {
+class FutureSupportAfterFilterFilter extends SkinnyEngineFilter {
   val system = ActorSystem()
   var actionTime: Long = _
   var afterTime: Long = _
   var afterCount: Long = _
-  protected implicit lazy val executor = system.dispatcher
+  protected override implicit lazy val executionContext = system.dispatcher
 
   asyncGet("/async") {
     Thread.sleep(2000)

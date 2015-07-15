@@ -9,7 +9,7 @@ import javax.servlet.{ FilterConfig, ServletConfig }
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.fusesource.scalate.servlet.ServletTemplateEngine
 import org.fusesource.scalate.support.TemplateFinder
-import org.fusesource.scalate.{ Binding, RenderContext, TemplateEngine }
+import org.fusesource.scalate.{ Binding, TemplateEngine }
 
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext

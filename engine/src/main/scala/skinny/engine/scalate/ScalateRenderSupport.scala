@@ -27,7 +27,7 @@ trait ScalateRenderSupport { self: SkinnyEngineBase with ScalateSupport =>
     (contentType = responseContentType)(ctx)
     response.setHeader("Cache-Control", "public, max-age=%d" format cacheMaxAge)
     response.setStatus(statusCode)
-    renderResponseBody(templateEngine.layout("%s/%s.%s".format(templateBaseDirectory, file, scalateExtension), params))
+    renderResponseBody(templateEngine.layout("%s/%s.%s".format(templateBaseDirectory, file, scalateExtension), params))(ctx)
   }
 
 }

@@ -5,7 +5,6 @@ import java.io._
 import org.apache.http.impl.client.{ CloseableHttpClient, HttpClientBuilder }
 import org.scalatest._
 import org.scalatra.test.scalatest.ScalatraFunSuite
-import skinny.engine.async.FutureSupport
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineServlet, ContentEncodingSupport, ContentEncoding }
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -14,10 +13,10 @@ import scala.concurrent.{ ExecutionContext, Future }
  * Test servlet using ContentEncodingSupport.
  */
 class ContentEncodingSupportTestServlet extends SkinnyEngineServlet with ContentEncodingSupportAppBase {
-  implicit protected def executor: ExecutionContext = ExecutionContext.global
+  override implicit protected def executionContext: ExecutionContext = ExecutionContext.global
 }
 
-trait ContentEncodingSupportAppBase extends SkinnyEngineBase with FutureSupport with ContentEncodingSupport {
+trait ContentEncodingSupportAppBase extends SkinnyEngineBase with ContentEncodingSupport {
   get("/") {
     Helper.body
   }

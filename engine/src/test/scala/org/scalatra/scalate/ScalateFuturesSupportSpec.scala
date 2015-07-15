@@ -6,7 +6,7 @@ import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import org.scalatra.test.specs2.MutableScalatraSpec
 import org.specs2.specification.{ Fragments, Step }
 import skinny.engine.SkinnyEngineServlet
-import skinny.engine.async.{ FutureSupport, AsyncResult }
+import skinny.engine.async.AsyncResult
 import skinny.engine.base.FlashMapSupport
 import skinny.engine.scalate.{ ScalateUrlGeneratorSupport, ScalateSupport }
 
@@ -28,10 +28,9 @@ class ScalateFuturesSupportServlet(exec: ExecutorService)
     extends SkinnyEngineServlet
     with ScalateSupport
     with ScalateUrlGeneratorSupport
-    with FlashMapSupport
-    with FutureSupport {
+    with FlashMapSupport {
 
-  protected implicit val executor = ExecutionContext.fromExecutorService(exec)
+  protected override implicit val executionContext = ExecutionContext.fromExecutorService(exec)
 
   get("/barf") {
     new AsyncResult { val is = Future { throw new RuntimeException } }

@@ -35,7 +35,8 @@ abstract class AsyncResult(
   val servletContext: ServletContext = skinnyEngineContext.toStable().servletContext
 
   // This is a Duration instead of a timeout because a duration has the concept of infinity
-  implicit def timeout: Duration = 30 seconds
+  // If you need to run long-live operations, override this value
+  implicit def timeout: Duration = 10.seconds
 
   val is: Future[_]
 
