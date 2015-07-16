@@ -1,12 +1,10 @@
 package skinny.engine
 
-import skinny.engine.json.JSONOperations
-
 import scala.language.implicitConversions
 import scala.language.reflectiveCalls
 
 import scala.annotation.tailrec
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 import scala.util.{ Failure, Success, Try }
 
@@ -28,82 +26,16 @@ import skinny.engine.util.UriDecoder
 import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern._
 
-object SkinnyEngineBase {
-
-  import ServletApiImplicits._
-  import scala.collection.JavaConverters._
-
-  /**
-   * A key for request attribute that contains any exception
-   * that might have occured before the handling has been
-   * propagated to SkinnyEngineBase#handle (such as in
-   * FileUploadSupport)
-   */
-  val PrehandleExceptionKey: String = "skinny.engine.PrehandleException"
-  val HostNameKey: String = "skinny.engine.HostName"
-  val PortKey: String = "skinny.engine.Port"
-  val ForceHttpsKey: String = "skinny.engine.ForceHttps"
-
-  private[this] val KeyPrefix: String = getClass.getName
-
-  val Callbacks: String = s"$KeyPrefix.callbacks"
-  val RenderCallbacks: String = s"$KeyPrefix.renderCallbacks"
-  val IsAsyncKey: String = s"$KeyPrefix.isAsync"
-
-  def isAsyncResponse(implicit ctx: SkinnyEngineContext): Boolean = ctx.request.get(IsAsyncKey).exists(_ => true)
-
-  def onSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.foreach(fn))
-
-  def onFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.failed.foreach(fn))
-
-  def onCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(fn)
-
-  def onRenderedSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.foreach(fn))
-
-  def onRenderedFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.failed.foreach(fn))
-
-  def onRenderedCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(fn)
-
-  def callbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] =
-    ctx.request.getOrElse(Callbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
-
-  def addCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
-    ctx.request(Callbacks) = callback :: callbacks
-  }
-
-  def runCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
-    callbacks.reverse foreach (_(data))
-  }
-
-  def renderCallbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] = {
-    ctx.request.getOrElse(RenderCallbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
-  }
-
-  def addRenderCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
-    ctx.request(RenderCallbacks) = callback :: renderCallbacks
-  }
-
-  def runRenderCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
-    renderCallbacks.reverse foreach (_(data))
-  }
-
-  def getServletRegistration(app: SkinnyEngineBase): Option[ServletRegistration] = {
-    val registrations = app.servletContext.getServletRegistrations.values().asScala.toList
-    registrations.find(_.getClassName == app.getClass.getName)
-  }
-
-}
-
 /**
  * The base implementation of the SkinnyEngine DSL.
  * Intended to be portable to all supported backends.
  */
 trait SkinnyEngineBase
     extends CoreHandler
-    with CoreRoutingDsl
-    with LoggerProvider
-    with SkinnyEngineContextInitializer
     with Initializable
+    with SkinnyEngineContextInitializer
+    with CoreRoutingDsl
+    with AsyncRoutingDsl
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
     with ServletContextAccessor
@@ -112,11 +44,9 @@ trait SkinnyEngineBase
     with RequestFormatAccessor
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
-    with BeforeAfterDsl
-    with AsyncRoutingDsl
-    with UrlGenerator
     with AsyncOperations
-    with JSONOperations
+    with LoggerProvider
+    with UrlGenerator
     with ServletApiImplicits
     with RouteMatcherImplicits
     with CookiesImplicits
@@ -126,6 +56,14 @@ trait SkinnyEngineBase
     with SessionImplicits {
 
   import SkinnyEngineBase._
+
+  // If you need to run long-live operations, override this value
+  protected def defaultFutureTimeout: Duration = 10.seconds
+
+  /**
+   * ExecutionContext implicit value for this web controller.
+   */
+  implicit protected def executionContext: ExecutionContext = ExecutionContext.global
 
   /**
    * true if async supported
@@ -193,33 +131,31 @@ trait SkinnyEngineBase
         result = runActions
       },
       errorHandler = { error =>
-        {
-          cradleHalt(
-            body = {
-              result = currentErrorHandler.apply(error)
-              rendered = false
-            },
-            errorHandler =
-              e => {
-                SkinnyEngineBase.runCallbacks(Failure(e))(skinnyEngineContext)
-                try {
-                  renderUncaughtException(e)(skinnyEngineContext)
-                } finally {
-                  SkinnyEngineBase.runRenderCallbacks(Failure(e))
-                }
+        cradleHalt(
+          body = {
+            result = currentErrorHandler.apply(error)
+            rendered = false
+          },
+          errorHandler =
+            e => {
+              SkinnyEngineBase.runCallbacks(Failure(e))(skinnyEngineContext)
+              try {
+                renderUncaughtException(e)(skinnyEngineContext)
+              } finally {
+                SkinnyEngineBase.runRenderCallbacks(Failure(e))
               }
-          )
-        }
+            }
+        )
       }
     )
-
     if (!rendered) renderResponse(result)
   }
 
   private[this] def cradleHalt(body: => Any, errorHandler: Throwable => Any): Any = {
-    try body
-    catch {
-      case e: HaltException => {
+    try {
+      body
+    } catch {
+      case e: HaltException =>
         try {
           handleStatusCode(extractStatusCode(e)) match {
             case Some(result) => renderResponse(result)
@@ -229,7 +165,6 @@ trait SkinnyEngineBase
           case e: HaltException => renderHaltException(e)
           case e: Throwable => errorHandler.apply(e)
         }
-      }
       case e: Throwable => errorHandler.apply(e)
     }
   }
@@ -533,13 +468,6 @@ trait SkinnyEngineBase
    */
   def requestPath(implicit ctx: SkinnyEngineContext): String
 
-  implicit protected def executionContext: ExecutionContext = ExecutionContext.global
-
-  override def asynchronously(f: => Any): Action = () => Future(f)
-
-  // If you need to run long-live operations, override this value
-  protected def defaultFutureTimeout: Duration = 10.seconds
-
   private[this] def handleFuture(f: Future[_], timeout: Duration)(implicit ctx: SkinnyEngineContext): Unit = {
     val gotResponseAlready = new AtomicBoolean(false)
     val context: AsyncContext = ctx.request.startAsync(ctx.request, ctx.response)
@@ -609,6 +537,72 @@ trait SkinnyEngineBase
       def onStartAsync(event: AsyncEvent): Unit = {}
     })
     renderFutureResult(f)
+  }
+
+}
+
+object SkinnyEngineBase {
+
+  import ServletApiImplicits._
+  import scala.collection.JavaConverters._
+
+  /**
+   * A key for request attribute that contains any exception
+   * that might have occured before the handling has been
+   * propagated to SkinnyEngineBase#handle (such as in
+   * FileUploadSupport)
+   */
+  val PrehandleExceptionKey: String = "skinny.engine.PrehandleException"
+  val HostNameKey: String = "skinny.engine.HostName"
+  val PortKey: String = "skinny.engine.Port"
+  val ForceHttpsKey: String = "skinny.engine.ForceHttps"
+
+  private[this] val KeyPrefix: String = getClass.getName
+
+  val Callbacks: String = s"$KeyPrefix.callbacks"
+  val RenderCallbacks: String = s"$KeyPrefix.renderCallbacks"
+  val IsAsyncKey: String = s"$KeyPrefix.isAsync"
+
+  def isAsyncResponse(implicit ctx: SkinnyEngineContext): Boolean = ctx.request.get(IsAsyncKey).exists(_ => true)
+
+  def onSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.foreach(fn))
+
+  def onFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(_.failed.foreach(fn))
+
+  def onCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addCallback(fn)
+
+  def onRenderedSuccess(fn: Any => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.foreach(fn))
+
+  def onRenderedFailure(fn: Throwable => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(_.failed.foreach(fn))
+
+  def onRenderedCompleted(fn: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = addRenderCallback(fn)
+
+  def callbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] =
+    ctx.request.getOrElse(Callbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
+
+  def addCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
+    ctx.request(Callbacks) = callback :: callbacks
+  }
+
+  def runCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
+    callbacks.reverse foreach (_(data))
+  }
+
+  def renderCallbacks(implicit ctx: SkinnyEngineContext): List[(Try[Any]) => Unit] = {
+    ctx.request.getOrElse(RenderCallbacks, List.empty[Try[Any] => Unit]).asInstanceOf[List[Try[Any] => Unit]]
+  }
+
+  def addRenderCallback(callback: Try[Any] => Unit)(implicit ctx: SkinnyEngineContext): Unit = {
+    ctx.request(RenderCallbacks) = callback :: renderCallbacks
+  }
+
+  def runRenderCallbacks(data: Try[Any])(implicit ctx: SkinnyEngineContext): Unit = {
+    renderCallbacks.reverse foreach (_(data))
+  }
+
+  def getServletRegistration(app: SkinnyEngineBase): Option[ServletRegistration] = {
+    val registrations = app.servletContext.getServletRegistrations.values().asScala.toList
+    registrations.find(_.getClassName == app.getClass.getName)
   }
 
 }

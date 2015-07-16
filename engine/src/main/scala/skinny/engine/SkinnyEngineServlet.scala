@@ -9,38 +9,6 @@ import skinny.engine.util.UriDecoder
 
 import scala.util.control.Exception.catching
 
-object SkinnyEngineServlet {
-
-  import ServletApiImplicits._
-  import RicherStringImplicits._
-
-  val RequestPathKey = "skinny.engine.SkinnyEngineServlet.requestPath"
-
-  def requestPath(request: HttpServletRequest): String = {
-    require(request != null, "The request can't be null for getting the request path")
-    def startIndex(r: HttpServletRequest) =
-      r.getContextPath.blankOption.map(_.length).getOrElse(0) + r.getServletPath.blankOption.map(_.length).getOrElse(0)
-    def getRequestPath(r: HttpServletRequest) = {
-      val u = (catching(classOf[NullPointerException]) opt { r.getRequestURI } getOrElse "/")
-      requestPath(u, startIndex(r))
-    }
-
-    request.get(RequestPathKey) map (_.toString) getOrElse {
-      val rp = getRequestPath(request)
-      request(RequestPathKey) = rp
-      rp
-    }
-  }
-
-  def requestPath(uri: String, idx: Int): String = {
-    val u1 = UriDecoder.firstStep(uri)
-    val u2 = (u1.blankOption map { _.substring(idx) } flatMap (_.blankOption) getOrElse "/")
-    val pos = u2.indexOf(';')
-    if (pos > -1) u2.substring(0, pos) else u2
-  }
-
-}
-
 /**
  * An implementation of the SkinnyEngine DSL in a servlet.  This is the recommended
  * base trait for most SkinnyEngine applications.  Use a servlet if:
@@ -56,7 +24,7 @@ object SkinnyEngineServlet {
 trait SkinnyEngineServlet
     extends HttpServlet
     with SkinnyEngineBase
-    with Initializable {
+    with SkinnyEngineBasicFeatures {
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {
     handle(request, response)
@@ -136,6 +104,38 @@ trait SkinnyEngineServlet
   override def destroy(): Unit = {
     shutdown()
     super.destroy()
+  }
+
+}
+
+object SkinnyEngineServlet {
+
+  import ServletApiImplicits._
+  import RicherStringImplicits._
+
+  val RequestPathKey = "skinny.engine.SkinnyEngineServlet.requestPath"
+
+  def requestPath(request: HttpServletRequest): String = {
+    require(request != null, "The request can't be null for getting the request path")
+    def startIndex(r: HttpServletRequest) =
+      r.getContextPath.blankOption.map(_.length).getOrElse(0) + r.getServletPath.blankOption.map(_.length).getOrElse(0)
+    def getRequestPath(r: HttpServletRequest) = {
+      val u = (catching(classOf[NullPointerException]) opt { r.getRequestURI } getOrElse "/")
+      requestPath(u, startIndex(r))
+    }
+
+    request.get(RequestPathKey) map (_.toString) getOrElse {
+      val rp = getRequestPath(request)
+      request(RequestPathKey) = rp
+      rp
+    }
+  }
+
+  def requestPath(uri: String, idx: Int): String = {
+    val u1 = UriDecoder.firstStep(uri)
+    val u2 = (u1.blankOption map { _.substring(idx) } flatMap (_.blankOption) getOrElse "/")
+    val pos = u2.indexOf(';')
+    if (pos > -1) u2.substring(0, pos) else u2
   }
 
 }

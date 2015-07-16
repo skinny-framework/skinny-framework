@@ -6,12 +6,14 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 import skinny.engine.async.AsyncSupported
 import skinny.engine.{ Action, RouteTransformer, SkinnyEngineBase }
 
+import scala.concurrent.{ ExecutionContext, Future }
+
 trait AsyncRoutingDsl extends AsyncSupported { self: SkinnyEngineBase =>
 
   /**
    * Takes a block and converts it to an action that can be run asynchronously.
    */
-  protected def asynchronously(f: => Any): Action
+  protected def asynchronously(f: => Any): Action = () => Future(f)
 
   protected def onAsyncEvent(event: AsyncEvent)(thunk: => Any): Unit = {
     withRequest(event.getSuppliedRequest.asInstanceOf[HttpServletRequest]) {

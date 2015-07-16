@@ -1,13 +1,16 @@
 package skinny.controller.feature
 
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.base.BeforeAfterDsl
 
 /**
  * beforeAction/afterAction support.
  *
  * @see http://guides.rubyonrails.org/action_controller_overview.html
  */
-trait BeforeAfterActionFeature extends SkinnyEngineBase {
+trait BeforeAfterActionFeature
+    extends SkinnyEngineBase
+    with BeforeAfterDsl {
 
   self: RichRouteFeature with ActionDefinitionFeature with RequestScopeFeature =>
 

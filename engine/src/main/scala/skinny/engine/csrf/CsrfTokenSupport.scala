@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest
 
 import CsrfTokenSupport._
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 
 /**
@@ -21,7 +22,7 @@ import skinny.engine.context.SkinnyEngineContext
  * `handleForgery()` hook is invoked.  Otherwise, a token for the next
  * request is prepared with `prepareCsrfToken`.
  */
-trait CsrfTokenSupport { this: SkinnyEngineBase =>
+trait CsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
   before(isForged) { handleForgery() }
   before() { prepareCsrfToken() }

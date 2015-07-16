@@ -1,10 +1,12 @@
 package org.scalatra
 
 import org.scalatra.test.scalatest.ScalatraFunSuite
-import skinny.engine.{ SkinnyEngineServlet, SkinnyEngineBase }
+import skinny.engine.base.BeforeAfterDsl
+import skinny.engine.{ Action, SkinnyEngineServlet, SkinnyEngineBase }
 
 class AfterTestServlet extends SkinnyEngineServlet with AfterTestAppBase
-trait AfterTestAppBase extends SkinnyEngineBase {
+
+trait AfterTestAppBase extends SkinnyEngineBase with BeforeAfterDsl {
 
   after() {
     response.setStatus(204)
