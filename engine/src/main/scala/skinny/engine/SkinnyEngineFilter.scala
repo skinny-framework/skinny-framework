@@ -24,7 +24,10 @@ import scala.util.DynamicVariable
  *
  * @see SkinnyEngineServlet
  */
-trait SkinnyEngineFilter extends Filter with SkinnyEngineBase {
+trait SkinnyEngineFilter
+    extends Filter
+    with SkinnyEngineBase
+    with SkinnyEngineBasicFeatures {
 
   private[this] val _filterChain: DynamicVariable[FilterChain] = new DynamicVariable[FilterChain](null)
 

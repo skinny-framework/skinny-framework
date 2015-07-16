@@ -1,5 +1,6 @@
 package skinny.engine.csrf
 
+import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ RouteTransformer, SkinnyEngineBase }
 
@@ -13,7 +14,7 @@ object XsrfTokenSupport {
 
 }
 
-trait XsrfTokenSupport { this: SkinnyEngineBase =>
+trait XsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
   import XsrfTokenSupport._
 

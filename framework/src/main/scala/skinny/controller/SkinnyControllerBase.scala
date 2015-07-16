@@ -4,7 +4,7 @@ import skinny._
 import skinny.controller.feature._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.json.JSONOperations
-import skinny.engine.{ SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
+import skinny.engine.{ SkinnyEngineBasicFeatures, SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
 import skinny.engine.response.ResponseStatus
 import skinny.engine.routing.Route
 import skinny.filter.SkinnyFilterActivation
@@ -23,6 +23,7 @@ import org.json4s.JDecimal
 
 trait SkinnyControllerBase
     extends SkinnyEngineBase
+    with SkinnyEngineBasicFeatures
     with ApiFormats
     with EnvFeature
     with QueryParamsFeature
@@ -36,7 +37,6 @@ trait SkinnyControllerBase
     with BeforeAfterActionFeature
     with LocaleFeature
     with ValidationFeature
-    with JSONOperations
     with TimeLoggingFeature
     with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature

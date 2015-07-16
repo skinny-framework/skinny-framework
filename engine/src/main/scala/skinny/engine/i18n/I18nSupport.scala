@@ -2,6 +2,7 @@ package skinny.engine.i18n
 
 import java.util.Locale
 
+import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineException }
 
@@ -15,7 +16,7 @@ object I18nSupport {
 
 }
 
-trait I18nSupport { this: SkinnyEngineBase =>
+trait I18nSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
   import I18nSupport._
 

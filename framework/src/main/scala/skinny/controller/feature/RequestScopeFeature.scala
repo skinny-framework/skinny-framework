@@ -3,6 +3,7 @@ package skinny.controller.feature
 import java.lang.reflect.Modifier
 import skinny.controller.{ KeyAndErrorMessages, Params }
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
@@ -76,6 +77,7 @@ object RequestScopeFeature extends LoggerProvider {
  */
 trait RequestScopeFeature
     extends SkinnyEngineBase
+    with BeforeAfterDsl
     with SnakeCasedParamKeysFeature
     with LocaleFeature
     with LoggerProvider {
