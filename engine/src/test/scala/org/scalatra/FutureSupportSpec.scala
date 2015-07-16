@@ -2,11 +2,15 @@ package org.scalatra
 
 import scala.language.postfixOps
 
+import java.security.SecureRandom
+import java.util.concurrent.Executors
+
+import org.scalatra.test.HttpComponentsClient
+
 import skinny.engine.{ ContentTypeInferrer, SkinnyEngineServlet }
 import skinny.engine.async.AsyncResult
 import skinny.engine.response._
 
-import java.util.concurrent.Executors
 import org.eclipse.jetty.server.{ Connector, ServerConnector, Server }
 import org.eclipse.jetty.util.thread.QueuedThreadPool
 import org.scalatra.test.specs2.MutableScalatraSpec
@@ -41,12 +45,13 @@ class FutureSupportServlet extends SkinnyEngineServlet {
     }
   }
 
+  val rand = new SecureRandom()
+
   get("/async-attributes/:mockSessionId") {
     request.setAttribute("sessionId", params("mockSessionId"))
-    val handlingReq = request
     new AsyncResult {
       override val is = Future {
-        Thread.sleep(200)
+        Thread.sleep(rand.nextInt(200))
         Ok(body = request.getAttribute("sessionId"))
       }(futureEC)
     }
@@ -176,29 +181,26 @@ class FutureSupportSpec extends MutableScalatraSpec {
       }
     }
 
-    //    "should not leak attributes between requests" in {
-    //      implicit val multiClentEc = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(50))
-    //      val ids = (1 to 50).map(_ => scala.util.Random.nextInt())
-    //      val serverBaseUrl = baseUrl
-    //      val idsToResponseFs = ids.map { id =>
-    //        val client = new HttpComponentsClient {
-    //          override val baseUrl: String = serverBaseUrl
-    //        }
-    //        Future {
-    //          blocking {
-    //            id.toString -> client.get(s"/async-attributes/$id") {
-    //              client.body
-    //            }
-    //          }
-    //        }(multiClentEc)
-    //      }
-    //      val fIdsToResponses = Future.sequence(idsToResponseFs)
-    //      val idsToResponses = Await.result(fIdsToResponses, Duration(60, SECONDS))
-    //      foreachWhen(idsToResponses) {
-    //        case (expected, actual) => {
-    //          expected must_== actual
-    //        }
-    //      }
-    //    }
+    "should not leak attributes between requests" in {
+      implicit val multiClentEc = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(50))
+      val rand = new SecureRandom()
+      val ids = (1 to 100).map(_ => System.currentTimeMillis() + "-" + rand.nextInt(100))
+      val serverBaseUrl = baseUrl
+      val idsToResponseFs = ids.map { id =>
+        val client = new HttpComponentsClient { override val baseUrl = serverBaseUrl }
+        Future {
+          blocking {
+            id -> client.get(s"/async-attributes/$id") {
+              client.body
+            }
+          }
+        }(multiClentEc)
+      }
+      val fIdsToResponses = Future.sequence(idsToResponseFs)
+      val idsToResponses = Await.result(fIdsToResponses, Duration(30, SECONDS))
+      foreachWhen(idsToResponses) {
+        case (expected, actual) => expected must_== actual
+      }
+    }
   }
 }
