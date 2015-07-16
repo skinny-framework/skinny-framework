@@ -1,10 +1,7 @@
 package skinny
 
-import skinny.engine.base.FlashMapSupport
 import skinny.engine.control.HaltPassControl
-import skinny.engine.csrf.{ XsrfTokenSupport, CsrfTokenSupport }
 import skinny.engine.data.{ MapWithIndifferentAccess, MultiMapHeadView, MultiMap }
-import skinny.engine.multipart.FileUploadSupport
 import skinny.engine.routing.Route
 
 import scala.language.implicitConversions
@@ -40,5 +37,11 @@ package object engine
   val EnvironmentKey = "skinny.engine.environment"
 
   val MultiParamsKey = "skinny.engine.MultiParams"
+
+  type AppBase = skinny.engine.SkinnyEngineBase
+
+  type SingleApp = skinny.engine.SkinnyEngineServlet
+
+  type WebApp = skinny.engine.SkinnyEngineFilter
 
 }

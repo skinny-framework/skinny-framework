@@ -2,7 +2,7 @@ package skinny.engine.base
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-import skinny.engine.SkinnyEngineBase
+import skinny.engine.{ Handler, SkinnyEngineBase }
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.flash.FlashMap
 import skinny.engine.implicits.{ ServletApiImplicits, SessionImplicits }

@@ -1,6 +1,7 @@
 package skinny.routing
 
-import skinny.controller.{ ActionDefinition, Constants, SkinnyControllerBase }
+import skinny.controller.{ ActionDefinition, SkinnyControllerBase }
+import skinny.engine.Handler
 import skinny.engine.constant.HttpMethod
 import skinny.engine.routing.Route
 import skinny.exception.RouteMetadataException
@@ -21,10 +22,10 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
    * @return route
    */
   def as(name: Symbol): Route = {
-    val expectedMethod = route.metadata.get(Constants.RouteMetadataHttpMethodCacheKey)
+    val expectedMethod = route.metadata.get(Handler.RouteMetadataHttpMethodCacheKey)
       .map(_.asInstanceOf[HttpMethod]).getOrElse {
         throw new RouteMetadataException(
-          s"Metadata attribute ${Constants.RouteMetadataHttpMethodCacheKey} of Route should be set.")
+          s"Metadata attribute ${Handler.RouteMetadataHttpMethodCacheKey} of Route should be set.")
       }
     controller.addActionDefinition(ActionDefinition(
       name = name,

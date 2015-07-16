@@ -23,7 +23,6 @@ import skinny.engine.multipart.FileCharset
 import skinny.engine.response.{ ResponseStatus, ActionResult, Found }
 import skinny.engine.routing._
 import skinny.engine.util.UriDecoder
-import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern._
 
 /**
@@ -32,10 +31,9 @@ import skinny.util.LoanPattern._
  */
 trait SkinnyEngineBase
     extends CoreHandler
-    with Initializable
-    with SkinnyEngineContextInitializer
     with CoreRoutingDsl
     with AsyncRoutingDsl
+    with AsyncOperations
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
     with ServletContextAccessor
@@ -44,8 +42,6 @@ trait SkinnyEngineBase
     with RequestFormatAccessor
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
-    with AsyncOperations
-    with LoggerProvider
     with UrlGenerator
     with ServletApiImplicits
     with RouteMatcherImplicits
@@ -72,6 +68,11 @@ trait SkinnyEngineBase
     classOf[Future[_]].isAssignableFrom(result.getClass) ||
       classOf[AsyncResult].isAssignableFrom(result.getClass)
   }
+
+  /**
+   * Default charset.
+   */
+  lazy val charset: Option[String] = Some("utf-8")
 
   /**
    * Executes routes in the context of the current request and response.

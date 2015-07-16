@@ -10,13 +10,12 @@ import scala.collection.concurrent.{ Map => ConcurrentMap }
 
 class RouteRegistry {
 
-  private[this] val _methodRoutes: ConcurrentMap[HttpMethod, Seq[Route]] =
-    new ConcurrentHashMap[HttpMethod, Seq[Route]].asScala
+  private[this] val _methodRoutes: ConcurrentMap[HttpMethod, Seq[Route]] = new ConcurrentHashMap[HttpMethod, Seq[Route]].asScala
 
-  private[this] val _statusRoutes: ConcurrentMap[Int, Route] =
-    new ConcurrentHashMap[Int, Route].asScala
+  private[this] val _statusRoutes: ConcurrentMap[Int, Route] = new ConcurrentHashMap[Int, Route].asScala
 
   private[this] var _beforeFilters: Seq[Route] = Vector.empty
+
   private[this] var _afterFilters: Seq[Route] = Vector.empty
 
   /**
@@ -84,10 +83,11 @@ class RouteRegistry {
     modifyRoutes(method, route +: _)
 
   /**
-   * Removes a route from the method's route seqeuence.
+   * Removes a route from the method's route sequence.
    */
-  def removeRoute(method: HttpMethod, route: Route): Unit =
-    modifyRoutes(method, _ filterNot (_ == route))
+  def removeRoute(method: HttpMethod, route: Route): Unit = {
+    modifyRoutes(method, (routes) => routes.filter(_ != route))
+  }
 
   /**
    * Returns the sequence of filters to run before the route.
@@ -109,7 +109,7 @@ class RouteRegistry {
    */
   def appendAfterFilter(route: Route): Unit = _afterFilters :+= route
 
-  @tailrec private def modifyRoutes(method: HttpMethod, f: (Seq[Route] => Seq[Route])): Unit = {
+  @tailrec private[this] def modifyRoutes(method: HttpMethod, f: (Seq[Route] => Seq[Route])): Unit = {
     if (_methodRoutes.putIfAbsent(method, f(Vector.empty)).isDefined) {
       val oldRoutes = _methodRoutes(method)
       if (!_methodRoutes.replace(method, oldRoutes, f(oldRoutes)))

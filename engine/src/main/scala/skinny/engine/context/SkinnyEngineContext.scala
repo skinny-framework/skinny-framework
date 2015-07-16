@@ -25,6 +25,9 @@ object SkinnyEngineContext {
   def buildWithRequest(req: HttpServletRequest): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(req), null, null)
   }
+  def buildWithoutResponse(req: HttpServletRequest, ctx: ServletContext): SkinnyEngineContext = {
+    new StableSkinnyEngineContext()(StableHttpServletRequest(req), null, ctx)
+  }
 
 }
 

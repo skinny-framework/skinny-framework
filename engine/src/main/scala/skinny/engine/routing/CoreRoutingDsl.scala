@@ -3,7 +3,7 @@ package skinny.engine.routing
 import javax.servlet.http.HttpServletRequest
 
 import skinny.engine._
-import skinny.engine.base.{ ServletContextAccessor, SkinnyEngineContextInitializer, RouteRegistryAccessor, Handler }
+import skinny.engine.base.{ SkinnyEngineContextInitializer, ServletContextAccessor, RouteRegistryAccessor }
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.HaltPassControl
@@ -13,10 +13,9 @@ import skinny.engine.implicits.ServletApiImplicits
  * The core SkinnyEngine DSL.
  */
 trait CoreRoutingDsl
-    extends Handler
-    with HaltPassControl
-    with SkinnyEngineContextInitializer
+    extends HaltPassControl
     with RouteRegistryAccessor
+    with SkinnyEngineContextInitializer
     with ServletContextAccessor
     with ServletApiImplicits {
 
@@ -86,8 +85,10 @@ trait CoreRoutingDsl
    * @see skinny.engine.SkinnyEngineKernel#removeRoute
    */
   protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
-    // TODO: still NPE work around here only when testing
-    val route = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext(servletContext)))
+    val route: Route = {
+      val r = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(SkinnyEngineContext.buildWithoutResponse(req, servletContext)))
+      r.copy(metadata = r.metadata.updated(Handler.RouteMetadataHttpMethodCacheKey, method))
+    }
     routes.prependRoute(method, route)
     route
   }

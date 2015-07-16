@@ -3,10 +3,8 @@ package skinny.controller
 import skinny._
 import skinny.controller.feature._
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.json.JSONOperations
 import skinny.engine.{ SkinnyEngineBasicFeatures, SkinnyEngineBase, ApiFormats, UrlGeneratorSupport }
 import skinny.engine.response.ResponseStatus
-import skinny.engine.routing.Route
 import skinny.filter.SkinnyFilterActivation
 import skinny.logging.LoggerProvider
 import skinny.validator.implicits.ParametersGetAsImplicits
@@ -28,7 +26,6 @@ trait SkinnyControllerBase
     with EnvFeature
     with QueryParamsFeature
     with FormParamsFeature
-    with RichRouteFeature
     with UrlGeneratorSupport
     with ExplicitRedirectFeature
     with ActionDefinitionFeature
@@ -46,18 +43,6 @@ trait SkinnyControllerBase
     with ParamsPermitImplicits
     with SkinnyFilterActivation
     with LoggerProvider {
-
-  /**
-   * Default charset.
-   */
-  lazy val charset: Option[String] = Some("utf-8")
-
-  /**
-   * Defines formats to be respond. By default, HTML, JSON, XML are available.
-   *
-   * @return formats
-   */
-  protected def respondTo: Seq[Format] = Seq(Format.HTML, Format.JSON, Format.XML)
 
   /**
    * Set Content-Type for the format if absent.
