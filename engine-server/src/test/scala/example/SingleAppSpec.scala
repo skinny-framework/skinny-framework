@@ -63,11 +63,11 @@ class SingleAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   it should "respond as NG when using Future without context" in {
     var failureFound = false
     var count = 0
-    while (!failureFound && count < 10) {
+    while (!failureFound && count < 30) {
       val response = HTTP.get("http://127.0.0.1:8766/json1")
       if (response.status != 500) {
         count += 1
-        Thread.sleep(10)
+        Thread.sleep(50)
       } else {
         failureFound = true
         response.status should equal(500)
