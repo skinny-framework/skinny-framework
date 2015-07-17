@@ -3,7 +3,7 @@ package skinny.engine.context
 import java.net.{ MalformedURLException, URL }
 import java.{ util => jutil }
 import javax.servlet.http.{ HttpServlet, HttpServletRequest }
-import javax.servlet.{ DispatcherType, Filter, ServletContext }
+import javax.servlet.{ ServletRegistration, DispatcherType, Filter, ServletContext }
 import skinny.engine._
 import skinny.engine.async.AsyncSupported
 import skinny.engine.data.AttributesMap
@@ -127,19 +127,19 @@ case class RichServletContext(sc: ServletContext) extends AttributesMap {
     urlPattern: String,
     name: String,
     loadOnStartup: Int): Unit = {
-    val reg = Option(sc.getServletRegistration(name)) getOrElse {
+    val reg: ServletRegistration = Option(sc.getServletRegistration(name)) getOrElse {
       val r = sc.addServlet(name, servlet)
       servlet match {
         case s: HasMultipartConfig =>
           r.setMultipartConfig(s.multipartConfig.toMultipartConfigElement)
         case _ =>
       }
-      if (servlet.isInstanceOf[AsyncSupported])
+      if (servlet.isInstanceOf[AsyncSupported]) {
         r.setAsyncSupported(true)
+      }
       r.setLoadOnStartup(loadOnStartup)
       r
     }
-
     reg.addMapping(urlPattern)
   }
 

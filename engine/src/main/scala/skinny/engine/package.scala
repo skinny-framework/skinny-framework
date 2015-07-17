@@ -38,6 +38,8 @@ package object engine
 
   val MultiParamsKey = "skinny.engine.MultiParams"
 
+  type Context = skinny.engine.context.SkinnyEngineContext
+
   type AppBase = skinny.engine.SkinnyEngineBase
 
   type SingleApp = skinny.engine.SkinnyEngineServlet

@@ -4,6 +4,7 @@ import javax.servlet._
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import skinny.SkinnyEnv
+import skinny.engine.async.AsyncSupported
 import skinny.engine.base.{ ServletContextAccessor, RouteRegistryAccessor, SkinnyEngineContextInitializer }
 import skinny.logging.LoggerProvider
 
@@ -28,10 +29,12 @@ trait Handler
         allRoutePaths.foreach { path =>
           val name = this.getClass.getName
           val registration: FilterRegistration = {
-            val r = Option(ctx.getFilterRegistration(name)).getOrElse(ctx.addFilter(name, this.asInstanceOf[Filter]))
+            val reg = Option(ctx.getFilterRegistration(name)).getOrElse(ctx.addFilter(name, this.asInstanceOf[Filter]))
             // mocked object can be null
-            Option(r.asInstanceOf[FilterRegistration.Dynamic]).foreach(_.setAsyncSupported(true))
-            r
+            if (reg != null && filter.isInstanceOf[AsyncSupported]) {
+              reg.asInstanceOf[FilterRegistration.Dynamic].setAsyncSupported(true)
+            }
+            reg
           }
           if (registration != null) {
             registration.addMappingForUrlPatterns(
@@ -42,7 +45,7 @@ trait Handler
         }
       case servlet: Servlet =>
         try {
-          ctx.addServlet("/", servlet).setAsyncSupported(true)
+          ctx.mount(servlet, "/")
         } catch {
           case e: NullPointerException if SkinnyEnv.isTest() =>
             logger.info("Skipped NPE when mocking servlet APIs.")

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.servlet.http.{ HttpServletResponse, HttpServlet, HttpServletRequest }
 import javax.servlet._
 
-import skinny.engine.async.{ AsyncOperations, AsyncResult }
+import skinny.engine.async.{ AsyncSupported, AsyncOperations, AsyncResult }
 import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
@@ -32,6 +32,7 @@ import skinny.util.LoanPattern._
 trait SkinnyEngineBase
     extends CoreHandler
     with CoreRoutingDsl
+    with AsyncSupported
     with AsyncOperations
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
