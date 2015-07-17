@@ -121,6 +121,9 @@ object SkinnyFrameworkBuild extends Build {
           "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
           "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
+        ) ++ Seq(
+          // TODO: remove this, due to mime-util
+          "org.slf4j"         %  "slf4j-log4j12"      % slf4jApiVersion           % Compile
         )
       }
     ) ++ _jettyOrbitHack
