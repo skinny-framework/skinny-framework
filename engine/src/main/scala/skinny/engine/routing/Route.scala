@@ -37,21 +37,23 @@ case class Route(
    * The reversible matcher of a route is the first reversible matcher, if
    * any.  This matcher may be used to generate URIs.
    */
-  lazy val reversibleMatcher: Option[RouteMatcher] =
+  lazy val reversibleMatcher: Option[RouteMatcher] = {
     routeMatchers find (_.isInstanceOf[ReversibleRouteMatcher])
+  }
 
   /**
    * Determines whether this is a reversible route.
    */
   lazy val isReversible: Boolean = !reversibleMatcher.isEmpty
 
-  override def toString: String = routeMatchers mkString " "
+  override def toString: String = routeMatchers.mkString(" ")
 }
 
 object Route {
 
-  def apply(transformers: Seq[RouteTransformer], action: Action): Route =
+  def apply(transformers: Seq[RouteTransformer], action: Action): Route = {
     apply(transformers, action, (_: HttpServletRequest) => "")
+  }
 
   // TODO: remove HttpServletRequest from contextPath
   def apply(transformers: Seq[RouteTransformer], action: Action, contextPath: HttpServletRequest => String): Route = {

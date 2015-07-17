@@ -3,6 +3,7 @@ package skinny.engine.base
 import javax.servlet.ServletContext
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.ServletConcurrencyException
 import skinny.engine.context.SkinnyEngineContext
 
 import scala.util.DynamicVariable
@@ -31,7 +32,20 @@ trait SkinnyEngineContextInitializer { self: ServletContextAccessor =>
    * Skinny Engine Context
    */
   implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
-    SkinnyEngineContext.build(ctx, mainThreadDynamicRequest.value, mainThreadDynamicResponse.value)
+    if (mainThreadDynamicRequest.value != null) {
+      SkinnyEngineContext.build(ctx, mainThreadDynamicRequest.value, mainThreadDynamicResponse.value)
+    } else {
+      // -------------------------------------------------
+      // NOTE: this behavior doesn't always happen
+      //
+      // dynamic request value is stored only for Servlet main thread.
+      // When DSLs that need stable SkinnyEngineContext are accessed inside Future value's #map operation and so on,
+      // framework users sometimes specify explicit SkinnyEngineContext.
+      //
+      // This exception's message shows framework users what they need to do.
+      // -------------------------------------------------
+      throw new ServletConcurrencyException
+    }
   }
 
   def context: SkinnyEngineContext = skinnyEngineContext(servletContext)

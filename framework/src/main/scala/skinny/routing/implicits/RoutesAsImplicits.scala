@@ -1,9 +1,10 @@
 package skinny.routing.implicits
 
+import scala.language.implicitConversions
+
+import skinny.engine.Handler
 import skinny.engine.constant.{ Get, HttpMethod }
 import skinny.engine.routing.Route
-
-import scala.language.implicitConversions
 
 import skinny.controller._
 import skinny.routing.RichRoute
@@ -19,7 +20,7 @@ object RoutesAsImplicits extends RoutesAsImplicits
 trait RoutesAsImplicits {
 
   implicit def convertRouteToRichRoute(route: Route)(implicit controller: SkinnyControllerBase): RichRoute = {
-    val method = route.metadata.get(Constants.RouteMetadataHttpMethodCacheKey).map(_.asInstanceOf[HttpMethod]).getOrElse(Get)
+    val method = route.metadata.get(Handler.RouteMetadataHttpMethodCacheKey).map(_.asInstanceOf[HttpMethod]).getOrElse(Get)
     new RichRoute(route, method, controller)
   }
 

@@ -7,6 +7,6 @@ trait RouteRegistryAccessor {
   /**
    * The routes registered in this kernel.
    */
-  lazy val routes: RouteRegistry = new RouteRegistry
+  protected val routes: RouteRegistry = new RouteRegistry
 
 }

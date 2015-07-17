@@ -13,6 +13,7 @@ sbt ++2.11.7 \
   factoryGirl/publishSigned \
   validator/publishSigned \
   engine/publishSigned \
+  engineServer/publishSigned \
   engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
@@ -37,6 +38,7 @@ sbt ++2.11.7 \
   factoryGirl/publishSigned \
   validator/publishSigned \
   engine/publishSigned \
+  engineServer/publishSigned \
   engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \

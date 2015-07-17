@@ -61,31 +61,27 @@ class FutureSupportServlet extends SkinnyEngineServlet {
     "redirected"
   }
 
-  asyncGet("/working") {
+  get("/working") {
     "the-working-reply"
-  }
-
-  asyncGet("/timeout") {
-    Thread.sleep((defaultFutureTimeout plus 1.second).toMillis)
   }
 
   class FailException extends RuntimeException
 
-  asyncGet("/fail") {
+  get("/fail") {
     throw new FailException
   }
 
   class FailHarderException extends RuntimeException
 
-  asyncGet("/fail-harder") {
+  get("/fail-harder") {
     throw new FailHarderException
   }
 
-  asyncGet("/halt") {
+  get("/halt") {
     halt(419)
   }
 
-  asyncGet("/*.jpg") {
+  get("/*.jpg") {
     "jpeg"
   }
 
@@ -121,13 +117,6 @@ class FutureSupportSpec extends MutableScalatraSpec {
     "render the reply of an actor" in {
       get("/working") {
         body must_== "the-working-reply"
-      }
-    }
-
-    "respond with timeout if no timely reply from the actor" in {
-      get("/timeout") {
-        status must_== 504
-        body must_== "Gateway timeout"
       }
     }
 

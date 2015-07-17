@@ -2,13 +2,14 @@ package skinny.engine.base
 
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 
+import skinny.engine.Handler
 import skinny.engine.cookie.{ SweetCookies, Cookie }
 import skinny.engine.implicits.ServletApiImplicits
+import skinny.engine.routing.CoreRoutingDsl
 
 trait CoreHandler
     extends Handler
-    with ServletApiImplicits
-    with SkinnyEngineContextInitializer { self: ServletContextAccessor =>
+    with ServletApiImplicits { self: ServletContextAccessor with CoreRoutingDsl =>
 
   /**
    * The default character encoding for requests and responses.
@@ -36,10 +37,10 @@ trait CoreHandler
     request(Cookie.SweetCookiesKey) = new SweetCookies(request, response)
     response.characterEncoding = Some(defaultCharacterEncoding)
     withRequestResponse(request, response) {
-      executeRoutes()
+      executeRoutes(request, response)
     }
   }
 
-  protected def executeRoutes(): Unit
+  protected def executeRoutes(request: HttpServletRequest, response: HttpServletResponse): Unit
 
 }

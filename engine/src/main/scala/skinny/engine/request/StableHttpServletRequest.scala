@@ -19,10 +19,16 @@ class StableHttpServletRequest(
   private val underlying: HttpServletRequest)
     extends HttpServletRequestWrapper(underlying) {
 
+  var stopTryingOriginal: Boolean = false
+
   private[this] def tryOriginalFirst[A](action: => A, fallback: A): A = {
-    val tried = Try(action)
-    if (tried.isFailure || tried.filter(_ != null).toOption.isEmpty) fallback
-    else tried.get
+    if (stopTryingOriginal) {
+      fallback
+    } else {
+      val tried = Try(action)
+      if (tried.isFailure || tried.filter(_ != null).toOption.isEmpty) fallback
+      else tried.get
+    }
   }
 
   private[this] val _getAuthType = underlying.getAuthType

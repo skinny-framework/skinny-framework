@@ -121,12 +121,26 @@ object SkinnyFrameworkBuild extends Build {
           "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
           "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
+        ) ++ Seq(
+          // TODO: remove this, due to mime-util
+          "org.slf4j"         %  "slf4j-log4j12"      % slf4jApiVersion           % Compile
         )
       }
     ) ++ _jettyOrbitHack
   ).dependsOn(
     common,
     json
+  )
+
+  lazy val engineServer = Project(id = "engineServer", base = file("engine-server"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-engine-server",
+      libraryDependencies ++= testDependencies
+    ) ++ _jettyOrbitHack
+  ).dependsOn(
+    engine,
+    standalone,
+    httpClient % Test
   )
 
   lazy val engineTest = Project(id = "engineTest", base = file("engine-test"),
@@ -402,7 +416,9 @@ object SkinnyFrameworkBuild extends Build {
     "org.scalatra.rl"                  %% "rl"                % "0.4.10",
     "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3",
     "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   excludeAll(fullExclusionRules: _*),
-    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   excludeAll(fullExclusionRules: _*)
+    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   excludeAll(fullExclusionRules: _*),
+    // To fix slf4j-log4j12 version for mime-util
+    "org.slf4j"                        %  "slf4j-log4j12"     % slf4jApiVersion  % Provided
   )
 
   lazy val scalikejdbcDependencies = Seq(

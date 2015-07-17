@@ -13,14 +13,14 @@ class FutureSupportAfterFilterFilter extends SkinnyEngineFilter {
   var afterCount: Long = _
   protected override implicit lazy val executionContext = system.dispatcher
 
-  asyncGet("/async") {
+  get("/async") {
     Thread.sleep(2000)
     actionTime = System.nanoTime()
 
     "async"
   }
 
-  asyncGet("/async-two-afters") {
+  get("/async-two-afters") {
     Thread.sleep(2000)
     "async-two-afters"
   }

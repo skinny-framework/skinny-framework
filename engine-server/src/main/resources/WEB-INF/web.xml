@@ -3,17 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-
     <listener>
         <listener-class>skinny.engine.SkinnyEngineListener</listener-class>
     </listener>
-
-    <session-config>
-        <tracking-mode>COOKIE</tracking-mode>
-        <session-timeout>1440</session-timeout>
-        <cookie-config>
-            <name>skinny_session</name>
-        </cookie-config>
-    </session-config>
-
 </web-app>

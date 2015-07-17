@@ -74,3 +74,6 @@ ivy2
 skinny-*.tar.gz
 tmp
 .sbtconfig
+
+velocity.log*
+

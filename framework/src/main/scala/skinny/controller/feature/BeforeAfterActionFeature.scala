@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
+import skinny.engine.{ Handler, SkinnyEngineBase }
 import skinny.engine.base.BeforeAfterDsl
 
 /**
@@ -12,7 +12,7 @@ trait BeforeAfterActionFeature
     extends SkinnyEngineBase
     with BeforeAfterDsl {
 
-  self: RichRouteFeature with ActionDefinitionFeature with RequestScopeFeature =>
+  self: Handler with ActionDefinitionFeature with RequestScopeFeature =>
 
   /**
    * Collection of beforeAction functions.

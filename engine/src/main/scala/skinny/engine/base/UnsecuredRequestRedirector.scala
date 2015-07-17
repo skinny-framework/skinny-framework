@@ -3,6 +3,7 @@ package skinny.engine.base
 import java.net.URI
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.Handler
 import skinny.engine.implicits.ServletApiImplicits
 
 /**

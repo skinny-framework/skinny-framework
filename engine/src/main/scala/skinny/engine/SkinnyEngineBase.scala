@@ -10,10 +10,10 @@ import scala.util.{ Failure, Success, Try }
 
 import java.io.{ File, FileInputStream }
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.servlet.http.{ HttpServlet, HttpServletRequest }
+import javax.servlet.http.{ HttpServletResponse, HttpServlet, HttpServletRequest }
 import javax.servlet._
 
-import skinny.engine.async.{ AsyncOperations, AsyncResult }
+import skinny.engine.async.{ AsyncSupported, AsyncOperations, AsyncResult }
 import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
@@ -23,7 +23,6 @@ import skinny.engine.multipart.FileCharset
 import skinny.engine.response.{ ResponseStatus, ActionResult, Found }
 import skinny.engine.routing._
 import skinny.engine.util.UriDecoder
-import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern._
 
 /**
@@ -32,10 +31,9 @@ import skinny.util.LoanPattern._
  */
 trait SkinnyEngineBase
     extends CoreHandler
-    with Initializable
-    with SkinnyEngineContextInitializer
     with CoreRoutingDsl
-    with AsyncRoutingDsl
+    with AsyncSupported
+    with AsyncOperations
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
     with ServletContextAccessor
@@ -44,8 +42,6 @@ trait SkinnyEngineBase
     with RequestFormatAccessor
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
-    with AsyncOperations
-    with LoggerProvider
     with UrlGenerator
     with ServletApiImplicits
     with RouteMatcherImplicits
@@ -56,9 +52,6 @@ trait SkinnyEngineBase
     with SessionImplicits {
 
   import SkinnyEngineBase._
-
-  // If you need to run long-live operations, override this value
-  protected def defaultFutureTimeout: Duration = 10.seconds
 
   /**
    * ExecutionContext implicit value for this web controller.
@@ -72,6 +65,11 @@ trait SkinnyEngineBase
     classOf[Future[_]].isAssignableFrom(result.getClass) ||
       classOf[AsyncResult].isAssignableFrom(result.getClass)
   }
+
+  /**
+   * Default charset.
+   */
+  lazy val charset: Option[String] = Some("utf-8")
 
   /**
    * Executes routes in the context of the current request and response.
@@ -91,26 +89,23 @@ trait SkinnyEngineBase
    * $ 4. Executes the after filters with `runFilters`.
    * $ 5. The action result is passed to `renderResponse`.
    */
-  protected def executeRoutes() {
+  protected def executeRoutes(request: HttpServletRequest, response: HttpServletResponse) {
     var result: Any = null
     var rendered = true
 
-    def runActions = {
+    def runActions(request: HttpServletRequest, response: HttpServletResponse) = {
       val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
-        val (rq, rs) = (request, response)
         SkinnyEngineBase.onCompleted { _ =>
-          withRequestResponse(rq, rs) {
-            val className = this.getClass.toString
-            this match {
-              case f: Filter if !rq.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
-                rq(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
-                runFilters(routes.afterFilters)
-              case f: HttpServlet if !rq.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
-                rq("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
-                runFilters(routes.afterFilters)
-              case _ =>
-            }
+          val className = this.getClass.toString
+          this match {
+            case f: Filter if !request.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
+              request(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
+              runFilters(routes.afterFilters)
+            case f: HttpServlet if !request.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
+              request("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
+              runFilters(routes.afterFilters)
+            case _ =>
           }
         }
         runFilters(routes.beforeFilters)
@@ -128,7 +123,7 @@ trait SkinnyEngineBase
 
     cradleHalt(
       body = {
-        result = runActions
+        result = runActions(request, response)
       },
       errorHandler = { error =>
         cradleHalt(
@@ -303,7 +298,7 @@ trait SkinnyEngineBase
   protected def renderResponse(actionResult: Any)(implicit ctx: SkinnyEngineContext): Unit = {
     actionResult match {
       case r: AsyncResult => handleFuture(r.is, r.timeout)(ctx)
-      case f: Future[_] => handleFuture(f, defaultFutureTimeout)(ctx)
+      case f: Future[_] => renderResponse(AsyncResult.withFuture(f)(ctx))(ctx)
       case a =>
         if (contentType(ctx) == null) {
           contentTypeInferrer.lift(actionResult) foreach { ct =>
@@ -467,6 +462,22 @@ trait SkinnyEngineBase
    * varies between servlets and filters.
    */
   def requestPath(implicit ctx: SkinnyEngineContext): String
+
+  private[this] def onAsyncEvent(event: AsyncEvent)(thunk: => Any): Unit = {
+    withRequest(event.getSuppliedRequest.asInstanceOf[HttpServletRequest]) {
+      withResponse(event.getSuppliedResponse.asInstanceOf[HttpServletResponse]) {
+        thunk
+      }
+    }
+  }
+
+  private[this] def withinAsyncContext(context: javax.servlet.AsyncContext)(thunk: => Any): Unit = {
+    withRequest(context.getRequest.asInstanceOf[HttpServletRequest]) {
+      withResponse(context.getResponse.asInstanceOf[HttpServletResponse]) {
+        thunk
+      }
+    }
+  }
 
   private[this] def handleFuture(f: Future[_], timeout: Duration)(implicit ctx: SkinnyEngineContext): Unit = {
     val gotResponseAlready = new AtomicBoolean(false)
