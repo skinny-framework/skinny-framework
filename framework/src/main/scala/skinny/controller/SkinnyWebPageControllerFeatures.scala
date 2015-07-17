@@ -6,7 +6,7 @@ import skinny.controller.feature._
  * Additional web pages specific features for SkinnyControllers.
  */
 trait SkinnyWebPageControllerFeatures
-    extends SkinnyControllerBase
+    extends SkinnyControllerCommonBase
     with FlashFeature
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
@@ -14,6 +14,6 @@ trait SkinnyWebPageControllerFeatures
     with XXSSProtectionHeaderFeature
     with XFrameOptionsHeaderFeature {
 
-  override def handleForgeryIfDetected() = haltWithBody(403)
+  override def handleForgeryIfDetected() = haltWithBody(403)(context)
 
 }

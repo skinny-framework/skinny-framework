@@ -59,7 +59,7 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
         | ------------------------------------------
         |  [Angular XSRF Protection Enabled]
         |  method      : ${request.getMethod}
-        |  requestPath : ${requestPath}
+        |  requestPath : ${requestPath(context)}
         |  actionName  : ${currentActionName}
         |  only        : ${forgeryProtectionIncludedActionNames.mkString(", ")}
         |  except      : ${forgeryProtectionExcludedActionNames.mkString(", ")}

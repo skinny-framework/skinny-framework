@@ -12,8 +12,8 @@ trait AngularXSRFCookieProviderFeature { self: BeforeAfterActionFeature =>
   protected def xsrfCookieName: String = AngularJSSpecification.xsrfCookieName
 
   beforeAction() {
-    if (cookies.get(xsrfCookieName).isEmpty) {
-      cookies += (xsrfCookieName -> CsrfTokenGenerator())
+    if (cookies(context).get(xsrfCookieName).isEmpty) {
+      cookies(context) += (xsrfCookieName -> CsrfTokenGenerator())
     }
   }
 

@@ -46,8 +46,8 @@ trait XsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    */
   protected def isForged: Boolean =
     !request.requestMethod.isSafe &&
-      session.get(xsrfKey) != params.get(xsrfKey) &&
-      !HeaderNames.map(request.headers.get).contains(session.get(xsrfKey))
+      session(context).get(xsrfKey) != params(context).get(xsrfKey) &&
+      !HeaderNames.map(request.headers.get).contains(session(context).get(xsrfKey))
 
   /**
    * Take an action when a forgery is detected. The default action
@@ -62,10 +62,10 @@ trait XsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    * and stores it on the session.
    */
   protected def prepareXsrfToken(): Unit = {
-    session.getOrElseUpdate(xsrfKey, CsrfTokenGenerator.apply())
-    val cookieOpt = cookies.get(CookieKey)
-    if (cookieOpt.isEmpty || cookieOpt != session.get(xsrfKey)) {
-      cookies += CookieKey -> xsrfToken
+    session(context).getOrElseUpdate(xsrfKey, CsrfTokenGenerator.apply())
+    val cookieOpt = cookies(context).get(CookieKey)
+    if (cookieOpt.isEmpty || cookieOpt != session(context).get(xsrfKey)) {
+      cookies(context) += CookieKey -> xsrfToken(context)
     }
   }
 }

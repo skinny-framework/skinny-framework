@@ -24,8 +24,9 @@ trait ValidationFeature {
    * @param locale current locale
    * @return validator
    */
-  def validationWithParams(validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(Params(params), null, validations: _*)
+  def validationWithParams(validations: NewValidation*)(
+    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    validationWithPrefix(Params(params(context)), null, validations: _*)(context)
   }
 
   /**
@@ -36,8 +37,9 @@ trait ValidationFeature {
    * @param locale current locale
    * @return validator
    */
-  def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(params, null, validations: _*)
+  def validation(params: Params, validations: NewValidation*)(
+    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, null, validations: _*)(context)
   }
 
   /**
@@ -50,8 +52,8 @@ trait ValidationFeature {
    * @return validator
    */
   def validationWithParamsAndPrefix(prefix: String, params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(params, prefix, validations: _*)
+    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, prefix, validations: _*)(context)
   }
 
   /**

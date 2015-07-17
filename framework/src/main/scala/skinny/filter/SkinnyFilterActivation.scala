@@ -1,12 +1,12 @@
 package skinny.filter
 
-import skinny.controller._
+import skinny.controller.feature.SkinnyControllerCommonBase
 import skinny.engine._
 
 /**
  * Activates skinny filters.
  */
-trait SkinnyFilterActivation { self: SkinnyControllerBase =>
+trait SkinnyFilterActivation { self: SkinnyControllerCommonBase =>
 
   sealed trait RenderingRequired
   case object WithRendering extends RenderingRequired

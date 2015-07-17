@@ -3,6 +3,7 @@ package skinny.controller.feature
 import skinny.controller.ActionDefinition
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.constant.HttpMethod
+import skinny.engine.context.SkinnyEngineContext
 
 /**
  * Action definitions for this controller.
@@ -30,11 +31,11 @@ trait ActionDefinitionFeature extends SkinnyEngineBase {
    *
    * @return action name
    */
-  def currentActionName: Option[Symbol] = {
+  def currentActionName(implicit cxt: SkinnyEngineContext = context): Option[Symbol] = {
     // Scalatra takes priority to routing definition which is defined later.
     // So we should take priority to the first action name found from reversed action definitions here.
     actionDefinitions.reverse.find { actionDef =>
-      actionDef.matcher.apply(HttpMethod(request.getMethod), requestPath)
+      actionDef.matcher.apply(HttpMethod(request.getMethod), requestPath(cxt))
     }.map(_.name)
   }
 

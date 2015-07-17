@@ -10,6 +10,11 @@ trait WebServer extends JettyServer {
 
   def mountableHandlers: Seq[Handler] = registeredWebAppHandlers.toSeq
 
+  def init(): WebServer = {
+    registeredWebAppHandlers.clear()
+    this
+  }
+
   def mount(handler: Handler): WebServer = {
     registeredWebAppHandlers.append(handler)
     this

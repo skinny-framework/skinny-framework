@@ -2,12 +2,13 @@ package skinny.controller.feature
 
 import skinny.engine.context.SkinnyEngineContext
 import skinny.util.TimeLogging
-import skinny.controller.SkinnyControllerBase
 
 /**
  * Enables time logging.
  */
-trait TimeLoggingFeature extends TimeLogging with SensitiveParametersFeature { self: SkinnyControllerBase =>
+trait TimeLoggingFeature
+    extends TimeLogging
+    with SensitiveParametersFeature { self: SkinnyControllerCommonBase =>
 
   def warnElapsedTimeWithRequest[A](millis: Long, additionalLines: Seq[String] = Nil)(action: => A)(
     implicit context: SkinnyEngineContext): A = {

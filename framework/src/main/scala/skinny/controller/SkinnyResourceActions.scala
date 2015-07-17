@@ -4,7 +4,7 @@ import skinny._
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
-import skinny.controller.feature.RequestScopeFeature
+import skinny.controller.feature.{ SkinnyControllerCommonBase, RequestScopeFeature }
 
 /**
  * Actions for Skinny resource.

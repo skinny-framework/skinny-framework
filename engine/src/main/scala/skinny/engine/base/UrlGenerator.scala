@@ -4,11 +4,11 @@ import skinny.SkinnyEnv
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.RicherStringImplicits
-import skinny.engine.routing.CoreRoutingDsl
+import skinny.engine.routing.RoutingDsl
 
 import scala.util.control.Exception._
 
-trait UrlGenerator extends RicherStringImplicits { self: ServletContextAccessor with CoreRoutingDsl =>
+trait UrlGenerator extends RicherStringImplicits { self: SkinnyEngineBase =>
 
   private[this] def needHttps: Boolean = {
     allCatch.withApply(_ => false) {

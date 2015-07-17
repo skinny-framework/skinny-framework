@@ -26,6 +26,8 @@ package object engine
 
   type Params = MultiMapHeadView[String, String] with MapWithIndifferentAccess[String]
 
+  type AsyncAction = (Context) => Any
+
   type Action = () => Any
 
   type ErrorHandler = PartialFunction[Throwable, Any]
@@ -45,5 +47,9 @@ package object engine
   type SingleApp = skinny.engine.SkinnyEngineServlet
 
   type WebApp = skinny.engine.SkinnyEngineFilter
+
+  type AsyncSingleApp = skinny.engine.AsyncSkinnyEngineServlet
+
+  type AsyncWebApp = skinny.engine.AsyncSkinnyEngineFilter
 
 }

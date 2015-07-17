@@ -13,11 +13,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.servlet.http.{ HttpServletResponse, HttpServlet, HttpServletRequest }
 import javax.servlet._
 
-import skinny.engine.async.{ AsyncSupported, AsyncOperations, AsyncResult }
+import skinny.engine.async.{ AsyncSupported, AsyncResult }
 import skinny.engine.base._
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.control.{ PassException, HaltException }
+import skinny.engine.control.{ HaltPassControl, PassException, HaltException }
 import skinny.engine.implicits._
 import skinny.engine.multipart.FileCharset
 import skinny.engine.response.{ ResponseStatus, ActionResult, Found }
@@ -31,9 +31,7 @@ import skinny.util.LoanPattern._
  */
 trait SkinnyEngineBase
     extends CoreHandler
-    with CoreRoutingDsl
-    with AsyncSupported
-    with AsyncOperations
+    with AsyncSupported // can mix async and thread-based model
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
     with ServletContextAccessor
@@ -43,6 +41,7 @@ trait SkinnyEngineBase
     with ResponseContentTypeAccessor
     with ResponseStatusAccessor
     with UrlGenerator
+    with HaltPassControl
     with ServletApiImplicits
     with RouteMatcherImplicits
     with CookiesImplicits
@@ -61,10 +60,12 @@ trait SkinnyEngineBase
   /**
    * true if async supported
    */
-  protected def isAsyncExecutable(result: Any): Boolean = {
-    classOf[Future[_]].isAssignableFrom(result.getClass) ||
-      classOf[AsyncResult].isAssignableFrom(result.getClass)
-  }
+  protected def isAsyncExecutable(result: Any): Boolean = false
+
+  /**
+   * Returns rout base path.
+   */
+  protected def routeBasePath(implicit ctx: SkinnyEngineContext): String
 
   /**
    * Default charset.
@@ -107,7 +108,7 @@ trait SkinnyEngineBase
               runFilters(routes.afterFilters)
             case _ =>
           }
-        }
+        }(context)
         runFilters(routes.beforeFilters)
         val actionResult = runRoutes(routes(request.requestMethod)).headOption
         // Give the status code handler a chance to override the actionResult
@@ -137,13 +138,13 @@ trait SkinnyEngineBase
               try {
                 renderUncaughtException(e)(skinnyEngineContext)
               } finally {
-                SkinnyEngineBase.runRenderCallbacks(Failure(e))
+                SkinnyEngineBase.runRenderCallbacks(Failure(e))(context)
               }
             }
         )
       }
     )
-    if (!rendered) renderResponse(result)
+    if (!rendered) renderResponse(result)(context)
   }
 
   private[this] def cradleHalt(body: => Any, errorHandler: Throwable => Any): Any = {
@@ -153,11 +154,11 @@ trait SkinnyEngineBase
       case e: HaltException =>
         try {
           handleStatusCode(extractStatusCode(e)) match {
-            case Some(result) => renderResponse(result)
-            case _ => renderHaltException(e)
+            case Some(result) => renderResponse(result)(context)
+            case _ => renderHaltException(e)(context)
           }
         } catch {
-          case e: HaltException => renderHaltException(e)
+          case e: HaltException => renderHaltException(e)(context)
           case e: Throwable => errorHandler.apply(e)
         }
       case e: Throwable => errorHandler.apply(e)
@@ -179,7 +180,7 @@ trait SkinnyEngineBase
   private[this] def runFilters(filters: Traversable[Route]): Unit = {
     for {
       route <- filters
-      matchedRoute <- route(requestPath)
+      matchedRoute <- route(requestPath(context))
     } invoke(matchedRoute)
   }
 
@@ -190,7 +191,7 @@ trait SkinnyEngineBase
   protected def runRoutes(routes: Traversable[Route]): Stream[Any] = {
     for {
       route <- routes.toStream // toStream makes it lazy so we stop after match
-      matchedRoute <- route.apply(requestPath)
+      matchedRoute <- route.apply(requestPath(context))
       saved = saveMatchedRoute(matchedRoute)
       actionResult <- invoke(saved)
     } yield actionResult
@@ -198,7 +199,7 @@ trait SkinnyEngineBase
 
   private[this] def saveMatchedRoute(matchedRoute: MatchedRoute): MatchedRoute = {
     request(context)("skinny.engine.MatchedRoute") = matchedRoute
-    setMultiparams(Some(matchedRoute), multiParams)
+    setMultiparams(Some(matchedRoute), multiParams(context))(context)
     matchedRoute
   }
 
@@ -259,21 +260,21 @@ trait SkinnyEngineBase
   }
 
   private[this] def matchOtherMethods(): Option[Any] = {
-    val allow = routes.matchingMethodsExcept(request.requestMethod, requestPath)
+    val allow = routes.matchingMethodsExcept(request.requestMethod, requestPath(context))
     if (allow.isEmpty) None else liftAction(() => doMethodNotAllowed(allow))
   }
 
   private[this] def handleStatusCode(status: Int): Option[Any] = {
     for {
       handler <- routes(status)
-      matchedHandler <- handler(requestPath)
+      matchedHandler <- handler(requestPath(context))
       handlerResult <- invoke(matchedHandler)
     } yield handlerResult
   }
 
   protected def withRouteMultiParams[S](matchedRoute: Option[MatchedRoute])(thunk: => S): S = {
-    val originalParams = multiParams
-    setMultiparams(matchedRoute, originalParams)
+    val originalParams = multiParams(context)
+    setMultiparams(matchedRoute, originalParams)(context)
     try {
       thunk
     } finally {
@@ -485,7 +486,7 @@ trait SkinnyEngineBase
     if (timeout.isFinite()) context.setTimeout(timeout.toMillis) else context.setTimeout(-1)
 
     def renderFutureResult(f: Future[_]): Unit = {
-      f onComplete {
+      f.onComplete {
         // Loop until we have a non-future result
         case Success(f2: Future[_]) => renderFutureResult(f2)
         case Success(r: AsyncResult) => renderFutureResult(r.is)

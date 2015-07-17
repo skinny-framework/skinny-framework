@@ -60,7 +60,7 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
         | ------------------------------------------
         |  [CSRF Protection Enabled]
         |  method      : ${request.getMethod}
-        |  requestPath : ${requestPath}
+        |  requestPath : ${requestPath(context)}
         |  actionName  : ${currentActionName}
         |  only        : ${forgeryProtectionIncludedActionNames.mkString(", ")}
         |  except      : ${forgeryProtectionExcludedActionNames.mkString(", ")}
@@ -90,9 +90,9 @@ trait CSRFProtectionFeature extends CsrfTokenSupport {
 
   // Registers csrfKey & csrfToken to request scope.
   beforeAction() {
-    if (getFromRequestScope(RequestScopeFeature.ATTR_CSRF_KEY).isEmpty) {
-      set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)
-      set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())
+    if (getFromRequestScope(RequestScopeFeature.ATTR_CSRF_KEY)(context).isEmpty) {
+      set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)(context)
+      set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())(context)
     }
   }
 

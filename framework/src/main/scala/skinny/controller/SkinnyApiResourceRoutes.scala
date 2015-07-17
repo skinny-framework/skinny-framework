@@ -2,11 +2,15 @@ package skinny.controller
 
 import skinny._
 import skinny.engine.routing.Route
+import skinny.routing.Routes
+import skinny.routing.implicits.RoutesAsImplicits
 
 /**
  * Routes for Skinny API resource.
  */
-trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with Routes { self: SkinnyApiResourceActions[Id] =>
+trait SkinnyApiResourceRoutes[Id]
+    extends SkinnyControllerBase
+    with Routes { self: SkinnyApiResourceActions[Id] =>
 
   /**
    * Set Content-Type response header which is suitable for specified extension.

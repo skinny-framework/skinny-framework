@@ -3,7 +3,7 @@ package skinny.engine.routing
 import javax.servlet.http.HttpServletRequest
 
 import skinny.engine._
-import skinny.engine.base.{ SkinnyEngineContextInitializer, ServletContextAccessor, RouteRegistryAccessor }
+import skinny.engine.base.{ RouteRegistryAccessor, ServletContextAccessor, SkinnyEngineContextInitializer }
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.HaltPassControl
@@ -12,7 +12,7 @@ import skinny.engine.implicits.ServletApiImplicits
 /**
  * The core SkinnyEngine DSL.
  */
-trait CoreRoutingDsl
+trait AsyncRoutingDsl
     extends HaltPassControl
     with RouteRegistryAccessor
     with SkinnyEngineContextInitializer
@@ -57,19 +57,19 @@ trait CoreRoutingDsl
    * }}}
    *
    */
-  def get(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Get, transformers, action)
+  def get(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Get, transformers, action)
 
-  def post(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Post, transformers, action)
+  def post(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Post, transformers, action)
 
-  def put(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Put, transformers, action)
+  def put(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Put, transformers, action)
 
-  def delete(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Delete, transformers, action)
+  def delete(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Delete, transformers, action)
 
-  def options(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Options, transformers, action)
+  def options(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Options, transformers, action)
 
-  def head(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Head, transformers, action)
+  def head(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Head, transformers, action)
 
-  def patch(transformers: RouteTransformer*)(action: => Any): Route = addRoute(Patch, transformers, action)
+  def patch(transformers: RouteTransformer*)(action: (Context) => Any): Route = addRoute(Patch, transformers, action)
 
   /**
    * Prepends a new route for the given HTTP method.
@@ -84,16 +84,16 @@ trait CoreRoutingDsl
    *
    * @see skinny.engine.SkinnyEngineKernel#removeRoute
    */
-  protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
+  protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: (Context) => Any): Route = {
     val route: Route = {
-      val r = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(SkinnyEngineContext.buildWithoutResponse(req, servletContext)))
+      val r = Route(transformers, () => action.apply(context), (req: HttpServletRequest) => routeBasePath(SkinnyEngineContext.buildWithoutResponse(req, servletContext)))
       r.copy(metadata = r.metadata.updated(Handler.RouteMetadataHttpMethodCacheKey, method))
     }
     routes.prependRoute(method, route)
     route
   }
 
-  private[this] def addStatusRoute(codes: Range, action: => Any): Unit = {
+  private[this] def addStatusRoute(codes: Range, action: (Context) => Any): Unit = {
     val route = Route(Seq.empty, () => action, (req: HttpServletRequest) => routeBasePath(skinnyEngineContext(servletContext)))
     routes.addStatusRoute(codes, route)
   }
@@ -134,14 +134,14 @@ trait CoreRoutingDsl
    * }* }}}
    * }}
    */
-  def trap(codes: Range)(block: => Any): Unit = {
+  def trap(codes: Range)(block: (Context) => Any): Unit = {
     addStatusRoute(codes, block)
   }
 
   /**
    * @see error
    */
-  def trap(code: Int)(block: => Any): Unit = {
+  def trap(code: Int)(block: (Context) => Any): Unit = {
     trap(Range(code, code + 1))(block)
   }
 

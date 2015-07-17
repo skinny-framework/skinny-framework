@@ -3,14 +3,14 @@ package skinny.controller.feature
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny._
 import skinny.controller.SkinnyController
+import skinny.engine.async.AsyncOperations
 
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class FutureOpsFeatureSpec extends ScalatraFlatSpec {
   behavior of "FutureOpsFeature"
 
-  object Controller extends SkinnyController with Routes {
+  object Controller extends SkinnyController with AsyncOperations with Routes {
     def index = {
       awaitFutures(1.seconds)(futureWithRequest(req => "ok"))
     }

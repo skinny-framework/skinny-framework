@@ -8,7 +8,7 @@ cd `dirname $0`
 ./create_blank_app.sh test
 cd release/skinny-blank-app
 npm install
-grunt compile
+grunt compile --force
 
 ./skinny g controller help && \
 ./skinny g controller admin.help && \

@@ -1,9 +1,14 @@
 package skinny.controller
 
+import skinny.routing.Routes
+import skinny.routing.implicits.RoutesAsImplicits
+
 /**
  * Routes for Skinny resource.
  */
-trait SkinnyResourceRoutes[Id] extends SkinnyApiResourceRoutes[Id] { self: SkinnyResourceActions[Id] =>
+trait SkinnyResourceRoutes[Id]
+    extends SkinnyApiResourceRoutes[Id]
+    with Routes { self: SkinnyResourceActions[Id] =>
 
   // --------------
   // show

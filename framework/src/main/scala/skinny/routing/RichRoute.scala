@@ -1,5 +1,6 @@
 package skinny.routing
 
+import skinny.controller.feature.SkinnyControllerCommonBase
 import skinny.controller.{ ActionDefinition, SkinnyControllerBase }
 import skinny.engine.Handler
 import skinny.engine.constant.HttpMethod
@@ -13,7 +14,7 @@ import skinny.exception.RouteMetadataException
  * @param method HTTP method
  * @param controller controller
  */
-case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControllerBase) {
+case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControllerCommonBase) {
 
   /**
    * Registers action name to the controller.

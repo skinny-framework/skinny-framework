@@ -9,7 +9,9 @@ trait ResponseContentTypeAccessor extends ServletApiImplicits { self: SkinnyEngi
   /**
    * Gets the content type of the current response.
    */
-  def contentType(implicit ctx: SkinnyEngineContext = context): String = ctx.response.contentType.orNull[String]
+  def contentType(implicit ctx: SkinnyEngineContext = context): String = {
+    ctx.response.contentType.orNull[String]
+  }
 
   /**
    * Sets the content type of the current response.

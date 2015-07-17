@@ -3,7 +3,9 @@ package skinny.engine
 import javax.servlet._
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
+import skinny.engine.base.MainThreadLocalEverywhere
 import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.routing.RoutingDsl
 import skinny.engine.util.UriDecoder
 
 import scala.util.DynamicVariable
@@ -26,70 +28,7 @@ import scala.util.DynamicVariable
  */
 trait SkinnyEngineFilter
     extends Filter
-    with SkinnyEngineBase
-    with SkinnyEngineBasicFeatures {
-
-  private[this] val _filterChain: DynamicVariable[FilterChain] = new DynamicVariable[FilterChain](null)
-
-  protected def filterChain: FilterChain = _filterChain.value
-
-  def doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain): Unit = {
-    val httpRequest = request.asInstanceOf[HttpServletRequest]
-    val httpResponse = response.asInstanceOf[HttpServletResponse]
-
-    _filterChain.withValue(chain) {
-      handle(httpRequest, httpResponse)
-    }
-  }
-
-  // What goes in servletPath and what goes in pathInfo depends on how the underlying servlet is mapped.
-  // Unlike the SkinnyEngine servlet, we'll use both here by default.  Don't like it?  Override it.
-  override def requestPath(implicit ctx: SkinnyEngineContext): String = {
-    val request = ctx.request
-    def getRequestPath: String = request.getRequestURI match {
-      case requestURI: String =>
-        var uri = requestURI
-        if (request.getContextPath.length > 0) uri = uri.substring(request.getContextPath.length)
-        if (uri.length == 0) {
-          uri = "/"
-        } else {
-          val pos = uri.indexOf(';')
-          if (pos >= 0) uri = uri.substring(0, pos)
-        }
-        UriDecoder.firstStep(uri)
-      case null => "/"
-    }
-
-    request.get("skinny.engine.SkinnyEngineFilter.requestPath") match {
-      case Some(uri) => uri.toString
-      case _ => {
-        val requestPath = getRequestPath
-        request.setAttribute("skinny.engine.SkinnyEngineFilter.requestPath", requestPath)
-        requestPath.toString
-      }
-    }
-  }
-
-  override protected def routeBasePath(implicit ctx: SkinnyEngineContext): String = {
-    if (ctx.servletContext == null) {
-      throw new IllegalStateException("routeBasePath requires an initialized servlet context to determine the context path")
-    }
-    ctx.servletContext.getContextPath
-  }
-
-  protected var doNotFound: Action = () => filterChain.doFilter(request, response)
-
-  methodNotAllowed { _ => filterChain.doFilter(request, response) }
-
-  type ConfigT = FilterConfig
-
-  // see Initializable.initialize for why
-  def init(filterConfig: FilterConfig): Unit = {
-    initialize(filterConfig)
-  }
-
-  def destroy: Unit = {
-    shutdown()
-  }
+    with SkinnyEngineFilterBase
+    with ThreadLocalFeatures {
 
 }

@@ -2,6 +2,7 @@ package skinny.controller.feature
 
 import skinny.SkinnyEnv
 import skinny.engine.SkinnyEngineBase
+import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.response.{ SeeOther, Found, MovedPermanently, ActionResult }
 
 /**
@@ -14,7 +15,8 @@ trait ExplicitRedirectFeature extends SkinnyEngineBase {
    *
    * @return ActionResult
    */
-  def redirect301(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
+  def redirect301(location: String, headers: Map[String, String] = Map.empty, reason: String = "")(
+    implicit ctx: SkinnyEngineContext = context): ActionResult = {
     val result = MovedPermanently(fullUrl(location, includeServletPath = false), headers, reason)
     if (SkinnyEnv.isTest()) result else halt(result)
   }
@@ -24,7 +26,8 @@ trait ExplicitRedirectFeature extends SkinnyEngineBase {
    *
    * @return ActionResult
    */
-  def redirect302(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
+  def redirect302(location: String, headers: Map[String, String] = Map.empty, reason: String = "")(
+    implicit ctx: SkinnyEngineContext = context): ActionResult = {
     val result = Found(fullUrl(location, includeServletPath = false), headers, reason)
     if (SkinnyEnv.isTest()) result else halt(result)
   }
@@ -34,7 +37,8 @@ trait ExplicitRedirectFeature extends SkinnyEngineBase {
    *
    * @return ActionResult
    */
-  def redirect303(location: String, headers: Map[String, String] = Map.empty, reason: String = ""): ActionResult = {
+  def redirect303(location: String, headers: Map[String, String] = Map.empty, reason: String = "")(
+    implicit ctx: SkinnyEngineContext = context): ActionResult = {
     val result = SeeOther(fullUrl(location, includeServletPath = false), headers, reason)
     if (SkinnyEnv.isTest()) result else halt(result)
   }

@@ -59,4 +59,6 @@ package object skinny {
   type Logging = skinny.logging.Logging
   type LoggerProvider = skinny.logging.LoggerProvider
 
+  type Context = skinny.engine.Context
+
 }

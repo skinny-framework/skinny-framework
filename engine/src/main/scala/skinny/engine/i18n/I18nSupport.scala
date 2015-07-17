@@ -21,8 +21,8 @@ trait I18nSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
   import I18nSupport._
 
   before() {
-    request(context)(LocaleKey) = resolveLocale
-    request(context)(MessagesKey) = provideMessages(locale)
+    request(context)(LocaleKey) = resolveLocale(context)
+    request(context)(MessagesKey) = provideMessages(locale(context))(context)
   }
 
   def locale(implicit ctx: SkinnyEngineContext): Locale = {

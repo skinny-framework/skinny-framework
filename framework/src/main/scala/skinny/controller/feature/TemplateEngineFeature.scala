@@ -6,13 +6,12 @@ import skinny.engine.json.JSONOperations
 import skinny.engine.response.ResponseStatus
 import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException
-import skinny.controller.SkinnyControllerBase
 
 /**
  * TemplateEngine support for Skinny app.
  */
 trait TemplateEngineFeature
-    extends SkinnyControllerBase
+    extends SkinnyControllerCommonBase
     with RequestScopeFeature
     with JSONOperations
     with LoggerProvider {

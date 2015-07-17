@@ -14,7 +14,7 @@ trait FlashFeature extends FlashMapSupport with BeforeAfterDsl {
   // just set Flash object to request scope
   before() {
     if (requestScope.get(RequestScopeFeature.ATTR_FLASH).isEmpty) {
-      set(RequestScopeFeature.ATTR_FLASH, Flash(flash))
+      set(RequestScopeFeature.ATTR_FLASH, Flash(flash(context)))(context)
     }
   }
 

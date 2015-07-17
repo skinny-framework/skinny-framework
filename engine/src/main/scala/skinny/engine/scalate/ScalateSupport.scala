@@ -139,8 +139,9 @@ trait ScalateSupport extends SkinnyEngineBase {
    */
   @deprecated("not idiomatic Scalate; consider layoutTemplate instead", "1.4")
   def renderTemplate(path: String, attributes: (String, Any)*)(
-    implicit ctx: SkinnyEngineRenderContext) =
-    createRenderContext(ctx.request, ctx.response, response.writer).render(path, Map(attributes: _*))
+    implicit ctx: SkinnyEngineRenderContext) = {
+    createRenderContext(ctx.request, ctx.response, response.writer)(ctx.context).render(path, Map(attributes: _*))
+  }
 
   /**
    * Flag whether the Scalate error page is enabled.  If true, uncaught
@@ -166,9 +167,9 @@ trait ScalateSupport extends SkinnyEngineBase {
     resp.setStatus(500)
     resp.setContentType("text/html")
     val errorPage = templateEngine.load("/WEB-INF/scalate/errors/500.scaml")
-    val context = createRenderContext(req, resp, resp.getWriter)
-    context.setAttribute("javax.servlet.error.exception", Some(e))
-    templateEngine.layout(errorPage, context)
+    val ctx = createRenderContext(req, resp, resp.getWriter)(context)
+    ctx.setAttribute("javax.servlet.error.exception", Some(e))
+    templateEngine.layout(errorPage, ctx)
   }
 
   /**

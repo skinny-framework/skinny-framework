@@ -8,9 +8,6 @@ object CsrfTokenSupport {
 
 }
 
-import javax.servlet.http.HttpServletRequest
-
-import CsrfTokenSupport._
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
@@ -37,8 +34,8 @@ trait CsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    */
   protected def isForged: Boolean =
     !request.requestMethod.isSafe &&
-      session.get(csrfKey) != params.get(csrfKey) &&
-      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(session.get(csrfKey))
+      session(context).get(csrfKey) != params(context).get(csrfKey) &&
+      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(session(context).get(csrfKey))
 
   /**
    * Take an action when a forgery is detected. The default action
@@ -54,7 +51,7 @@ trait CsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    */
   // NOTE: keep return type as Any for backward compatibility
   protected def prepareCsrfToken(): Any = {
-    session.getOrElseUpdate(csrfKey, CsrfTokenGenerator.apply()).toString
+    session(context).getOrElseUpdate(csrfKey, CsrfTokenGenerator.apply()).toString
   }
 
   /**

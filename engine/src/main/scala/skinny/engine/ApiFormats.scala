@@ -158,7 +158,7 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
    * one.
    */
   protected def inferFromFormats: ContentTypeInferrer = {
-    case _ if format.nonBlank => formats.get(format) getOrElse "application/octet-stream"
+    case _ if format(context).nonBlank => formats.get(format(context)) getOrElse "application/octet-stream"
   }
 
   override protected def contentTypeInferrer: ContentTypeInferrer = {

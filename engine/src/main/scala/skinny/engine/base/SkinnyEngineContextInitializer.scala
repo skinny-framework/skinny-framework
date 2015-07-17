@@ -31,7 +31,7 @@ trait SkinnyEngineContextInitializer { self: ServletContextAccessor =>
   /**
    * Skinny Engine Context
    */
-  implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
+  def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
     if (mainThreadDynamicRequest.value != null) {
       SkinnyEngineContext.build(ctx, mainThreadDynamicRequest.value, mainThreadDynamicResponse.value)
     } else {

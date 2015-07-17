@@ -3,13 +3,16 @@ package org.scalatra
 import java.io.ByteArrayOutputStream
 
 import org.scalatra.test.specs2.MutableScalatraSpec
+import skinny.engine.base.MainThreadLocalEverywhere
+import skinny.engine.routing.RoutingDsl
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineServlet }
 import skinny.engine.response._
 
 class ActionResultServlet extends SkinnyEngineServlet with ActionResultTestBase
 
 trait ActionResultTestBase {
-  self: SkinnyEngineBase =>
+  self: SkinnyEngineBase with RoutingDsl with MainThreadLocalEverywhere =>
+
   error {
     case e => BadRequest("something went wrong")
   }

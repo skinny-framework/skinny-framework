@@ -20,7 +20,7 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   override def beforeAll() = {
-    WebServer.mount(new WebApp {
+    WebServer.init().mount(new WebApp {
       get("/ok") {
         logger.info("params: " + params)
         "OK"
@@ -44,6 +44,20 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
         implicit val ctx = context
         Database.findMessage(params(ctx).getAs[String]("name")).map { message =>
           responseAsJSON(Map("message" -> message))(ctx)
+        }.recover {
+          case NonFatal(e) =>
+            logger.info(e.getMessage, e)
+            InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
+        }
+      }
+    }).mount(new AsyncWebApp {
+      before() { implicit ctx =>
+        contentType = "application/json; charset=utf-8"
+      }
+
+      get("/async/json") { implicit ctx =>
+        Database.findMessage(params.getAs[String]("name")).map { message =>
+          responseAsJSON(Map("message" -> message))
         }.recover {
           case NonFatal(e) =>
             logger.info(e.getMessage, e)
@@ -95,6 +109,20 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
 
   it should "respond as 500 error with JSON body 2" in {
     val response = HTTP.get("http://127.0.0.1:8765/json2?name=Martin")
+    response.status should equal(500)
+    response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
+    response.textBody should equal("""{"message":"Oops... RuntimeException"}""")
+  }
+
+  it should "respond as OK with JSON body in async mode" in {
+    val response = HTTP.get("http://127.0.0.1:8765/async/json")
+    response.status should equal(200)
+    response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
+    response.textBody should equal("""{"message":"Hello, Anonymous"}""")
+  }
+
+  it should "respond as 500 error with JSON body in async mode" in {
+    val response = HTTP.get("http://127.0.0.1:8765/async/json?name=Martin")
     response.status should equal(500)
     response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
     response.textBody should equal("""{"message":"Oops... RuntimeException"}""")

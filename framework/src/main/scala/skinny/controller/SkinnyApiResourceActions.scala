@@ -2,6 +2,7 @@ package skinny.controller
 
 import skinny._
 import skinny.ParamType
+import skinny.controller.feature.SkinnyControllerCommonBase
 import skinny.validator.{ NewValidation, MapValidator }
 import skinny.exception.StrongParametersException
 import java.util.Locale
@@ -9,7 +10,7 @@ import java.util.Locale
 /**
  * Actions for Skinny API resource.
  */
-trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
+trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
 
   /**
    * SkinnyModel for this resource.
@@ -55,8 +56,8 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
    * @return validator
    */
   override def validation(params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
-    validationWithPrefix(params, resourceName, validations: _*)
+    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, resourceName, validations: _*)(context)
   }
 
   /**
@@ -134,6 +135,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
    * @return list of resource
    */
   def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
+    implicit val ctx = context
     if (enablePagination) {
       val pageSize: Int = params.getAs[Int](pageSizeParamName).getOrElse(this.pageSize)
       val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
@@ -161,7 +163,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
    * @return single resource
    */
   def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
-    renderWithFormat(findResource(id).getOrElse(haltWithBody(404)))
+    renderWithFormat(findResource(id).getOrElse(haltWithBody(404)(context)))
   }
 
   protected def findResource(id: Id): Option[_] = model.findModel(id)
@@ -174,7 +176,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
   /**
    * Params for creation.
    */
-  protected def createParams: Params = Params(params)
+  protected def createParams: Params = Params(params(context))
 
   /**
    * Strong parameter definitions for creation form
@@ -227,7 +229,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
   /**
    * Params for modification.
    */
-  protected def updateParams: Params = Params(params)
+  protected def updateParams: Params = Params(params(context))
 
   /**
    * Strong parameter definitions for modification form
@@ -272,7 +274,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
         status = 400
         renderWithFormat(keyAndErrorMessages)
       }
-    } getOrElse haltWithBody(404)
+    } getOrElse haltWithBody(404)(context)
   }
 
   /**
@@ -298,7 +300,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerBase =>
     findResource(id).map { m =>
       doDestroy(id)
       status = 200
-    } getOrElse haltWithBody(404)
+    } getOrElse haltWithBody(404)(context)
   }
 
 }
