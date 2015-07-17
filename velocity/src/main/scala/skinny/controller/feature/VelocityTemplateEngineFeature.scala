@@ -17,7 +17,7 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   val velocityExtension: String = "vm"
 
   override protected def templatePaths(path: String)(implicit format: Format = Format.HTML): List[String] = {
-    List(templatePath(path))
+    List(templatePath(path)(context, format))
   }
 
   protected def templatePath(path: String)(
@@ -26,7 +26,7 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean = {
-    velocity.templateExists(templatePath(path))
+    velocity.templateExists(templatePath(path)(context, format))
   }
 
   override protected def renderWithTemplate(path: String)(

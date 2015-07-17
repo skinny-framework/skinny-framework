@@ -3,6 +3,7 @@ package controller
 import org.joda.time._
 import model._
 import skinny.engine.context.SkinnyEngineContext
+import skinny.engine.async.AsyncOperations
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -17,7 +18,7 @@ case class DashboardOps(controller: DashboardController) {
   }
 }
 
-class DashboardController extends ApplicationController {
+class DashboardController extends ApplicationController with AsyncOperations {
 
   val adminUserService = new AdminUserService
   val accessService = new AccessLogService
