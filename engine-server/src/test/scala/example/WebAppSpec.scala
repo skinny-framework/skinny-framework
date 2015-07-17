@@ -8,14 +8,14 @@ import skinny.engine.async.AsyncResult
 
 import skinny.http.HTTP
 
-import scala.concurrent.Future
+import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.control.NonFatal
 
 class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
 
   object Database {
-    def findMessage(name: Option[String]) = Future {
+    def findMessage(name: Option[String])(implicit ctx: ExecutionContext) = Future {
       if (name.isDefined && name.exists(_ == "Martin")) {
         throw new RuntimeException
       } else {
@@ -27,6 +27,7 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
   before {
     WebServer.mount(new WebApp {
       get("/ok") {
+        logger.info("params: " + params)
         "OK"
       }
     }).mount(new WebApp {
@@ -35,14 +36,19 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
       }
       get("/json") {
         AsyncResult {
+          val ctx = context // TODO: remove this
           Database.findMessage(params.getAs[String]("name")).map { message =>
-            responseAsJSON(Map("message" -> message))
+            // `sbt enginServer/test` twice causes IllegalStateException here when resolving context implicitly
+            responseAsJSON(Map("message" -> message))(ctx)
           }.recover {
-            case NonFatal(e) => InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
+            case NonFatal(e) =>
+              logger.info(e.getMessage, e)
+              InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
           }
         }
       }
     }).port(8765).start()
+    Thread.sleep(100)
   }
 
   it should "work" in {

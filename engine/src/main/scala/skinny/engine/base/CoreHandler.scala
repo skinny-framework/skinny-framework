@@ -37,10 +37,10 @@ trait CoreHandler
     request(Cookie.SweetCookiesKey) = new SweetCookies(request, response)
     response.characterEncoding = Some(defaultCharacterEncoding)
     withRequestResponse(request, response) {
-      executeRoutes()
+      executeRoutes(request, response)
     }
   }
 
-  protected def executeRoutes(): Unit
+  protected def executeRoutes(request: HttpServletRequest, response: HttpServletResponse): Unit
 
 }

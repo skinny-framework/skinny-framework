@@ -15,7 +15,7 @@ class ErrorHandlerTest extends ScalatraFunSuite {
       throw new Exception1
     }
     get("/uncaught") { throw new RuntimeException }
-    error { case e: RuntimeException => "base" }
+    error { case e: Exception1 => "base" }
   }
 
   class ChildServlet extends BaseServlet {

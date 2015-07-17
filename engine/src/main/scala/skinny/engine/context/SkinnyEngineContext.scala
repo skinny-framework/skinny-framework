@@ -14,17 +14,18 @@ object SkinnyEngineContext {
       val servletContext: ServletContext) extends SkinnyEngineContext {
   }
 
-  def toStable(ctx: SkinnyEngineContext): SkinnyEngineContext = {
+  def surelyStable(ctx: SkinnyEngineContext): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(ctx.request), ctx.response, ctx.servletContext)
   }
 
-  def build(implicit ctx: ServletContext, req: HttpServletRequest, resp: HttpServletResponse): SkinnyEngineContext = {
+  def build(ctx: ServletContext, req: HttpServletRequest, resp: HttpServletResponse): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(req), resp, ctx)
   }
 
   def buildWithRequest(req: HttpServletRequest): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(req), null, null)
   }
+
   def buildWithoutResponse(req: HttpServletRequest, ctx: ServletContext): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(req), null, ctx)
   }
@@ -42,6 +43,6 @@ trait SkinnyEngineContext
 
   val servletContext: ServletContext
 
-  def toStable(): SkinnyEngineContext = SkinnyEngineContext.toStable(this)
+  def surelyStable: SkinnyEngineContext = SkinnyEngineContext.surelyStable(this)
 
 }

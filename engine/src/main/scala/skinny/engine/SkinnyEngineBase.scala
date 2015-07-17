@@ -10,7 +10,7 @@ import scala.util.{ Failure, Success, Try }
 
 import java.io.{ File, FileInputStream }
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.servlet.http.{ HttpServlet, HttpServletRequest }
+import javax.servlet.http.{ HttpServletResponse, HttpServlet, HttpServletRequest }
 import javax.servlet._
 
 import skinny.engine.async.{ AsyncOperations, AsyncResult }
@@ -92,26 +92,23 @@ trait SkinnyEngineBase
    * $ 4. Executes the after filters with `runFilters`.
    * $ 5. The action result is passed to `renderResponse`.
    */
-  protected def executeRoutes() {
+  protected def executeRoutes(request: HttpServletRequest, response: HttpServletResponse) {
     var result: Any = null
     var rendered = true
 
-    def runActions = {
+    def runActions(request: HttpServletRequest, response: HttpServletResponse) = {
       val prehandleException = request.get(SkinnyEngineBase.PrehandleExceptionKey)
       if (prehandleException.isEmpty) {
-        val (rq, rs) = (request, response)
         SkinnyEngineBase.onCompleted { _ =>
-          withRequestResponse(rq, rs) {
-            val className = this.getClass.toString
-            this match {
-              case f: Filter if !rq.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
-                rq(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
-                runFilters(routes.afterFilters)
-              case f: HttpServlet if !rq.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
-                rq("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
-                runFilters(routes.afterFilters)
-              case _ =>
-            }
+          val className = this.getClass.toString
+          this match {
+            case f: Filter if !request.contains(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") =>
+              request(s"skinny.engine.SkinnyEngineFilter.afterFilters.Run (${className})") = new {}
+              runFilters(routes.afterFilters)
+            case f: HttpServlet if !request.contains("skinny.engine.SkinnyEngineServlet.afterFilters.Run") =>
+              request("skinny.engine.SkinnyEngineServlet.afterFilters.Run") = new {}
+              runFilters(routes.afterFilters)
+            case _ =>
           }
         }
         runFilters(routes.beforeFilters)
@@ -129,7 +126,7 @@ trait SkinnyEngineBase
 
     cradleHalt(
       body = {
-        result = runActions
+        result = runActions(request, response)
       },
       errorHandler = { error =>
         cradleHalt(
