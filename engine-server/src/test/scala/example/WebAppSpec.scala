@@ -16,11 +16,8 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
 
   object Database {
     def findMessage(name: Option[String])(implicit ctx: ExecutionContext) = Future {
-      if (name.isDefined && name.exists(_ == "Martin")) {
-        throw new RuntimeException
-      } else {
-        s"Hello, ${name.getOrElse("Anonymous")}"
-      }
+      if (name.isDefined && name.exists(_ == "Martin")) throw new RuntimeException
+      else s"Hello, ${name.getOrElse("Anonymous")}"
     }
   }
 
@@ -34,17 +31,25 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
       before() {
         contentType = "application/json; charset=utf-8"
       }
-      get("/json") {
-        AsyncResult {
-          val ctx = context // TODO: remove this
-          Database.findMessage(params.getAs[String]("name")).map { message =>
-            // `sbt enginServer/test` twice causes IllegalStateException here when resolving context implicitly
-            responseAsJSON(Map("message" -> message))(ctx)
-          }.recover {
-            case NonFatal(e) =>
-              logger.info(e.getMessage, e)
-              InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
-          }
+      get("/json1") {
+        val name = params.getAs[String]("name")
+        Future {
+          if (name.isDefined && name.exists(_ == "Martin")) throw new RuntimeException
+          else s"Hello, ${name.getOrElse("Anonymous")}"
+        }.map { message =>
+          responseAsJSON(Map("message" -> message)) // ServletConcurrencyException here
+        }.recover {
+          case NonFatal(e) => InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
+        }
+      }
+      get("/json2") {
+        implicit val ctx = context
+        Database.findMessage(params(ctx).getAs[String]("name")).map { message =>
+          responseAsJSON(Map("message" -> message))(ctx)
+        }.recover {
+          case NonFatal(e) =>
+            logger.info(e.getMessage, e)
+            InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
         }
       }
     }).port(8765).start()
@@ -58,19 +63,32 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "respond as OK with JSON body" in {
-    val response = HTTP.get("http://127.0.0.1:8765/json")
-    response.status should equal(200)
+    val response = HTTP.get("http://127.0.0.1:8765/json1")
+    response.textBody should equal("""{"message":"Oops... ServletConcurrencyException"}""")
+    response.status should equal(500)
     response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
-    response.textBody should equal("""{"message":"Hello, Anonymous"}""")
   }
 
   it should "respond as 500 error with JSON body" in {
-    val response = HTTP.get("http://127.0.0.1:8765/json?name=Martin")
+    val response = HTTP.get("http://127.0.0.1:8765/json1?name=Martin")
     response.status should equal(500)
     response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
     response.textBody should equal("""{"message":"Oops... RuntimeException"}""")
   }
 
+  it should "respond as OK with JSON body 2" in {
+    val response = HTTP.get("http://127.0.0.1:8765/json2")
+    response.status should equal(200)
+    response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
+    response.textBody should equal("""{"message":"Hello, Anonymous"}""")
+  }
+
+  it should "respond as 500 error with JSON body 2" in {
+    val response = HTTP.get("http://127.0.0.1:8765/json2?name=Martin")
+    response.status should equal(500)
+    response.header("Content-Type") should equal(Some("application/json; charset=utf-8"))
+    response.textBody should equal("""{"message":"Oops... RuntimeException"}""")
+  }
   after {
     WebServer.stop()
   }

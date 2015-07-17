@@ -32,7 +32,6 @@ import skinny.util.LoanPattern._
 trait SkinnyEngineBase
     extends CoreHandler
     with CoreRoutingDsl
-    with AsyncRoutingDsl
     with AsyncOperations
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
@@ -52,9 +51,6 @@ trait SkinnyEngineBase
     with SessionImplicits {
 
   import SkinnyEngineBase._
-
-  // If you need to run long-live operations, override this value
-  protected def defaultFutureTimeout: Duration = 10.seconds
 
   /**
    * ExecutionContext implicit value for this web controller.
@@ -301,7 +297,7 @@ trait SkinnyEngineBase
   protected def renderResponse(actionResult: Any)(implicit ctx: SkinnyEngineContext): Unit = {
     actionResult match {
       case r: AsyncResult => handleFuture(r.is, r.timeout)(ctx)
-      case f: Future[_] => handleFuture(f, defaultFutureTimeout)(ctx)
+      case f: Future[_] => renderResponse(AsyncResult.withFuture(f)(ctx))(ctx)
       case a =>
         if (contentType(ctx) == null) {
           contentTypeInferrer.lift(actionResult) foreach { ct =>
@@ -465,6 +461,22 @@ trait SkinnyEngineBase
    * varies between servlets and filters.
    */
   def requestPath(implicit ctx: SkinnyEngineContext): String
+
+  private[this] def onAsyncEvent(event: AsyncEvent)(thunk: => Any): Unit = {
+    withRequest(event.getSuppliedRequest.asInstanceOf[HttpServletRequest]) {
+      withResponse(event.getSuppliedResponse.asInstanceOf[HttpServletResponse]) {
+        thunk
+      }
+    }
+  }
+
+  private[this] def withinAsyncContext(context: javax.servlet.AsyncContext)(thunk: => Any): Unit = {
+    withRequest(context.getRequest.asInstanceOf[HttpServletRequest]) {
+      withResponse(context.getResponse.asInstanceOf[HttpServletResponse]) {
+        thunk
+      }
+    }
+  }
 
   private[this] def handleFuture(f: Future[_], timeout: Duration)(implicit ctx: SkinnyEngineContext): Unit = {
     val gotResponseAlready = new AtomicBoolean(false)

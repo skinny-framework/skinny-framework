@@ -1,7 +1,7 @@
 package example
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
-import skinny.engine.SkinnyEngineServlet
+import skinny.engine.{ ServletConcurrencyException, SkinnyEngineServlet }
 import skinny.engine.async.AsyncResult
 
 import scala.concurrent.Future
@@ -29,7 +29,7 @@ class FutureSpec extends ScalatraFlatSpec {
           try {
             responseAsJSON(params)
           } catch {
-            case e: IllegalStateException =>
+            case e: ServletConcurrencyException =>
               Map("message" -> e.getMessage)
           }
         }
@@ -46,7 +46,7 @@ class FutureSpec extends ScalatraFlatSpec {
   it should "fail with simple Future" in {
     get("/future-error?foo=bar") {
       status should equal(200)
-      body should equal("""[{"message":"Use AsyncResult { ... } or futureWithContext { implicit ctx => ... } instead."}]""")
+      body.contains("Concurrency Issue Detected") should be(true)
     }
   }
   it should "work with futureWithContext" in {
