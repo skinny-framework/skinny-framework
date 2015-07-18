@@ -1,7 +1,7 @@
 package integrationtest
 
 import _root_.controller._
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class SampleTxApiControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 

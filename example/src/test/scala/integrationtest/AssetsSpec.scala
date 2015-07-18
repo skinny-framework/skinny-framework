@@ -1,8 +1,7 @@
 package integrationtest
 
 import skinny.controller._
-import skinny.test.SkinnyTestSupport
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
 
 class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 

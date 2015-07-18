@@ -3,7 +3,6 @@ package integrationtest
 import _root_.controller.SnakeCaseKeyExamplesController
 import _root_.model._
 import skinny._, skinny.test._
-import skinny.test.scalatest.SkinnyFlatSpec
 
 class SnakeCaseKeyExamplesControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {
   addFilter(SnakeCaseKeyExamplesController, "/*")

@@ -1,7 +1,7 @@
 package integrationtest
 
 import controller.Controllers
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class ScaldiControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 

@@ -2,7 +2,6 @@ package integrationtest
 
 import controller.{ AngularXHRProgrammersController, Controllers }
 import model._
-import skinny.test.scalatest.SkinnyFlatSpec
 import skinny.util.AngularJSONStringOps._
 import skinny.test._
 

@@ -3,7 +3,7 @@ package skinny.controller.feature
 import skinny.controller._
 
 import skinny.Routes
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class VelocityTemplateEngineFeatureSpec extends SkinnyFlatSpec {
 

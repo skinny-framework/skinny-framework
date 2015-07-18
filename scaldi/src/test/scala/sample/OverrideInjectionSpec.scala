@@ -5,7 +5,7 @@ import scaldi.Module
 import service.{ EchoService, EchoServiceImpl }
 import skinny._
 import skinny.controller.feature.ScaldiFeature
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class OverrideInjectionSpec extends SkinnyFlatSpec {
 

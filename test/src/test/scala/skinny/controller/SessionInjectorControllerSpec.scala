@@ -1,7 +1,6 @@
 package skinny.controller
 
-import skinny.test.scalatest.SkinnyFlatSpec
-import skinny.test.SkinnyTestSupport
+import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
 
 class SessionInjectorControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 

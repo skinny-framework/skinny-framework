@@ -1,5 +1,6 @@
 package org.scalatra.test
 
+import skinny.test._
 import skinny.test.scalatest._
 
 package object scalatest {

@@ -1,6 +1,6 @@
 package controller
 
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class CustomLayoutControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 

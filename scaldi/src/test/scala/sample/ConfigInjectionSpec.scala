@@ -4,7 +4,7 @@ import skinny._
 import skinny.controller.feature.ScaldiFeature
 import service.EchoService
 import model.AppName
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 class ConfigInjectionSpec extends SkinnyFlatSpec {
 

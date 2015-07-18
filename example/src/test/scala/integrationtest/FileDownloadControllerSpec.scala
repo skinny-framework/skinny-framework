@@ -1,8 +1,7 @@
 package integrationtest
 
 import controller.Controllers
-import skinny.test.SkinnyTestSupport
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
 import unit.DBSettings
 
 class FileDownloadControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {

@@ -1,7 +1,6 @@
 package integrationtest
 
 import skinny.test._
-import skinny.test.scalatest.SkinnyFlatSpec
 import skinny.util.JSONStringOps._
 import model._
 import controller.Controllers

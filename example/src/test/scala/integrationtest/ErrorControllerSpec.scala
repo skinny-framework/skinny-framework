@@ -1,9 +1,8 @@
 package integrationtest
 
-import skinny.test.SkinnyTestSupport
+import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
 import controller.ErrorController
 import model.Company
-import skinny.test.scalatest.SkinnyFlatSpec
 import unit.DBSettings
 
 class ErrorControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport with DBSettings {

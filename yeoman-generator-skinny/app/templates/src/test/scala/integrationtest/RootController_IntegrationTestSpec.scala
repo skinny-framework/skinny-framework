@@ -1,8 +1,7 @@
 package integrationtest
 
 import _root_.controller.Controllers
-import skinny.test.SkinnyTestSupport
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
 
 class RootController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport {
   Controllers.root.mount(servletContextHandler.getServletContext)

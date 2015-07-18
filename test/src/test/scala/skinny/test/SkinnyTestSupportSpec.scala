@@ -3,7 +3,7 @@ package skinny.test
 import skinny._
 import skinny.controller.SkinnyController
 import skinny.filter.SkinnySessionFilter
-import skinny.test.scalatest.SkinnyFlatSpec
+import skinny.test.SkinnyFlatSpec
 
 case class Foo(str: String, value: Int) extends java.io.Serializable
 
