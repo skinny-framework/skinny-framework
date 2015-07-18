@@ -20,7 +20,7 @@ class AngularXSRFCookieProviderFeatureSpec extends ScalatraFlatSpec {
   it should "return Set-Cookie header" in {
     get("/alice") {
       status should equal(200)
-      header("Set-Cookie") should include regex ("XSRF-TOKEN=\\w+;Path=/")
+      header("Set-Cookie") should include regex ("XSRF-TOKEN=\\w+")
     }
   }
 }

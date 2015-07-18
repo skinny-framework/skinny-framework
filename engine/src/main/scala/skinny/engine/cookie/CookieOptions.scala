@@ -2,7 +2,7 @@ package skinny.engine.cookie
 
 case class CookieOptions(
   domain: String = "",
-  path: String = "/",
+  path: String = "",
   maxAge: Int = -1,
   secure: Boolean = false,
   comment: String = "",

@@ -6,12 +6,10 @@ import com.fasterxml.jackson.databind.{ ObjectWriter, DeserializationFeature, Ob
 
 import scala.util.control.Exception._
 
-object JSONStringOps extends JSONStringOps
-
 /**
  * Easy-to-use JSON String Operation.
  */
-trait JSONStringOps {
+trait JSONStringOps extends { config: JSONStringOpsConfig =>
 
   // -------------------------------
   // Avoid extending org.json4s.jackson.JsonMethods due to #render method conflict
@@ -52,35 +50,13 @@ trait JSONStringOps {
   def fromJValue[T](json: JValue)(implicit reader: Reader[T]): T = reader.read(json)
 
   /**
-   * Use the prefix for JSON Vulnerability Protection.
-   * see: "https://docs.angularjs.org/api/ng/service/$http"
-   */
-  protected def useJSONVulnerabilityProtection: Boolean = false
-
-  /**
-   * the prefix for JSON Vulnerability Protection.
-   * see: "https://docs.angularjs.org/api/ng/service/$http"
-   */
-  protected def prefixForJSONVulnerabilityProtection: String = ")]}',\n"
-
-  /**
-   * Default key policy.
-   */
-  protected def useUnderscoreKeysForJSON: Boolean = true
-
-  /**
-   * JSON format support implicitly.
-   */
-  protected implicit val jsonFormats: Formats = DefaultFormats ++ org.json4s.ext.JodaTimeSerializers.all
-
-  /**
    * Returns JSON string value.
    *
    * @param value value
    */
   def compact(value: JValue): String = {
     val json = mapper.writeValueAsString(value)
-    if (useJSONVulnerabilityProtection) prefixForJSONVulnerabilityProtection + json
+    if (config.useJSONVulnerabilityProtection) prefixForJSONVulnerabilityProtection + json
     else json
   }
 
@@ -99,7 +75,7 @@ trait JSONStringOps {
    * @param underscoreKeys apply #underscoreKeys keys if true
    * @return json string
    */
-  def toJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
+  def toJSONString(v: Any, underscoreKeys: Boolean = config.useUnderscoreKeysForJSON): String = {
     if (underscoreKeys) compact(parse(compact(toJSON(v))).underscoreKeys)
     else compact(toJSON(v))
   }
@@ -119,7 +95,7 @@ trait JSONStringOps {
    * @param underscoreKeys apply #underscoreKeys keys if true
    * @return json string
    */
-  def toPrettyJSONString(v: Any, underscoreKeys: Boolean = useUnderscoreKeysForJSON): String = {
+  def toPrettyJSONString(v: Any, underscoreKeys: Boolean = config.useUnderscoreKeysForJSON): String = {
     if (underscoreKeys) pretty(parse(compact(toJSON(v))).underscoreKeys)
     else pretty(toJSON(v))
   }
@@ -173,7 +149,7 @@ trait JSONStringOps {
    * @return value
    */
   def fromJSONStringToJValue(json: String, underscoreKeys: Boolean = false, asIs: Boolean = false): Option[JValue] = {
-    val pureJson = if (useJSONVulnerabilityProtection &&
+    val pureJson = if (config.useJSONVulnerabilityProtection &&
       json.startsWith(prefixForJSONVulnerabilityProtection)) {
       json.replace(prefixForJSONVulnerabilityProtection, "")
     } else {
@@ -187,3 +163,7 @@ trait JSONStringOps {
   }
 
 }
+
+object JSONStringOps
+  extends JSONStringOps
+  with JSONStringOpsConfig

@@ -3,8 +3,8 @@ package skinny.controller.feature
 import java.util.Locale
 
 import org.json4s.JsonAST._
-import skinny.I18n
 
+import skinny.I18n
 import skinny.controller.implicits.ParamsPermitImplicits
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.response.ResponseStatus
@@ -12,7 +12,7 @@ import skinny.engine.{ Format, _ }
 import skinny.filter.SkinnyFilterActivation
 import skinny.logging.LoggerProvider
 import skinny.routing.implicits.RoutesAsImplicits
-import skinny.util.{ JSONStringOps, StringUtil }
+import skinny.util.StringUtil
 import skinny.validator.implicits.ParametersGetAsImplicits
 
 import scala.xml._
@@ -30,6 +30,7 @@ trait SkinnyControllerCommonBase
     with ChunkedResponseFeature
     with BeforeAfterActionFeature
     with LocaleFeature
+    with JSONFeature
     with ValidationFeature
     with TimeLoggingFeature
     with ThreadLocalRequestFeature
@@ -64,9 +65,9 @@ trait SkinnyControllerCommonBase
     setContentTypeIfAbsent()
     format match {
       case Format.XML =>
-        val entityXml = convertJValueToXML(JSONStringOps.toJSON(entity)).toString
+        val entityXml = convertJValueToXML(toJSON(entity)).toString
         s"""<?xml version="1.0" encoding="${charset.getOrElse("UTF-8")}"?><${xmlRootName}>${entityXml}</${xmlRootName}>"""
-      case Format.JSON => JSONStringOps.toJSONString(entity)
+      case Format.JSON => toJSONString(entity)
       case _ => null
     }
   }
@@ -140,6 +141,7 @@ trait SkinnyControllerCommonBase
   }
   private[this] class XmlNode(name: String, children: Seq[Node])
     extends Elem(null, name, xml.Null, TopScope, children.isEmpty, children: _*)
+
   private[this] class XmlElem(name: String, value: String)
     extends Elem(null, name, xml.Null, TopScope, Text(value).isEmpty, Text(value))
 

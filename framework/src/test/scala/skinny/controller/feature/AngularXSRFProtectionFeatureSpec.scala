@@ -23,7 +23,7 @@ class AngularXSRFProtectionFeatureSpec extends ScalatraFlatSpec {
   it should "reject CSRF request" in {
     post("/") {
       status should equal(403)
-      header("Set-Cookie") should include regex ("XSRF-TOKEN=\\w+;Path=/")
+      header("Set-Cookie") should include regex ("XSRF-TOKEN=\\w+")
     }
   }
 

@@ -10,6 +10,7 @@ import skinny.engine.json.{ JSONOperations, JsonSupport }
 import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
 import skinny.engine.routing.MatchedRoute
 import skinny.logging.LoggerProvider
+import skinny.util.JSONStringOpsConfig
 
 /**
  * Merging JSON request body into Scalatra params.
@@ -20,7 +21,7 @@ trait JSONParamsAutoBinderFeature
     extends SkinnyEngineBase
     with JSONOperations
     with ApiFormats
-    with LoggerProvider {
+    with LoggerProvider { self: JSONStringOpsConfig =>
 
   /**
    * Merge parsedBody (JValue) into params if possible.

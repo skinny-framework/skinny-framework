@@ -6,13 +6,13 @@ package skinny.util
  * - camelCase keys
  * - JSON vulnerability protection enabled by default
  */
-trait AngularJSONStringOps extends JSONStringOps {
+trait AngularJSONStringOps extends JSONStringOps with JSONStringOpsConfig {
 
   // JSON vulnerability protection enabled by default
-  override protected def useJSONVulnerabilityProtection = true
+  override protected def useJSONVulnerabilityProtection: Boolean = true
 
   // camelCase keys by default
-  override protected def useUnderscoreKeysForJSON = false
+  override protected def useUnderscoreKeysForJSON: Boolean = false
 
 }
 

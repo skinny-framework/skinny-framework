@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import org.fusesource.scalate.{ TemplateEngine, RenderContext }
+import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }

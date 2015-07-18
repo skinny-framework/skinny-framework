@@ -3,6 +3,7 @@ package skinny.engine
 import skinny.engine.async.{ AsyncBeforeAfterDsl, AsyncSupport }
 import skinny.engine.json.JSONOperations
 import skinny.engine.routing.AsyncRoutingDsl
+import skinny.util.JSONStringOpsConfig
 
 /**
  * Built-in features in SkinnyEngineFilter/SkinnyEngineServlet.
@@ -12,6 +13,7 @@ trait AsyncFeatures
     extends AsyncSupport
     with AsyncRoutingDsl
     with AsyncBeforeAfterDsl
-    with JSONOperations { self: SkinnyEngineBase =>
+    with JSONOperations
+    with JSONStringOpsConfig { self: SkinnyEngineBase =>
 
 }

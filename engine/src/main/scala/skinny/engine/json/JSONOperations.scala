@@ -2,12 +2,12 @@ package skinny.engine.json
 
 import skinny.engine.{ Format, SkinnyEngineBase }
 import skinny.engine.context.SkinnyEngineContext
-import skinny.util.JSONStringOps
+import skinny.util.{ JSONStringOpsConfig, JSONStringOps }
 
 /**
  * JSON response support.
  */
-trait JSONOperations extends JSONStringOps { self: SkinnyEngineBase =>
+trait JSONOperations extends JSONStringOps { self: SkinnyEngineBase with JSONStringOpsConfig =>
 
   /**
    * Returns JSON response.
@@ -21,7 +21,7 @@ trait JSONOperations extends JSONStringOps { self: SkinnyEngineBase =>
     entity: Any,
     charset: Option[String] = Some("utf-8"),
     prettify: Boolean = false,
-    underscoreKeys: Boolean = useUnderscoreKeysForJSON)(implicit ctx: SkinnyEngineContext): String = {
+    underscoreKeys: Boolean = self.useUnderscoreKeysForJSON)(implicit ctx: SkinnyEngineContext): String = {
 
     // If Content-Type is already set, never overwrite it.
     if (contentType(ctx) == null) {

@@ -7,6 +7,8 @@ import skinny.util.AngularJSONStringOps
 /**
  * Angular application's server side API support.
  */
-trait AngularJSONFeature extends JSONOperations with AngularJSONStringOps { self: SkinnyEngineBase =>
+trait AngularJSONFeature
+    extends JSONOperations
+    with AngularJSONStringOps { self: SkinnyEngineBase =>
 
 }
