@@ -1,7 +1,7 @@
 package integrationtest
 
 import _root_.controller.Controllers
-import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
+import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
 
 class MustacheControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 

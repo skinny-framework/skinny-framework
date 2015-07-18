@@ -1,7 +1,7 @@
 package skinny.test
 
 import org.scalatest._
-import org.scalatest.junit.{JUnit3Suite, JUnitSuite}
+import org.scalatest.junit.{ JUnit3Suite, JUnitSuite }
 import skinny.engine.test.scalatest.SkinnyEngineSuite
 
 /**

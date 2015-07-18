@@ -1,7 +1,7 @@
 package integrationtest
 
 import controller.Controllers
-import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
+import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
 
 class FreeMarkerControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 

@@ -1,6 +1,6 @@
 package integrationtest
 
-import skinny.test.{SkinnyFlatSpec, SkinnyTestSupport}
+import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
 import controller.Controllers
 
 class VelocityControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
