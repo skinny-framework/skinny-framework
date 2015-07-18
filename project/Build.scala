@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.0.M1-20150718"
+  lazy val currentVersion = "2.0.0-SNAPSHOT"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.3.0.RC3"
@@ -90,7 +90,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies <++= (scalaVersion) { (sv) =>
         scalatraDependencies ++ Seq(
           "commons-io"    %  "commons-io" % "2.4"
-        ) ++ testDependencies ++ Seq(
+        ) ++ compileScalateDependencies(sv) ++ testDependencies ++ Seq(
           "org.scalatra"    %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"    %% "scalatra-scalatest" % compatibleScalatraVersion % Test
         )
@@ -413,13 +413,17 @@ object SkinnyFrameworkBuild extends Build {
     "org.json4s"    %% "json4s-ext"         % json4SVersion    % Compile  excludeAll(fullExclusionRules: _*)
   )
   lazy val scalatraDependencies = json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies ++ Seq(
-    "org.scalatra.rl"                  %% "rl"                % "0.4.10",
-    "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3",
-    "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   excludeAll(fullExclusionRules: _*),
-    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   excludeAll(fullExclusionRules: _*),
-    // To fix slf4j-log4j12 version for mime-util
-    "org.slf4j"                        %  "slf4j-log4j12"     % slf4jApiVersion  % Provided
+    "org.scalatra.rl"                  %% "rl"                % "0.4.10"  % Compile,
+    "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3"   % Compile,
+    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   % Compile excludeAll(fullExclusionRules: _*),
+    "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   % Provided excludeAll(fullExclusionRules: _*)
   )
+  def compileScalateDependencies(sv: String) = Seq(
+     sv match {
+       case v if v.startsWith("2.11.") => "org.scalatra.scalate"   %% "scalamd" % "1.6.1" % Compile
+       case _ =>                          "org.fusesource.scalamd" %% "scalamd" % "1.6"   % Compile
+     }
+   ) ++ Seq("org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   % Compile excludeAll(fullExclusionRules: _*))
 
   lazy val scalikejdbcDependencies = Seq(
     "org.scalikejdbc" %% "scalikejdbc"                      % scalikeJDBCVersion % Compile excludeAll(fullExclusionRules: _*),
