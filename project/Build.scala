@@ -113,18 +113,14 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-engine",
       libraryDependencies <++= (scalaVersion) { (sv) =>
         scalatraDependencies ++ Seq(
-          sv match {
-            case v if v.startsWith("2.11.") => "org.scalatra.scalate"   %% "scalamd" % "1.6.1" % Compile
-            case _ =>                          "org.fusesource.scalamd" %% "scalamd" % "1.6"   % Compile
-          }
-        ) ++ testDependencies ++ Seq(
           "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
           "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
         ) ++ Seq(
-          // TODO: remove this, due to mime-util
-          "org.slf4j"         %  "slf4j-log4j12"      % slf4jApiVersion           % Compile
-        )
+          // override mime-util's dependencies (it depends on slf4j-api 1.5.x)
+          "log4j"             %  "log4j"              % "1.2.17"                  % Provided,
+          "org.slf4j"         %  "slf4j-log4j12"      % slf4jApiVersion           % Provided
+        ) ++ testDependencies
       }
     ) ++ _jettyOrbitHack
   ).dependsOn(
