@@ -6,7 +6,7 @@ import skinny.engine.Context
 import skinny.orm.SkinnyCRUDMapper
 import skinny.routing.Routes
 
-class AsyncSkinnyApiServletSpec extends ScalatraFlatSpec {
+class AsyncSkinnyServletSpec extends ScalatraFlatSpec {
 
   behavior of "AsyncSkinnyApiServlet"
 
