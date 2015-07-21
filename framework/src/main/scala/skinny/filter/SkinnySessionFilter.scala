@@ -41,7 +41,14 @@ trait SkinnySessionFilter extends SkinnyFilter {
 
   afterAction()(saveCurrentSkinnySession)
 
-  protected def initializeSkinnySession: SkinnyHttpSession = SkinnyHttpSession.getOrCreate(request)
+  /**
+   * Replace this when you use other backend.
+   */
+  protected def initializeSkinnySession: SkinnyHttpSession = {
+    // SkinnyHttpSession's factory method doesn't support several backend implementation.
+    // Of course, pull requests are always welcome.
+    SkinnyHttpSession.getOrCreate(request)
+  }
 
   protected def saveCurrentSkinnySession(): Unit = {
     try {
