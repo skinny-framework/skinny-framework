@@ -2,30 +2,31 @@ package skinny.controller
 
 import org.scalatra.test.scalatest._
 import scalikejdbc._
-import skinny._
+import skinny.engine.Context
 import skinny.orm.SkinnyCRUDMapper
+import skinny.routing.Routes
 
-class AsyncSkinnyControllerSpec extends ScalatraFlatSpec {
+class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
 
-  behavior of "AsyncSkinnyController"
+  behavior of "AsyncSkinnyApiController"
 
   Class.forName("org.h2.Driver")
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
-  ConnectionPool.add('AsyncSkinnyController, "jdbc:h2:mem:AsyncSkinnyController", "", "")
-  NamedDB('AsyncSkinnyController).localTx { implicit s =>
+  ConnectionPool.add('AsyncSkinnyApiController, "jdbc:h2:mem:AsyncSkinnyApiController", "", "")
+  NamedDB('AsyncSkinnyApiController).localTx { implicit s =>
     sql"create table company (id serial primary key, name varchar(64), url varchar(128));"
       .execute.apply()
   }
 
   case class Company(id: Long, name: String, url: String)
   object Company extends SkinnyCRUDMapper[Company] {
-    override def connectionPoolName = 'AsyncSkinnyController
+    override def connectionPoolName = 'AsyncSkinnyApiController
     override def defaultAlias = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = new Company(
       id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url))
   }
 
-  class CompaniesController extends AsyncSkinnyController {
+  class CompaniesController extends AsyncSkinnyApiController {
     def create(implicit ctx: Context) = {
       val count = Company.createWithAttributes(
         'name -> params.getAs[String]("name"),
