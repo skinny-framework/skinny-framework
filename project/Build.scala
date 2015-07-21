@@ -174,7 +174,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty" %  "jetty-server"      % jettyVersion  % Compile
       )
     ) ++ _jettyOrbitHack
-  ).dependsOn(framework)
+  ).dependsOn(framework % Provided)
 
   lazy val assets = Project(id = "assets", base = file("assets"),
     settings = baseSettings ++ Seq(
