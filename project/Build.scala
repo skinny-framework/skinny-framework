@@ -116,10 +116,6 @@ object SkinnyFrameworkBuild extends Build {
           "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
           "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
           "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
-        ) ++ Seq(
-          // override mime-util's dependencies (it depends on slf4j-api 1.5.x)
-          "log4j"             %  "log4j"              % "1.2.17"                  % Provided,
-          "org.slf4j"         %  "slf4j-log4j12"      % slf4jApiVersion           % Provided
         ) ++ testDependencies
       }
     ) ++ _jettyOrbitHack
@@ -411,7 +407,6 @@ object SkinnyFrameworkBuild extends Build {
   lazy val scalatraDependencies = json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies ++ Seq(
     "org.scalatra.rl"                  %% "rl"                % "0.4.10"  % Compile,
     "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3"   % Compile,
-    "eu.medsea.mimeutil"               %  "mime-util"         % "2.1.3"   % Compile excludeAll(fullExclusionRules: _*),
     "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   % Provided excludeAll(fullExclusionRules: _*)
   )
   def compileScalateDependencies(sv: String) = Seq(
