@@ -72,7 +72,6 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package integrationtest.admin
           |
-          |import skinny.test.scalatest._
           |import org.scalatest._
           |import skinny._
           |import skinny.test._
