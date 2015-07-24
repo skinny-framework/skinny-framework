@@ -6,6 +6,7 @@ import java.util.Locale
 import javax.servlet._
 import javax.servlet.http._
 import scala.collection.JavaConverters._
+import scala.collection.concurrent.TrieMap
 
 import scala.util.Try
 
@@ -22,18 +23,6 @@ class StableHttpServletRequest(
   private val underlying: HttpServletRequest)
     extends HttpServletRequestWrapper(underlying) {
 
-  var stopTryingOriginal: Boolean = false
-
-  private[this] def tryOriginalFirst[A](action: => A, fallback: A): A = {
-    if (stopTryingOriginal) {
-      fallback
-    } else {
-      val tried = Try(action)
-      if (tried.isFailure || tried.filter(_ != null).toOption.isEmpty) fallback
-      else tried.get
-    }
-  }
-
   // -------------------------
   // context, fixed request metadata
 
@@ -47,9 +36,14 @@ class StableHttpServletRequest(
     underlying.startAsync(servletRequest, servletResponse)
   }
 
-  private[this] val _getRequest = super.getRequest
-  override def getRequest: ServletRequest = tryOriginalFirst(super.getRequest, _getRequest)
-  override def setRequest(request: ServletRequest): Unit = super.setRequest(request)
+  private[this] var _getRequest = super.getRequest
+  override def getRequest: ServletRequest = _getRequest
+  override def setRequest(request: ServletRequest): Unit = {
+    _getRequest.synchronized {
+      super.setRequest(request)
+      _getRequest = request
+    }
+  }
 
   override def isWrapperFor(wrapped: ServletRequest): Boolean = super.isWrapperFor(wrapped)
   override def isWrapperFor(wrappedType: Class[_]): Boolean = super.isWrapperFor(wrappedType)
@@ -101,9 +95,14 @@ class StableHttpServletRequest(
   override def isRequestedSessionIdFromURL: Boolean = _isRequestedSessionIdFromURL
   override def isRequestedSessionIdFromUrl: Boolean = isRequestedSessionIdFromURL
 
-  private[this] val _getCharacterEncoding = underlying.getCharacterEncoding
-  override def getCharacterEncoding: String = tryOriginalFirst(underlying.getCharacterEncoding, _getCharacterEncoding)
-  override def setCharacterEncoding(enc: String): Unit = underlying.setCharacterEncoding(enc)
+  private[this] var _getCharacterEncoding = underlying.getCharacterEncoding
+  override def getCharacterEncoding: String = _getCharacterEncoding
+  override def setCharacterEncoding(enc: String): Unit = {
+    _getCharacterEncoding.synchronized {
+      underlying.setCharacterEncoding(enc)
+      _getCharacterEncoding = enc
+    }
+  }
 
   private[this] val _getContentLength = underlying.getContentLength
   override def getContentLength: Int = _getContentLength
@@ -179,12 +178,8 @@ class StableHttpServletRequest(
 
   // Don't override getParts
   // javax.servlet.ServletException: Content-Type != multipart/form-data
-
-  //  private[this] val _getParts = underlying.getParts
-  //  override def getParts: java.util.Collection[Part] = tryOriginalFirst(underlying.getParts, _getParts)
-  //  override def getPart(name: String): Part = {
-  //    tryOriginalFirst(underlying.getPart(name), _getParts.asScala.find(_.getName == name).orNull)
-  //  }
+  override def getParts: java.util.Collection[Part] = underlying.getParts
+  override def getPart(name: String): Part = underlying.getPart(name)
 
   // deprecated
   // override def getRealPath(path: String): String = underlying.getRealPath(path)
@@ -214,21 +209,35 @@ class StableHttpServletRequest(
   // -------------------------
   // attributes
 
-  private[this] val _getAttributeNames = underlying.getAttributeNames
-  private[this] val _attributes: Map[String, AnyRef] = {
-    Option(underlying.getAttributeNames)
-      .map(_.asScala.map(name => name -> underlying.getAttribute(name)).filterNot { case (_, v) => v == null }.toMap)
-      .getOrElse(Map.empty)
+  private[this] def _getAttributeNames: java.util.Enumeration[String] = _attributes.keys.iterator.asJavaEnumeration
+  private[this] val _attributes: TrieMap[String, AnyRef] = {
+    val result = new TrieMap[String, AnyRef]
+    Option(underlying.getAttributeNames).map(_.asScala).foreach { names =>
+      names.foreach { name =>
+        val value = underlying.getAttribute(name)
+        if (value != null) {
+          result.put(name, value)
+        }
+      }
+    }
+    result
   }
 
-  override def getAttributeNames: java.util.Enumeration[String] = tryOriginalFirst(underlying.getAttributeNames, _getAttributeNames)
-  override def getAttribute(name: String): AnyRef = tryOriginalFirst(underlying.getAttribute(name), _attributes.getOrElse(name, null))
-  override def setAttribute(name: String, o: scala.Any): Unit = underlying.setAttribute(name, o)
-  override def removeAttribute(name: String): Unit = underlying.removeAttribute(name)
+  override def getAttributeNames: java.util.Enumeration[String] = _getAttributeNames
+  override def getAttribute(name: String): AnyRef = _attributes.getOrElse(name, null)
+  override def setAttribute(name: String, o: scala.Any): Unit = {
+    underlying.setAttribute(name, o)
+    Option(o).foreach(v => _attributes.put(name, v.asInstanceOf[AnyRef]))
+  }
+  override def removeAttribute(name: String): Unit = {
+    underlying.removeAttribute(name)
+    _attributes.remove(name)
+  }
 
   // -------------------------
   // headers
 
+  // request headers are immutable
   private[this] val _getHeaderNames = underlying.getHeaderNames
   private[this] val _cachedGetHeader: Map[String, String] = {
     Option(underlying.getHeaderNames)
@@ -241,28 +250,20 @@ class StableHttpServletRequest(
       .getOrElse(Map.empty)
   }
 
-  // this API must try original first
-  override def getHeaderNames: java.util.Enumeration[String] = tryOriginalFirst(underlying.getHeaderNames, _getHeaderNames)
-  override def getHeader(name: String): String = {
-    tryOriginalFirst(underlying.getHeader(name),
-      _cachedGetHeader.get(name).orNull[String])
-  }
+  override def getHeaderNames: java.util.Enumeration[String] = _getHeaderNames
+  override def getHeader(name: String): String = _cachedGetHeader.get(name).orNull[String]
   override def getIntHeader(name: String): Int = {
-    tryOriginalFirst(underlying.getIntHeader(name),
-      // an integer expressing the value of the request header or -1 if the request doesn't have a header of this name
-      _cachedGetHeader.get(name).map(_.toInt).getOrElse(-1))
+    // an integer expressing the value of the request header or -1 if the request doesn't have a header of this name
+    _cachedGetHeader.get(name).map(_.toInt).getOrElse(-1)
   }
   override def getHeaders(name: String): java.util.Enumeration[String] = {
-    tryOriginalFirst(underlying.getHeaders(name),
-      // If the request does not have any headers of that name return an empty enumeration
-      _cachedGetHeaders.get(name).getOrElse(java.util.Collections.emptyEnumeration[String]()))
+    // If the request does not have any headers of that name return an empty enumeration
+    _cachedGetHeaders.get(name).getOrElse(java.util.Collections.emptyEnumeration[String]())
   }
   override def getDateHeader(name: String): Long = {
-    tryOriginalFirst(underlying.getDateHeader(name),
-      // -1 if the named header was not included with the request
-      _cachedGetHeader.get(name).map(_.toLong).getOrElse(-1L))
+    // -1 if the named header was not included with the request
+    _cachedGetHeader.get(name).map(_.toLong).getOrElse(-1L)
   }
-
 }
 
 object StableHttpServletRequest {

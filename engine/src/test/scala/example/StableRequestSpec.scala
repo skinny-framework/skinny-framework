@@ -11,31 +11,37 @@ class StableRequestSpec extends ScalatraFlatSpec {
     get("/foo") { implicit ctx =>
       request.setAttribute("foo", "bar")
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getAttribute("foo")
       }
     }
     get("/getAuthType") { implicit ctx =>
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getAuthType
       }
     }
     get("/getHeader") { implicit ctx =>
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getHeader("X-REQUEST-ID")
       }
     }
     get("/getPathInfo") { implicit ctx =>
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getPathInfo
       }
     }
     get("/getMethod") { implicit ctx =>
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getMethod
       }
     }
     get("/getMethod") { implicit ctx =>
       Future {
+        Thread.sleep(100) // To get the container to give up the request
         request.getMethod
       }
     }
