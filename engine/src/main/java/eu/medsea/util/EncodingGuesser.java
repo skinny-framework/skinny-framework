@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.*;
 
-
 /**
  * This class contains a list of known encodings used by TextMimeType.
  * It is used by the TextMimeDetector but can be used as a stand alone utility class
@@ -64,12 +63,13 @@ import java.util.*;
  * </p>
  */
 public class EncodingGuesser {
-    private static final long serialVersionUID = -247389882161262839L;
 
     private static Logger log = LoggerFactory.getLogger(EncodingGuesser.class);
 
     // We want the CANONICAL name of the default Charset for the JVM.
-    private static String defaultJVMEncoding = Charset.forName(new java.io.OutputStreamWriter(new java.io.ByteArrayOutputStream()).getEncoding()).name();
+    private static String defaultJVMEncoding = Charset.forName(
+            new java.io.OutputStreamWriter(new java.io.ByteArrayOutputStream()).getEncoding()).name();
+
     private static Collection supportedEncodings = new TreeSet();
 
     private static Map boms = new HashMap();
@@ -190,32 +190,6 @@ public class EncodingGuesser {
     }
 
     /**
-     * Allows you to remove an encoding from the supported encodings you are not interested in.
-     *
-     * @param encoding
-     * @return true if removed else false
-     */
-    public static boolean removeEncoding(String encoding) {
-        return supportedEncodings.remove(encoding);
-    }
-
-    /**
-     * Remove all valid encodings in the string array
-     *
-     * @param encodings String [] containing the encodings to remove
-     * @return true if at least one of the encodings was removed else false
-     */
-    public static boolean removeEncodings(String[] encodings) {
-        boolean removedAtLeast_1 = false;
-        for (int i = 0; i < encodings.length; i++) {
-            if (removeEncoding(encodings[i])) {
-                removedAtLeast_1 = true;
-            }
-        }
-        return removedAtLeast_1;
-    }
-
-    /**
      * Get a Collection containing entries in both the supported encodings
      * and the passed in String [] of encodings.
      * <p>
@@ -256,7 +230,7 @@ public class EncodingGuesser {
     /**
      * Set the supported encodings
      *
-     * @param encodings. If this is null the supported encodings are left unchanged.
+     * @param encodings If this is null the supported encodings are left unchanged.
      * @return a copy of the currently supported encodings
      */
     public static Collection setSupportedEncodings(Collection encodings) {
@@ -335,24 +309,5 @@ public class EncodingGuesser {
         return true;
     }
 
-    /**
-     * Utility method to get all of the current encoding names, in canonical format, supported by your JVM
-     * at the time this is called.
-     *
-     * @return current Collection of canonical encoding names
-     */
-    public static Collection getCanonicalEncodingNamesSupportedByJVM() {
-        Collection encodings = new TreeSet();
-
-        SortedMap charSets = Charset.availableCharsets();
-        Collection charSetNames = charSets.keySet();
-        for (Iterator it = charSetNames.iterator(); it.hasNext(); ) {
-            encodings.add((String) it.next());
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("The following [" + encodings.size() + "] encodings will be used: " + encodings);
-        }
-        return encodings;
-    }
 }
 

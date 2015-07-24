@@ -26,6 +26,7 @@ import java.util.Collection;
  * @author Steven McArdle
  */
 public abstract class MimeDetector {
+
     /**
      * Gets the name of this MimeDetector
      *
@@ -187,16 +188,5 @@ public abstract class MimeDetector {
      * @throws UnsupportedOperationException
      */
     protected abstract Collection getMimeTypesByteArray(final byte[] data) throws UnsupportedOperationException;
-
-    protected static InputStream closeStream(InputStream in) {
-        if (in == null) {
-            return null;
-        }
-        try {
-            in.close();
-        } catch (Exception ignore) {
-        }
-        return null;
-    }
 
 }

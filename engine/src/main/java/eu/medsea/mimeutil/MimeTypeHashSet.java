@@ -15,7 +15,10 @@
  */
 package eu.medsea.mimeutil;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * This class is used to represent a collection of <code>MimeType</code> objects.
@@ -68,52 +71,6 @@ class MimeTypeHashSet implements Set, Collection {
      */
     MimeTypeHashSet(final Collection collection) {
         addAll(collection);
-    }
-
-    /**
-     * @param initialCapacity
-     * @see LinkedHashSet#HashSet(int)
-     */
-    MimeTypeHashSet(final int initialCapacity) {
-        hashSet = new HashSet(initialCapacity);
-    }
-
-    /**
-     * @param initialCapacity
-     * @param loadFactor
-     * @see LinkedHashSet#HashSet(int, float)
-     */
-    MimeTypeHashSet(final int initialCapacity, float loadFactor) {
-        hashSet = new HashSet(initialCapacity, loadFactor);
-    }
-
-    /**
-     * Construct a MimeTypeHashSet from a String object representing a mime type. The String can be a comma separated
-     * list each of which can be a string representation of a mime type.
-     *
-     * @param arg0 See the introduction to this class for a description of the String parameter that can be passed.
-     */
-    MimeTypeHashSet(final String arg0) {
-        add(arg0);
-    }
-
-    /**
-     * Construct a MimeTypeHashSet from a String [] object representing a mime types. Each string in the array can be a string
-     * representation of a mime type or a comma separated list each of which can be a string representation of a mime type.
-     *
-     * @param arg0 See the introduction to this class for a description of the String [] parameter that can be passed.
-     */
-    MimeTypeHashSet(final String[] arg0) {
-        add(arg0);
-    }
-
-    /**
-     * Construct a MimeTypeHashSet from a single MimeType
-     *
-     * @param mimeType
-     */
-    MimeTypeHashSet(final MimeType mimeType) {
-        add(mimeType);
     }
 
     /**
@@ -222,7 +179,7 @@ class MimeTypeHashSet implements Set, Collection {
     /**
      * Checks if this Collection contains the type passed in. See the introduction of this class for a description of the types that can be parsed.
      *
-     * @param an object representing one of the recognised types that can represent mime types.
+     * @param o an object representing one of the recognised types that can represent mime types.
      * @return true if this set contains the specified element or elements.
      */
     public boolean contains(final Object o) {
@@ -447,7 +404,6 @@ class MimeTypeHashSet implements Set, Collection {
 	 * before they can be accessed.
 	 */
 
-
     /**
      * Return a sub collection from this collection containing all MimeType(s) that match the
      * pattern passed in. The pattern can be any pattern supported by the {@Link Pattern} class.
@@ -458,7 +414,6 @@ class MimeTypeHashSet implements Set, Collection {
      */
     public Collection matches(String pattern) {
         Collection c = new MimeTypeHashSet();
-
         for (Iterator it = iterator(); it.hasNext(); ) {
             MimeType mimeType = (MimeType) it.next();
             if (mimeType.toString().matches(pattern)) {

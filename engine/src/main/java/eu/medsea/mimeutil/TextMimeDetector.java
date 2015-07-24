@@ -294,33 +294,6 @@ public final class TextMimeDetector extends MimeDetector {
     }
 
     /**
-     * Register a TexMimeHandler(s)
-     *
-     * @param handler to register
-     */
-    public static void registerTextMimeHandler(TextMimeHandler handler) {
-        handlers.add(handler);
-    }
-
-    /**
-     * Unregister a TextMimeHandler
-     *
-     * @param handler to unregister
-     */
-    public static void unregisterTextMimeHandler(TextMimeHandler handler) {
-        handlers.remove(handler);
-    }
-
-    /**
-     * Get the current Collection of registered TexMimeHandler(s)
-     *
-     * @return currently registered collection of TextMimeHandler(s)
-     */
-    public static Collection getRegisteredTextMimeHandlers() {
-        return handlers;
-    }
-
-    /**
      * Give registered TextMimeHandler(s) the opportunity to influence the
      * actual mime type before returning from the getMimeTypesXXX(...) methods
      *
@@ -355,9 +328,7 @@ public final class TextMimeDetector extends MimeDetector {
      * We will modify this method to include other known sequences as and when we discover them
      */
     private boolean isBinary(byte[] data) {
-
         int negCount = 0;
-
         for (int i = 0; i < data.length; i++) {
             if (data[i] == 0) {
                 negCount++;

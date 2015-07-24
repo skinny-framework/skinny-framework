@@ -43,17 +43,6 @@ public class MimeType implements Comparable, Serializable {
     private int specificity = 1;
 
     /**
-     * Construct a MimeType from another MimeType instance
-     *
-     * @param mimeType
-     */
-    public MimeType(final MimeType mimeType) {
-        this.mediaType = mimeType.mediaType;
-        this.subType = mimeType.subType;
-        this.specificity = mimeType.specificity;
-    }
-
-    /**
      * Construct a mime type from a String such as <code>text/plain</code>.
      * It tries to ensure that the mime type pattern passed in is correctly
      * formatted.

@@ -186,38 +186,4 @@ class MimeDetectorRegistry {
         return mimeTypes;
     }
 
-    MimeDetector unregisterMimeDetector(final String mimeDetector) {
-        if (mimeDetector == null) {
-            return null;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistering MimeDetector [" + mimeDetector + "] from registry.");
-        }
-        try {
-            MimeDetector md = (MimeDetector) mimeDetectors.get(mimeDetector);
-            if (md != null) {
-                md.delete();
-                return (MimeDetector) mimeDetectors.remove(mimeDetector);
-            }
-        } catch (Exception e) {
-            log.error("Exception while un-registering MimeDetector [" + mimeDetector + "].", e);
-        }
-
-        // Shouldn't get here
-        return null;
-    }
-
-    /**
-     * unregister the MimeDetector from the list.
-     *
-     * @param mimeDetector the MimeDetector to unregister
-     * @return MimeDetector unregistered or null if it was not registered
-     */
-    MimeDetector unregisterMimeDetector(final MimeDetector mimeDetector) {
-        if (mimeDetector == null) {
-            return null;
-        }
-        return unregisterMimeDetector(mimeDetector.getName());
-    }
-
 }

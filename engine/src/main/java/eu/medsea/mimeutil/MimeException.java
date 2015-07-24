@@ -33,8 +33,4 @@ public class MimeException extends RuntimeException {
         super(t);
     }
 
-    public MimeException(String message, Throwable t) {
-        super(message, t);
-    }
-
 }

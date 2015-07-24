@@ -44,21 +44,6 @@ public class TextMimeType extends MimeType {
         this.encoding = getValidEncoding(encoding);
     }
 
-    public TextMimeType(final MimeType mimeType, final String encoding) {
-        super(mimeType);
-        this.encoding = getValidEncoding(encoding);
-    }
-
-    public TextMimeType(final MimeType mimeType) {
-        super(mimeType);
-        // We don't change the encoding
-    }
-
-    public void setMimeType(MimeType mimeType) {
-        mediaType = mimeType.mediaType;
-        subType = mimeType.subType;
-    }
-
     /**
      * Get the encoding currently set for this TextMimeType.
      *
@@ -93,14 +78,6 @@ public class TextMimeType extends MimeType {
         } else {
             return "Unknown";
         }
-    }
-
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
-
-    public void setSubType(String subType) {
-        this.subType = subType;
     }
 
 }
