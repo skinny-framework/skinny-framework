@@ -1,7 +1,7 @@
 ### skinny-engine standalone minimum example
 
 ```
-./scalas app.scalas
+./scalas app.scala
 ```
 
 or
