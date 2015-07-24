@@ -1,5 +1,4 @@
 lazy val root = (project in file("."))
-  .settings(net.virtualvoid.sbt.graph.Plugin.graphSettings)
   .settings(
     scalaVersion := "2.11.7",
     resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases",
