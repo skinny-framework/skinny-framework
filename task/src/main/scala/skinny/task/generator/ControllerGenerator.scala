@@ -176,7 +176,6 @@ trait ControllerGenerator extends CodeGenerator {
 
     s"""package ${toNamespace("integrationtest", namespaces)}
         |
-        |import skinny.test.scalatest._
         |import org.scalatest._
         |import skinny._
         |import skinny.test._

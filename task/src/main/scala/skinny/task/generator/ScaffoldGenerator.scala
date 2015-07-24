@@ -409,7 +409,6 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     s"""package ${namespace}
         |
-        |import skinny.test.scalatest._
         |import org.scalatest._
         |import skinny._
         |import skinny.test._
