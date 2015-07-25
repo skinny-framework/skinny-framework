@@ -513,9 +513,4 @@ object SkinnyFrameworkBuild extends Build {
     </dependencies>
   )
 
-  // TODO: just dummy for sbt-scoverage 0.99.x requirement
-  // since 1.0, we should remove this settings def.
-  // I will remove this after checking scoverage 1.0 works fine with this project
-  lazy val instrumentSettings = Nil
-
 }
