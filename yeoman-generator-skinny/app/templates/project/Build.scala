@@ -15,9 +15,9 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.0-SNAPSHOT"
+  val skinnyVersion = "2.0.0.M2-20150725"
   val theScalaVersion = "2.11.7"
-  val jettyVersion = "9.2.11.v20150529"
+  val jettyVersion = "9.2.12.v20150709"
 
   lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
@@ -78,7 +78,7 @@ object SkinnyAppBuild extends Build {
 
   lazy val devBaseSettings = baseSettings ++ Seq(
     unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
-    // Scalatra tests become slower when multiple controller tests are loaded in the same time
+    // Integration tests become slower when multiple controller tests are loaded in the same time
     parallelExecution in Test := false,
     port in container.Configuration := 8080
   )
