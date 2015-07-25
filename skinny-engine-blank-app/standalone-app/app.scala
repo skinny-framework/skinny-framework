@@ -3,7 +3,7 @@
 /***
 scalaVersion := "2.11.7"
 resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
-libraryDependencies += "org.skinny-framework" %% "skinny-engine-server" % "2.0.0-SNAPSHOT"
+libraryDependencies += "org.skinny-framework" %% "skinny-engine-server" % "2.0.0.M2-20150725"
 */
 import skinny.engine._
 import scala.concurrent._

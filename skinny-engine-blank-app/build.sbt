@@ -16,5 +16,5 @@ lazy val root = (project in file("."))
     unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
   ).enablePlugins(JavaAppPackaging)
 
-val skinnyVersion = "2.0.0-SNAPSHOT"
+val skinnyVersion = "2.0.0.M2-20150725"
 val jettyVersion = "9.2.12.v20150709"
