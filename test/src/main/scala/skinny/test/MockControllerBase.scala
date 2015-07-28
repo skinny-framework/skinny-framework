@@ -4,7 +4,7 @@ import javax.servlet.http._
 import javax.servlet.ServletContext
 import org.json4s._
 import org.mockito.Mockito._
-import skinny.engine.EngineParams
+import skinny.engine.{ UnstableAccessValidation, EngineParams }
 import skinny.engine.context.SkinnyEngineContext
 import skinny.util.JSONStringOps
 import scala.collection.concurrent.TrieMap
@@ -42,7 +42,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   override implicit def servletContext: ServletContext = mock(classOf[ServletContext])
 
   override implicit def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
-    SkinnyEngineContext.build(ctx, mockRequest, mockResponse)
+    SkinnyEngineContext.build(ctx, mockRequest, mockResponse, UnstableAccessValidation(true))
   }
 
   override def halt[T: Manifest](

@@ -1,10 +1,9 @@
 package skinny.filter
 
-import skinny.engine.base.FlashMapSupport
-
 import scala.language.implicitConversions
 
 import skinny.controller.feature._
+import skinny.engine.base.FlashMapSupport
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
 import skinny.engine.flash.FlashMap
@@ -12,7 +11,6 @@ import skinny.session._
 import FlashMapSupport._
 
 import java.util.Locale
-import javax.servlet.http.HttpServletRequest
 
 object SkinnySessionFilter {
 

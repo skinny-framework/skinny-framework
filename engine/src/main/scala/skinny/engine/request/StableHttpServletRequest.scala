@@ -5,6 +5,8 @@ import java.security.Principal
 import java.util.Locale
 import javax.servlet._
 import javax.servlet.http._
+import skinny.engine.{ UnstableAccessException, UnstableAccessValidation }
+
 import scala.collection.JavaConverters._
 import scala.collection.concurrent.TrieMap
 
@@ -20,19 +22,39 @@ import scala.util.Try
  * see also: https://bugs.eclipse.org/bugs/show_bug.cgi?id=433321
  */
 class StableHttpServletRequest(
-  private val underlying: HttpServletRequest)
+  private val underlying: HttpServletRequest,
+  private val unstableAccessValidation: UnstableAccessValidation)
     extends HttpServletRequestWrapper(underlying) {
+
+  private[this] def ensureStableAccessStrictly(attributeName: String): Unit = {
+    if (unstableAccessValidation.enabled) {
+      val threadId = Thread.currentThread.getId
+      if (unstableAccessValidation.createdThreadId != threadId) {
+        throw new UnstableAccessException(attributeName)
+      }
+    }
+  }
 
   // -------------------------
   // context, fixed request metadata
 
-  override def getServletContext: ServletContext = underlying.getServletContext
+  override def getServletContext: ServletContext = {
+    ensureStableAccessStrictly("getServletContext")
+    underlying.getServletContext
+  }
 
   // AsyncContext must not be cached
-  override def getAsyncContext: AsyncContext = underlying.getAsyncContext
+  override def getAsyncContext: AsyncContext = {
+    ensureStableAccessStrictly("getAsyncContext")
+    underlying.getAsyncContext
+  }
 
-  override def startAsync(): AsyncContext = underlying.startAsync()
+  override def startAsync(): AsyncContext = {
+    ensureStableAccessStrictly("startAsync")
+    underlying.startAsync()
+  }
   override def startAsync(servletRequest: ServletRequest, servletResponse: ServletResponse): AsyncContext = {
+    ensureStableAccessStrictly("startAsync")
     underlying.startAsync(servletRequest, servletResponse)
   }
 
@@ -165,21 +187,51 @@ class StableHttpServletRequest(
   override def getUserPrincipal: Principal = _getUserPrincipal
 
   // should not cache the value: java.lang.IllegalStateException: No SessionManager
-  override def getSession: HttpSession = underlying.getSession
-  override def getSession(create: Boolean): HttpSession = underlying.getSession(create)
+  override def getSession: HttpSession = {
+    ensureStableAccessStrictly("getSession")
+    underlying.getSession
+  }
+  override def getSession(create: Boolean): HttpSession = {
+    ensureStableAccessStrictly("getSession")
+    underlying.getSession(create)
+  }
 
-  override def changeSessionId(): String = underlying.changeSessionId()
-  override def authenticate(response: HttpServletResponse): Boolean = underlying.authenticate(response)
-  override def logout(): Unit = underlying.logout()
-  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = underlying.upgrade(handlerClass)
+  override def changeSessionId(): String = {
+    ensureStableAccessStrictly("changeSessionId")
+    underlying.changeSessionId()
+  }
+  override def authenticate(response: HttpServletResponse): Boolean = {
+    ensureStableAccessStrictly("authenticate")
+    underlying.authenticate(response)
+  }
+  override def logout(): Unit = {
+    ensureStableAccessStrictly("logout")
+    underlying.logout()
+  }
+  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = {
+    ensureStableAccessStrictly("upgrade")
+    underlying.upgrade(handlerClass)
+  }
 
-  override def isUserInRole(role: String): Boolean = underlying.isUserInRole(role)
-  override def login(username: String, password: String): Unit = underlying.login(username, password)
+  override def isUserInRole(role: String): Boolean = {
+    ensureStableAccessStrictly("isUserInRole")
+    underlying.isUserInRole(role)
+  }
+  override def login(username: String, password: String): Unit = {
+    ensureStableAccessStrictly("login")
+    underlying.login(username, password)
+  }
 
   // Don't override getParts
   // javax.servlet.ServletException: Content-Type != multipart/form-data
-  override def getParts: java.util.Collection[Part] = underlying.getParts
-  override def getPart(name: String): Part = underlying.getPart(name)
+  override def getParts: java.util.Collection[Part] = {
+    ensureStableAccessStrictly("getParts")
+    underlying.getParts
+  }
+  override def getPart(name: String): Part = {
+    ensureStableAccessStrictly("getPart")
+    underlying.getPart(name)
+  }
 
   // deprecated
   // override def getRealPath(path: String): String = underlying.getRealPath(path)
@@ -268,13 +320,13 @@ class StableHttpServletRequest(
 
 object StableHttpServletRequest {
 
-  def apply(req: HttpServletRequest): StableHttpServletRequest = {
+  def apply(req: HttpServletRequest, unstableAccessValidation: UnstableAccessValidation): StableHttpServletRequest = {
     if (req == null) {
       throw new IllegalStateException("Use AsyncResult { ... } or futureWithContext { implicit ctx => ... } instead.")
     } else if (req.isInstanceOf[StableHttpServletRequest]) {
       req.asInstanceOf[StableHttpServletRequest]
     } else {
-      new StableHttpServletRequest(req)
+      new StableHttpServletRequest(req, unstableAccessValidation)
     }
   }
 }

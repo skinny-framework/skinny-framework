@@ -3,7 +3,7 @@ package skinny.engine.base
 import javax.servlet.ServletContext
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-import skinny.engine.ServletConcurrencyException
+import skinny.engine.{ UnstableAccessValidation, ServletConcurrencyException }
 import skinny.engine.context.SkinnyEngineContext
 
 import scala.util.DynamicVariable
@@ -16,7 +16,9 @@ import scala.util.DynamicVariable
  * post about Step, out of which SkinnyEngine grew:
  * http://www.riffraff.info/2009/4/11/step-a-scala-web-picoframework
  */
-trait SkinnyEngineContextInitializer { self: ServletContextAccessor =>
+trait SkinnyEngineContextInitializer {
+
+  self: ServletContextAccessor with UnstableAccessValidationConfig =>
 
   /**
    * The currently scoped request.  Valid only inside the `handle` method.
@@ -33,7 +35,12 @@ trait SkinnyEngineContextInitializer { self: ServletContextAccessor =>
    */
   def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
     if (mainThreadDynamicRequest.value != null) {
-      SkinnyEngineContext.build(ctx, mainThreadDynamicRequest.value, mainThreadDynamicResponse.value)
+      SkinnyEngineContext.build(
+        ctx,
+        mainThreadDynamicRequest.value,
+        mainThreadDynamicResponse.value,
+        UnstableAccessValidation(unstableAccessValidationEnabled)
+      )
     } else {
       // -------------------------------------------------
       // NOTE: this behavior doesn't always happen

@@ -2,7 +2,7 @@ package skinny.engine.base
 
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
-import skinny.engine.{ Handler, SkinnyEngineBase }
+import skinny.engine.{ UnstableAccessValidation, Handler, SkinnyEngineBase }
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.flash.FlashMap
 import skinny.engine.implicits.{ ServletApiImplicits, SessionImplicits }
@@ -37,6 +37,7 @@ trait FlashMapSupport
     extends Handler
     with ServletContextAccessor
     with SkinnyEngineContextInitializer
+    with UnstableAccessValidationConfig
     with ServletApiImplicits
     with SessionImplicits {
 
@@ -44,7 +45,7 @@ trait FlashMapSupport
 
   abstract override def handle(req: HttpServletRequest, res: HttpServletResponse): Unit = {
     withRequest(req) {
-      val context = SkinnyEngineContext.build(servletContext, req, res)
+      val context = SkinnyEngineContext.build(servletContext, req, res, UnstableAccessValidation(unstableAccessValidationEnabled))
       val f = flash(context)
       val isOutermost = !req.contains(LockKey)
 

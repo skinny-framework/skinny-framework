@@ -13,11 +13,17 @@ import scala.concurrent.duration._
 abstract class AsyncResult(
     implicit val context: SkinnyEngineContext) {
 
-  val request: HttpServletRequest = context.surelyStable.request
+  val request: HttpServletRequest = {
+    context.surelyStable(context.unstableAccessValidation).request
+  }
 
-  val response: HttpServletResponse = context.surelyStable.response
+  val response: HttpServletResponse = {
+    context.surelyStable(context.unstableAccessValidation).response
+  }
 
-  val servletContext: ServletContext = context.surelyStable.servletContext
+  val servletContext: ServletContext = {
+    context.surelyStable(context.unstableAccessValidation).servletContext
+  }
 
   // This is a Duration instead of a timeout because a duration has the concept of infinity
   // If you need to run long-live operations, override this value

@@ -32,6 +32,7 @@ import skinny.util.LoanPattern._
 trait SkinnyEngineBase
     extends CoreHandler
     with AsyncSupported // can mix async and thread-based model
+    with UnstableAccessValidationConfig
     with RouteRegistryAccessor
     with ErrorHandlerAccessor
     with ServletContextAccessor

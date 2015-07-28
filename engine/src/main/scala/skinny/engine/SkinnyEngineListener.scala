@@ -72,12 +72,15 @@ class SkinnyEngineListener extends ServletContextListener with LoggerProvider {
         |  }
         |}
         |' > src/main/scala/Bootstrap.scala
+        |
+        |If you're using only skinny-engine, inherit skinny.engine.LifeCycle instead.
+        |
         |"""".stripMargin
     )
     logger.debug(s"Loaded lifecycle class: ${cycleClass}")
 
     if (cycleClass.getName == OldDefaultLifeCycle) {
-      logger.warn("The SkinnyEngine name for a boot class will be removed eventually. Please use SkinnyEngineBootstrap instead as class name.")
+      logger.warn(s"${OldDefaultLifeCycle} for a boot class will be removed eventually. Please use ${DefaultLifeCycle} instead as class name.")
     }
     (cycleClass.getSimpleName, cycleClass.newInstance.asInstanceOf[LifeCycle])
   }

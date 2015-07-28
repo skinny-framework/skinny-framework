@@ -2,7 +2,7 @@ package skinny.controller
 
 import java.io._
 
-import skinny._
+import skinny.engine.Format
 import skinny.util.LoanPattern._
 import sun.misc.{ BASE64Decoder, BASE64Encoder }
 import skinny.logging.LoggerProvider
@@ -20,7 +20,7 @@ private[skinny] object SessionInjectorController extends SessionInjectorControll
 /**
  * Session injector for testing & debugging.
  */
-trait SessionInjectorController extends SkinnyController with LoggerProvider {
+trait SessionInjectorController extends SkinnyApiController with LoggerProvider {
 
   /**
    * Shows whole session attributes.
@@ -39,8 +39,7 @@ trait SessionInjectorController extends SkinnyController with LoggerProvider {
   def update()(implicit format: Format = Format.HTML) = {
     if (isProduction) haltWithBody(404)
     else params.foreach {
-      case (key, value) =>
-        session.put(key, deserialize(value))
+      case (key, value) => session.put(key, deserialize(value))
     }
   }
 
