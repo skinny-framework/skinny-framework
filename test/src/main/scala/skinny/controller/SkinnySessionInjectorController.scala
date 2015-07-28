@@ -1,6 +1,7 @@
 package skinny.controller
 
-import skinny._
+import skinny.controller.feature.{ LocaleFeature, CSRFProtectionFeature, FlashFeature }
+import skinny.engine.Format
 import skinny.filter.SkinnySessionFilter
 
 /**
@@ -13,7 +14,13 @@ private[skinny] object SkinnySessionInjectorController extends SkinnySessionInje
 /**
  * Session injector for testing & debugging.
  */
-trait SkinnySessionInjectorController extends SkinnyController with SkinnySessionFilter {
+trait SkinnySessionInjectorController
+    extends SkinnyApiController
+    with FlashFeature
+    with CSRFProtectionFeature
+    with LocaleFeature
+    // SkinnySessionFilter must be the last one
+    with SkinnySessionFilter {
 
   /**
    * Injects a value into session.

@@ -45,6 +45,15 @@ class StableRequestSpec extends ScalatraFlatSpec {
         request.getMethod
       }
     }
+    get("/getSession/ok") { implicit ctx =>
+      request.getSession
+    }
+    get("/getSession/ng") { implicit ctx =>
+      Future {
+        Thread.sleep(100) // To get the container to give up the request
+        request.getSession
+      }
+    }
   }, "/app/*")
 
   it should "handle request attributes" in {
@@ -86,6 +95,21 @@ class StableRequestSpec extends ScalatraFlatSpec {
       get("/app/getMethod") {
         status should equal(200)
         body should equal("GET")
+      }
+    }
+  }
+
+  it should "allow getSession" in {
+    (1 to 20).foreach { _ =>
+      get("/app/getSession/ok") {
+        status should equal(200)
+      }
+    }
+  }
+  it should "prohibit getSession" in {
+    (1 to 20).foreach { _ =>
+      get("/app/getSession/ng") {
+        status should equal(500)
       }
     }
   }

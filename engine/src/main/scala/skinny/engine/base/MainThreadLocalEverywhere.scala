@@ -4,7 +4,9 @@ import javax.servlet.ServletContext
 
 import skinny.engine.context.SkinnyEngineContext
 
-trait MainThreadLocalEverywhere extends SkinnyEngineContextInitializer { self: ServletContextAccessor =>
+trait MainThreadLocalEverywhere extends SkinnyEngineContextInitializer {
+
+  self: ServletContextAccessor with UnstableAccessValidationConfig =>
 
   /**
    * Skinny Engine Context

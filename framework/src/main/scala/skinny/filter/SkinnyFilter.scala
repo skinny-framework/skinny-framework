@@ -1,6 +1,6 @@
 package skinny.filter
 
-import skinny.controller.{ SkinnyControllerBase, SkinnyController }
+import skinny.controller.SkinnyControllerBase
 
 /**
  * Skinny Filter.

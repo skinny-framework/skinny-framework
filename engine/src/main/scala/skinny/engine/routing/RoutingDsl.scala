@@ -3,7 +3,7 @@ package skinny.engine.routing
 import javax.servlet.http.HttpServletRequest
 
 import skinny.engine._
-import skinny.engine.base.{ SkinnyEngineContextInitializer, ServletContextAccessor, RouteRegistryAccessor }
+import skinny.engine.base.{ UnstableAccessValidationConfig, SkinnyEngineContextInitializer, ServletContextAccessor, RouteRegistryAccessor }
 import skinny.engine.constant._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.control.HaltPassControl
@@ -16,6 +16,7 @@ trait RoutingDsl
     extends HaltPassControl
     with RouteRegistryAccessor
     with SkinnyEngineContextInitializer
+    with UnstableAccessValidationConfig
     with ServletContextAccessor
     with ServletApiImplicits {
 
@@ -86,7 +87,8 @@ trait RoutingDsl
    */
   protected def addRoute(method: HttpMethod, transformers: Seq[RouteTransformer], action: => Any): Route = {
     val route: Route = {
-      val r = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(SkinnyEngineContext.buildWithoutResponse(req, servletContext)))
+      val r = Route(transformers, () => action, (req: HttpServletRequest) => routeBasePath(
+        SkinnyEngineContext.buildWithoutResponse(req, servletContext, UnstableAccessValidation(unstableAccessValidationEnabled))))
       r.copy(metadata = r.metadata.updated(Handler.RouteMetadataHttpMethodCacheKey, method))
     }
     routes.prependRoute(method, route)

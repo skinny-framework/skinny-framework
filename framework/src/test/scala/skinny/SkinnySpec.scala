@@ -1,6 +1,7 @@
 package skinny
 
 import javax.servlet.http.HttpServletRequest
+import skinny.engine.UnstableAccessValidation
 import skinny.engine.context.SkinnyEngineContext
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import scala.collection.mutable.HashMap
@@ -19,7 +20,7 @@ class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   val i18n = I18n()
   requestScope.put("i18n", i18n)
 
-  val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request), requestScope)
+  val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request, UnstableAccessValidation(true)), requestScope)
 
   it should "have #contextPath" in {
     skinnyObject.contextPath should equal("/foo")
@@ -104,7 +105,7 @@ class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   object Controller extends SkinnyController with Routes {
     val indexUrl = get("/")("ok").as('index)
     get("/redirect") {
-      val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request), requestScope)
+      val skinnyObject = Skinny(SkinnyEngineContext.buildWithRequest(request, UnstableAccessValidation(true)), requestScope)
       val urlString = skinnyObject.url(indexUrl, "id" -> "123")
       urlString should equal("/?id=123")
       redirect302(url(indexUrl))

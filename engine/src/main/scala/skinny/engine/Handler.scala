@@ -5,7 +5,7 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
 
 import skinny.SkinnyEnv
 import skinny.engine.async.AsyncSupported
-import skinny.engine.base.{ ServletContextAccessor, RouteRegistryAccessor, SkinnyEngineContextInitializer }
+import skinny.engine.base.{ UnstableAccessValidationConfig, ServletContextAccessor, RouteRegistryAccessor, SkinnyEngineContextInitializer }
 import skinny.logging.LoggerProvider
 
 /**
@@ -14,6 +14,7 @@ import skinny.logging.LoggerProvider
 trait Handler
     extends Initializable
     with SkinnyEngineContextInitializer
+    with UnstableAccessValidationConfig
     with RouteRegistryAccessor
     with ServletContextAccessor
     with LoggerProvider {

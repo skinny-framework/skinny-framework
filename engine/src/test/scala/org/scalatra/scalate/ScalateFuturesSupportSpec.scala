@@ -32,6 +32,8 @@ class ScalateFuturesSupportServlet(exec: ExecutorService)
 
   protected override implicit val executionContext = ExecutionContext.fromExecutorService(exec)
 
+  protected override def unstableAccessValidationEnabled = false
+
   get("/barf") {
     new AsyncResult { val is = Future { throw new RuntimeException } }
   }
