@@ -2,11 +2,10 @@ package example
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny.engine._
-import skinny.engine.scalate.ScalateSupport
 
 import scala.concurrent.Future
 
-object HelloServlet extends SingleApp with ScalateSupport {
+object HelloServlet extends SingleApp {
 
   def message(implicit ctx: Context) = {
     s"Hello, ${params(ctx).getOrElse("name", "Anonymous")}"
@@ -15,12 +14,6 @@ object HelloServlet extends SingleApp with ScalateSupport {
   // synchronous action
   get("/hello")(message)
   post("/hello")(message)
-
-  // Scalate template engine
-  get("/hello/scalate") {
-    contentType = "text/html"
-    ssp("/index", "name" -> "foo")
-  }
 
   // asynchronous action
   get("/hello/async") {

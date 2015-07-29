@@ -13,6 +13,7 @@ sbt ++2.11.7 \
   factoryGirl/publishSigned \
   validator/publishSigned \
   engine/publishSigned \
+  engineScalate/publishSigned \
   engineServer/publishSigned \
   engineTest/publishSigned \
   framework/publishSigned \
@@ -38,6 +39,7 @@ sbt ++2.11.7 \
   factoryGirl/publishSigned \
   validator/publishSigned \
   engine/publishSigned \
+  engineScalate/publishSigned \
   engineServer/publishSigned \
   engineTest/publishSigned \
   framework/publishSigned \

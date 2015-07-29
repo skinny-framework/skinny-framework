@@ -99,6 +99,7 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     common,
     engine,
+    engineScalate,
     json,
     validator,
     orm,
@@ -122,6 +123,20 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     common,
     json
+  )
+
+  lazy val engineScalate = Project(id = "engineScalate", base = file("engine-scalate"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-engine-scalate",
+      libraryDependencies ++= servletApiDependencies ++ Seq(
+        "org.scalatra.scalate"  %% "scalate-core"       % "1.7.1" excludeAll(fullExclusionRules: _*),
+        "org.scalatra"          %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
+        "org.scalatra"          %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
+        "com.typesafe.akka"     %% "akka-actor"         % "2.3.12"                  % Test
+      ) ++ testDependencies
+    ) ++ _jettyOrbitHack
+  ).dependsOn(
+    engine
   )
 
   lazy val engineServer = Project(id = "engineServer", base = file("engine-server"),
@@ -406,8 +421,7 @@ object SkinnyFrameworkBuild extends Build {
   )
   lazy val scalatraDependencies = json4sDependencies ++ servletApiDependencies ++ slf4jApiDependencies ++ Seq(
     "org.scalatra.rl"                  %% "rl"                % "0.4.10"  % Compile,
-    "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3"   % Compile,
-    "org.scalatra.scalate"             %% "scalate-core"      % "1.7.1"   % Provided excludeAll(fullExclusionRules: _*)
+    "com.googlecode.juniversalchardet" %  "juniversalchardet" % "1.0.3"   % Compile
   )
   def compileScalateDependencies(sv: String) = Seq(
      sv match {

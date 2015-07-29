@@ -14,6 +14,7 @@ sbt \
   factoryGirl/publishLocal \
   validator/publishLocal \
   engine/publishLocal \
+  engineScalate/publishLocal \
   engineServer/publishLocal \
   engineTest/publishLocal \
   framework/publishLocal \
@@ -39,6 +40,7 @@ sbt \
   factoryGirl/publishLocal \
   validator/publishLocal \
   engine/publishLocal \
+  engineScalate/publishLocal \
   engineServer/publishLocal \
   engineTest/publishLocal \
   framework/publishLocal \
