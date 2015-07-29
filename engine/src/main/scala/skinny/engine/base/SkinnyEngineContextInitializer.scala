@@ -20,38 +20,48 @@ trait SkinnyEngineContextInitializer {
 
   self: ServletContextAccessor with UnstableAccessValidationConfig =>
 
+  private[this] case class HttpServletRequestHolder(
+    value: HttpServletRequest,
+    threadId: Long)
+
+  private[this] case class HttpServletResponseHolder(
+    value: HttpServletResponse,
+    threadId: Long)
+
+  private[this] def currentThreadId: Long = Thread.currentThread.getId
+
   /**
    * The currently scoped request.  Valid only inside the `handle` method.
    */
-  private[this] val mainThreadDynamicRequest = new DynamicVariable[HttpServletRequest](null)
+  private[this] val mainThreadDynamicRequest: DynamicVariable[Option[HttpServletRequestHolder]] = {
+    new DynamicVariable[Option[HttpServletRequestHolder]](None)
+  }
 
   /**
    * The currently scoped response.  Valid only inside the `handle` method.
    */
-  private[this] val mainThreadDynamicResponse = new DynamicVariable[HttpServletResponse](null)
+  private[this] val mainThreadDynamicResponse: DynamicVariable[Option[HttpServletResponseHolder]] = {
+    new DynamicVariable[Option[HttpServletResponseHolder]](None)
+  }
 
   /**
    * Skinny Engine Context
    */
   def skinnyEngineContext(implicit ctx: ServletContext): SkinnyEngineContext = {
-    if (mainThreadDynamicRequest.value != null) {
-      SkinnyEngineContext.build(
-        ctx,
-        mainThreadDynamicRequest.value,
-        mainThreadDynamicResponse.value,
-        UnstableAccessValidation(unstableAccessValidationEnabled)
-      )
-    } else {
-      // -------------------------------------------------
-      // NOTE: this behavior doesn't always happen
-      //
-      // dynamic request value is stored only for Servlet main thread.
-      // When DSLs that need stable SkinnyEngineContext are accessed inside Future value's #map operation and so on,
-      // framework users sometimes specify explicit SkinnyEngineContext.
-      //
-      // This exception's message shows framework users what they need to do.
-      // -------------------------------------------------
-      throw new ServletConcurrencyException
+    (mainThreadDynamicRequest.value, mainThreadDynamicResponse.value) match {
+      case (Some(req), _) if (req.threadId != currentThreadId) =>
+        // dynamic variable access from another thread detected
+        throw new ServletConcurrencyException
+      case (Some(req), Some(resp)) =>
+        SkinnyEngineContext.build(
+          ctx,
+          req.value,
+          resp.value,
+          UnstableAccessValidation(unstableAccessValidationEnabled)
+        )
+      case _ =>
+        // If the dynamic variables are None, this code is running on another thread
+        throw new ServletConcurrencyException
     }
   }
 
@@ -74,9 +84,10 @@ trait SkinnyEngineContextInitializer {
    * method.
    */
   protected def withRequest[A](request: HttpServletRequest)(f: => A): A = {
-    mainThreadDynamicRequest.withValue(request) {
-      f
-    }
+    mainThreadDynamicRequest.withValue(
+      Some(HttpServletRequestHolder(request, currentThreadId))) {
+        f
+      }
   }
 
   /**
@@ -84,9 +95,10 @@ trait SkinnyEngineContextInitializer {
    * method.
    */
   protected def withResponse[A](response: HttpServletResponse)(f: => A) = {
-    mainThreadDynamicResponse.withValue(response) {
-      f
-    }
+    mainThreadDynamicResponse.withValue(
+      Some(HttpServletResponseHolder(response, currentThreadId))) {
+        f
+      }
   }
 
 }

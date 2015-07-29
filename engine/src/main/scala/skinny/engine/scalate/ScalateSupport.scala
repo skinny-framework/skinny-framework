@@ -1,6 +1,7 @@
 package skinny.engine.scalate
 
 import scala.language.reflectiveCalls
+import scala.language.implicitConversions
 
 import java.io.{ PrintWriter, StringWriter }
 import javax.servlet.http.{ HttpServletRequest, HttpServletResponse }
@@ -127,20 +128,9 @@ trait ScalateSupport extends SkinnyEngineBase {
     new SkinnyEngineRenderContext(this, ctx, templateEngine, out, req, resp)
   }
 
-  implicit def skinnyEngineRenderContext: SkinnyEngineRenderContext = {
+  implicit def skinnyEngineRenderContext(implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
     new SkinnyEngineRenderContext(
-      this, skinnyEngineContext, templateEngine, response.getWriter, request, response)
-  }
-
-  /**
-   * Creates a render context and renders directly to that.  No template
-   * search is performed, and the layout strategy is circumvented.  Clients
-   * are urged to consider layoutTemplate instead.
-   */
-  @deprecated("not idiomatic Scalate; consider layoutTemplate instead", "1.4")
-  def renderTemplate(path: String, attributes: (String, Any)*)(
-    implicit ctx: SkinnyEngineRenderContext) = {
-    createRenderContext(ctx.request, ctx.response, response.writer)(ctx.context).render(path, Map(attributes: _*))
+      this, ctx, templateEngine, response.getWriter, request, response)
   }
 
   /**
