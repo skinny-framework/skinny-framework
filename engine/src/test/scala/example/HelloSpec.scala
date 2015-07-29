@@ -38,6 +38,12 @@ object Hello extends WebApp with ScalateSupport {
       responseAsJSON(Map("message" -> s"Hello, ${params.getOrElse("name", "Anonymous")}"))
     }
   }
+
+  get("/dynamic") {
+    Future {
+      request
+    }
+  }
 }
 
 class HelloSpec extends ScalatraFlatSpec {
@@ -86,6 +92,12 @@ class HelloSpec extends ScalatraFlatSpec {
       status should equal(200)
       header("Content-Type") should equal("application/json; charset=utf-8")
       body should equal("""{"message":"Hello, Martin"}""")
+    }
+  }
+
+  it should "detect dynamic value acess when the first access" in {
+    get("/dynamic") {
+      status should equal(500)
     }
   }
 }
