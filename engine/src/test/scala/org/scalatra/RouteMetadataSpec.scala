@@ -1,7 +1,7 @@
 package org.scalatra
 
 import org.scalatra.test.specs2.MutableScalatraSpec
-import skinny.engine.{ Handler, SkinnyEngineServlet, RouteTransformer }
+import skinny.engine.{ SkinnyEngineServlet, RouteTransformer }
 import skinny.engine.routing.Route
 
 class RouteMetadataSpec extends MutableScalatraSpec {
@@ -33,7 +33,7 @@ object RouteMetadataSpec {
 
   def servlet = new SkinnyEngineServlet {
     val zero: Route = get("/zero/:key") {
-      zero.metadata.filterKeys(_ != Handler.RouteMetadataHttpMethodCacheKey).size.toString
+      zero.metadata.filterKeys(_ != skinny.engine.Handler.RouteMetadataHttpMethodCacheKey).size.toString
     }
 
     val one: Route = get("/one/:key", meta('foo, "bar")) {

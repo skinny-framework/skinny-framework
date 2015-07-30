@@ -1,5 +1,7 @@
 package skinny.controller
 
+import scala.language.reflectiveCalls
+
 import javax.servlet.ServletContext
 
 import org.scalatest._

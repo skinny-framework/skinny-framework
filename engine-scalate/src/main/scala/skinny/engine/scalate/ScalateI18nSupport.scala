@@ -13,10 +13,10 @@ trait ScalateI18nSupport
     with I18nSupport { self: BeforeAfterDsl =>
 
   /*
-   * Binding done here seems to work all the time. 
-   * 
+   * Binding done here seems to work all the time.
+   *
    * If it were placed in createRenderContext, it wouldn't work for "view" templates
-   * on first access. However, on subsequent accesses, it worked fine. 
+   * on first access. However, on subsequent accesses, it worked fine.
    */
   before() {
     templateEngine.bindings ::= Binding("messages", classOf[Messages].getName, true, isImplicit = true)

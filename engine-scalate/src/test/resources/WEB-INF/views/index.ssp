@@ -1,0 +1,2 @@
+<%@ var name: String %>
+<div>Hello, <%= name %></div>
