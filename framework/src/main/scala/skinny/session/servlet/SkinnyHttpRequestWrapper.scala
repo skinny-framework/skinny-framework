@@ -73,9 +73,4 @@ case class SkinnyHttpRequestWrapper(request: HttpServletRequest, session: Skinny
   def getAsyncContext = request.getAsyncContext
   def getDispatcherType = request.getDispatcherType
 
-  // Servlet 3.1
-  def changeSessionId(): String = request.changeSessionId()
-  def upgrade[T <: javax.servlet.http.HttpUpgradeHandler](clazz: Class[T]): T = request.upgrade(clazz)
-  def getContentLengthLong: Long = request.getContentLengthLong
-
 }

@@ -1,7 +1,7 @@
 package skinny.engine.response
 
 import java.io.OutputStream
-import javax.servlet.{ ServletOutputStream, WriteListener }
+import javax.servlet.ServletOutputStream
 
 /** Wraps the specified raw and servlet output streams into one servlet output stream. */
 private[skinny] class EncodedOutputStream(
@@ -18,10 +18,5 @@ private[skinny] class EncodedOutputStream(
   // -------------------------------------------------------------------------------------------------------------------
   override def flush(): Unit = out.flush()
   override def close(): Unit = out.close()
-
-  // - ServletOutputStream  --------------------------------------------------------------------------------------------
-  // -------------------------------------------------------------------------------------------------------------------
-  override def setWriteListener(writeListener: WriteListener): Unit = orig.setWriteListener(writeListener)
-  override def isReady: Boolean = orig.isReady
 
 }
