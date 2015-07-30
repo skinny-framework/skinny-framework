@@ -77,7 +77,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-fileupload" %  "commons-fileupload" % "1.3.1"            % Test,
         "commons-io"         %  "commons-io"         % "2.4"              % Test,
         "commons-httpclient" %  "commons-httpclient" % "3.1"              % Test,
-        "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"            % Test,
+        "javax.servlet"      %  "javax.servlet-api"  % "3.0.1"            % Test,
         "org.eclipse.jetty"  %  "jetty-server"       % jettyVersion       % Test,
         "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion       % Test
       ) ++ slf4jApiDependencies
@@ -179,7 +179,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-standalone",
       libraryDependencies ++= Seq(
-        "javax.servlet"     %  "javax.servlet-api" % "3.1.0"       % Compile,
+        "javax.servlet"     %  "javax.servlet-api" % "3.0.1"       % Compile,
         "org.eclipse.jetty" %  "jetty-webapp"      % jettyVersion  % Compile,
         "org.eclipse.jetty" %  "jetty-servlet"     % jettyVersion  % Compile,
         "org.eclipse.jetty" %  "jetty-server"      % jettyVersion  % Compile
@@ -382,7 +382,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.mockito"        %  "mockito-core"       % mockitoVersion            % Test,
         "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion              % "container",
         "org.eclipse.jetty"  %  "jetty-plus"         % jettyVersion              % "container",
-        "javax.servlet"      %  "javax.servlet-api"  % "3.1.0"                   % "container;provided;test"
+        "javax.servlet"      %  "javax.servlet-api"  % "3.0.1"                   % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
       // Scalatra tests become slower when multiple controller tests are loaded in the same time
@@ -438,7 +438,7 @@ object SkinnyFrameworkBuild extends Build {
   )
 
   lazy val servletApiDependencies = Seq(
-    "javax.servlet" % "javax.servlet-api" % "3.1.0"  % Provided
+    "javax.servlet" % "javax.servlet-api" % "3.0.1"  % Provided
   )
   lazy val slf4jApiDependencies   = Seq(
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile

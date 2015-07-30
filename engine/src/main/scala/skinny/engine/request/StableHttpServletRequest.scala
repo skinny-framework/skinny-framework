@@ -132,9 +132,6 @@ class StableHttpServletRequest(
   private[this] val _getContentType = underlying.getContentType
   override def getContentType: String = _getContentType
 
-  private[this] val _getContentLengthLong = underlying.getContentLengthLong
-  override def getContentLengthLong: Long = _getContentLengthLong
-
   private[this] val _getProtocol = underlying.getProtocol
   override def getProtocol: String = _getProtocol
 
@@ -196,10 +193,6 @@ class StableHttpServletRequest(
     underlying.getSession(create)
   }
 
-  override def changeSessionId(): String = {
-    ensureStableAccessStrictly("changeSessionId")
-    underlying.changeSessionId()
-  }
   override def authenticate(response: HttpServletResponse): Boolean = {
     ensureStableAccessStrictly("authenticate")
     underlying.authenticate(response)
@@ -207,10 +200,6 @@ class StableHttpServletRequest(
   override def logout(): Unit = {
     ensureStableAccessStrictly("logout")
     underlying.logout()
-  }
-  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = {
-    ensureStableAccessStrictly("upgrade")
-    underlying.upgrade(handlerClass)
   }
 
   override def isUserInRole(role: String): Boolean = {

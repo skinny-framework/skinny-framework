@@ -51,6 +51,5 @@ private[skinny] class EncodedServletResponse(
 
   // Encoded responses do not have a content length.
   override def setContentLength(i: Int) = {}
-  override def setContentLengthLong(len: Long): Unit = {}
 
 }
