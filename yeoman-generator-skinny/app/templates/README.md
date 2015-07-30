@@ -21,8 +21,10 @@ Skinny apps are Servlet applications. Let's create war file and deploy it to Ser
 
 ### Skinny Framework
 
-Skinny is a full-stack web app framework built on Scalatra.
+Skinny is a full-stack web app framework to build Servlet applications.
+
 To put it simply, Skinny framework’s concept is Scala on Rails. 
+
 Skinny is highly inspired by Ruby on Rails and it is optimized for sustainable productivity for Servlet-based web app development.
 
 http://skinny-framework.org/
@@ -30,13 +32,6 @@ http://skinny-framework.org/
 ### Reference Links
 
 Skinny is built upon several stable OSS libraries. 
-
-#### Scalatra 
-
-Scalatra is a simple, accessible and free web micro-framework. Skinny Framework's Web MVC part is a thin wrapper fof Scalatra core framework. 
-Skinny users sometimes need to understand the Scalatra layer when learning deeper.
-
-http://scalatra.org/
 
 #### ScalikeJDBC
 

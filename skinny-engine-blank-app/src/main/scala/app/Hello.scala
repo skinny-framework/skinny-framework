@@ -11,6 +11,10 @@ trait MessageExtractor { self: SkinnyEngineBase =>
 
 object Hello extends WebApp with MessageExtractor {
 
+  get("/") {
+    redirect("/hello")
+  }
+
   get("/hello")(message)
 
   post("/hello")(message)
