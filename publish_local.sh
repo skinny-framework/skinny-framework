@@ -1,56 +1,56 @@
 #!/bin/sh
 
-sbt \
-  ++2.11.7 \
+sbt ++2.11.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
   json/publishLocal \
-  oauth2/publishLocal \
-  oauth2Controller/publishLocal \
-  twitterController/publishLocal \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
   engine/publishLocal \
+  engineJson/publishLocal \
   engineScalate/publishLocal \
   engineServer/publishLocal \
   engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
-  standalone/publishLocal \
   task/publishLocal \
-  scaldi/publishLocal \
   test/publishLocal \
+  worker/publishLocal \
+  oauth2/publishLocal \
+  oauth2Controller/publishLocal \
+  twitterController/publishLocal \
+  standalone/publishLocal \
+  scaldi/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
   velocity/publishLocal \
-  worker/publishLocal \
   ++2.10.5 \
   clean \
   common/publishLocal \
   assets/publishLocal \
   httpClient/publishLocal \
   json/publishLocal \
-  oauth2/publishLocal \
-  oauth2Controller/publishLocal \
-  twitterController/publishLocal \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
   engine/publishLocal \
+  engineJson/publishLocal \
   engineScalate/publishLocal \
   engineServer/publishLocal \
   engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
-  standalone/publishLocal \
   task/publishLocal \
-  scaldi/publishLocal \
   test/publishLocal \
+  worker/publishLocal \
+  oauth2/publishLocal \
+  oauth2Controller/publishLocal \
+  twitterController/publishLocal \
+  standalone/publishLocal \
+  scaldi/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  velocity/publishLocal \
-  worker/publishLocal
-
+  velocity/publishLocal

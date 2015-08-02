@@ -6,11 +6,11 @@ import org.json4s.Xml._
 import org.json4s._
 import org.slf4j.LoggerFactory
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.json.{ JSONOperations, JsonSupport }
+import skinny.engine.json.{ EngineJSONStringOps, JsonSupport }
 import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
 import skinny.engine.routing.MatchedRoute
 import skinny.logging.LoggerProvider
-import skinny.util.JSONStringOpsConfig
+import skinny.json.JSONStringOpsConfig
 
 /**
  * Merging JSON request body into Scalatra params.
@@ -19,7 +19,7 @@ import skinny.util.JSONStringOpsConfig
  */
 trait JSONParamsAutoBinderFeature
     extends SkinnyEngineBase
-    with JSONOperations
+    with EngineJSONStringOps
     with ApiFormats
     with LoggerProvider { self: JSONStringOpsConfig =>
 

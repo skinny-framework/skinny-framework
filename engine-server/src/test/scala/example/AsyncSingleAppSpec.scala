@@ -2,6 +2,7 @@ package example
 
 import org.scalatest._
 import skinny.engine._
+import skinny.engine.json.EngineJSONStringOps
 import skinny.engine.response.InternalServerError
 import skinny.http.HTTP
 
@@ -18,7 +19,7 @@ class AsyncSingleAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   override def beforeAll() = {
-    WebServer.init().mount(new AsyncSingleApp {
+    WebServer.init().mount(new AsyncSingleApp with EngineJSONStringOps {
       before() { implicit ctx =>
         contentType = "application/json; charset=utf-8"
       }

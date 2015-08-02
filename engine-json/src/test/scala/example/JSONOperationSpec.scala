@@ -2,10 +2,11 @@ package example
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny.engine.SkinnyEngineServlet
+import skinny.engine.json.EngineJSONStringOps
 
 class JSONOperationSpec extends ScalatraFlatSpec {
 
-  object App extends SkinnyEngineServlet {
+  object App extends SkinnyEngineServlet with EngineJSONStringOps {
     def name = params.getAs[String]("name").getOrElse("Anonymous")
 
     get("/hello") {

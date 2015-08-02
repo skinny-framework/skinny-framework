@@ -1,6 +1,7 @@
 package example
 
 import org.scalatra.test.scalatest.ScalatraFlatSpec
+import skinny.engine.json.EngineJSONStringOps
 import skinny.engine.{ AsyncSkinnyEngineServlet, ServletConcurrencyException }
 
 import scala.concurrent.Future
@@ -8,36 +9,36 @@ import scala.concurrent.duration._
 
 class FutureSpec extends ScalatraFlatSpec {
 
-  addServlet(new AsyncSkinnyEngineServlet {
+  addServlet(new AsyncSkinnyEngineServlet with EngineJSONStringOps {
 
     get("/") { implicit ctx =>
-      params.keys.mkString(",")
+      responseAsJSON(params)
     }
 
     get("/future") { implicit ctx =>
       Future {
-        params.keys.mkString(",")
+        responseAsJSON(params)
       }
     }
 
     get("/no-future-error") { implicit ctx =>
-      awaitFutures(3.seconds) {
+      responseAsJSON(awaitFutures(3.seconds) {
         Future {
           try {
-            params.keys.mkString(",")
+            responseAsJSON(params)
           } catch {
             case e: ServletConcurrencyException =>
               Map("message" -> e.getMessage)
           }
         }
-      }
+      })
     }
   }, "/*")
 
   it should "simply work" in {
     get("/?foo=bar") {
       status should equal(200)
-      body should equal("foo")
+      body should equal("""{"foo":"bar"}""")
     }
   }
   it should "fail with simple Future" in {
@@ -56,9 +57,9 @@ class FutureSpec extends ScalatraFlatSpec {
     }
   }
   it should "work with futureWithContext" in {
-    get("/future?foo=bar&baz=zzz") {
+    get("/future?foo=bar") {
       status should equal(200)
-      body should equal("baz,foo")
+      body should equal("""{"foo":"bar"}""")
     }
   }
 
