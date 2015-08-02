@@ -8,6 +8,9 @@ import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.collection.concurrent.{ Map => ConcurrentMap }
 
+/**
+ * Route registry.
+ */
 class RouteRegistry {
 
   private[this] val _methodRoutes: ConcurrentMap[HttpMethod, Seq[Route]] = new ConcurrentHashMap[HttpMethod, Seq[Route]].asScala

@@ -9,6 +9,9 @@ import skinny.engine.util.UriDecoder
 
 import scala.util.control.Exception._
 
+/**
+ * Base trait for SkinnyEngineServlet implementations.
+ */
 trait SkinnyEngineServletBase extends HttpServlet with SkinnyEngineBase {
 
   override def service(request: HttpServletRequest, response: HttpServletResponse): Unit = {

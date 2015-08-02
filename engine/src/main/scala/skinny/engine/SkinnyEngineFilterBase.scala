@@ -8,6 +8,9 @@ import skinny.engine.util.UriDecoder
 
 import scala.util.DynamicVariable
 
+/**
+ * Base trait for SkinnyEngineFilter implementations.
+ */
 trait SkinnyEngineFilterBase extends SkinnyEngineBase {
 
   private[this] val _filterChain: DynamicVariable[FilterChain] = new DynamicVariable[FilterChain](null)

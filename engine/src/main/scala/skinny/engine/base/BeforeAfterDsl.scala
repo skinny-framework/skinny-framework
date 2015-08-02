@@ -3,6 +3,9 @@ package skinny.engine.base
 import skinny.engine.RouteTransformer
 import skinny.engine.routing.Route
 
+/**
+ * Before/After DSL for non-async skinny-engine.
+ */
 trait BeforeAfterDsl { self: RouteRegistryAccessor =>
 
   /**

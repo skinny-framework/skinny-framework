@@ -5,7 +5,6 @@ import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 import skinny.engine.Handler
 import skinny.engine.cookie.{ SweetCookies, Cookie }
 import skinny.engine.implicits.ServletApiImplicits
-import skinny.engine.routing.RoutingDsl
 
 trait CoreHandler
     extends Handler

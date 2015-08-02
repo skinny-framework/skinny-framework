@@ -9,6 +9,9 @@ import skinny.engine.implicits.RicherStringImplicits
 import scala.collection.JavaConverters._
 import scala.collection.mutable.Map
 
+/**
+ * Rich Servlet response.
+ */
 case class RichResponse(res: HttpServletResponse) {
 
   import RicherStringImplicits._

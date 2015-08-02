@@ -7,6 +7,10 @@ import skinny.util.LoanPattern._
 import skinny.engine.implicits.RicherStringImplicits
 import skinny.engine.util.io
 
+/**
+ * File item.
+ * @param part file part.
+ */
 case class FileItem(part: Part) {
 
   import RicherStringImplicits._

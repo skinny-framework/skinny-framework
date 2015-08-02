@@ -15,12 +15,9 @@ import scala.collection.immutable.DefaultMap
 import scala.collection.{ Map => CMap }
 import scala.io.Source
 
-object RichRequest {
-
-  private val cachedBodyKey: String = "skinny.engine.RichRequest.cachedBody"
-
-}
-
+/**
+ * Rich Servlet request.
+ */
 case class RichRequest(r: HttpServletRequest) extends AttributesMap {
 
   import RichRequest._
@@ -260,3 +257,8 @@ case class RichRequest(r: HttpServletRequest) extends AttributesMap {
 
 }
 
+object RichRequest {
+
+  private val cachedBodyKey: String = "skinny.engine.RichRequest.cachedBody"
+
+}

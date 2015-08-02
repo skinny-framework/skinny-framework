@@ -3,6 +3,9 @@ package skinny.engine.async
 import skinny.engine.SkinnyEngineBase
 import scala.concurrent.Future
 
+/**
+ * Async operations provider.
+ */
 trait AsyncSupport
     extends AsyncOperations { self: SkinnyEngineBase =>
 

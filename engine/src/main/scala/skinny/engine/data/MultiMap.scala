@@ -1,20 +1,12 @@
 package skinny.engine.data
 
-import scala.collection.immutable.Map
 import scala.language.implicitConversions
 
-object MultiMap {
+import scala.collection.immutable.Map
 
-  def apply(): MultiMap = new MultiMap
-
-  def apply[SeqType <: Seq[String]](wrapped: Map[String, SeqType]): MultiMap = new MultiMap(wrapped)
-
-  def empty: MultiMap = apply()
-
-  implicit def map2MultiMap(map: Map[String, Seq[String]]): MultiMap = new MultiMap(map)
-
-}
-
+/**
+ * Map which contains multi values for each key.
+ */
 class MultiMap(wrapped: Map[String, Seq[String]] = Map.empty)
     extends Map[String, Seq[String]] {
 
@@ -33,5 +25,17 @@ class MultiMap(wrapped: Map[String, Seq[String]] = Map.empty)
   def iterator: Iterator[(String, Seq[String])] = wrapped.iterator
 
   override def default(a: String): Seq[String] = wrapped.default(a)
+
+}
+
+object MultiMap {
+
+  def apply(): MultiMap = new MultiMap
+
+  def apply[SeqType <: Seq[String]](wrapped: Map[String, SeqType]): MultiMap = new MultiMap(wrapped)
+
+  def empty: MultiMap = apply()
+
+  implicit def map2MultiMap(map: Map[String, Seq[String]]): MultiMap = new MultiMap(map)
 
 }

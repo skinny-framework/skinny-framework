@@ -8,7 +8,11 @@ import skinny.engine.ContentEncoding
 
 import scala.util.Try
 
-/** Encodes any output written to a servlet response. */
+/**
+ * Encoded servlet response.
+ *
+ * Encodes any output written to a servlet response.
+ */
 private[skinny] class EncodedServletResponse(
     res: HttpServletResponse,
     enc: ContentEncoding) extends HttpServletResponseWrapper(res) {

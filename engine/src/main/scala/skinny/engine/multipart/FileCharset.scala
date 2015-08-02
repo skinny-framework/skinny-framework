@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory
 
 import scala.io.Codec
 
+/**
+ * File charset utility.
+ */
 object FileCharset {
 
   private[this] val logger = LoggerFactory.getLogger(getClass)

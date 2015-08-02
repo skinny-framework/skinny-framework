@@ -4,6 +4,9 @@ import skinny.engine.{ SkinnyEngineBase, ApiFormats }
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.ServletApiImplicits
 
+/**
+ * Provides accessor for request format.
+ */
 trait RequestFormatAccessor extends ServletApiImplicits { self: SkinnyEngineBase =>
 
   /**

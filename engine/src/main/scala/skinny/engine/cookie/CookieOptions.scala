@@ -1,5 +1,8 @@
 package skinny.engine.cookie
 
+/**
+ * Cookie options.
+ */
 case class CookieOptions(
   domain: String = "",
   path: String = "",

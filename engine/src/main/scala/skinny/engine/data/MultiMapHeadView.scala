@@ -2,22 +2,9 @@ package skinny.engine.data
 
 import scala.collection.immutable.Map
 
-object MultiMapHeadView {
-
-  def empty[A, B]: MultiMapHeadView[A, B] = {
-    new MultiMapHeadView[A, B] {
-      override protected val multiMap = Map.empty[A, Seq[B]]
-    }
-  }
-
-  def emptyIndifferent[B]: MultiMapHeadView[String, B] with MapWithIndifferentAccess[B] = {
-    new MultiMapHeadView[String, B] with MapWithIndifferentAccess[B] {
-      override protected val multiMap = Map.empty[String, Seq[B]]
-    }
-  }
-
-}
-
+/**
+ * View for MultiMap.
+ */
 trait MultiMapHeadView[A, B] extends Map[A, B] {
 
   protected def multiMap: Map[A, Seq[B]]
@@ -34,3 +21,18 @@ trait MultiMapHeadView[A, B] extends Map[A, B] {
 
 }
 
+object MultiMapHeadView {
+
+  def empty[A, B]: MultiMapHeadView[A, B] = {
+    new MultiMapHeadView[A, B] {
+      override protected val multiMap = Map.empty[A, Seq[B]]
+    }
+  }
+
+  def emptyIndifferent[B]: MultiMapHeadView[String, B] with MapWithIndifferentAccess[B] = {
+    new MultiMapHeadView[String, B] with MapWithIndifferentAccess[B] {
+      override protected val multiMap = Map.empty[String, Seq[B]]
+    }
+  }
+
+}

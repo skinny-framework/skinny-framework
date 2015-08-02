@@ -3,54 +3,8 @@ package skinny.engine.cookie
 import java.util.{ Date, Locale }
 import skinny.engine.implicits.RicherStringImplicits
 
-object Cookie {
-
-  import java.text.SimpleDateFormat
-  import java.util.{ Date, Locale, TimeZone }
-
-  val SweetCookiesKey = "skinny.engine.SweetCookies"
-
-  val CookieOptionsKey = "skinny.engine.CookieOptions"
-
-  private object DateUtil {
-
-    @volatile private[this] var _currentTimeMillis: Option[Long] = None
-
-    def currentTimeMillis: Long = _currentTimeMillis getOrElse System.currentTimeMillis
-
-    def currentTimeMillis_=(ct: Long): Unit = _currentTimeMillis = Some(ct)
-
-    def freezeTime(): Unit = _currentTimeMillis = Some(System.currentTimeMillis())
-
-    def unfreezeTime(): Unit = _currentTimeMillis = None
-
-    def formatDate(
-      date: Date,
-      format: String,
-      timeZone: TimeZone = TimeZone.getTimeZone("GMT"),
-      locale: Locale = Locale.ENGLISH): String = {
-      val df = new SimpleDateFormat(format, locale)
-      df.setTimeZone(timeZone)
-      df.format(date)
-    }
-
-  }
-
-  @volatile private[this] var _currentTimeMillis: Option[Long] = None
-
-  def currentTimeMillis: Long = _currentTimeMillis getOrElse System.currentTimeMillis
-
-  def currentTimeMillis_=(ct: Long): Unit = _currentTimeMillis = Some(ct)
-
-  def freezeTime(): Unit = _currentTimeMillis = Some(System.currentTimeMillis())
-
-  def unfreezeTime(): Unit = _currentTimeMillis = None
-
-  def formatExpires(date: Date): String = DateUtil.formatDate(date, "EEE, dd MMM yyyy HH:mm:ss zzz")
-
-}
-
-case class Cookie(name: String, value: String)(implicit cookieOptions: CookieOptions = CookieOptions()) {
+case class Cookie(name: String, value: String)(
+    implicit cookieOptions: CookieOptions = CookieOptions()) {
 
   import Cookie._
   import RicherStringImplicits._
@@ -101,5 +55,52 @@ case class Cookie(name: String, value: String)(implicit cookieOptions: CookieOpt
   private[this] def appendExpires(sb: StringBuilder, expires: Date): StringBuilder = {
     sb append "; Expires=" append formatExpires(expires)
   }
+
+}
+
+object Cookie {
+
+  import java.text.SimpleDateFormat
+  import java.util.{ Date, Locale, TimeZone }
+
+  val SweetCookiesKey = "skinny.engine.SweetCookies"
+
+  val CookieOptionsKey = "skinny.engine.CookieOptions"
+
+  private object DateUtil {
+
+    @volatile private[this] var _currentTimeMillis: Option[Long] = None
+
+    def currentTimeMillis: Long = _currentTimeMillis getOrElse System.currentTimeMillis
+
+    def currentTimeMillis_=(ct: Long): Unit = _currentTimeMillis = Some(ct)
+
+    def freezeTime(): Unit = _currentTimeMillis = Some(System.currentTimeMillis())
+
+    def unfreezeTime(): Unit = _currentTimeMillis = None
+
+    def formatDate(
+      date: Date,
+      format: String,
+      timeZone: TimeZone = TimeZone.getTimeZone("GMT"),
+      locale: Locale = Locale.ENGLISH): String = {
+      val df = new SimpleDateFormat(format, locale)
+      df.setTimeZone(timeZone)
+      df.format(date)
+    }
+
+  }
+
+  @volatile private[this] var _currentTimeMillis: Option[Long] = None
+
+  def currentTimeMillis: Long = _currentTimeMillis getOrElse System.currentTimeMillis
+
+  def currentTimeMillis_=(ct: Long): Unit = _currentTimeMillis = Some(ct)
+
+  def freezeTime(): Unit = _currentTimeMillis = Some(System.currentTimeMillis())
+
+  def unfreezeTime(): Unit = _currentTimeMillis = None
+
+  def formatExpires(date: Date): String = DateUtil.formatDate(date, "EEE, dd MMM yyyy HH:mm:ss zzz")
 
 }

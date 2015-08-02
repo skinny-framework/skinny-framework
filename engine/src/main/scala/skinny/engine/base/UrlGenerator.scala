@@ -4,10 +4,12 @@ import skinny.SkinnyEnv
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.RicherStringImplicits
-import skinny.engine.routing.RoutingDsl
 
 import scala.util.control.Exception._
 
+/**
+ * Provides url generator DSL.
+ */
 trait UrlGenerator extends RicherStringImplicits { self: SkinnyEngineBase =>
 
   private[this] def needHttps: Boolean = {

@@ -3,6 +3,9 @@ package skinny.engine.request
 import java.io.InputStream
 import javax.servlet.ServletInputStream
 
+/**
+ * Encoded input stream in a Servlet request.
+ */
 private[skinny] class EncodedInputStream(
     encoded: InputStream,
     raw: ServletInputStream) extends ServletInputStream {

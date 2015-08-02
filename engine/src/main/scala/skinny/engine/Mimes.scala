@@ -10,25 +10,6 @@ import skinny.logging.Logger
 import scala.collection.JavaConversions._
 import scala.util.control.Exception._
 
-object Mimes {
-
-  val DefaultMime = "application/octet-stream"
-  /**
-   * Sets supported encodings for the mime-util library if they have not been
-   * set. Since the supported encodings is stored as a static Set we
-   * synchronize access.
-   */
-  private def registerEncodingsIfNotSet(): Unit = {
-    synchronized {
-      if (EncodingGuesser.getSupportedEncodings.isEmpty) {
-        val enc = Set("UTF-8", "ISO-8859-1", "windows-1252", "MacRoman", EncodingGuesser.getDefaultEncoding)
-        EncodingGuesser.setSupportedEncodings(enc)
-      }
-    }
-  }
-  registerEncodingsIfNotSet
-}
-
 import Mimes._
 
 /**
@@ -105,4 +86,23 @@ trait Mimes {
   def apply(bytes: Array[Byte]) = bytesMime(bytes)
   def apply(uri: URI) = urlMime(uri.toASCIIString)
 
+}
+
+object Mimes {
+
+  val DefaultMime = "application/octet-stream"
+  /**
+   * Sets supported encodings for the mime-util library if they have not been
+   * set. Since the supported encodings is stored as a static Set we
+   * synchronize access.
+   */
+  private def registerEncodingsIfNotSet(): Unit = {
+    synchronized {
+      if (EncodingGuesser.getSupportedEncodings.isEmpty) {
+        val enc = Set("UTF-8", "ISO-8859-1", "windows-1252", "MacRoman", EncodingGuesser.getDefaultEncoding)
+        EncodingGuesser.setSupportedEncodings(enc)
+      }
+    }
+  }
+  registerEncodingsIfNotSet
 }

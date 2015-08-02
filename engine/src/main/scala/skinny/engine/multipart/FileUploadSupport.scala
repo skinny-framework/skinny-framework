@@ -197,7 +197,7 @@ trait FileUploadSupport
 
 object FileUploadSupport {
 
-  private val BodyParamsKey = "skinny.engine.fileupload.bodyParams"
+  private val BodyParamsKey = "skinny.engine.multipart.bodyParams"
 
   case class BodyParams(
     fileParams: FileMultiParams,
