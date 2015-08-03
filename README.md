@@ -30,7 +30,7 @@ https://github.com/skinny-framework/skinny-framework/releases
 
 ## Under The MIT License
 
-Only `skinny-scalatra` and `skinny-scalatra-test` are under the BSD 2-Clause license.
+Only `skinny-engine` and `skinny-engine-*` are under the BSD 2-Clause license.
 
 Others are under The MIT License.
 
