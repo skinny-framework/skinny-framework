@@ -2,12 +2,12 @@ package skinny.engine.json
 
 import skinny.engine.{ Format, SkinnyEngineBase }
 import skinny.engine.context.SkinnyEngineContext
-import skinny.util.{ JSONStringOpsConfig, JSONStringOps }
+import skinny.json.{ JSONStringOpsConfig, JSONStringOps }
 
 /**
  * JSON response support.
  */
-trait JSONOperations extends JSONStringOps { self: SkinnyEngineBase with JSONStringOpsConfig =>
+trait EngineJSONStringOps extends JSONStringOps with JSONStringOpsConfig { self: SkinnyEngineBase =>
 
   /**
    * Returns JSON response.

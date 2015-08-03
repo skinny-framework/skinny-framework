@@ -1,4 +1,4 @@
-package skinny.util
+package skinny.json
 
 /**
  * JSON String operations for Angular application's server side.

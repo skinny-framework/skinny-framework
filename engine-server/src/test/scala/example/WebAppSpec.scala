@@ -3,6 +3,7 @@ package example
 import org.scalatest._
 
 import skinny.engine._
+import skinny.engine.json.EngineJSONStringOps
 import skinny.engine.response.InternalServerError
 
 import skinny.http.HTTP
@@ -25,7 +26,7 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
         logger.info("params: " + params)
         "OK"
       }
-    }).mount(new WebApp {
+    }).mount(new WebApp with EngineJSONStringOps {
       before() {
         contentType = "application/json; charset=utf-8"
       }
@@ -50,7 +51,7 @@ class WebAppSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
             InternalServerError(toJSONString(Map("message" -> ("Oops... " + e.getClass.getSimpleName))))
         }
       }
-    }).mount(new AsyncWebApp {
+    }).mount(new AsyncWebApp with EngineJSONStringOps {
       before() { implicit ctx =>
         contentType = "application/json; charset=utf-8"
       }

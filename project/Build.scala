@@ -99,6 +99,7 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     common,
     engine,
+    engineJson,
     engineScalate,
     json,
     validator,
@@ -121,7 +122,20 @@ object SkinnyFrameworkBuild extends Build {
       }
     ) ++ _jettyOrbitHack
   ).dependsOn(
-    common,
+    common
+  )
+
+  lazy val engineJson = Project(id = "engineJson", base = file("engine-json"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-engine-json",
+      libraryDependencies ++= servletApiDependencies ++ Seq(
+        "org.scalatra"      %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
+        "org.scalatra"      %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
+        "com.typesafe.akka" %% "akka-actor"         % "2.3.12"                  % Test
+      ) ++ testDependencies
+    ) ++ _jettyOrbitHack
+  ).dependsOn(
+    engine,
     json
   )
 
@@ -147,6 +161,7 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     engine,
     standalone,
+    engineJson % Test,
     httpClient % Test
   )
 

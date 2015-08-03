@@ -1,12 +1,10 @@
 package skinny.engine.json
 
 import java.io.{ InputStream, InputStreamReader }
-import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 
 import org.json4s.Xml._
 import org.json4s._
 import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.implicits.RicherStringImplicits
 import org.slf4j.LoggerFactory
 
 import javax.xml.parsers.SAXParserFactory
@@ -17,18 +15,19 @@ import scala.xml.factory.XMLLoader
 
 object JsonSupport {
 
-  val ParsedBodyKey = "org.scalatra.json.ParsedBody"
+  val ParsedBodyKey = "skinny.engine.json.ParsedBody"
 }
 
 trait JsonSupport[T] extends JsonOutput[T] {
 
   import JsonSupport._
-  import RicherStringImplicits._
 
   private[this] val logger = LoggerFactory.getLogger(getClass)
 
   private[this] val _defaultCacheRequestBody = true
+
   protected def cacheRequestBodyAsString: Boolean = _defaultCacheRequestBody
+
   protected def parseRequestBody(format: String)(implicit ctx: SkinnyEngineContext) = try {
     val ct = ctx.request.contentType getOrElse ""
     if (format == "json") {
@@ -60,7 +59,9 @@ trait JsonSupport[T] extends JsonOutput[T] {
   }
 
   protected def readJsonFromBody(bd: String): JValue
+
   protected def readJsonFromStreamWithCharset(stream: InputStream, charset: String): JValue
+
   protected def readJsonFromStream(stream: InputStream): JValue = readJsonFromStreamWithCharset(stream, defaultCharacterEncoding)
 
   def secureXML: XMLLoader[Elem] = {

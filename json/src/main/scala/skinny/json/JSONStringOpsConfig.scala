@@ -1,4 +1,4 @@
-package skinny.util
+package skinny.json
 
 import org.json4s.{ DefaultFormats, Formats }
 

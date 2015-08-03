@@ -1,8 +1,8 @@
-package skinny.util
+package skinny.json
 
+import com.fasterxml.jackson.databind.{ DeserializationFeature, ObjectMapper, ObjectWriter }
 import org.json4s._
 import org.json4s.jackson.Json4sScalaModule
-import com.fasterxml.jackson.databind.{ ObjectWriter, DeserializationFeature, ObjectMapper }
 
 import scala.util.control.Exception._
 
