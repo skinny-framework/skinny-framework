@@ -6,16 +6,9 @@ import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ SkinnyEngineBase, SkinnyEngineException }
 
-object I18nSupport {
-
-  val LocaleKey: String = "skinny.engine.i18n.locale"
-
-  val UserLocalesKey: String = "skinny.engine.i18n.userLocales"
-
-  val MessagesKey: String = "messages"
-
-}
-
+/**
+ * i18n support.
+ */
 trait I18nSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
   import I18nSupport._
@@ -71,9 +64,7 @@ trait I18nSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    * in cookie. Later requests will read locale string directly from this
    *
    * If it's not found, then look at Accept-Language header.
-   *
    * Locale strings are transformed to [[java.util.Locale]]
-   *
    */
   private def resolveHttpLocale(implicit ctx: SkinnyEngineContext): Option[Locale] = {
     (params(ctx).get(LocaleKey) match {
@@ -127,5 +118,15 @@ trait I18nSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
   }
 
   private def defaultLocale: Locale = Locale.getDefault
+
+}
+
+object I18nSupport {
+
+  val LocaleKey: String = "skinny.engine.i18n.locale"
+
+  val UserLocalesKey: String = "skinny.engine.i18n.userLocales"
+
+  val MessagesKey: String = "messages"
 
 }

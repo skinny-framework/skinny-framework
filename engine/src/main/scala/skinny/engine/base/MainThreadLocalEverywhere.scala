@@ -4,7 +4,11 @@ import javax.servlet.ServletContext
 
 import skinny.engine.context.SkinnyEngineContext
 
-trait MainThreadLocalEverywhere extends SkinnyEngineContextInitializer {
+/**
+ * When this trait is activated, thread-local request/response needed by SkinnyEngineContext are always accessible.
+ */
+trait MainThreadLocalEverywhere
+    extends SkinnyEngineContextInitializer {
 
   self: ServletContextAccessor with UnstableAccessValidationConfig =>
 

@@ -1,5 +1,8 @@
 package skinny.engine.multipart
 
+/**
+ * Multi parmas in a file.
+ */
 class FileMultiParams(
   wrapped: Map[String, Seq[FileItem]] = Map.empty)
     extends Map[String, Seq[FileItem]] {

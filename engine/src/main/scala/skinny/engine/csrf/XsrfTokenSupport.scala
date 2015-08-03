@@ -4,16 +4,12 @@ import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.{ RouteTransformer, SkinnyEngineBase }
 
-object XsrfTokenSupport {
-
-  val DefaultKey = "skinny.engine.XsrfTokenSupport.key"
-
-  val HeaderNames = Vector("X-XSRF-TOKEN")
-
-  val CookieKey = "XSRF-TOKEN"
-
-}
-
+/**
+ * Provides cross-site request forgery protection.
+ *
+ * If a request is determined to be forged, the `handleForgery()` hook is invoked.
+ * Otherwise, a token for the next request is prepared with `prepareCsrfToken`.
+ */
 trait XsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
   import XsrfTokenSupport._
@@ -68,4 +64,14 @@ trait XsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
       cookies(context) += CookieKey -> xsrfToken(context)
     }
   }
+}
+
+object XsrfTokenSupport {
+
+  val DefaultKey = "skinny.engine.XsrfTokenSupport.key"
+
+  val HeaderNames = Vector("X-XSRF-TOKEN")
+
+  val CookieKey = "XSRF-TOKEN"
+
 }

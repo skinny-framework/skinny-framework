@@ -7,6 +7,28 @@ import skinny.engine.UnstableAccessValidation
 import skinny.engine.implicits.{ CookiesImplicits, ServletApiImplicits, SessionImplicits }
 import skinny.engine.request.StableHttpServletRequest
 
+/**
+ * SkinnyEngine's context for each request.
+ */
+trait SkinnyEngineContext
+    extends ServletApiImplicits
+    with SessionImplicits
+    with CookiesImplicits {
+
+  val request: HttpServletRequest
+
+  val response: HttpServletResponse
+
+  val servletContext: ServletContext
+
+  val unstableAccessValidation: UnstableAccessValidation
+
+  def surelyStable(validation: UnstableAccessValidation): SkinnyEngineContext = {
+    SkinnyEngineContext.surelyStable(this, validation)
+  }
+
+}
+
 object SkinnyEngineContext {
 
   private class StableSkinnyEngineContext(
@@ -30,25 +52,6 @@ object SkinnyEngineContext {
 
   def buildWithoutResponse(req: HttpServletRequest, ctx: ServletContext, validation: UnstableAccessValidation): SkinnyEngineContext = {
     new StableSkinnyEngineContext()(StableHttpServletRequest(req, validation), null, ctx, validation)
-  }
-
-}
-
-trait SkinnyEngineContext
-    extends ServletApiImplicits
-    with SessionImplicits
-    with CookiesImplicits {
-
-  val request: HttpServletRequest
-
-  val response: HttpServletResponse
-
-  val servletContext: ServletContext
-
-  val unstableAccessValidation: UnstableAccessValidation
-
-  def surelyStable(validation: UnstableAccessValidation): SkinnyEngineContext = {
-    SkinnyEngineContext.surelyStable(this, validation)
   }
 
 }

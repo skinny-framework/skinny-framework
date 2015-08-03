@@ -12,10 +12,16 @@ class FutureOpsFeatureSpec extends ScalatraFlatSpec {
 
   object Controller extends SkinnyController with AsyncOperations with Routes {
     def index = {
-      awaitFutures(1.seconds)(futureWithRequest(req => "ok"))
+      val f = futureWithRequest { req =>
+        req.getContextPath
+      }
+      awaitFutures(1.seconds)(f)
     }
     def withContext = {
-      awaitFutures(1.seconds)(futureWithContext(ctx => "ok"))
+      val f = FutureWithContext { implicit ctx =>
+        contextPath
+      }
+      awaitFutures(1.seconds)(f)
     }
     get("/")(index).as('index)
     get("/context")(withContext).as('context)

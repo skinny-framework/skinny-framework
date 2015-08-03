@@ -5,8 +5,9 @@ import javax.servlet.http.{ HttpServletRequest, HttpServletRequestWrapper }
 
 import skinny.engine.ContentEncoding
 
-// - Request decoding --------------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------------------------------
+/**
+ * Decoded servlet request.
+ */
 private[skinny] class DecodedServletRequest(
     req: HttpServletRequest,
     enc: ContentEncoding) extends HttpServletRequestWrapper(req) {

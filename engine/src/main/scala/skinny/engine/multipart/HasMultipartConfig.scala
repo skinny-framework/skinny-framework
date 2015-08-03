@@ -5,13 +5,9 @@ import javax.servlet.ServletContext
 import org.slf4j.LoggerFactory
 import skinny.engine.Initializable
 
-object HasMultipartConfig {
-
-  val DefaultMultipartConfig = MultipartConfig()
-  val MultipartConfigKey = "skinny.engine.MultipartConfigKey"
-
-}
-
+/**
+ * Presents that multipart config has been activated.
+ */
 trait HasMultipartConfig extends Initializable { self: { def servletContext: ServletContext } =>
 
   import HasMultipartConfig._
@@ -51,5 +47,13 @@ trait HasMultipartConfig extends Initializable { self: { def servletContext: Ser
   def configureMultipartHandling(config: MultipartConfig): Unit = {
     providedConfig = Some(config)
   }
+
+}
+
+object HasMultipartConfig {
+
+  val DefaultMultipartConfig = MultipartConfig()
+
+  val MultipartConfigKey = "skinny.engine.MultipartConfigKey"
 
 }

@@ -2,13 +2,9 @@ package skinny.engine.i18n
 
 import java.util.{ Locale, MissingResourceException, ResourceBundle }
 
-object Messages {
-
-  def apply(locale: Locale = Locale.getDefault, bundlePath: String = "i18n/messages"): Messages = {
-    new Messages(locale, bundlePath)
-  }
-
-}
+/**
+ * Messages for i18n support.
+ */
 class Messages(locale: Locale, bundlePath: String = "i18n/messages") {
 
   private[this] val bundle: ResourceBundle = ResourceBundle.getBundle(bundlePath, locale)
@@ -56,6 +52,14 @@ class Messages(locale: Locale, bundlePath: String = "i18n/messages") {
     } catch {
       case e: MissingResourceException => default
     }
+  }
+
+}
+
+object Messages {
+
+  def apply(locale: Locale = Locale.getDefault, bundlePath: String = "i18n/messages"): Messages = {
+    new Messages(locale, bundlePath)
   }
 
 }

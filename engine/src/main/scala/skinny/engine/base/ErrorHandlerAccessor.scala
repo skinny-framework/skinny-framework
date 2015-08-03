@@ -5,16 +5,21 @@ import java.util.concurrent.atomic.AtomicInteger
 import skinny.engine._
 import skinny.logging.LoggerProvider
 
+/**
+ * Provides accessors for values related to error handlers.
+ */
 trait ErrorHandlerAccessor extends LoggerProvider {
 
   /**
-   * The error handler function, called if an exception is thrown during
-   * before filters or the routes.
+   * The error handler function, called if an exception is thrown during before filters or the routes.
    */
   private[this] var errorHandler: ErrorHandler = {
     case t => throw t
   }
 
+  /**
+   * Current error handler.
+   */
   protected def currentErrorHandler: ErrorHandler = errorHandler
 
   /**

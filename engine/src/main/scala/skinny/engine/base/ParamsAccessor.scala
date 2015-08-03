@@ -4,12 +4,15 @@ import skinny.engine._
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.ServletApiImplicits
 
+/**
+ * Provides params/multiParams DSL.
+ */
 trait ParamsAccessor extends ServletApiImplicits {
 
   /**
-   * The current multiparams.
+   * The current multi params.
    *
-   * Multiparams are a result of merging the standard request params (query string or post params) with the route
+   * Multi params are a result of merging the standard request params (query string or post params) with the route
    * parameters extracted from the route matchers of the current route.
    * The default value for an unknown param is the empty sequence.
    * Invalid outside `handle`.

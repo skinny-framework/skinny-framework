@@ -4,6 +4,9 @@ import skinny.engine.{ Context, RouteTransformer }
 import skinny.engine.base.{ SkinnyEngineContextInitializer, RouteRegistryAccessor }
 import skinny.engine.routing.Route
 
+/**
+ * Before/After DSL for Async web apps.
+ */
 trait AsyncBeforeAfterDsl { self: RouteRegistryAccessor with SkinnyEngineContextInitializer =>
 
   /**

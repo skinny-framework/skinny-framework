@@ -4,6 +4,9 @@ import scala.language.implicitConversions
 
 import skinny.engine.MultiParams
 
+/**
+ * Properties for params value reader.
+ */
 trait ParamsValueReaderProperties {
 
   implicit def stringMapValueReader(d: Map[String, String]): ValueReader[Map[String, String], String] =

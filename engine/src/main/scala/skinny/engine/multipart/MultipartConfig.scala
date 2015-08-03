@@ -4,6 +4,9 @@ import javax.servlet.{ MultipartConfigElement, ServletContext }
 
 import skinny.engine.context.MountConfig
 
+/**
+ * Multipart config.
+ */
 case class MultipartConfig(
     location: Option[String] = None,
     maxFileSize: Option[Long] = None,

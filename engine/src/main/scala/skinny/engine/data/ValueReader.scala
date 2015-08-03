@@ -1,5 +1,8 @@
 package skinny.engine.data
 
+/**
+ * Value reader.
+ */
 trait ValueReader[S, U] {
 
   def data: S

@@ -1,5 +1,8 @@
 package skinny.engine.constant
 
+/**
+ * HTTP protocol version.
+ */
 abstract class HttpVersion(
     val protocolName: String,
     val majorVersion: Int,
@@ -32,6 +35,12 @@ abstract class HttpVersion(
 
 }
 
+/**
+ * HTTP/1.0
+ */
 object Http10 extends HttpVersion("HTTP", 1, 0, false)
 
+/**
+ * HTTP/1.1
+ */
 object Http11 extends HttpVersion("HTTP", 1, 1, true)

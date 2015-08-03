@@ -7,6 +7,9 @@ import skinny.engine.context.SkinnyEngineContext
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, Future, ExecutionContext }
 
+/**
+ * Utility to build async operations.
+ */
 trait AsyncOperations {
 
   /**
@@ -25,7 +28,7 @@ trait AsyncOperations {
   }
 
   /**
-   *  Creates a future with implicit context.
+   * Creates a future with implicit context.
    *
    * @param op operation inside this future
    * @param ec execution context
@@ -33,7 +36,7 @@ trait AsyncOperations {
    * @tparam A response type
    * @return response value
    */
-  def futureWithContext[A](op: (SkinnyEngineContext) => A)(
+  def FutureWithContext[A](op: (SkinnyEngineContext) => A)(
     implicit ec: ExecutionContext, context: SkinnyEngineContext): Future[A] = {
     Future { op(context) }
   }

@@ -1,13 +1,5 @@
 package skinny.engine.csrf
 
-object CsrfTokenSupport {
-
-  val DefaultKey = "skinny.engine.CsrfTokenSupport.key"
-
-  val HeaderNames = Vector("X-CSRF-TOKEN")
-
-}
-
 import skinny.engine.SkinnyEngineBase
 import skinny.engine.base.BeforeAfterDsl
 import skinny.engine.context.SkinnyEngineContext
@@ -15,9 +7,8 @@ import skinny.engine.context.SkinnyEngineContext
 /**
  * Provides cross-site request forgery protection.
  *
- * Adds a before filter.  If a request is determined to be forged, the
- * `handleForgery()` hook is invoked.  Otherwise, a token for the next
- * request is prepared with `prepareCsrfToken`.
+ * If a request is determined to be forged, the `handleForgery()` hook is invoked.
+ * Otherwise, a token for the next request is prepared with `prepareCsrfToken`.
  */
 trait CsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
 
@@ -65,5 +56,13 @@ trait CsrfTokenSupport { this: SkinnyEngineBase with BeforeAfterDsl =>
    */
   protected[skinny] def csrfToken(implicit context: SkinnyEngineContext): String =
     context.request.getSession.getAttribute(csrfKey).asInstanceOf[String]
+
+}
+
+object CsrfTokenSupport {
+
+  val DefaultKey = "skinny.engine.CsrfTokenSupport.key"
+
+  val HeaderNames = Vector("X-CSRF-TOKEN")
 
 }

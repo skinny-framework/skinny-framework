@@ -2,6 +2,9 @@ package skinny.engine.base
 
 import skinny.engine._
 
+/**
+ * Provides accessors for values related to environment.
+ */
 trait EnvironmentAccessor { self: ServletContextAccessor =>
 
   def environment: String = {

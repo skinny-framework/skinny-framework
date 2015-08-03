@@ -4,6 +4,9 @@ import skinny.engine.SkinnyEngineBase
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.ServletApiImplicits
 
+/**
+ * Provides DSL to access the context type in response.
+ */
 trait ResponseContentTypeAccessor extends ServletApiImplicits { self: SkinnyEngineBase =>
 
   /**

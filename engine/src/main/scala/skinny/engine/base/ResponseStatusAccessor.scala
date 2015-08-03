@@ -5,6 +5,9 @@ import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.implicits.ServletApiImplicits
 import skinny.engine.response.ResponseStatus
 
+/**
+ * Provides accessor for response status.
+ */
 trait ResponseStatusAccessor extends ServletApiImplicits { self: SkinnyEngineBase =>
 
   /**

@@ -10,6 +10,9 @@ import skinny.engine.context.SkinnyEngineContext
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 
+/**
+ * Result value of async skinny-engine.
+ */
 abstract class AsyncResult(
     implicit val context: SkinnyEngineContext) {
 

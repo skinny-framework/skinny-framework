@@ -141,7 +141,7 @@ trait RoutingDsl
   }
 
   /**
-   * @see error
+   * @see trap
    */
   def trap(code: Int)(block: => Any): Unit = {
     trap(Range(code, code + 1))(block)

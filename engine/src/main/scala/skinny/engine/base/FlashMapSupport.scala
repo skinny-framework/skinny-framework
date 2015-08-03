@@ -7,16 +7,6 @@ import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.flash.FlashMap
 import skinny.engine.implicits.{ ServletApiImplicits, SessionImplicits }
 
-object FlashMapSupport {
-
-  val SessionKey = FlashMapSupport.getClass.getName + ".flashMap"
-
-  val LockKey = FlashMapSupport.getClass.getName + ".lock"
-
-  val FlashMapKey = "skinny.engine.FlashMap"
-
-}
-
 /**
  * Allows an action to set key-value pairs in a transient state that is accessible only to the next action and is expired immediately after that.
  * This is especially useful when using the POST-REDIRECT-GET pattern to trace the result of an operation.
@@ -108,5 +98,15 @@ trait FlashMapSupport
    * Determines whether unused flash entries should be swept.  The default is false.
    */
   protected def sweepUnusedFlashEntries(req: HttpServletRequest): Boolean = false
+
+}
+
+object FlashMapSupport {
+
+  val SessionKey = FlashMapSupport.getClass.getName + ".flashMap"
+
+  val LockKey = FlashMapSupport.getClass.getName + ".lock"
+
+  val FlashMapKey = "skinny.engine.FlashMap"
 
 }

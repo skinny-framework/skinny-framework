@@ -2,6 +2,9 @@ package skinny.engine.csrf
 
 import java.security.SecureRandom
 
+/**
+ * CSRF token value generator.
+ */
 object CsrfTokenGenerator {
 
   def apply(): String = generateCsrfToken()
@@ -18,9 +21,6 @@ object CsrfTokenGenerator {
     (new SecureRandom).nextBytes(tokenVal)
     hexEncode(tokenVal)
   }
-
-  @deprecated("Use generateCsrfToken()", "1.4")
-  protected def generateCSRFToken(): String = generateCsrfToken()
 
 }
 

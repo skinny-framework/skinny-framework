@@ -1,5 +1,8 @@
 package skinny.engine.base
 
+/**
+ * Configures to activate unstable access validation or not.
+ */
 trait UnstableAccessValidationConfig {
 
   /**

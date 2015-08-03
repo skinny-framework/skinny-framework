@@ -6,6 +6,9 @@ import skinny.engine.implicits.ServletApiImplicits
 
 import scala.collection.mutable
 
+/**
+ * Extended cookie object.
+ */
 class SweetCookies(
   private[this] val request: HttpServletRequest,
   private[this] val response: HttpServletResponse)
@@ -49,4 +52,5 @@ class SweetCookies(
     response.addCookie(cookie)
     cookie
   }
+
 }

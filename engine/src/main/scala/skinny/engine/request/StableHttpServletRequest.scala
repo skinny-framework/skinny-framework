@@ -311,7 +311,7 @@ object StableHttpServletRequest {
 
   def apply(req: HttpServletRequest, unstableAccessValidation: UnstableAccessValidation): StableHttpServletRequest = {
     if (req == null) {
-      throw new IllegalStateException("Use AsyncResult { ... } or futureWithContext { implicit ctx => ... } instead.")
+      throw new IllegalStateException("Use AsyncResult { ... } or FutureWithContext { implicit ctx => ... } instead.")
     } else if (req.isInstanceOf[StableHttpServletRequest]) {
       req.asInstanceOf[StableHttpServletRequest]
     } else {

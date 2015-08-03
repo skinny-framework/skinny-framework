@@ -13,6 +13,9 @@ import skinny.engine.cookie.{ CookieOptions, Cookie }
 import scala.collection.immutable.DefaultMap
 import scala.collection.JavaConverters._
 
+/**
+ * Provides accessor for ServletContext.
+ */
 trait ServletContextAccessor
     extends Initializable
     with ServletApiImplicits
@@ -92,7 +95,6 @@ trait ServletContextAccessor
    * Gets an init parameter from the config.
    *
    * @param name the name of the key
-   *
    * @return an option containing the value of the parameter if defined, or
    *         `None` if the parameter is not set.
    */
