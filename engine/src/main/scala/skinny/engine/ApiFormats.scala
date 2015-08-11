@@ -105,7 +105,7 @@ trait ApiFormats extends SkinnyEngineBase with RicherStringImplicits {
   def acceptHeader(implicit request: HttpServletRequest): List[String] = parseAcceptHeader(request)
 
   private[this] def getFromParams(implicit ctx: SkinnyEngineContext): Option[String] = {
-    params(ctx).get("format").find(p ⇒ formats.contains(p.toLowerCase(ENGLISH)))
+    params(ctx).get("format").find(p => formats.contains(p.toLowerCase(ENGLISH)))
   }
 
   private[this] def getFromAcceptHeader(implicit request: HttpServletRequest): Option[String] = {

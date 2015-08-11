@@ -52,7 +52,7 @@ trait JsonSupport[T] extends JsonOutput[T] {
       transformRequestBody(bd)
     } else JNothing
   } catch {
-    case t: Throwable ⇒ {
+    case t: Throwable => {
       logger.error(s"Parsing the request body failed, because:", t)
       JNothing
     }
