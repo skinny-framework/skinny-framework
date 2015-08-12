@@ -23,7 +23,7 @@ trait ParamsAccessor extends ServletApiImplicits {
     val found = req.get(MultiParamsKey) map (
       _.asInstanceOf[MultiParams] ++ (if (read) Map.empty else req.multiParameters)
     )
-    val multi = found getOrElse req.multiParameters
+    val multi = found.getOrElse(req.multiParameters)
     req("MultiParamsRead") = new {}
     req(MultiParamsKey) = multi
     multi.withDefaultValue(Seq.empty)
