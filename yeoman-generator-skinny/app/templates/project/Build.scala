@@ -17,7 +17,11 @@ object SkinnyAppBuild extends Build {
 
   val skinnyVersion = "2.0.0-SNAPSHOT"
   val theScalaVersion = "2.11.7"
-  val jettyVersion = "9.2.12.v20150709"
+  val jettyVersion = "9.2.13.v20150730"
+
+  def applyDefaultExclusions(m: ModuleID) = m.excludeAll(
+    ExclusionRule("commons-dbcp", "commons-dbcp")
+  )
 
   lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
@@ -25,9 +29,12 @@ object SkinnyAppBuild extends Build {
     version      := appVersion,
     scalaVersion := theScalaVersion,
     dependencyOverrides := Set(
-      "org.scala-lang" %  "scala-library"  % scalaVersion.value,
-      "org.scala-lang" %  "scala-reflect"  % scalaVersion.value,
-      "org.scala-lang" %  "scala-compiler" % scalaVersion.value
+      "org.scala-lang"         %  "scala-library"            % scalaVersion.value,
+      "org.scala-lang"         %  "scala-reflect"            % scalaVersion.value,
+      "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
+      "org.scala-lang.modules" %% "scala-xml"                % "1.0.4",
+      "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+      "org.slf4j"              %  "slf4j-api"                % "1.7.12"
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
@@ -35,7 +42,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
       "org.skinny-framework"    %  "skinny-logback"       % "1.0.6",
       "org.apache.commons"      %  "commons-dbcp2"        % "2.1",
-      "com.h2database"          %  "h2"                   % "1.4.187",      // your own JDBC driver
+      "com.h2database"          %  "h2"                   % "1.4.188",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
       // for Skinny 1.x tests compatibility
@@ -43,7 +50,7 @@ object SkinnyAppBuild extends Build {
       "org.eclipse.jetty"       %  "jetty-webapp"         % jettyVersion    % "container",
       "org.eclipse.jetty"       %  "jetty-plus"           % jettyVersion    % "container",
       "javax.servlet"           %  "javax.servlet-api"    % "3.1.0"         % "container;provided;test"
-    ),
+    ).map(applyDefaultExclusions),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"

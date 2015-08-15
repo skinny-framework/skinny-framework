@@ -9,13 +9,14 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "2.0.0-SNAPSHOT"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
+  // TODO: fix version before skinny 2.0.0
   lazy val json4SVersion = "3.3.0.RC3"
   lazy val scalikeJDBCVersion = "2.2.7"
-  lazy val h2Version = "1.4.187"
+  lazy val h2Version = "1.4.188"
   lazy val kuromojiVersion = "5.2.1"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
-  lazy val jettyVersion = "9.2.12.v20150709"
+  lazy val jettyVersion = "9.2.13.v20150730"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
   lazy val scalaTestVersion = "2.2.5"
@@ -227,7 +228,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.2.1"        % Compile,
-        "org.hibernate"   %  "hibernate-core" % "4.3.10.Final" % Test
+        "org.hibernate"   %  "hibernate-core" % "4.3.11.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
