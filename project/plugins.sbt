@@ -10,7 +10,8 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea"                % "1.6.0")
 addSbtPlugin("com.jsuereth"         % "sbt-pgp"                 % "1.0.0")
 addSbtPlugin("net.virtual-void"     % "sbt-dependency-graph"    % "0.7.5")
 addSbtPlugin("com.timushev.sbt"     % "sbt-updates"             % "0.1.8")
-addSbtPlugin("org.scoverage"        % "sbt-scoverage"           % "1.2.0")
+// 1.2.0 looks unstable
+addSbtPlugin("org.scoverage"        % "sbt-scoverage"           % "1.1.0")
 addSbtPlugin("org.scoverage"        % "sbt-coveralls"           % "1.0.0")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
