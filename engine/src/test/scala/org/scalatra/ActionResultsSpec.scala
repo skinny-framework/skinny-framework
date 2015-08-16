@@ -203,6 +203,8 @@ abstract class ActionResultsSpec extends MutableScalatraSpec {
     }
   }
 
+  /*
+  NOTICE: removed deprecated API usage
   "returning ActionResult with custom reason" should {
     "set a custom reason on status line" in {
       get("/custom-reason") {
@@ -210,6 +212,7 @@ abstract class ActionResultsSpec extends MutableScalatraSpec {
       }
     }
   }
+  */
 
   "returning ActionResult" should {
     "defaults to call by value" in {

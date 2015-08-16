@@ -12,10 +12,10 @@ case class ServletSession(jsessionId: String, skinnySessionId: Long, createdAt: 
 
 }
 
-object ServletSession extends SkinnyTable[ServletSession] {
+object ServletSession extends SkinnyMapper[ServletSession] {
   override def tableName = "servlet_sessions"
+  override def primaryKeyFieldName = "jsessionId"
   override def defaultAlias = createAlias("sv")
-  override def defaultJoinColumnFieldName = "jsessionId"
 
   override def extract(rs: WrappedResultSet, n: ResultName[ServletSession]) = new ServletSession(
     jsessionId = rs.get(n.jsessionId),

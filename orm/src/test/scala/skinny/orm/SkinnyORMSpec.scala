@@ -225,9 +225,9 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
         Member.findAllBy(sqls.eq(m.countryId, countryId), Seq(ordering)).size should be > (0)
         Member.findAllByWithLimitOffset(sqls.eq(m.countryId, countryId), 1, 0, Seq(ordering)).size should equal(1)
         Member.findAllByWithPagination(sqls.eq(m.countryId, countryId), Pagination.page(1).per(1), Seq(ordering)).size should equal(1)
-        // TODO remove this in 1.1.0
-        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
-        Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, Seq(ordering)).size should equal(1)
+        // Removed since 2.0.0
+        // Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0).size should equal(1)
+        // Member.findAllByPaging(sqls.eq(m.countryId, countryId), 1, 0, Seq(ordering)).size should equal(1)
       }
     }
 

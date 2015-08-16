@@ -22,6 +22,6 @@ table(class="table table-bordered")
       td
         a(href={url(SnakeCaseKeyExamplesController.showUrl, "id" -> e.id.toString)} class="btn btn-default") #{s.i18n.get("detail")}
         a(href={url(SnakeCaseKeyExamplesController.editUrl, "id" -> e.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-        a(data-method="delete" data-confirm={s.i18n.get("snakeCaseKeyExample.delete.confirm")} href={url(SnakeCaseKeyExamplesController.deleteUrl, "id" -> e.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+        a(data-method="delete" data-confirm={s.i18n.get("snakeCaseKeyExample.delete.confirm")} href={url(SnakeCaseKeyExamplesController.destroyUrl, "id" -> e.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
 
 a(href={url(SnakeCaseKeyExamplesController.newUrl)} class="btn btn-primary") #{s.i18n.get("new")}

@@ -39,9 +39,6 @@ trait SkinnyApiResourceRoutes[Id]
     createApiAction
   }).as('createApi)
 
-  @deprecated("Use createApiUrl instead", since = "1.0.0")
-  val createExtUrl = createApiUrl
-
   protected def createApiAction = params.get("ext").map {
     case "json" => createResource()(Format.JSON)
     case "xml" => createResource()(Format.XML)
@@ -55,9 +52,6 @@ trait SkinnyApiResourceRoutes[Id]
     setContentTypeFromSkinnyApiResourceExtParam
     indexApiAction
   }).as('indexApi)
-
-  @deprecated("Use indexApiUrl instead", since = "1.0.0")
-  val indexExtUrl = indexApiUrl
 
   protected def indexApiAction = (for {
     ext <- params.get("ext")
@@ -73,9 +67,6 @@ trait SkinnyApiResourceRoutes[Id]
   // show API
 
   val showApiUrl: Route = routeForShowApi
-
-  @deprecated("Use showApiUrl instead", since = "1.0.0")
-  val showExtUrl = showApiUrl
 
   protected def routeForShowApi = {
     get(s"${resourcesBasePath}/:${idParamName}.:ext")({
@@ -102,24 +93,15 @@ trait SkinnyApiResourceRoutes[Id]
     updateApiAction
   }).as('updateApi)
 
-  @deprecated("Use updatePostApiUrl instead", since = "1.0.0")
-  val updatePostExtUrl = updatePostApiUrl
-
   val updatePutApiUrl = put(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     updateApiAction
   }).as('updateApi)
 
-  @deprecated("Use updatePutApiUrl instead", since = "1.0.0")
-  val updatePutExtUrl = updatePutApiUrl
-
   val updatePatchApiUrl = patch(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     updateApiAction
   }).as('updateApi)
-
-  @deprecated("Use updatePatchApiUrl instead", since = "1.0.0")
-  val updatePatchExtUrl = updatePatchApiUrl
 
   protected def updateApiAction = {
     params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>
@@ -141,13 +123,6 @@ trait SkinnyApiResourceRoutes[Id]
     setContentTypeFromSkinnyApiResourceExtParam
     deleteApiAction
   }).as('destroyApi)
-
-  @deprecated("Use destroyApiUrl instead", since = "1.0.0")
-  val destroyExtUrl = destroyApiUrl
-  @deprecated("Use destroyApiUrl instead", since = "1.0.0")
-  val deleteApiUrl = destroyApiUrl
-  @deprecated("Use destroyApiUrl instead", since = "1.0.0")
-  val deleteExtUrl = destroyApiUrl
 
   protected def deleteApiAction = {
     params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>

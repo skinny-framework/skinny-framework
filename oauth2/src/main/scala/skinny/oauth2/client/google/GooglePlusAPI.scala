@@ -2,7 +2,7 @@ package skinny.oauth2.client.google
 
 import skinny.logging.LoggerProvider
 import skinny.oauth2.client._
-import skinny.util.JSONStringOps
+import skinny.json.JSONStringOps
 
 import scala.util.control.NonFatal
 

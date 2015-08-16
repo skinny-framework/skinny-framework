@@ -2,7 +2,7 @@ package skinny.oauth2.client.facebook
 
 import skinny.oauth2.client._
 import skinny.logging.LoggerProvider
-import skinny.util.JSONStringOps
+import skinny.json.JSONStringOps
 import scala.util.control.NonFatal
 
 /**

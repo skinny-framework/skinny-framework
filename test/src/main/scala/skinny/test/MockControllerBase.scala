@@ -6,7 +6,7 @@ import org.json4s._
 import org.mockito.Mockito._
 import skinny.engine.{ UnstableAccessValidation, EngineParams }
 import skinny.engine.context.SkinnyEngineContext
-import skinny.util.JSONStringOps
+import skinny.json.JSONStringOps
 import scala.collection.concurrent.TrieMap
 import skinny.controller.SkinnyControllerBase
 import skinny.controller.feature.{ JSONParamsAutoBinderFeature, RequestScopeFeature }

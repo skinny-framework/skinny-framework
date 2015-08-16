@@ -3,7 +3,7 @@ package skinny.controller.feature
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny._
 import skinny.controller.SkinnyController
-import skinny.util.JSONStringOps
+import skinny.json.JSONStringOps
 
 class JSONParamsAutoBinderFeatureSpec extends ScalatraFlatSpec {
 

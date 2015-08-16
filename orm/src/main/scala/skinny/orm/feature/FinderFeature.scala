@@ -105,12 +105,6 @@ trait FinderFeatureWithId[Id, Entity]
     }
   }
 
-  @deprecated("Use #findAllWithLimitOffset or #findAllWithPagination instead. This method will be removed since version 1.1.0.", since = "1.0.0")
-  def findAllPaging(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
-    findAllWithLimitOffset(limit, offset, orderings)
-  }
-
   override def findBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
@@ -200,12 +194,6 @@ trait FinderFeatureWithId[Id, Entity]
 
   private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
     orderings.filter { o => allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value) }
-  }
-
-  @deprecated("Use #findAllByWithLimitOffset or #findAllByWithPagination instead. This method will be removed since version 1.4.0.", since = "1.0.0")
-  def findAllByPaging(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
-    findAllByWithLimitOffset(where, limit, offset, orderings)
   }
 
 }

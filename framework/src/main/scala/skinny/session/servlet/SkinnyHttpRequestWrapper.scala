@@ -3,7 +3,12 @@ package skinny.session.servlet
 import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
 import javax.servlet.{ ServletResponse, ServletRequest }
 
-case class SkinnyHttpRequestWrapper(request: HttpServletRequest, session: SkinnyHttpSessionWrapper) extends HttpServletRequest {
+/**
+ * Http request wrapper for SkinnySession
+ */
+case class SkinnyHttpRequestWrapper(
+    request: HttpServletRequest,
+    session: SkinnyHttpSessionWrapper) extends HttpServletRequest {
 
   def getSession(create: Boolean) = session // already created
   def getSession = session
@@ -30,7 +35,8 @@ case class SkinnyHttpRequestWrapper(request: HttpServletRequest, session: Skinny
   def isRequestedSessionIdValid = request.isRequestedSessionIdValid
   def isRequestedSessionIdFromCookie = request.isRequestedSessionIdFromCookie
   def isRequestedSessionIdFromURL = request.isRequestedSessionIdFromURL
-  def isRequestedSessionIdFromUrl = request.isRequestedSessionIdFromUrl
+  // method isRequestedSessionIdFromUrl in trait HttpServletRequest is deprecated: see corresponding Javadoc for more information.
+  def isRequestedSessionIdFromUrl = request.isRequestedSessionIdFromURL
   def authenticate(response: HttpServletResponse) = request.authenticate(response)
   def login(username: String, password: String) = request.login(username, password)
   def logout() = request.logout
@@ -60,6 +66,7 @@ case class SkinnyHttpRequestWrapper(request: HttpServletRequest, session: Skinny
   def getLocales = request.getLocales
   def isSecure = request.isSecure
   def getRequestDispatcher(path: String) = request.getRequestDispatcher(path)
+  // Deprecated. As of Version 2.1 of the Java Servlet API, use ServletContext#getRealPath instead.
   def getRealPath(path: String) = request.getRealPath(path)
   def getRemotePort = request.getRemotePort
   def getLocalName = request.getLocalName

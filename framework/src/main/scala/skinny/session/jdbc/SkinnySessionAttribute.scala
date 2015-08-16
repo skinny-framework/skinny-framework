@@ -4,16 +4,24 @@ import skinny.orm._
 import skinny.logging.LoggerProvider
 import scalikejdbc._
 
-case class SkinnySessionAttribute(skinnySessionId: Long, name: String, value: Option[Any], session: Option[SkinnySession] = None)
-    extends EntityEquality {
+case class SkinnySessionAttribute(
+    skinnySessionId: Long,
+    name: String,
+    value: Option[Any],
+    session: Option[SkinnySession] = None) extends EntityEquality {
 
   def entityIdentity = (skinnySessionId, name)
 }
 
-object SkinnySessionAttribute extends SkinnyTable[SkinnySessionAttribute] with LoggerProvider {
+// TODO: Enable to use SkinnyNoIdMapper for this
+object SkinnySessionAttribute
+    extends SkinnyMapper[SkinnySessionAttribute]
+    with LoggerProvider {
+
   override def tableName = "skinny_session_attributes"
+  // TODO: avoid specifying dummy PK
+  override def primaryKeyFieldName = "skinnySessionId"
   override def defaultAlias = createAlias("ska")
-  override def defaultJoinColumnFieldName = "skinnySessionId"
   override def nameConverters = Map("^name$" -> "attribute_name", "value$" -> "attribute_value")
   override def extract(rs: WrappedResultSet, n: ResultName[SkinnySessionAttribute]) = new SkinnySessionAttribute(
     skinnySessionId = rs.get(n.skinnySessionId), name = rs.get(n.name), value = rs.anyOpt(n.value))
