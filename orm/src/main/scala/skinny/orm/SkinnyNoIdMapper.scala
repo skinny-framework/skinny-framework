@@ -19,7 +19,7 @@ trait SkinnyNoIdMapper[Entity]
     with StrongParametersFeature {
 
   override def hasOne[A](
-    right: AssociationsWithIdFeature[_, A],
+    right: AssociationsFeature[A],
     merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
 
     throw new IllegalAssociationException(
