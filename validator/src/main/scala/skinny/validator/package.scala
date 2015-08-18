@@ -73,8 +73,4 @@ package object validator {
     new ParamDefinitionWithIsDSL(paramDef)
   }
 
-  @deprecated(message = "Use Error instead.", since = "1.0.8")
-  type SimpleError = Error
-
 }
-

@@ -49,9 +49,6 @@ package object skinny {
 
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
 
-  @deprecated("Use SkinnyMapper or SkinnyCRUDMapper instead because this mapper has ID.", since = "1.0.14")
-  type SkinnyJoinTableWithId[Id, A] = skinny.orm.SkinnyJoinTableWithId[Id, A]
-
   type TypeConverter[A, B] = skinny.engine.implicits.TypeConverter[A, B]
   type TypeConverterSupport = skinny.engine.implicits.TypeConverterSupport
   val TypeConverterSupport = implicits.TypeConverterSupport

@@ -21,4 +21,4 @@ hr
 div(class="form-actions")
   a(class="btn btn-default" href={url(SnakeCaseKeyExamplesController.indexUrl)}) #{s.i18n.get("backToList")}
   a(href={url(SnakeCaseKeyExamplesController.editUrl, "id" -> item.id.toString)} class="btn btn-info") #{s.i18n.get("edit")}
-  a(data-method="delete" data-confirm={s.i18n.get("item.delete.confirm")} href={url(SnakeCaseKeyExamplesController.deleteUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}
+  a(data-method="delete" data-confirm={s.i18n.get("item.delete.confirm")} href={url(SnakeCaseKeyExamplesController.destroyUrl, "id" -> item.id.toString)} rel="nofollow" class="btn btn-danger") #{s.i18n.get("delete")}

@@ -23,7 +23,6 @@ trait SkinnyResourceRoutes[Id]
   // Scalatra takes priority to route definition which is defined later.
   // So showExtUrl is defined again here.
   override val showApiUrl = routeForShowApi
-  override val showExtUrl = routeForShowApi
 
   // --------------
   // create
@@ -52,8 +51,6 @@ trait SkinnyResourceRoutes[Id]
   // delete
 
   val destroyUrl = delete(s"${resourcesBasePath}/:${idParamName}")(deleteAction).as('destroy)
-  @deprecated("Use destroyUrl instead", since = "1.0.0")
-  val deleteUrl = destroyUrl
 
   protected def deleteAction = {
     params.getAs[Id](idParamName).map(id => destroyResource(id)) getOrElse haltWithBody(404)

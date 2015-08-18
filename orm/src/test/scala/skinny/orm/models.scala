@@ -136,14 +136,13 @@ object GroupMapper extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampF
   def extract(rs: WrappedResultSet, s: ResultName[Group]): Group = autoConstruct(rs, s)
 
   private[this] val logger = LoggerFactory.getLogger(classOf[Group])
-  override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession) = {
-    super.beforeCreate(namedValues)(s)
+
+  beforeCreate((session: DBSession, namedValues: Seq[(SQLSyntax, Any)]) => {
     logger.info(s"Before creation. params: ${namedValues}")
-  }
-  override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(implicit s: DBSession) = {
-    super.afterCreate(namedValues, generatedId)(s)
+  })
+  afterCreate((session: DBSession, namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long]) => {
     logger.info(s"Created Group's id: ${generatedId}")
-  }
+  })
 }
 
 case class GroupMember(groupId: Long, memberId: Long)
@@ -238,19 +237,26 @@ object Product extends SkinnyCRUDMapperWithId[ProductId, Product] {
 
 // -----------------------------------
 // SkinnyTable is deprecated
+// NOTICE: Removed since 2.0.0
 
 case class Tag(tag: String, description: Option[TagDescription] = None)
-object Tag extends SkinnyTable[Tag] {
+// object Tag extends SkinnyTable[Tag] {
+object Tag extends SkinnyMapper[Tag] {
   override def defaultAlias = createAlias("tag")
-  override def defaultJoinColumnFieldName = "tag"
+  override def primaryKeyFieldName = "tag"
   override def extract(rs: WrappedResultSet, n: ResultName[Tag]): Tag = new Tag(tag = rs.get(n.tag))
 
-  hasOne[TagDescription](TagDescription, (t, td) => t.copy(description = td)).byDefault
+  hasOneWithFk[TagDescription](
+    right = TagDescription,
+    fk = "tag",
+    merge = (t, td) => t.copy(description = td)
+  ).byDefault
 }
 case class TagDescription(tag: String, description: String)
-object TagDescription extends SkinnyTable[TagDescription] {
+// object TagDescription extends SkinnyTable[TagDescription] {
+object TagDescription extends SkinnyMapper[TagDescription] {
   override def defaultAlias = createAlias("td")
-  override def defaultJoinColumnFieldName = "tag"
+  override def primaryKeyFieldName = "tag"
   override def extract(rs: WrappedResultSet, n: ResultName[TagDescription]): TagDescription = autoConstruct(rs, n)
 }
 

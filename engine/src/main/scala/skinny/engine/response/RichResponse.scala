@@ -23,7 +23,10 @@ case class RichResponse(res: HttpServletResponse) {
   def status: ResponseStatus = ResponseStatus(res.getStatus)
 
   def status_=(statusLine: ResponseStatus): Unit = {
-    res.setStatus(statusLine.code, statusLine.message)
+    //  Deprecated. As of version 2.1, due to ambiguous meaning of the message parameter.
+    //  To set a status code use setStatus(int), to send an error with a description use sendError(int, String).
+    // res.setStatus(statusLine.code, statusLine.message)
+    res.setStatus(statusLine.code)
   }
 
   object headers extends Map[String, String] {

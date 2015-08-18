@@ -2,7 +2,7 @@ package skinny.oauth2.client.typetalk
 
 import skinny.logging.LoggerProvider
 import skinny.oauth2.client.{ BearerRequest, OAuth2Client, OAuth2Token }
-import skinny.util.JSONStringOps
+import skinny.json.JSONStringOps
 
 import scala.util.control.NonFatal
 

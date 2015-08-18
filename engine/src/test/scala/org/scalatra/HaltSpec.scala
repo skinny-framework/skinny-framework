@@ -81,7 +81,8 @@ class HaltSpec extends ScalatraSpec {
       "halt with all arguments should" ^
       "behave like a common halt" ^ commonHalt("/all-args") ^
       "set the status" ! status("/all-args", 403) ^
-      "set the reason" ! reason("/all-args", "Go away") ^
+      // NOTICE: removed deprecated API usage
+      //"set the reason" ! reason("/all-args", "Go away") ^
       "set the headers" ! hasHeader("/all-args", "X-Your-Father-Smelt-Of", "elderberries") ^
       "render the body" ! bodyEquals("/all-args", "<h1>Go away or I shall taunt you a second time!</h1>") ^
       end ^

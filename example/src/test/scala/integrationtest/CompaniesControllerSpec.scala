@@ -1,7 +1,7 @@
 package integrationtest
 
 import skinny.test._
-import skinny.util.JSONStringOps._
+import skinny.json.JSONStringOps._
 import model._
 import controller.Controllers
 
