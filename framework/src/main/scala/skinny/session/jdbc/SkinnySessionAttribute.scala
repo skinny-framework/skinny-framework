@@ -13,14 +13,11 @@ case class SkinnySessionAttribute(
   def entityIdentity = (skinnySessionId, name)
 }
 
-// TODO: Enable to use SkinnyNoIdMapper for this
 object SkinnySessionAttribute
-    extends SkinnyMapper[SkinnySessionAttribute]
+    extends SkinnyNoIdMapper[SkinnySessionAttribute]
     with LoggerProvider {
 
   override def tableName = "skinny_session_attributes"
-  // TODO: avoid specifying dummy PK
-  override def primaryKeyFieldName = "skinnySessionId"
   override def defaultAlias = createAlias("ska")
   override def nameConverters = Map("^name$" -> "attribute_name", "value$" -> "attribute_value")
   override def extract(rs: WrappedResultSet, n: ResultName[SkinnySessionAttribute]) = new SkinnySessionAttribute(
