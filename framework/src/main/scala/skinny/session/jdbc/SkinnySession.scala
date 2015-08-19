@@ -119,11 +119,14 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
     )
   }
 
-  val attributesRef = hasMany[SkinnySessionAttribute](
-    many = SkinnySessionAttribute -> SkinnySessionAttribute.createAlias("attrs"),
-    on = (s, a) => sqls.eq(s.id, a.skinnySessionId),
-    merge = (s, as) => s.copy(attributes = as)
-  ).byDefault
+  val attributesRef = {
+    val attrs = SkinnySessionAttribute.createAlias("attrs")
+    hasMany[SkinnySessionAttribute](
+      many = SkinnySessionAttribute -> attrs,
+      on = (s, a) => sqls.eq(s.id, a.skinnySessionId),
+      merge = (s, as) => s.copy(attributes = as)
+    ).byDefault
+  }
 
   /**
    * Returns expireAt value to be set for the ServletSession's maxInactiveInterval.
