@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "1.3.20-SNAPSHOT"
+  lazy val currentVersion = "1.3.20"
   lazy val scalatraVersion = "2.3.1"
   lazy val json4SVersion = "3.2.11"
   lazy val scalikeJDBCVersion = "2.2.8"
@@ -136,7 +136,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"    %  "flyway-core"    % "3.2.1"        % "compile",
-        "org.hibernate"   %  "hibernate-core" % "4.3.10.Final" % "test"
+        "org.hibernate"   %  "hibernate-core" % "4.3.11.Final" % "test"
       ) ++ testDependencies
     )
   ).dependsOn(common)

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 sbt \
-  ++2.11.6 \
+  ++2.11.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \
