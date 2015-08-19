@@ -172,8 +172,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
       generator.run(Seq(namespace, resources, resource) ++ fields)
 
     } catch {
-      case e: Exception =>
-        showErrors(Seq(e.getMessage))
+      case scala.util.control.NonFatal(e) => showErrors(Seq(e.getMessage))
     }
   }
 

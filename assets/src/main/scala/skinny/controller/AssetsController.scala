@@ -246,7 +246,7 @@ class AssetsController extends SkinnyController {
     request.header("If-Modified-Since").map(_.replaceFirst("^\"", "").replaceFirst("\"$", "")).map { ifModifiedSince =>
       modifiedHeaderFormats.flatMap { formatter =>
         try Option(formatter.parseDateTime(ifModifiedSince))
-        catch { case e: Exception => None }
+        catch { case scala.util.control.NonFatal(e) => None }
       }.headOption.map(_.getMillis < resourceLastModified) getOrElse true
     } getOrElse true
   }

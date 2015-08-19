@@ -151,7 +151,7 @@ class ScalaMethodWrapper(
   def exec(arguments: java.util.List[_]) = {
     try wrapper.wrap(org.apache.commons.beanutils.MethodUtils.invokeMethod(target, methodName, arguments.toArray))
     catch {
-      case e: Exception =>
+      case scala.util.control.NonFatal(e) =>
         val params = arguments.asScala.map { a =>
           a match {
             case v: java.util.List[_] => v.asScala.asInstanceOf[Seq[_]]
@@ -301,7 +301,7 @@ class ScalaBaseWrapper(val obj: Any, val wrapper: ObjectWrapper)
           return wrapper.wrap(selectDynamic.invoke(obj, key))
         }
       } catch {
-        case e: Exception =>
+        case scala.util.control.NonFatal(e) =>
           logger.debug(s"Failed to invoke #selectDynamic because ${e.getMessage}", e)
       }
       try {
@@ -310,7 +310,7 @@ class ScalaBaseWrapper(val obj: Any, val wrapper: ObjectWrapper)
           return wrapper.wrap(applyDynamic.invoke(obj, key))
         }
       } catch {
-        case e: Exception =>
+        case scala.util.control.NonFatal(e) =>
           logger.debug(s"Failed to invoke #applyDynamic because ${e.getMessage}", e)
       }
     } else {

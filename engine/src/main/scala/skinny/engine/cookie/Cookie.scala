@@ -13,27 +13,34 @@ case class Cookie(name: String, value: String)(
 
   def toCookieString: String = {
     val sb = new StringBuilder
-    sb append name append "="
-    sb append value
 
-    if (cookieOptions.domain.nonBlank && cookieOptions.domain != "localhost")
+    sb.append(name).append("=").append(value)
+
+    if (cookieOptions.domain.nonBlank && cookieOptions.domain != "localhost") {
       sb.append("; Domain=").append({
         if (!cookieOptions.domain.startsWith(".")) "." + cookieOptions.domain
         else cookieOptions.domain
       }.toLowerCase(Locale.ENGLISH))
+    }
 
     val pth = cookieOptions.path
     if (pth.nonBlank) {
-      sb append "; Path=" append (if (!pth.startsWith("/")) "/" + pth else pth)
+      sb.append("; Path=").append(if (!pth.startsWith("/")) "/" + pth else pth)
     }
+
     if (cookieOptions.comment.nonBlank) {
-      sb append ("; Comment=") append cookieOptions.comment
+      sb.append("; Comment=").append(cookieOptions.comment)
     }
 
     appendMaxAge(sb, cookieOptions.maxAge, cookieOptions.version)
 
-    if (cookieOptions.secure) sb append "; Secure"
-    if (cookieOptions.httpOnly) sb append "; HttpOnly"
+    if (cookieOptions.secure) {
+      sb.append("; Secure")
+    }
+    if (cookieOptions.httpOnly) {
+      sb.append("; HttpOnly")
+    }
+
     sb.toString
   }
 
@@ -53,7 +60,7 @@ case class Cookie(name: String, value: String)(
   }
 
   private[this] def appendExpires(sb: StringBuilder, expires: Date): StringBuilder = {
-    sb append "; Expires=" append formatExpires(expires)
+    sb.append("; Expires=").append(formatExpires(expires))
   }
 
 }

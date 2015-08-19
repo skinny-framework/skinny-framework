@@ -86,7 +86,7 @@ trait FileUploadSupport
         wrapRequest(req, mergedFormParams)
       } else req
     } catch {
-      case e: Exception => {
+      case scala.util.control.NonFatal(e) => {
         req.setAttribute(SkinnyEngineBase.PrehandleExceptionKey, e)
         req
       }

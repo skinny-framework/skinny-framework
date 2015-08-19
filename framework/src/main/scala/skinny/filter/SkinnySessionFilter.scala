@@ -54,7 +54,7 @@ trait SkinnySessionFilter extends SkinnyFilter {
         sessionWrapper.save()
       }
     } catch {
-      case e: Exception =>
+      case scala.util.control.NonFatal(e) =>
         logger.warn(s"Failed to save skinny session because ${e.getMessage}", e)
     }
   }
@@ -80,7 +80,7 @@ trait SkinnySessionFilter extends SkinnyFilter {
     try {
       skinnySession(ctx).setAttribute(SessionKey, f)
     } catch {
-      case e: Throwable => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
+      case scala.util.control.NonFatal(e) => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
     }
   }
 

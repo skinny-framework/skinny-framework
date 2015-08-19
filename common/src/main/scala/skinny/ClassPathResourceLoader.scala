@@ -24,8 +24,7 @@ object ClassPathResourceLoader {
       val lastModified = conn.getLastModified
       Some(ClassPathResource(conn.getInputStream, lastModified))
     } catch {
-      case e: Exception =>
-        None
+      case scala.util.control.NonFatal(_) => None
     }
   }
 

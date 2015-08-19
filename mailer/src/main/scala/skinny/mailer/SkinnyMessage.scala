@@ -32,7 +32,7 @@ class SkinnyMessage(val currentSession: Session, val auth: Option[SmtpAuthentica
     try t.sendMessage(this, getAllRecipients)
     finally {
       try if (!keepConnection) t.close()
-      catch { case e: Exception => }
+      catch { case scala.util.control.NonFatal(_) => }
     }
   }
 

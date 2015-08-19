@@ -33,7 +33,7 @@ trait JSONParamsAutoBinderFeature
         val mergedParams: Map[String, Seq[String]] = getMergedMultiParams(multiParams(ctx), jsonParams)
         new EngineParams(mergedParams)
       } catch {
-        case e: Exception =>
+        case scala.util.control.NonFatal(e) =>
           logger.debug(s"Failed to parse JSON body because ${e.getMessage}")
           super.params(ctx)
       }
@@ -88,7 +88,7 @@ trait JSONParamsAutoBinderFeature
       transformRequestBody(bd)
     } else JNothing
   } catch {
-    case t: Throwable => {
+    case scala.util.control.NonFatal(t) => {
       logger.error(s"Parsing the request body failed, because:", t)
       JNothing
     }

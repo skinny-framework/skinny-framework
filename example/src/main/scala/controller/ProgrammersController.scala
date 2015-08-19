@@ -56,7 +56,7 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
       skill <- Skill.findById(skillId)
     } yield {
       try programmer.addSkill(skill)
-      catch { case e: Exception => halt(409) }
+      catch { case scala.util.control.NonFatal(_) => halt(409) }
     }) getOrElse halt(404)
   }
 

@@ -32,7 +32,7 @@ trait HasMultipartConfig extends Initializable { self: { def servletContext: Ser
   def multipartConfig: MultipartConfig = try {
     multipartConfigFromContext getOrElse DefaultMultipartConfig
   } catch {
-    case e: Throwable =>
+    case scala.util.control.NonFatal(e) =>
       logger.error("Couldn't get the multipart config from the servlet context because " + e.getMessage, e)
       DefaultMultipartConfig
   }

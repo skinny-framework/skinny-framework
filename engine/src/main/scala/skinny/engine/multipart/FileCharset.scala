@@ -30,7 +30,7 @@ object FileCharset {
       }
       getCharset(detector, Codec.fileEncodingCodec)
     } catch {
-      case t: Throwable =>
+      case scala.util.control.NonFatal(t) =>
         logger.warn("Failed to detect charset for file: " + file.getPath + ".", t)
         Codec.defaultCharsetCodec.charSet
     } finally {
@@ -58,7 +58,7 @@ object FileCharset {
       detector.dataEnd()
       getCharset(detector, Codec.defaultCharsetCodec)
     } catch {
-      case t: Throwable =>
+      case scala.util.control.NonFatal(t) =>
         logger.warn("Failed to detect charset.", t)
         Codec.defaultCharsetCodec.charSet
     } finally {

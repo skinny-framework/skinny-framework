@@ -35,7 +35,9 @@ trait SkinnyFilterActivation { self: SkinnyControllerCommonBase =>
         handlers.foreach { handler =>
           // just apply this filter and return the existing body.
           try handler.apply(t)
-          catch { case e: Exception => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e) }
+          catch {
+            case scala.util.control.NonFatal(e) => logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
+          }
         }
       }
 
@@ -53,7 +55,7 @@ trait SkinnyFilterActivation { self: SkinnyControllerCommonBase =>
               rendered = true
               try handler.apply(t)
               catch {
-                case e: Exception =>
+                case scala.util.control.NonFatal(e) =>
                   logger.error(s"Failed to apply SkinnyFilter (error: ${e.getMessage})", e)
                   body
               }

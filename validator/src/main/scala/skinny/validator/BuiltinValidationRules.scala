@@ -304,7 +304,7 @@ object dateTimeFormat extends ValidationRule {
   def name = "dateTimeFormat"
   def isValid(v: Any): Boolean = isEmpty(v) || {
     try DateTimeUtil.parseDateTime(v.toString) != null
-    catch { case e: Exception => false }
+    catch { case scala.util.control.NonFatal(e) => false }
   }
 }
 
@@ -314,7 +314,7 @@ object dateFormat extends ValidationRule {
   def name = "dateFormat"
   def isValid(v: Any): Boolean = isEmpty(v) || {
     try DateTimeUtil.parseLocalDate(v.toString) != null
-    catch { case e: Exception => false }
+    catch { case scala.util.control.NonFatal(e) => false }
   }
 }
 
@@ -324,7 +324,7 @@ object timeFormat extends ValidationRule {
   def name = "timeFormat"
   def isValid(v: Any): Boolean = isEmpty(v) || {
     try DateTimeUtil.parseLocalTime(v.toString) != null
-    catch { case e: Exception => false }
+    catch { case scala.util.control.NonFatal(e) => false }
   }
 }
 

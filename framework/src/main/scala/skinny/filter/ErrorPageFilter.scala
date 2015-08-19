@@ -6,7 +6,7 @@ package skinny.filter
 trait ErrorPageFilter extends SkinnyRenderingFilter {
 
   addRenderingErrorFilter {
-    case e: Throwable =>
+    case scala.util.control.NonFatal(e) =>
       logger.error(e.getMessage, e)
       try {
         status = 500

@@ -5,6 +5,9 @@ import scala.language.implicitConversions
 import skinny.engine.context.SkinnyEngineContext
 import skinny.engine.cookie.{ Cookie, CookieOptions, SweetCookies }
 
+/**
+ * Implicit conversion for Cookie values.
+ */
 trait CookiesImplicits extends ServletApiImplicits {
 
   implicit def cookieOptions(implicit ctx: SkinnyEngineContext): CookieOptions = {

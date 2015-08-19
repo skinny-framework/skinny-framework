@@ -73,7 +73,7 @@ trait FlashMapSupport
       // Save flashMap to Session after (a session could stop existing during a request, so catch exception)
       session(ctx)(SessionKey) = f
     } catch {
-      case e: Throwable =>
+      case scala.util.control.NonFatal(_) =>
     }
   }
 

@@ -33,7 +33,7 @@ object SkinnyJapaneseAnalyzerFactory {
     try {
       Class.forName("org.apache.lucene.analysis.ja.JapaneseAnalyzer")
       false
-    } catch { case e: Exception => true }
+    } catch { case scala.util.control.NonFatal(_) => true }
   }
 
   def create(dictionaryText: String): SkinnyJapaneseAnalyzer = {

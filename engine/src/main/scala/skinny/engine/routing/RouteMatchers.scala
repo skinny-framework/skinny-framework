@@ -123,7 +123,7 @@ final class RailsRouteMatcher(pattern: String)
 
     def optional(builder: Builder => Builder): Builder =
       try builder(this)
-      catch { case e: Exception => this }
+      catch { case scala.util.control.NonFatal(_) => this }
 
     // appends additional params as a query string
     def get: String = {
