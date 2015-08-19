@@ -11,7 +11,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val compatibleScalatraVersion = "2.3.1"
   // TODO: fix version before skinny 2.0.0
   lazy val json4SVersion = "3.3.0.RC3"
-  lazy val scalikeJDBCVersion = "2.2.7"
+  lazy val scalikeJDBCVersion = "2.2.8"
   lazy val h2Version = "1.4.188"
   lazy val kuromojiVersion = "5.2.1"
   lazy val mockitoVersion = "1.10.19"
