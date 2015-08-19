@@ -26,7 +26,7 @@ trait SkinnyMailerConfigBase extends LoggerProvider {
   lazy val loadedConfig: Option[Config] = {
     try Option(TypesafeConfigReader.config(skinnyEnv).getConfig(s"mailer.${name}"))
     catch {
-      case e: Exception =>
+      case scala.util.control.NonFatal(e) =>
         logger.warn(s"Failed to load configuration for SkinnyMailer because ${e.getMessage}")
         None
     }
@@ -35,10 +35,7 @@ trait SkinnyMailerConfigBase extends LoggerProvider {
   // scala.Try may return Some(null)
   protected def opt[A](op: => A): Option[A] = {
     try Option(op)
-    catch {
-      case e: Exception =>
-        None
-    }
+    catch { case scala.util.control.NonFatal(_) => None }
   }
 
 }

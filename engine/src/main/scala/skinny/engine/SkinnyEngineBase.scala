@@ -160,9 +160,17 @@ trait SkinnyEngineBase
           }
         } catch {
           case e: HaltException => renderHaltException(e)(context)
-          case e: Throwable => errorHandler.apply(e)
+          case scala.util.control.NonFatal(e) => errorHandler.apply(e)
+          case e: Throwable => {
+            errorHandler.apply(e)
+            throw e
+          }
         }
-      case e: Throwable => errorHandler.apply(e)
+      case scala.util.control.NonFatal(e) => errorHandler.apply(e)
+      case e: Throwable => {
+        errorHandler.apply(e)
+        throw e
+      }
     }
   }
 
@@ -314,7 +322,6 @@ trait SkinnyEngineBase
   /**
    * A partial function to infer the content type from the action result.
    *
-   * @return
    * $ - "text/plain" for String
    * $ - "application/octet-stream" for a byte array
    * $ - "text/html" for any other result
@@ -342,17 +349,20 @@ trait SkinnyEngineBase
       case _: Unit | Unit => runRenderCallbacks(Success(actionResult))(ctx)
       case a => loop(renderPipeline(ctx).lift(a).getOrElse(()))
     }
+    def handle(e: Throwable) = {
+      runCallbacks(Failure(e))(ctx)
+      try { renderUncaughtException(e)(ctx) }
+      finally { runRenderCallbacks(Failure(e))(ctx) }
+    }
     try {
       runCallbacks(Success(actionResult))(ctx)
       loop(actionResult)
     } catch {
-      case e: Throwable =>
-        runCallbacks(Failure(e))(ctx)
-        try {
-          renderUncaughtException(e)(ctx)
-        } finally {
-          runRenderCallbacks(Failure(e))(ctx)
-        }
+      case scala.util.control.NonFatal(e) => handle(e)
+      case e: Throwable => {
+        handle(e)
+        throw e
+      }
     }
   }
 
@@ -421,10 +431,15 @@ trait SkinnyEngineBase
       }
       if (!rendered) renderResponse(e.body)(ctx)
     } catch {
+      case scala.util.control.NonFatal(e) =>
+        runCallbacks(Failure(e))(ctx)
+        renderUncaughtException(e)(skinnyEngineContext)
+        runCallbacks(Failure(e))(ctx)
       case e: Throwable =>
         runCallbacks(Failure(e))(ctx)
         renderUncaughtException(e)(skinnyEngineContext)
         runCallbacks(Failure(e))(ctx)
+        throw e
     }
   }
 
@@ -504,10 +519,15 @@ trait SkinnyEngineBase
                     try {
                       renderResponse(currentErrorHandler.apply(e))(ctx)
                     } catch {
+                      case scala.util.control.NonFatal(e) =>
+                        SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
+                        renderUncaughtException(e)(ctx)
+                        SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
                       case e: Throwable =>
                         SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
                         renderUncaughtException(e)(ctx)
                         SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
+                        throw e
                     }
                 }
               } finally {
@@ -538,10 +558,15 @@ trait SkinnyEngineBase
                 try {
                   renderResponse(currentErrorHandler.apply(e))(ctx)
                 } catch {
+                  case scala.util.control.NonFatal(e) =>
+                    SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
+                    renderUncaughtException(e)(ctx)
+                    SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
                   case e: Throwable =>
                     SkinnyEngineBase.runCallbacks(Failure(e))(ctx)
                     renderUncaughtException(e)(ctx)
                     SkinnyEngineBase.runRenderCallbacks(Failure(e))(ctx)
+                    throw e
                 }
             }
           }

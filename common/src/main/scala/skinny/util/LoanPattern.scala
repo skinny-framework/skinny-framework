@@ -19,7 +19,7 @@ object LoanPattern {
       try {
         resource.close()
       } catch {
-        case ignore: Exception =>
+        case scala.util.control.NonFatal(_) =>
       }
     }
   }

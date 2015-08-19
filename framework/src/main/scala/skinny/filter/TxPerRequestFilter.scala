@@ -12,7 +12,9 @@ trait TxPerRequestFilter extends SkinnyFilter with LoggerProvider {
 
   afterAction()(commitTxPerRequest)
 
-  addErrorFilter { case e: Throwable => rollbackTxPerRequest }
+  addErrorFilter {
+    case scala.util.control.NonFatal(e) => rollbackTxPerRequest
+  }
 
   def connectionPoolForTxPerRequestFilter: ConnectionPool = ConnectionPool.get()
 
@@ -32,7 +34,7 @@ trait TxPerRequestFilter extends SkinnyFilter with LoggerProvider {
           logger.debug(s"Thread local db session is rolled back. (db: ${db})")
         } finally {
           try db.close()
-          catch { case e: Exception => }
+          catch { case scala.util.control.NonFatal(_) => }
           logger.debug(s"Thread local db session is returned to the pool. (db: ${db})")
         }
       } else {
@@ -52,7 +54,7 @@ trait TxPerRequestFilter extends SkinnyFilter with LoggerProvider {
           logger.debug(s"Thread local db session is committed. (db: ${db})")
         } finally {
           try db.close()
-          catch { case e: Exception => }
+          catch { case scala.util.control.NonFatal(_) => }
           logger.debug(s"Thread local db session is returned to the pool. (db: ${db})")
         }
       } else {

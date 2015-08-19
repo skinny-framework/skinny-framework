@@ -2,6 +2,9 @@ package skinny.engine.implicits
 
 import scala.language.implicitConversions
 
+/**
+ * Low priority implicit conversions for TypeConverters.
+ */
 trait LowPriorityImplicits extends LowestPriorityImplicits {
 
   implicit val anyToBoolean: TypeConverter[Any, Boolean] = safe {

@@ -2,6 +2,9 @@ package skinny.engine.implicits
 
 import java.util.Date
 
+/**
+ * Built-in TypeExtractor definitions.
+ */
 object TypeExtractors extends DefaultImplicits {
 
   sealed abstract class TypeExtractorImpl[T](implicit val converter: TypeConverter[String, T]) extends TypeExtractor[T]

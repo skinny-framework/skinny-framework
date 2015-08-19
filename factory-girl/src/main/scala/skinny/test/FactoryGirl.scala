@@ -137,7 +137,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
 
     val id = try mapper.createWithNamedValues(mergedAttributes: _*)
     catch {
-      case e: Exception =>
+      case scala.util.control.NonFatal(e) =>
         val message = s"Failed to create an entity because ${e.getMessage}"
         logger.error(message, e)
         throw new FactoryGirlException(message, e)
@@ -148,7 +148,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
       case e: ClassCastException =>
         try mapper.findById(mapper.rawValueToId(id)).get
         catch {
-          case e: Exception =>
+          case scala.util.control.NonFatal(e) =>
             val message = s"Failed to find created entity because ${e.getMessage}"
             logger.error(message, e)
             throw new FactoryGirlException(message, e)

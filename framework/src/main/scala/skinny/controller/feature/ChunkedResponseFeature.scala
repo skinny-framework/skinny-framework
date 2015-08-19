@@ -23,7 +23,7 @@ trait ChunkedResponseFeature { self: SkinnyEngineBase with LoggerProvider =>
           logger.info(s"Chunked response error (message: ${message})")
         }
         try stream.close() catch {
-          case e: Exception =>
+          case scala.util.control.NonFatal(e) =>
             logger.debug(s"Failed to close output stream because ${e.getMessage})", e)
         }
     }

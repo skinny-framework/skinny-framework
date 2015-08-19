@@ -9,6 +9,9 @@ import skinny.engine.context.RichServletContext
 import skinny.engine.request.{ RichHttpServletSession, RichRequest }
 import skinny.engine.response.RichResponse
 
+/**
+ * Implicit conversions to enrich Servlet APIs.
+ */
 trait ServletApiImplicits {
 
   implicit def enrichRequest(request: HttpServletRequest): RichRequest =

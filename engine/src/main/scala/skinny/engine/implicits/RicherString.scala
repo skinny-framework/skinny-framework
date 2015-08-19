@@ -7,11 +7,12 @@ import java.util.regex.Pattern
 
 import rl.UrlCodingUtils
 
+/**
+ * Extended String value.
+ */
 class RicherString(orig: String) {
 
-  def isBlank: Boolean = {
-    orig == null || orig.trim.isEmpty
-  }
+  def isBlank: Boolean = orig == null || orig.trim.isEmpty
 
   def isNonBlank: Boolean = !isBlank
 

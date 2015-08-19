@@ -4,6 +4,9 @@ import scala.language.implicitConversions
 
 import java.util.Date
 
+/**
+ * Built-in TypeConverter definitions.
+ */
 object TypeConverters extends DefaultImplicits {
 
   private type StringTypeConverter[T] = TypeConverter[String, T]

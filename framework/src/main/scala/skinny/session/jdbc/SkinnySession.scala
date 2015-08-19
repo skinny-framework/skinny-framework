@@ -178,7 +178,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
           insert.into(SkinnySessionAttribute).namedValues(namedValues: _*).toSQL.update.apply()
         }
       } catch {
-        case e: Exception =>
+        case scala.util.control.NonFatal(e) =>
           try update(SkinnySessionAttribute).set(namedValues: _*)
             .where
             // compilation succeeded in Scala 2.10.0 but higher version on Java8 doesn't accept.
@@ -186,7 +186,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
             .eq(c.field("skinnySessionId"), id).and.eq(c.field("name"), name)
             .toSQL.update.apply()
           catch {
-            case e: Exception =>
+            case scala.util.control.NonFatal(_) =>
               logger.info(s"Failed to set attribute ($name -> $value) for id: ${id}")
           }
       }
@@ -231,7 +231,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
       servletSession.attachTo(session)
     }.getOrElse {
       try ServletSession.create(jsessionId, session)
-      catch { case e: Exception => logger.info(s"Failed to create a ServletSession because ${e.getMessage}") }
+      catch { case scala.util.control.NonFatal(e) => logger.info(s"Failed to create a ServletSession because ${e.getMessage}") }
     }
   }
   private[this] def postponeSkinnySessionTimeout(session: SkinnySession, expireAt: DateTime): Unit = {

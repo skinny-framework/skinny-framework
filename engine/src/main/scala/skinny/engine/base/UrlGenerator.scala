@@ -44,7 +44,6 @@ trait UrlGenerator extends RicherStringImplicits { self: SkinnyEngineBase =>
    * @return the path plus the query string, if any.  The path is run through
    *         `response.encodeURL` to add any necessary session tracking parameters.
    */
-  // TODO: 2.0.0 still has this issue. Remove this override when it will be fixed in the future
   def url(
     path: String,
     params: Iterable[(String, Any)] = Iterable.empty,
@@ -74,7 +73,7 @@ trait UrlGenerator extends RicherStringImplicits { self: SkinnyEngineBase =>
       if (withSessionId) appendSessionIdToUri(newPath + queryString)(ctx) else newPath + queryString
     } catch {
       case e: NullPointerException =>
-        // work around for Scalatra issue
+        // FIXME: 2.0.0 still has this issue.
         if (SkinnyEnv.isTest()) "[work around] see https://github.com/scalatra/scalatra/issues/368"
         else throw e
     }

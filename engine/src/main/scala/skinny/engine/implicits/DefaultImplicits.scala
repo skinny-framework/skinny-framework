@@ -6,8 +6,7 @@ import java.text.{ DateFormat, SimpleDateFormat }
 import java.util.Date
 
 /**
- * Implicit TypeConverter values for value types and some factory method for
- * dates and seqs.
+ * Implicit TypeConverter values for value types and some factory method for dates and seqs.
  */
 trait DefaultImplicits extends LowPriorityImplicits {
 

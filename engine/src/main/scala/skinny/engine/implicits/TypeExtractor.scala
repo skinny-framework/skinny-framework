@@ -1,5 +1,8 @@
 package skinny.engine.implicits
 
+/**
+ * Type extractor.
+ */
 trait TypeExtractor[T] {
 
   def converter: TypeConverter[String, T]

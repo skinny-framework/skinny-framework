@@ -7,7 +7,7 @@ import java.util.Date
 import skinny.engine.{ MultiParams, Params, SkinnyEngineException }
 
 /**
- * Add some implicits
+ * Implicit conversion for EngineParams.
  */
 trait EngineParamsImplicits {
 

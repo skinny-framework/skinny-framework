@@ -6,6 +6,9 @@ import scala.language.implicitConversions
 
 import scala.util.matching.Regex
 
+/**
+ * Implicit conversions for RouteMatcher values.
+ */
 trait RouteMatcherImplicits {
 
   /**

@@ -2,7 +2,7 @@ package integrationtest
 
 import controller.{ AngularXHRProgrammersController, Controllers }
 import model._
-import skinny.util.AngularJSONStringOps._
+import skinny.json.AngularJSONStringOps._
 import skinny.test._
 
 class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
