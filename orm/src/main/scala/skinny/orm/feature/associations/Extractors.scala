@@ -1,5 +1,7 @@
 package skinny.orm.feature.associations
 
+import scalikejdbc.WrappedResultSet
+
 import scala.language.existentials
 
 import skinny.orm._
@@ -52,6 +54,7 @@ case class HasOneExtractor[Entity](
  * HasMany association extractor.
  *
  * @param mapper mapper
+ * @param fk foreign key
  * @param alias table alias
  * @param merge function to merge associations
  * @param byDefault enable by default
@@ -59,6 +62,7 @@ case class HasOneExtractor[Entity](
  */
 case class HasManyExtractor[Entity](
   mapper: AssociationsFeature[_],
+  fk: String,
   alias: Alias[_],
   merge: (Entity, Seq[Any]) => Entity,
   includesMerge: (Seq[Entity], Seq[_]) => Seq[Entity] = AssociationsFeature.defaultIncludesMerge[Entity, Any],

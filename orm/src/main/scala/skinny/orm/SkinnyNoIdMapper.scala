@@ -18,8 +18,10 @@ trait SkinnyNoIdMapper[Entity]
     with NoIdAssociationsFeature[Entity]
     with StrongParametersFeature {
 
+  override def primaryKeyFieldName: String = throw new IllegalStateException("Unexpected access to primaryKeyFieldName")
+
   override def hasOne[A](
-    right: AssociationsWithIdFeature[_, A],
+    right: AssociationsFeature[A],
     merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
 
     throw new IllegalAssociationException(
