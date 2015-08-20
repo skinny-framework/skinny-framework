@@ -378,14 +378,14 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ servletSettings ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
-        "com.h2database"     %  "h2"                 % h2Version,
-        "ch.qos.logback"     %  "logback-classic"    % logbackVersion,
-        "org.scalatra"       %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
-        "org.scalatra"       %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
-        "org.mockito"        %  "mockito-core"       % mockitoVersion            % Test,
-        "org.eclipse.jetty"  %  "jetty-webapp"       % jettyVersion              % "container",
-        "org.eclipse.jetty"  %  "jetty-plus"         % jettyVersion              % "container",
-        "javax.servlet"      %  "javax.servlet-api"  % "3.0.1"                   % "container;provided;test"
+        "com.h2database"       %  "h2"                 % h2Version,
+        "org.skinny-framework" %  "skinny-logback"     % "1.0.6",
+        "org.scalatra"         %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
+        "org.scalatra"         %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
+        "org.mockito"          %  "mockito-core"       % mockitoVersion            % Test,
+        "org.eclipse.jetty"    %  "jetty-webapp"       % jettyVersion              % "container",
+        "org.eclipse.jetty"    %  "jetty-plus"         % jettyVersion              % "container",
+        "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"                   % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
       // Scalatra tests become slower when multiple controller tests are loaded in the same time
@@ -395,7 +395,6 @@ object SkinnyFrameworkBuild extends Build {
   ).dependsOn(
     framework, 
     assets, 
-    logback, 
     thymeleaf, 
     freemarker, 
     velocity, 
