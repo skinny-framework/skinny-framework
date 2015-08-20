@@ -344,19 +344,6 @@ object SkinnyFrameworkBuild extends Build {
     engineTest % Test
   )
 
-  lazy val logback = Project(id = "logback", base = file("logback"),
-    settings = baseSettings ++ Seq(
-      name             := "skinny-logback",
-      version          := "1.0.7-SNAPSHOT",
-      crossPaths       := false,
-      autoScalaLibrary := false,
-      libraryDependencies ++= Seq(
-        "ch.qos.logback" % "logback-classic" % logbackVersion  % Compile exclude("org.slf4j", "slf4j-api"),
-        "org.slf4j"      % "slf4j-api"       % slf4jApiVersion % Compile
-      )
-    )
-  )
-
   lazy val validator = Project(id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
