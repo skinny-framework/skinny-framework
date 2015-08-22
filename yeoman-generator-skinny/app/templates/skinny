@@ -58,7 +58,7 @@ function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "resolvers += \"scala-js-release\" at \"http://dl.bintray.com/scala-js/scala-js-releases\"
-addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.3\")" > ${setting_file}
+addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.4\")" > ${setting_file}
 
 echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).settings(
   name := \"application\", // JavaScript file name
