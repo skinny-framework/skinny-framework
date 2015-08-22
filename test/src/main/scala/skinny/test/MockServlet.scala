@@ -1,7 +1,7 @@
 package skinny.test
 
 import skinny.controller.SkinnyServlet
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.context.SkinnyContext
 
 /**
  * Mock of SkinnyServlet.
@@ -33,7 +33,7 @@ trait MockServlet extends SkinnyServlet with MockControllerBase with MockWebPage
   //  at skinny.controller.SkinnyServlet.initializeRequestScopeAttributes(SkinnyServlet.scala:8)
   //  at skinny.test.MockControllerBase$class.$init$(MockControllerBase.scala:89)
 
-  override def requestPath(implicit ctx: SkinnyEngineContext = skinnyEngineContext): String = {
+  override def requestPath(implicit ctx: SkinnyContext = skinnyContext): String = {
     try {
       super.requestPath(ctx)
     } catch {

@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.engine.{ Handler, SkinnyEngineBase }
-import skinny.engine.base.BeforeAfterDsl
+import skinny.micro.{ Handler, SkinnyMicroBase }
+import skinny.micro.base.BeforeAfterDsl
 
 /**
  * beforeAction/afterAction support.
@@ -9,7 +9,7 @@ import skinny.engine.base.BeforeAfterDsl
  * @see http://guides.rubyonrails.org/action_controller_overview.html
  */
 trait BeforeAfterActionFeature
-    extends SkinnyEngineBase
+    extends SkinnyMicroBase
     with BeforeAfterDsl {
 
   self: Handler with ActionDefinitionFeature with RequestScopeFeature =>

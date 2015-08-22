@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny.controller.feature.{ LocaleFeature, CSRFProtectionFeature, FlashFeature }
-import skinny.engine.Format
+import skinny.micro.Format
 import skinny.filter.SkinnySessionFilter
 
 /**

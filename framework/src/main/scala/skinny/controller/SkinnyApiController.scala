@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.SkinnyEngineFilter
+import skinny.micro.SkinnyMicroFilter
 
 /**
  * SkinnyController as a Servlet for REST APIs.
@@ -9,4 +9,4 @@ import skinny.engine.SkinnyEngineFilter
  */
 trait SkinnyApiController
   extends SkinnyControllerBase
-  with SkinnyEngineFilter
+  with SkinnyMicroFilter

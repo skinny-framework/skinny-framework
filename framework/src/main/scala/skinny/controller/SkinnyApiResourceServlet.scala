@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.implicits.{ TypeConverter, TypeConverters }
+import skinny.micro.implicits.{ TypeConverter, TypeConverters }
 
 /**
  * Skinny resource is a DRY module to implement ROA(Resource-oriented architecture) apps.

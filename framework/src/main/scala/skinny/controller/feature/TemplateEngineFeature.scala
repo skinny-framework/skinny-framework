@@ -1,9 +1,9 @@
 package skinny.controller.feature
 
 import skinny.Format
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.json.EngineJSONStringOps
-import skinny.engine.response.ResponseStatus
+import skinny.json.JSONStringOps
+import skinny.micro.context.SkinnyContext
+import skinny.micro.response.ResponseStatus
 import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException
 import skinny.json.JSONStringOpsConfig
@@ -14,7 +14,7 @@ import skinny.json.JSONStringOpsConfig
 trait TemplateEngineFeature
     extends SkinnyControllerCommonBase
     with RequestScopeFeature
-    with EngineJSONStringOps
+    with JSONStringOps
     with JSONStringOpsConfig
     with LoggerProvider {
 
@@ -25,7 +25,7 @@ trait TemplateEngineFeature
    * @param format format (HTML,JSON,XML...)
    * @return body
    */
-  def render(path: String)(implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+  def render(path: String)(implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     setContentTypeIfAbsent()(format)
 
     if (templateExists(path)(format)) {
@@ -78,10 +78,10 @@ trait TemplateEngineFeature
    * @return body
    */
   protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): String
 
   override protected def haltWithBody[A](httpStatus: Int)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): A = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): A = {
     val body: String = format match {
       case Format.HTML => render(s"/error/${httpStatus}")(ctx, format)
       case _ => renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))(format)

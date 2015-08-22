@@ -2,8 +2,8 @@ package controller
 
 import org.joda.time._
 import model._
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.async.AsyncOperations
+import skinny.micro.context.SkinnyContext
+import skinny.micro.async.AsyncOperations
 
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import javax.servlet.http.HttpServletRequest
 
 case class DashboardOps(controller: DashboardController) {
-  def setCurrentUser(implicit ctx: SkinnyEngineContext) = {
+  def setCurrentUser(implicit ctx: SkinnyContext) = {
     val userId = controller.currentUserId.getOrElse(controller.halt(401))
     controller.set("currentUser" -> controller.adminUserService.getCurrentUser(userId))
   }

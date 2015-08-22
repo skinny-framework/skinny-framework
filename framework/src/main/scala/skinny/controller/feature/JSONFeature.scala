@@ -1,8 +1,8 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
-import skinny.engine.json.EngineJSONStringOps
+import skinny.micro.SkinnyMicroBase
+import skinny.micro.json.SkinnyMicroJSONStringOps
 
-trait JSONFeature extends EngineJSONStringOps { self: SkinnyEngineBase =>
+trait JSONFeature extends SkinnyMicroJSONStringOps { self: SkinnyMicroBase =>
 
 }

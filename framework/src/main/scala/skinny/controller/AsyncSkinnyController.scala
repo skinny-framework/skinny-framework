@@ -1,11 +1,11 @@
 package skinny.controller
 
-import skinny.engine.AsyncSkinnyEngineFilter
+import skinny.micro.AsyncSkinnyMicroFilter
 
 /**
  * Skinny controller.
  */
 trait AsyncSkinnyController
-  extends AsyncSkinnyEngineFilter
+  extends AsyncSkinnyMicroFilter
   with AsyncSkinnyControllerBase
   with SkinnyWebPageControllerFeatures

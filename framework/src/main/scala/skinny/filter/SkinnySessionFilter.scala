@@ -3,10 +3,10 @@ package skinny.filter
 import scala.language.implicitConversions
 
 import skinny.controller.feature._
-import skinny.engine.base.FlashMapSupport
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
-import skinny.engine.flash.FlashMap
+import skinny.micro.base.FlashMapSupport
+import skinny.micro.context.SkinnyContext
+import skinny.micro.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
+import skinny.micro.flash.FlashMap
 import skinny.session._
 import FlashMapSupport._
 
@@ -62,21 +62,21 @@ trait SkinnySessionFilter extends SkinnyFilter {
   // --------------------------------------
   // Accessing SkinnySession
 
-  def skinnySession(implicit ctx: SkinnyEngineContext): SkinnyHttpSession = {
+  def skinnySession(implicit ctx: SkinnyContext): SkinnyHttpSession = {
     getFromRequestScope[SkinnyHttpSession](ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE)(ctx).getOrElse {
       initializeSkinnySession
     }
   }
 
-  def skinnySession[A](key: String)(implicit ctx: SkinnyEngineContext): Option[A] = skinnySession(ctx).getAs[A](key)
+  def skinnySession[A](key: String)(implicit ctx: SkinnyContext): Option[A] = skinnySession(ctx).getAs[A](key)
 
-  def skinnySession[A](key: Symbol)(implicit ctx: SkinnyEngineContext): Option[A] = skinnySession[A](key.name)(ctx)
+  def skinnySession[A](key: Symbol)(implicit ctx: SkinnyContext): Option[A] = skinnySession[A](key.name)(ctx)
 
   // --------------------------------------
   // override FlashMapSupport
   // NOTICE: This API doesn't support Future ops
 
-  override def flashMapSetSession(f: FlashMap)(implicit ctx: SkinnyEngineContext): Unit = {
+  override def flashMapSetSession(f: FlashMap)(implicit ctx: SkinnyContext): Unit = {
     try {
       skinnySession(ctx).setAttribute(SessionKey, f)
     } catch {
@@ -103,11 +103,11 @@ trait SkinnySessionFilter extends SkinnyFilter {
   // --------------------------------------
   // override SessionLocaleFeature
 
-  override def setCurrentLocale(locale: String)(implicit ctx: SkinnyEngineContext): Unit = {
+  override def setCurrentLocale(locale: String)(implicit ctx: SkinnyContext): Unit = {
     skinnySession(ctx).setAttribute(sessionLocaleKey, locale)
   }
 
-  override def currentLocale(implicit ctx: SkinnyEngineContext): Option[Locale] = {
+  override def currentLocale(implicit ctx: SkinnyContext): Option[Locale] = {
     skinnySession(ctx)
       .getAttribute(sessionLocaleKey)
       .map(l => new Locale(l.toString))

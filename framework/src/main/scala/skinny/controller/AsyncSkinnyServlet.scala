@@ -1,11 +1,11 @@
 package skinny.controller
 
-import skinny.engine.AsyncSkinnyEngineServlet
+import skinny.micro.AsyncSkinnyMicroServlet
 
 /**
  * SkinnyController as a Servlet.
  */
 class AsyncSkinnyServlet
-  extends AsyncSkinnyEngineServlet
+  extends AsyncSkinnyMicroServlet
   with AsyncSkinnyControllerBase
   with SkinnyWebPageControllerFeatures

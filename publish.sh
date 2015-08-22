@@ -9,11 +9,6 @@ sbt ++2.11.7 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
-  engine/publishSigned \
-  engineJson/publishSigned \
-  engineScalate/publishSigned \
-  engineServer/publishSigned \
-  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   task/publishSigned \
@@ -36,11 +31,6 @@ sbt ++2.11.7 \
   orm/publishSigned \
   factoryGirl/publishSigned \
   validator/publishSigned \
-  engine/publishSigned \
-  engineJson/publishSigned \
-  engineScalate/publishSigned \
-  engineServer/publishSigned \
-  engineTest/publishSigned \
   framework/publishSigned \
   mailer/publishSigned \
   task/publishSigned \

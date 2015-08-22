@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.csrf.CsrfTokenGenerator
+import skinny.micro.csrf.CsrfTokenGenerator
 
 /**
  * Angular.js Cross Site Request Forgery (XSRF) Protection support.

@@ -1,7 +1,7 @@
 package skinny.filter
 
 import skinny.controller.feature.SkinnyControllerCommonBase
-import skinny.engine._
+import skinny.micro._
 
 /**
  * Activates skinny filters.

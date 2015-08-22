@@ -2,9 +2,9 @@ package skinny.routing
 
 import skinny.controller.feature.SkinnyControllerCommonBase
 import skinny.controller.{ ActionDefinition, SkinnyControllerBase }
-import skinny.engine.Handler
-import skinny.engine.constant.HttpMethod
-import skinny.engine.routing.Route
+import skinny.micro.Handler
+import skinny.micro.constant.HttpMethod
+import skinny.micro.routing.Route
 import skinny.exception.RouteMetadataException
 
 /**

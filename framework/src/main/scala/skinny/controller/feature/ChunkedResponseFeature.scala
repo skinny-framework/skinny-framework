@@ -2,13 +2,13 @@ package skinny.controller.feature
 
 import javax.servlet.ServletOutputStream
 
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 import skinny.logging.LoggerProvider
 
 /**
  * Chunked Response (Transfer-Encoding: chunked).
  */
-trait ChunkedResponseFeature { self: SkinnyEngineBase with LoggerProvider =>
+trait ChunkedResponseFeature { self: SkinnyMicroBase with LoggerProvider =>
 
   def withOutputStream(f: ServletOutputStream => Unit): Unit = {
     val stream = response.getOutputStream

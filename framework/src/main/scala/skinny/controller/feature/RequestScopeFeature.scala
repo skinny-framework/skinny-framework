@@ -2,9 +2,9 @@ package skinny.controller.feature
 
 import java.lang.reflect.Modifier
 import skinny.controller.{ KeyAndErrorMessages, Params }
-import skinny.engine.SkinnyEngineBase
-import skinny.engine.base.BeforeAfterDsl
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.SkinnyMicroBase
+import skinny.micro.base.BeforeAfterDsl
+import skinny.micro.context.SkinnyContext
 import skinny.exception.RequestScopeConflictException
 import java.util.Locale
 import org.joda.time._
@@ -76,7 +76,7 @@ object RequestScopeFeature extends LoggerProvider {
  * Request scope support.
  */
 trait RequestScopeFeature
-    extends SkinnyEngineBase
+    extends SkinnyMicroBase
     with BeforeAfterDsl
     with SnakeCasedParamKeysFeature
     with LocaleFeature
@@ -96,9 +96,9 @@ trait RequestScopeFeature
   /**
    * Registers default attributes in the request scope.
    */
-  before()(initializeRequestScopeAttributes(skinnyEngineContext))
+  before()(initializeRequestScopeAttributes(skinnyContext))
 
-  def initializeRequestScopeAttributes(implicit ctx: SkinnyEngineContext = context) = {
+  def initializeRequestScopeAttributes(implicit ctx: SkinnyContext = context) = {
     if (requestScope(ctx).get(ATTR_SKINNY).isEmpty) {
       set(ATTR_SKINNY, skinny.Skinny(ctx, requestScope(ctx)))(ctx)
       // requestPath/contextPath
@@ -122,7 +122,7 @@ trait RequestScopeFeature
    *
    * @return whole attributes
    */
-  def requestScope(implicit ctx: SkinnyEngineContext = context): scala.collection.concurrent.Map[String, Any] = {
+  def requestScope(implicit ctx: SkinnyContext = context): scala.collection.concurrent.Map[String, Any] = {
     RequestScopeFeature.requestScope(ctx.request)
   }
   /**
@@ -131,7 +131,7 @@ trait RequestScopeFeature
    * @param keyAndValue key and value
    * @return self
    */
-  def requestScope(keyAndValue: (String, Any))(implicit ctx: SkinnyEngineContext): RequestScopeFeature = {
+  def requestScope(keyAndValue: (String, Any))(implicit ctx: SkinnyContext): RequestScopeFeature = {
     requestScope(Seq(keyAndValue))(ctx)
   }
 
@@ -141,7 +141,7 @@ trait RequestScopeFeature
    * @param keyAndValues collection of key and value.
    * @return self
    */
-  def requestScope(keyAndValues: Seq[(String, Any)])(implicit ctx: SkinnyEngineContext): RequestScopeFeature = {
+  def requestScope(keyAndValues: Seq[(String, Any)])(implicit ctx: SkinnyContext): RequestScopeFeature = {
     keyAndValues.foreach {
       case (key, _) =>
         if (key == "layout") {
@@ -157,14 +157,14 @@ trait RequestScopeFeature
   /**
    * Set attribute to request scope.
    */
-  def set(keyAndValue: (String, Any))(implicit ctx: SkinnyEngineContext): RequestScopeFeature = {
+  def set(keyAndValue: (String, Any))(implicit ctx: SkinnyContext): RequestScopeFeature = {
     requestScope(Seq(keyAndValue))(ctx)
   }
 
   /**
    * Set attributes to request scope.
    */
-  def set(keyAndValues: Seq[(String, Any)])(implicit ctx: SkinnyEngineContext): RequestScopeFeature = {
+  def set(keyAndValues: Seq[(String, Any)])(implicit ctx: SkinnyContext): RequestScopeFeature = {
     requestScope(keyAndValues)(ctx)
   }
 
@@ -175,7 +175,7 @@ trait RequestScopeFeature
    * @tparam A type
    * @return value if exists
    */
-  def getFromRequestScope[A](key: String)(implicit ctx: SkinnyEngineContext = context): Option[A] = {
+  def getFromRequestScope[A](key: String)(implicit ctx: SkinnyContext = context): Option[A] = {
     requestScope(ctx).get(key).map { v =>
       try v.asInstanceOf[A]
       catch {
@@ -191,7 +191,7 @@ trait RequestScopeFeature
    *
    * @param model model instance
    */
-  def setAsParams(model: Any)(implicit ctx: SkinnyEngineContext = context): Unit = {
+  def setAsParams(model: Any)(implicit ctx: SkinnyContext = context): Unit = {
     val toKey: (String) => String = if (useSnakeCasedParamKeys) {
       skinny.util.StringUtil.toSnakeCase
     } else {
@@ -257,12 +257,12 @@ trait RequestScopeFeature
   /**
    * Set params to request scope.
    */
-  def setParams(implicit ctx: SkinnyEngineContext = context) = setParamsToRequestScope(ctx)
+  def setParams(implicit ctx: SkinnyContext = context) = setParamsToRequestScope(ctx)
 
   /**
    * Set params to request scope.
    */
-  def setParamsToRequestScope(implicit ctx: SkinnyEngineContext = context): Unit = set(ATTR_PARAMS -> Params(params(ctx)))(ctx)
+  def setParamsToRequestScope(implicit ctx: SkinnyContext = context): Unit = set(ATTR_PARAMS -> Params(params(ctx)))(ctx)
 
   /**
    * Set {{skinny.I18n}} object for the current request to request scope.
@@ -270,7 +270,7 @@ trait RequestScopeFeature
    * @param ctx context
    * @return self
    */
-  def setI18n(implicit ctx: SkinnyEngineContext = context) = {
+  def setI18n(implicit ctx: SkinnyContext = context) = {
     val locale: Locale = currentLocale(ctx).orNull[Locale]
     set(RequestScopeFeature.ATTR_I18N, I18n(locale))(ctx)
   }
@@ -281,7 +281,7 @@ trait RequestScopeFeature
    * @param name name
    * @param value value
    */
-  def addParam(name: String, value: Any)(implicit ctx: SkinnyEngineContext = context): Unit = {
+  def addParam(name: String, value: Any)(implicit ctx: SkinnyContext = context): Unit = {
 
     // ensure "params" in the request scope is valid
     // don't delete requestScope[Any] 's `Any` (because cannot cast Nothing to Params)
@@ -306,7 +306,7 @@ trait RequestScopeFeature
   /**
    * Returns errorMessages in the RequestScope.
    */
-  def errorMessages(implicit ctx: SkinnyEngineContext = context): Seq[String] = {
+  def errorMessages(implicit ctx: SkinnyContext = context): Seq[String] = {
     requestScope(ctx).get(RequestScopeFeature.ATTR_ERROR_MESSAGES)
       .map(_.asInstanceOf[Seq[String]]).getOrElse(Nil)
   }
@@ -314,7 +314,7 @@ trait RequestScopeFeature
   /**
    * Returns keyAndErrorMessages in the RequestScope.
    */
-  def keyAndErrorMessages(implicit ctx: SkinnyEngineContext = context): Map[String, Seq[String]] = {
+  def keyAndErrorMessages(implicit ctx: SkinnyContext = context): Map[String, Seq[String]] = {
     requestScope(ctx).get(RequestScopeFeature.ATTR_KEY_AND_ERROR_MESSAGES)
       .map(_.asInstanceOf[KeyAndErrorMessages].underlying).getOrElse(Map())
   }

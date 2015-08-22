@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineServlet
-import skinny.engine.multipart.FileUploadSupport
+import skinny.micro.SkinnyMicroServlet
+import skinny.micro.multipart.FileUploadSupport
 
 /**
  * File upload feature.
@@ -30,6 +30,6 @@ import skinny.engine.multipart.FileUploadSupport
  *   fileUpload.mount(ctx)
  * }}}
  */
-trait FileUploadFeature extends FileUploadSupport { self: SkinnyEngineServlet =>
+trait FileUploadFeature extends FileUploadSupport { self: SkinnyMicroServlet =>
 
 }

@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.AsyncSkinnyEngineFilter
+import skinny.micro.AsyncSkinnyMicroFilter
 
 /**
  * SkinnyController as a Servlet for REST APIs.
@@ -9,4 +9,4 @@ import skinny.engine.AsyncSkinnyEngineFilter
  */
 trait AsyncSkinnyApiController
   extends AsyncSkinnyControllerBase
-  with AsyncSkinnyEngineFilter
+  with AsyncSkinnyMicroFilter

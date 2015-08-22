@@ -2,7 +2,7 @@ package skinny.controller
 
 import org.scalatra.test.scalatest._
 import scalikejdbc._
-import skinny.engine.Context
+import skinny.micro.Context
 import skinny.orm.SkinnyCRUDMapper
 import skinny.routing.Routes
 

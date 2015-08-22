@@ -36,7 +36,7 @@ class MockControllerSpec extends FunSpec with Matchers {
       result should equal("/foo")
 
       val result2 = controller.useUrl2
-      result2 should equal("[work around] see https://github.com/scalatra/scalatra/issues/368")
+      result2 should equal("/hoge?a=b")
     }
   }
 

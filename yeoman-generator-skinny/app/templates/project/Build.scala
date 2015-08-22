@@ -53,7 +53,7 @@ object SkinnyAppBuild extends Build {
     ).map(applyDefaultExclusions),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //,"sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     // Faster "./skinny idea"
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
@@ -72,7 +72,7 @@ object SkinnyAppBuild extends Build {
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
       Seq("import controller._", "import model._"),
-      Seq(Binding("context", "_root_.skinny.engine.scalate.SkinnyEngineRenderContext", importMembers = true, isImplicit = true)),
+      Seq(Binding("context", "_root_.skinny.micro.scalate.SkinnyScalateRenderContext", importMembers = true, isImplicit = true)),
       Some("templates")))
     }
   )

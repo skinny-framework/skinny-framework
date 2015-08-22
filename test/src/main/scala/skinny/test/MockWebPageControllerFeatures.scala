@@ -2,7 +2,7 @@ package skinny.test
 
 import skinny.Format
 import skinny.controller.SkinnyWebPageControllerFeatures
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.context.SkinnyContext
 
 /**
  * Mock of SkinnyWebPageControllerFeatures.
@@ -12,7 +12,7 @@ trait MockWebPageControllerFeatures { self: MockControllerBase with SkinnyWebPag
   var renderCall: Option[RenderCall] = None
 
   override def render(path: String)(
-    implicit ctx: SkinnyEngineContext = skinnyEngineContext, format: Format = Format.HTML): String = {
+    implicit ctx: SkinnyContext = skinnyContext, format: Format = Format.HTML): String = {
     // If Content-Type is already set, never overwrite it.
     if (contentType(ctx) == null) {
       (contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse(""))(ctx)

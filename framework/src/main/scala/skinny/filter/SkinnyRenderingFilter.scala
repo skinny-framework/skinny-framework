@@ -1,7 +1,7 @@
 package skinny.filter
 
 import skinny.controller.SkinnyWebPageControllerFeatures
-import skinny.engine.ErrorHandler
+import skinny.micro.ErrorHandler
 
 /**
  * Skinny Rendering Filter.

@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.constant.HttpMethod
+import skinny.micro.constant.HttpMethod
 
 /**
  * Action definition.

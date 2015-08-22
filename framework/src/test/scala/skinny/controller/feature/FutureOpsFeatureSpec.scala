@@ -3,7 +3,7 @@ package skinny.controller.feature
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import skinny._
 import skinny.controller.SkinnyController
-import skinny.engine.async.AsyncOperations
+import skinny.micro.async.AsyncOperations
 
 import scala.concurrent.duration._
 

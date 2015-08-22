@@ -1,5 +1,5 @@
-import skinny.engine.implicits
-import skinny.engine.implicits.TypeConverterSupport
+import skinny.micro.implicits
+import skinny.micro.implicits.TypeConverterSupport
 
 /**
  * Skinny framework for rapid web app development in Scala.
@@ -9,8 +9,8 @@ import skinny.engine.implicits.TypeConverterSupport
  */
 package object skinny {
 
-  type Format = skinny.engine.Format
-  val Format = skinny.engine.Format
+  type Format = skinny.micro.Format
+  val Format = skinny.micro.Format
 
   type SkinnyLifeCycle = bootstrap.SkinnyLifeCycle
   type ServletContext = javax.servlet.ServletContext
@@ -49,13 +49,13 @@ package object skinny {
 
   type SkinnyJoinTable[A] = skinny.orm.SkinnyJoinTable[A]
 
-  type TypeConverter[A, B] = skinny.engine.implicits.TypeConverter[A, B]
-  type TypeConverterSupport = skinny.engine.implicits.TypeConverterSupport
+  type TypeConverter[A, B] = skinny.micro.implicits.TypeConverter[A, B]
+  type TypeConverterSupport = skinny.micro.implicits.TypeConverterSupport
   val TypeConverterSupport = implicits.TypeConverterSupport
 
   type Logging = skinny.logging.Logging
   type LoggerProvider = skinny.logging.LoggerProvider
 
-  type Context = skinny.engine.Context
+  type Context = skinny.micro.Context
 
 }

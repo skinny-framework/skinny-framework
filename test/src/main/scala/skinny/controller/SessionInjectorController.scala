@@ -2,7 +2,7 @@ package skinny.controller
 
 import java.io._
 
-import skinny.engine.Format
+import skinny.micro.Format
 import skinny.util.LoanPattern._
 import sun.misc.{ BASE64Decoder, BASE64Encoder }
 import skinny.logging.LoggerProvider

@@ -1,11 +1,11 @@
 package skinny.controller
 
-import skinny.engine.SkinnyEngineFilter
+import skinny.micro.SkinnyMicroFilter
 
 /**
  * Skinny controller.
  */
 class SkinnyController
-  extends SkinnyEngineFilter
+  extends SkinnyMicroFilter
   with SkinnyControllerBase
   with SkinnyWebPageControllerFeatures

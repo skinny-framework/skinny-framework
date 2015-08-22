@@ -1,13 +1,13 @@
 package skinny
 
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.routing.Route
-import skinny.engine.util.UrlGenerator
+import skinny.micro.context.SkinnyContext
+import skinny.micro.routing.Route
+import skinny.micro.util.UrlGenerator
 
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.
  */
-case class Skinny(context: SkinnyEngineContext,
+case class Skinny(context: SkinnyContext,
     requestScope: collection.mutable.Map[String, Any]) {
 
   import skinny.controller.feature.RequestScopeFeature._
