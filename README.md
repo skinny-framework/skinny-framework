@@ -30,10 +30,6 @@ https://github.com/skinny-framework/skinny-framework/releases
 
 ## Under The MIT License
 
-Only `skinny-engine` and `skinny-engine-*` are under the BSD 2-Clause license.
-
-Others are under The MIT License.
-
 (The MIT License)
 
 Copyright (c) skinny-framework.org
