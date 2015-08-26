@@ -1,7 +1,7 @@
 package skinny.bootstrap
 
 import javax.servlet.ServletContext
-import skinny.engine.LifeCycle
+import skinny.micro.LifeCycle
 import skinny.worker._
 
 /**

@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 import skinny.logging.LoggerProvider
 
 /**
@@ -10,7 +10,7 @@ import skinny.logging.LoggerProvider
  */
 trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
 
-  self: SkinnyEngineBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
+  self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
   /**
    * Enabled if true.

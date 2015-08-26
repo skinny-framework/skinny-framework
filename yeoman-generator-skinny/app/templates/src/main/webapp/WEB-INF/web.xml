@@ -7,13 +7,13 @@
     <!-- If you'd like to rename Bootstrap class or put it into other package, configure like this -->
     <!--
     <context-param>
-        <param-name>skinny.engine.LifeCycle</param-name>
+        <param-name>skinny.micro.LifeCycle</param-name>
         <param-value>Bootstrap</param-value>
     </context-param>
     -->
 
     <listener>
-        <listener-class>skinny.engine.SkinnyEngineListener</listener-class>
+        <listener-class>skinny.micro.SkinnyListener</listener-class>
     </listener>
 
     <session-config>

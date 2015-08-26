@@ -4,9 +4,9 @@ import scala.language.implicitConversions
 
 import skinny.controller.feature.SkinnyControllerCommonBase
 
-import skinny.engine.Handler
-import skinny.engine.constant.{ Get, HttpMethod }
-import skinny.engine.routing.Route
+import skinny.micro.Handler
+import skinny.micro.constant.{ Get, HttpMethod }
+import skinny.micro.routing.Route
 
 import skinny.routing.RichRoute
 

@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny.controller.feature._
-import skinny.engine.ThreadLocalFeatures
+import skinny.micro.ThreadLocalFeatures
 
 trait SkinnyControllerBase
     extends SkinnyControllerCommonBase

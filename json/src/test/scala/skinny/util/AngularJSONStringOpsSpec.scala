@@ -1,6 +1,7 @@
 package skinny.util
 
 import org.scalatest._
+import skinny.json.AngularJSONStringOps
 
 class AngularJSONStringOpsSpec extends FlatSpec with Matchers {
 

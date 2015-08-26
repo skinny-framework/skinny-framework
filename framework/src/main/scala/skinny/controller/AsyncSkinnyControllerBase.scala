@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny.controller.feature.SkinnyControllerCommonBase
-import skinny.engine.AsyncFeatures
+import skinny.micro.AsyncFeatures
 
 trait AsyncSkinnyControllerBase
     extends SkinnyControllerCommonBase

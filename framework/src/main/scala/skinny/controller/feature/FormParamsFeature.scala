@@ -1,17 +1,17 @@
 package skinny.controller.feature
 
-import skinny.engine._
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro._
+import skinny.micro.context.SkinnyContext
 
 /**
  * Provides formParams/formMultiParams.
  */
-trait FormParamsFeature extends SkinnyEngineBase with QueryParamsFeature {
+trait FormParamsFeature extends SkinnyMicroBase with QueryParamsFeature {
 
   /**
    * Returns query string multi parameters as a Map value.
    */
-  def formMultiParams(implicit ctx: SkinnyEngineContext): MultiParams = {
+  def formMultiParams(implicit ctx: SkinnyContext): MultiParams = {
     multiParams(ctx).map {
       case (k, vs) =>
         queryMultiParams(ctx).find(_._1 == k) match {
@@ -24,6 +24,6 @@ trait FormParamsFeature extends SkinnyEngineBase with QueryParamsFeature {
   /**
    * Returns query string parameters as a Map value.
    */
-  def formParams(implicit ctx: SkinnyEngineContext): Params = new EngineParams(formMultiParams(ctx))
+  def formParams(implicit ctx: SkinnyContext): Params = new SkinnyMicroParams(formMultiParams(ctx))
 
 }

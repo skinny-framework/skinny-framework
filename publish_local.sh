@@ -9,11 +9,6 @@ sbt ++2.11.7 \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
-  engine/publishLocal \
-  engineJson/publishLocal \
-  engineScalate/publishLocal \
-  engineServer/publishLocal \
-  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   task/publishLocal \
@@ -36,11 +31,6 @@ sbt ++2.11.7 \
   orm/publishLocal \
   factoryGirl/publishLocal \
   validator/publishLocal \
-  engine/publishLocal \
-  engineJson/publishLocal \
-  engineScalate/publishLocal \
-  engineServer/publishLocal \
-  engineTest/publishLocal \
   framework/publishLocal \
   mailer/publishLocal \
   task/publishLocal \

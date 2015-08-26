@@ -3,9 +3,8 @@ package skinny.controller.feature
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
-import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.scalate.{ SkinnyEngineRenderContext, ScalateSupport }
+import skinny.micro.context.SkinnyContext
+import skinny.micro.scalate.{ SkinnyScalateRenderContext, ScalateSupport }
 
 import scala.annotation.tailrec
 import java.io.PrintWriter
@@ -64,16 +63,16 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
   /**
    * Creates a RenderContext instance for Skinny app.
    */
-  override protected def createRenderContext(req: HttpServletRequest, resp: HttpServletResponse, out: PrintWriter)(
-    implicit ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
-    val context = super.createRenderContext(req, resp, out)(ctx)
+  override protected def createRenderContext(out: PrintWriter)(
+    implicit ctx: SkinnyContext): SkinnyScalateRenderContext = {
+    val context = super.createRenderContext(out)(ctx)
     context.numberFormat = scalateRenderContextNumberFormat
     context
   }
 
-  protected def createSkinnyEngineRenderContext(ctx: SkinnyEngineContext): SkinnyEngineRenderContext = {
-    createRenderContext(ctx.request, ctx.response, ctx.response.getWriter)(ctx)
-      .asInstanceOf[SkinnyEngineRenderContext]
+  protected def createSkinnyScalateRenderContext(ctx: SkinnyContext): SkinnyScalateRenderContext = {
+    createRenderContext(ctx.response.getWriter)(ctx)
+      .asInstanceOf[SkinnyScalateRenderContext]
   }
 
   /**
@@ -184,10 +183,10 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @return true/false
    */
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     // Note: templateExists() should already have been called, so we know we have an actual template
     val templatePath = findFirstAvailableTemplate(templatePaths(path)).getOrElse("missing-template")
-    layoutTemplate(templatePath, requestScope(ctx).toMap.toSeq: _*)(ctx, createSkinnyEngineRenderContext(ctx))
+    layoutTemplate(templatePath, requestScope(ctx).toMap.toSeq: _*)(ctx)
   }
 
   /**
@@ -195,7 +194,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    *
    * @param path the layout template path, including extension, e.g. "custom.jade"
    */
-  def layout(path: String)(implicit ctx: SkinnyEngineContext): ScalateTemplateEngineFeature = {
+  def layout(path: String)(implicit ctx: SkinnyContext): ScalateTemplateEngineFeature = {
     if (request(ctx) != null) {
       val _path = path.replaceFirst("^/", "").replaceAll("//", "/").replaceFirst("/$", "")
       templateAttributes(ctx) += ("layout" -> s"/WEB-INF/layouts/${_path}")

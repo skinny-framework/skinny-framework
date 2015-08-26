@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 
 /**
  * X-Content-Type-Options header support.
@@ -10,7 +10,7 @@ import skinny.engine.SkinnyEngineBase
  * - https://github.com/blog/1482-heads-up-nosniff-header-support-coming-to-chrome-and-firefox
  * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
  */
-trait XContentTypeOptionsNosniffHeaderFeature { self: SkinnyEngineBase with BeforeAfterActionFeature =>
+trait XContentTypeOptionsNosniffHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionFeature =>
 
   // NOTE: To force this header to all responses
   //beforeAction() {

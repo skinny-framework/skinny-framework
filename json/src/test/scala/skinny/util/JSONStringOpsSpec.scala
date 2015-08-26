@@ -1,6 +1,7 @@
 package skinny.util
 
 import org.scalatest._
+import skinny.json.JSONStringOps
 
 // http://www.playframework.com/documentation/2.2.x/ScalaJson
 case class UserResponse(user: User)

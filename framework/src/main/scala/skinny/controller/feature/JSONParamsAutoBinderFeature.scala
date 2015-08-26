@@ -5,10 +5,11 @@ import java.io.{ InputStreamReader, InputStream }
 import org.json4s.Xml._
 import org.json4s._
 import org.slf4j.LoggerFactory
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.json.{ EngineJSONStringOps, JsonSupport }
-import skinny.engine.{ SkinnyEngineBase, EngineParams, Params, ApiFormats }
-import skinny.engine.routing.MatchedRoute
+import skinny.micro.context.SkinnyContext
+import skinny.json.JSONStringOps
+import skinny.micro.json.JsonSupport
+import skinny.micro.{ SkinnyMicroBase, SkinnyMicroParams, Params, ApiFormats }
+import skinny.micro.routing.MatchedRoute
 import skinny.logging.LoggerProvider
 import skinny.json.JSONStringOpsConfig
 
@@ -18,20 +19,20 @@ import skinny.json.JSONStringOpsConfig
  * When you'd like to avoid merging JSON request body into params in some actions, please separate controllers.
  */
 trait JSONParamsAutoBinderFeature
-    extends SkinnyEngineBase
-    with EngineJSONStringOps
+    extends SkinnyMicroBase
+    with JSONStringOps
     with ApiFormats
     with LoggerProvider { self: JSONStringOpsConfig =>
 
   /**
    * Merge parsedBody (JValue) into params if possible.
    */
-  override def params(implicit ctx: SkinnyEngineContext): Params = {
+  override def params(implicit ctx: SkinnyContext): Params = {
     if (request(ctx).get(JsonSupport.ParsedBodyKey).isDefined) {
       try {
         val jsonParams: Map[String, Seq[String]] = parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v))
         val mergedParams: Map[String, Seq[String]] = getMergedMultiParams(multiParams(ctx), jsonParams)
-        new EngineParams(mergedParams)
+        new SkinnyMicroParams(mergedParams)
       } catch {
         case scala.util.control.NonFatal(e) =>
           logger.debug(s"Failed to parse JSON body because ${e.getMessage}")
@@ -58,7 +59,7 @@ trait JSONParamsAutoBinderFeature
 
   protected def cacheRequestBodyAsString: Boolean = _defaultCacheRequestBody
 
-  protected def parseRequestBody(format: String)(implicit ctx: SkinnyEngineContext) = try {
+  protected def parseRequestBody(format: String)(implicit ctx: SkinnyContext) = try {
     val ct = ctx.request.contentType getOrElse ""
     if (format == "json") {
       val bd = {
@@ -140,11 +141,11 @@ trait JSONParamsAutoBinderFeature
     }
   }
 
-  protected def shouldParseBody(fmt: String)(implicit ctx: SkinnyEngineContext) = {
+  protected def shouldParseBody(fmt: String)(implicit ctx: SkinnyContext) = {
     (fmt == "json" || fmt == "xml") && !ctx.request.requestMethod.isSafe && parsedBody(ctx) == JNothing
   }
 
-  def parsedBody(implicit ctx: SkinnyEngineContext): JValue = {
+  def parsedBody(implicit ctx: SkinnyContext): JValue = {
     ctx.request.get(ParsedBodyKey).fold({
       val fmt = requestFormat(ctx)
       var bd: JValue = JNothing

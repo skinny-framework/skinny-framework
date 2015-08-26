@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.context.SkinnyContext
 import skinny.Format
 import java.io.IOException
 import skinny.view.freemarker._
@@ -40,7 +40,7 @@ trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     freeMarker.render(templatePath(path), requestScope(ctx).toMap)
   }
 

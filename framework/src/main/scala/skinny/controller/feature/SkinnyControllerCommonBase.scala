@@ -6,9 +6,9 @@ import org.json4s.JsonAST._
 
 import skinny.I18n
 import skinny.controller.implicits.ParamsPermitImplicits
-import skinny.engine.context.SkinnyEngineContext
-import skinny.engine.response.ResponseStatus
-import skinny.engine.{ Format, _ }
+import skinny.micro.context.SkinnyContext
+import skinny.micro.response.ResponseStatus
+import skinny.micro.{ Format, _ }
 import skinny.filter.SkinnyFilterActivation
 import skinny.logging.LoggerProvider
 import skinny.routing.implicits.RoutesAsImplicits
@@ -18,7 +18,7 @@ import skinny.validator.implicits.ParametersGetAsImplicits
 import scala.xml._
 
 trait SkinnyControllerCommonBase
-    extends SkinnyEngineBase
+    extends SkinnyMicroBase
     with ApiFormats
     with EnvFeature
     with QueryParamsFeature
@@ -80,7 +80,7 @@ trait SkinnyControllerCommonBase
    * @return body if possible
    */
   protected def haltWithBody[A](httpStatus: Int)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): A = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): A = {
     halt(httpStatus, renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message)))
   }
 

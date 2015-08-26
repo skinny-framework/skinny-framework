@@ -1,7 +1,7 @@
 package skinny.controller
 
 import skinny._
-import skinny.engine.routing.Route
+import skinny.micro.routing.Route
 import skinny.routing.Routes
 import skinny.routing.implicits.RoutesAsImplicits
 
@@ -10,13 +10,14 @@ import skinny.routing.implicits.RoutesAsImplicits
  */
 trait SkinnyApiResourceRoutes[Id]
     extends SkinnyControllerBase
+    with RoutesAsImplicits
     with Routes { self: SkinnyApiResourceActions[Id] =>
 
   /**
    * Set Content-Type response header which is suitable for specified extension.
    */
   protected def setContentTypeFromSkinnyApiResourceExtParam: Unit = {
-    params.get("ext").foreach(f => setContentTypeIfAbsent()(engine.Format(f)))
+    params.get("ext").foreach(f => setContentTypeIfAbsent()(skinny.micro.Format(f)))
   }
 
   /**
@@ -104,7 +105,7 @@ trait SkinnyApiResourceRoutes[Id]
   }).as('updateApi)
 
   protected def updateApiAction = {
-    params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>
+    params.get("ext").map(ext => skinny.micro.Format(ext)).map { implicit format =>
       format match {
         case Format.HTML => haltWithBody(404)
         case _ =>
@@ -125,7 +126,7 @@ trait SkinnyApiResourceRoutes[Id]
   }).as('destroyApi)
 
   protected def deleteApiAction = {
-    params.get("ext").map(ext => engine.Format(ext)).map { implicit format =>
+    params.get("ext").map(ext => skinny.micro.Format(ext)).map { implicit format =>
       format match {
         case Format.HTML => haltWithBody(404)
         case _ =>

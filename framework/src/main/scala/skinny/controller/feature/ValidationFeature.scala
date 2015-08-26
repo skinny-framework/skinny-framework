@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.SkinnyMicroBase
+import skinny.micro.context.SkinnyContext
 import skinny.validator._
 import skinny.validator.NewValidation
 import skinny.validator.MapValidator
@@ -15,7 +15,7 @@ import skinny.util.StringUtil.toCamelCase
  */
 trait ValidationFeature {
 
-  self: SkinnyEngineBase with RequestScopeFeature with LocaleFeature =>
+  self: SkinnyMicroBase with RequestScopeFeature with LocaleFeature =>
 
   /**
    * Creates new validation form.
@@ -65,7 +65,7 @@ trait ValidationFeature {
    * @return validator
    */
   def validationWithPrefix(params: Params, prefix: String, validations: NewValidation*)(
-    implicit ctx: SkinnyEngineContext): MapValidator = {
+    implicit ctx: SkinnyContext): MapValidator = {
     implicit val locale: Locale = currentLocale(ctx).orNull[Locale]
 
     if (params == null) {

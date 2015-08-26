@@ -1,11 +1,11 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 
 /**
  * Supports snake_case'd keys for parameter names.
  */
-trait SnakeCasedParamKeysFeature extends SkinnyEngineBase {
+trait SnakeCasedParamKeysFeature extends SkinnyMicroBase {
 
   /**
    * Defines use snake_case'd keys.

@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.context.SkinnyContext
 import skinny._
 import skinny.view.velocity._
 
@@ -21,7 +21,7 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   protected def templatePath(path: String)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     s"${path}.${format.name}.${velocityExtension}".replaceAll("//", "/")
   }
 
@@ -30,7 +30,7 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyEngineContext, format: Format = Format.HTML): String = {
+    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     velocity.render(templatePath(path)(ctx, format), requestScope(ctx).toMap, ctx.request, ctx.response)
   }
 

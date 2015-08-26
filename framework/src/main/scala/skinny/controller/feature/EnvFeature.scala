@@ -1,12 +1,12 @@
 package skinny.controller.feature
 
 import skinny.SkinnyEnv
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 
 /**
  * SkinnyEnv support.
  */
-trait EnvFeature extends SkinnyEngineBase {
+trait EnvFeature extends SkinnyMicroBase {
 
   /**
    * Env string value from "skinny.env" or "org.scalatra.environment".

@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.engine.SkinnyEngineBase
+import skinny.micro.SkinnyMicroBase
 
 /**
  * Server side implementation for Angular apps.
@@ -10,6 +10,6 @@ trait AngularXHRServerFeature
     with JSONParamsAutoBinderFeature
     with AngularXSRFProtectionFeature {
 
-  self: SkinnyEngineBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature =>
+  self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature =>
 
 }

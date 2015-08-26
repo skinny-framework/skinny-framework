@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.SkinnyEngineServlet
+import skinny.micro.SkinnyMicroServlet
 
 /**
  * Skinny Servlet Controller for REST APIs.
@@ -8,5 +8,5 @@ import skinny.engine.SkinnyEngineServlet
  * NOTICE: If you'd like to disable Set-Cookie header for session id, configure in web.xml
  */
 trait SkinnyApiServlet
-  extends SkinnyEngineServlet
+  extends SkinnyMicroServlet
   with SkinnyControllerBase

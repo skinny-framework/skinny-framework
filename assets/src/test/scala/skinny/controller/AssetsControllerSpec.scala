@@ -10,7 +10,7 @@ import org.mockito.Mockito._
 import org.mockito.Matchers.anyString
 import org.mockito.internal.stubbing.answers._
 import skinny.SkinnyEnv
-import skinny.engine.context.SkinnyEngineContext
+import skinny.micro.context.SkinnyContext
 import skinny.test.MockController
 
 class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
@@ -25,7 +25,7 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
     }
 
     var _path: String = ""
-    override def multiParams(key: String)(implicit ctx: SkinnyEngineContext): Seq[String] = {
+    override def multiParams(key: String)(implicit ctx: SkinnyContext): Seq[String] = {
       if (key == "splat") Seq(_path) else Seq.empty
     }
 

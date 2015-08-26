@@ -1,6 +1,6 @@
 package skinny.controller
 
-import skinny.engine.flash.FlashMap
+import skinny.micro.flash.FlashMap
 
 import scala.language.dynamics
 
