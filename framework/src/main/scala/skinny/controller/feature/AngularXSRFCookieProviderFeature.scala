@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.micro.csrf.CsrfTokenGenerator
+import skinny.micro.contrib.csrf.CSRFTokenGenerator
 
 /**
  * Angular.js Cross Site Request Forgery (XSRF) Protection support.
@@ -13,7 +13,7 @@ trait AngularXSRFCookieProviderFeature { self: BeforeAfterActionFeature =>
 
   beforeAction() {
     if (cookies(context).get(xsrfCookieName).isEmpty) {
-      cookies(context) += (xsrfCookieName -> CsrfTokenGenerator())
+      cookies(context) += (xsrfCookieName -> CSRFTokenGenerator())
     }
   }
 

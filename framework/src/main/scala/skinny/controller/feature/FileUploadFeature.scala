@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
 import skinny.micro.SkinnyMicroServlet
-import skinny.micro.multipart.FileUploadSupport
+import skinny.micro.contrib.FileUploadSupport
 
 /**
  * File upload feature.

@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
 import skinny.micro.SkinnyMicroBase
-import skinny.micro.csrf.CsrfTokenSupport
+import skinny.micro.contrib.CSRFTokenSupport
 import skinny.logging.LoggerProvider
 
 object CSRFProtectionFeature {
@@ -14,7 +14,7 @@ object CSRFProtectionFeature {
 /**
  * Provides Cross-Site Request Forgery (CSRF) protection.
  */
-trait CSRFProtectionFeature extends CsrfTokenSupport {
+trait CSRFProtectionFeature extends CSRFTokenSupport {
 
   self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 

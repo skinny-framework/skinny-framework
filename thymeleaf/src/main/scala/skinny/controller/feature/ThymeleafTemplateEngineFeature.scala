@@ -18,7 +18,7 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   /**
    * Set as cacheable if true.
    */
-  lazy val thymeleafCacheable: Boolean = !isDevelopmentMode
+  lazy val thymeleafCacheable: Boolean = !isDevelopment()
 
   /**
    * Default template mode.

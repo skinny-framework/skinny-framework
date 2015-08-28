@@ -72,7 +72,7 @@ object SkinnyAppBuild extends Build {
       Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
       Seq("import controller._", "import model._"),
-      Seq(Binding("context", "_root_.skinny.micro.scalate.SkinnyScalateRenderContext", importMembers = true, isImplicit = true)),
+      Seq(Binding("context", "_root_.skinny.micro.contrib.scalate.SkinnyScalateRenderContext", importMembers = true, isImplicit = true)),
       Some("templates")))
     }
   )
