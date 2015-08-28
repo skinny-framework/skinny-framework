@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val currentVersion = "2.0.0-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "0.9.5"
+  lazy val skinnyMicroVersion = "0.9.6"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val scalikeJDBCVersion = "2.2.8"
@@ -27,7 +27,7 @@ object SkinnyFrameworkBuild extends Build {
     dependencyOverrides += "org.slf4j" %  "slf4j-api"  % slf4jApiVersion,
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,

@@ -1,8 +1,8 @@
 package skinny.controller
 
-import skinny.micro.flash.FlashMap
-
 import scala.language.dynamics
+
+import skinny.micro.contrib.flash.FlashMap
 
 /**
  * org.scalatra.FlashMap wrapper.

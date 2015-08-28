@@ -4,6 +4,7 @@ import javax.servlet.http._
 import javax.servlet.ServletContext
 import org.json4s._
 import org.mockito.Mockito._
+import skinny.SkinnyEnv
 import skinny.micro.{ UnstableAccessValidation, SkinnyMicroParams }
 import skinny.micro.context.SkinnyContext
 import skinny.json.JSONStringOps
@@ -20,6 +21,8 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   case class RenderCall(path: String)
 
   private val _requestScope = TrieMap[String, Any]()
+
+  override def skipHaltingWhenRedirection = SkinnyEnv.isTest()
 
   override def contextPath = ""
 

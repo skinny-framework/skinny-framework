@@ -1,12 +1,13 @@
 package skinny.filter
 
+import skinny.micro.contrib.{ FlashMapSupport, CSRFTokenSupport }
+import skinny.micro.contrib.csrf.CSRFTokenGenerator
+import skinny.micro.contrib.flash.FlashMap
+
 import scala.language.implicitConversions
 
 import skinny.controller.feature._
-import skinny.micro.base.FlashMapSupport
 import skinny.micro.context.SkinnyContext
-import skinny.micro.csrf.{ CsrfTokenSupport, CsrfTokenGenerator }
-import skinny.micro.flash.FlashMap
 import skinny.session._
 import FlashMapSupport._
 
@@ -93,11 +94,11 @@ trait SkinnySessionFilter extends SkinnyFilter {
     }
     !request.requestMethod.isSafe &&
       skinnySession.getAttribute(csrfKey) != params.get(csrfKey) &&
-      !CsrfTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
+      !CSRFTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
   }
 
   override protected def prepareCsrfToken() = {
-    skinnySession.getAttributeOrElseUpdate(csrfKey, CsrfTokenGenerator())
+    skinnySession.getAttributeOrElseUpdate(csrfKey, CSRFTokenGenerator())
   }
 
   // --------------------------------------

@@ -2,7 +2,8 @@ package skinny.controller.feature
 
 import skinny.controller.Flash
 import skinny.micro.SkinnyMicroBase
-import skinny.micro.base.{ BeforeAfterDsl, FlashMapSupport }
+import skinny.micro.base.BeforeAfterDsl
+import skinny.micro.contrib.FlashMapSupport
 
 /**
  * Easy-to-use Flash support.

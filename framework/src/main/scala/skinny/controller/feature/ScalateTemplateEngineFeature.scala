@@ -4,7 +4,8 @@ import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
 import skinny.micro.context.SkinnyContext
-import skinny.micro.scalate.{ SkinnyScalateRenderContext, ScalateSupport }
+import skinny.micro.contrib.ScalateSupport
+import skinny.micro.contrib.scalate.SkinnyScalateRenderContext
 
 import scala.annotation.tailrec
 import java.io.PrintWriter

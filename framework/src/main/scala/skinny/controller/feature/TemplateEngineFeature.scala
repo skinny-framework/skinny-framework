@@ -1,12 +1,11 @@
 package skinny.controller.feature
 
 import skinny.Format
-import skinny.json.JSONStringOps
 import skinny.micro.context.SkinnyContext
+import skinny.micro.contrib.JSONSupport
 import skinny.micro.response.ResponseStatus
 import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException
-import skinny.json.JSONStringOpsConfig
 
 /**
  * TemplateEngine support for Skinny app.
@@ -14,8 +13,7 @@ import skinny.json.JSONStringOpsConfig
 trait TemplateEngineFeature
     extends SkinnyControllerCommonBase
     with RequestScopeFeature
-    with JSONStringOps
-    with JSONStringOpsConfig
+    with JSONSupport
     with LoggerProvider {
 
   /**
