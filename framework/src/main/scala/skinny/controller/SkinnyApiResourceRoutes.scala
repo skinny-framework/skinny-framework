@@ -23,7 +23,7 @@ trait SkinnyApiResourceRoutes[Id]
   /**
    * to enable params.getAs[Id]("id")
    */
-  implicit val scalatraParamsIdTypeConverter: TypeConverter[String, Id] = new TypeConverter[String, Id] {
+  implicit val skinnyMicroParamsIdTypeConverter: TypeConverter[String, Id] = new TypeConverter[String, Id] {
     def apply(s: String): Option[Id] = Option(s).map(_.asInstanceOf[Id])
   }
 

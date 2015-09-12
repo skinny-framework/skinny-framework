@@ -7,7 +7,7 @@ import model._
 class CompaniesController extends SkinnyResourceWithId[CompanyId] with ApplicationController {
   protectFromForgery()
 
-  implicit override val scalatraParamsIdTypeConverter = new skinny.TypeConverter[String, CompanyId] {
+  implicit override val skinnyMicroParamsIdTypeConverter = new skinny.TypeConverter[String, CompanyId] {
     def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
   }
 
