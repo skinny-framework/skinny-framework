@@ -8,7 +8,7 @@ trait ThreadLocalRequestFeature { self: BeforeAfterActionFeature =>
    * Stores request as a thread-local value.
    */
   beforeAction() {
-    ThreadLocalRequest.save(request)
+    ThreadLocalRequest.save(request(context))
   }
 
 }

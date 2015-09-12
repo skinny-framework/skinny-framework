@@ -15,7 +15,7 @@ trait XContentTypeOptionsNosniffHeaderFeature { self: SkinnyMicroBase with Befor
   // NOTE: To force this header to all responses
   //beforeAction() {
   before() {
-    response.setHeader("X-Content-Type-Options", "nosniff")
+    response(context).setHeader("X-Content-Type-Options", "nosniff")
   }
 
 }

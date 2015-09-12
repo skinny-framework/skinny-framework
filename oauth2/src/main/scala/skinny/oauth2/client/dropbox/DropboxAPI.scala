@@ -16,7 +16,7 @@ trait DropboxAPI extends LoggerProvider {
         BearerRequest("https://api.dropbox.com/1/account/info").accessToken(token.accessToken)
       }
       logger.debug(s"Dropbox authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[RawDropboxUser](response.body).map(_.toDropboxUser)
+      JSONStringOps.fromJSONString[RawDropboxUser](response.body).map(_.toDropboxUser).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Dropbox user information because ${e.getMessage}", e)

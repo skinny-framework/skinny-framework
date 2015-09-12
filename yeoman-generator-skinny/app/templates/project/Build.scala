@@ -32,7 +32,7 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"         %  "scala-library"            % scalaVersion.value,
       "org.scala-lang"         %  "scala-reflect"            % scalaVersion.value,
       "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
-      "org.scala-lang.modules" %% "scala-xml"                % "1.0.4",
+      "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
       "org.slf4j"              %  "slf4j-api"                % "1.7.12"
     ),

@@ -59,7 +59,7 @@ trait CSRFProtectionFeature extends CSRFTokenSupport {
         s"""
         | ------------------------------------------
         |  [CSRF Protection Enabled]
-        |  method      : ${request.getMethod}
+        |  method      : ${request(context).getMethod}
         |  requestPath : ${requestPath(context)}
         |  actionName  : ${currentActionName}
         |  only        : ${forgeryProtectionIncludedActionNames.mkString(", ")}

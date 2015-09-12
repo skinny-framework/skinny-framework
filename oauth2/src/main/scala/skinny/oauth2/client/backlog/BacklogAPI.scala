@@ -14,7 +14,7 @@ case class BacklogAPI(spaceID: String) extends LoggerProvider {
         BearerRequest(s"https://${spaceID}.backlogtool.com/api/v2/users/myself").accessToken(token.accessToken)
       }
       logger.debug(s"Backlog authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[BacklogUser](response.body)
+      JSONStringOps.fromJSONString[BacklogUser](response.body).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Backlog user information because ${e.getMessage}", e)

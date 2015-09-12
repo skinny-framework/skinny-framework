@@ -17,7 +17,7 @@ trait GooglePlusAPI extends LoggerProvider {
         BearerRequest("https://www.googleapis.com/plus/v1/people/me").accessToken(token.accessToken)
       }
       logger.debug(s"Google authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[GoogleUser](response.body)
+      JSONStringOps.fromJSONString[GoogleUser](response.body).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Google user information because ${e.getMessage}", e)

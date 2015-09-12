@@ -17,7 +17,7 @@ trait XFrameOptionsHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionF
 
   // NOTE: for all HTML responses defined as Skinny routes
   beforeAction() {
-    response.setHeader("X-Frame-Options", xFrameOptionsPolicy)
+    response(context).setHeader("X-Frame-Options", xFrameOptionsPolicy)
   }
 
 }

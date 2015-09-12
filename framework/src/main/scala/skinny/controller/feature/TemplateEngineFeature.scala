@@ -2,7 +2,7 @@ package skinny.controller.feature
 
 import skinny.Format
 import skinny.micro.context.SkinnyContext
-import skinny.micro.contrib.JSONSupport
+import skinny.micro.contrib.json4s.JSONSupport
 import skinny.micro.response.ResponseStatus
 import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException

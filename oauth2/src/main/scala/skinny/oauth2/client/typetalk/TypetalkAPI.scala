@@ -14,7 +14,7 @@ trait TypetalkAPI extends LoggerProvider {
         BearerRequest("https://typetalk.in/api/v1/profile").accessToken(token.accessToken)
       }
       logger.debug(s"Typetalk authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[MyProfileResponse](response.body).map(_.account)
+      JSONStringOps.fromJSONString[MyProfileResponse](response.body).map(_.account).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Typetalk user information because ${e.getMessage}", e)

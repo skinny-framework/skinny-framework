@@ -58,7 +58,7 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
         s"""
         | ------------------------------------------
         |  [Angular XSRF Protection Enabled]
-        |  method      : ${request.getMethod}
+        |  method      : ${request(context).getMethod}
         |  requestPath : ${requestPath(context)}
         |  actionName  : ${currentActionName}
         |  only        : ${forgeryProtectionIncludedActionNames.mkString(", ")}
@@ -88,6 +88,7 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
   def handleForgeryIfDetected(): Unit = halt(403)
 
   def isForged: Boolean = {
+    implicit val ctx = context
     val unsafeMethod = !request.requestMethod.isSafe
     val headerValue = request.headers.get(xsrfHeaderName)
     val cookieValue = request.cookies.get(xsrfCookieName)

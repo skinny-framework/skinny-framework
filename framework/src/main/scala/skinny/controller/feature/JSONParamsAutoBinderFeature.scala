@@ -1,6 +1,6 @@
 package skinny.controller.feature
 
-import skinny.micro.contrib.JSONParamsAutoBinderSupport
+import skinny.micro.contrib.json4s.JSONParamsAutoBinderSupport
 
 /**
  * Merging JSON request body into Scalatra params.

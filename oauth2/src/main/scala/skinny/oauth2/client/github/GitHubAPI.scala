@@ -16,7 +16,7 @@ trait GitHubAPI extends LoggerProvider {
         BearerRequest("https://api.github.com/user").accessToken(token.accessToken)
       }
       logger.debug(s"GitHub authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[GitHubUser](response.body)
+      JSONStringOps.fromJSONString[GitHubUser](response.body).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current GitHub user information because ${e.getMessage}", e)

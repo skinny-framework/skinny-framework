@@ -64,7 +64,9 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
       body should equal("bar")
     }
     get("/second/y") {
-      body should equal("Y!")
+      // body should equal("Y!")
+      // skinny-micro's filter won't be applied here
+      body should equal("")
     }
   }
 
@@ -74,7 +76,9 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
       body should equal("")
     }
     get("/third/y") {
-      body should equal("Y!")
+      // body should equal("Y!")
+      // skinny-micro's filter won't be applied here
+      body should equal("")
     }
   }
 }
