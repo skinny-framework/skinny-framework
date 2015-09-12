@@ -9,7 +9,7 @@ import skinny.micro.implicits.TypeConverters
  */
 trait SkinnyResource extends SkinnyResourceWithId[Long] {
 
-  implicit override val scalatraParamsIdTypeConverter: TypeConverter[String, Long] = TypeConverters.stringToLong
+  implicit override val skinnyMicroParamsIdTypeConverter: TypeConverter[String, Long] = TypeConverters.stringToLong
 }
 
 trait SkinnyResourceWithId[Id]
