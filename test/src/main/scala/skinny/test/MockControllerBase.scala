@@ -38,9 +38,9 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
     new MockHttpServletResponse
   }
 
-  override def request(implicit ctx: SkinnyContext): HttpServletRequest = mockRequest
+  override def request(implicit ctx: SkinnyContext = context): HttpServletRequest = mockRequest
 
-  override def response(implicit ctx: SkinnyContext): HttpServletResponse = mockResponse
+  override def response(implicit ctx: SkinnyContext = context): HttpServletResponse = mockResponse
 
   override implicit def servletContext: ServletContext = mock(classOf[ServletContext])
 
@@ -73,9 +73,9 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   private[this] val _params = TrieMap[String, Seq[String]]()
-  private def _scalatraParams = new SkinnyMicroParams(_params.toMap)
+
   override def params(implicit ctx: SkinnyContext) = {
-    val mergedParams = (super.params(ctx) ++ _scalatraParams).mapValues(v => Seq(v))
+    val mergedParams = (super.params(ctx) ++ new SkinnyMicroParams(_params.toMap)).mapValues(v => Seq(v))
     new SkinnyMicroParams(if (_parsedBody.isDefined) {
       getMergedMultiParams(mergedParams, parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v)))
     } else {
@@ -92,8 +92,8 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
     _parsedBody.getOrElse(JNothing)
   }
 
-  def prepareJSONBodyRequest(json: String) = {
-    _parsedBody = JSONStringOps.fromJSONStringToJValue(json)
+  def prepareJSONBodyRequest(json: String): Unit = {
+    _parsedBody = JSONStringOps.fromJSONStringToJValue(json).toOption
   }
 
   // initialize this controller

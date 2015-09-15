@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val currentVersion = "2.0.0-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "0.9.6"
+  lazy val skinnyMicroVersion = "0.9.11"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val scalikeJDBCVersion = "2.2.8"
@@ -19,12 +19,13 @@ object SkinnyFrameworkBuild extends Build {
   lazy val jettyVersion = "9.2.13.v20150730"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
+  lazy val json4SVersion = "3.3.0.RC5"
   lazy val scalaTestVersion = "2.2.5"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
     version := currentVersion,
-    dependencyOverrides += "org.slf4j" %  "slf4j-api"  % slf4jApiVersion,
+    dependencyOverrides += "org.slf4j" % "slf4j-api" % slf4jApiVersion,
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -91,7 +92,6 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies <++= (scalaVersion) { (sv) =>
         Seq(
           "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion        % Compile,
-          "org.skinny-framework" %% "skinny-micro-json"    % skinnyMicroVersion        % Compile,
           "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion        % Compile,
           "commons-io"           %  "commons-io"           % "2.4"                     % Compile,
           "org.scalatra"         %% "scalatra-specs2"      % compatibleScalatraVersion % Test,
@@ -101,6 +101,7 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(
     common,
+    json,
     validator,
     orm,
     mailer,
@@ -230,7 +231,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-json",
       libraryDependencies ++= Seq(
-        "org.skinny-framework" %% "skinny-micro-json" % skinnyMicroVersion % Compile
+        "org.skinny-framework" %% "skinny-micro-json4s" % skinnyMicroVersion % Compile
       ) ++ testDependencies
     )
   )
@@ -239,11 +240,10 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-oauth2",
       libraryDependencies ++= Seq(
-        "org.skinny-framework"   %% "skinny-micro-json"             % skinnyMicroVersion % Compile,
         "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.0"            % Compile exclude("org.slf4j", "slf4j-api")
       ) ++ servletApiDependencies ++ testDependencies
     )
-  ).dependsOn(common)
+  ).dependsOn(common, json)
 
   lazy val oauth2Controller = Project(id = "oauth2Controller", base = file("oauth2-controller"),
     settings = baseSettings ++ Seq(

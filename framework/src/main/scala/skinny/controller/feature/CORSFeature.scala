@@ -11,7 +11,7 @@ import skinny.micro.SkinnyMicroBase
 trait CORSFeature { self: SkinnyMicroBase with BeforeAfterActionFeature =>
 
   beforeAction() {
-    response.setHeader("Access-Control-Allow-Origin", "*")
+    response(context).setHeader("Access-Control-Allow-Origin", "*")
   }
 
 }

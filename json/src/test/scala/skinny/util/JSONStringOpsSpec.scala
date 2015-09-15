@@ -3,6 +3,8 @@ package skinny.util
 import org.scalatest._
 import skinny.json.JSONStringOps
 
+import scala.util.{ Success, Try }
+
 // http://www.playframework.com/documentation/2.2.x/ScalaJson
 case class UserResponse(user: User)
 case class User(name: String, age: Int, email: String, isAlive: Boolean = false, friend: Option[User] = None)
@@ -29,7 +31,7 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
         """.stripMargin
 
       val userResponse = JSONStringOps.fromJSONString[UserResponse](jsonString)
-      userResponse.isDefined should be(true)
+      userResponse.isSuccess should be(true)
 
       val user = userResponse.get.user
       user.age should equal(25)
@@ -61,7 +63,7 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
     it("converts JSON string value to Something object") {
       val source = Something("abC", 123)
       val json = JSONStringOps.toJSONStringAsIs(source)
-      val result: Option[Something] = JSONStringOps.fromJSONString[Something](json, false)
+      val result: Try[Something] = JSONStringOps.fromJSONString[Something](json, false)
       result.get.fooBarBaz should equal(source.fooBarBaz)
       result.get.hogeFooBar should equal(source.hogeFooBar)
     }
@@ -69,7 +71,7 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
     it("converts snake_cased JSON string value to Something object") {
       val source = Something("abC", 123)
       val json = JSONStringOps.toJSONString(source, true)
-      val result: Option[Something] = JSONStringOps.fromJSONString[Something](json, false)
+      val result: Try[Something] = JSONStringOps.fromJSONString[Something](json, false)
       result.get.fooBarBaz should equal(source.fooBarBaz)
       result.get.hogeFooBar should equal(source.hogeFooBar)
     }
@@ -97,10 +99,10 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
         "name" -> "name's length must be less than 32.",
         "something_like_that" -> "")
 
-      val result: Option[Map[String, Any]] = JSONStringOps.fromJSONString[Map[String, String]](
+      val result: Try[Map[String, Any]] = JSONStringOps.fromJSONString[Map[String, String]](
         JSONStringOps.toJSONString(source), true)
 
-      result.get should equal(source)
+      result should equal(Success(source))
     }
 
   }

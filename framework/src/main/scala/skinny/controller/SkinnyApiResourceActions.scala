@@ -214,7 +214,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
       }
       status = 201
       val ext = if (format == Format.HTML) "" else "." + format.name
-      response.setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}${ext}")
+      response(context).setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}${ext}")
     } else {
       status = 400
       renderWithFormat(keyAndErrorMessages)

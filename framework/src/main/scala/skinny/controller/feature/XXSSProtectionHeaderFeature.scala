@@ -11,7 +11,7 @@ trait XXSSProtectionHeaderFeature { self: SkinnyMicroBase with BeforeAfterAction
 
   // NOTE: for all HTML responses defined as Skinny routes
   beforeAction() {
-    response.setHeader("X-XSS-Protection", "1; mode=block")
+    response(context).setHeader("X-XSS-Protection", "1; mode=block")
   }
 
 }

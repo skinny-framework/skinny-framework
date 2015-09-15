@@ -16,7 +16,7 @@ trait FacebookGraphAPI extends LoggerProvider {
         BearerRequest("https://graph.facebook.com/v2.1/me").accessToken(token.accessToken)
       }
       logger.debug(s"Facebook authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[FacebookUser](response.body)
+      JSONStringOps.fromJSONString[FacebookUser](response.body).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Facebook user information because ${e.getMessage}", e)
