@@ -95,8 +95,7 @@ object SkinnyFrameworkBuild extends Build {
         "commons-httpclient" %  "commons-httpclient" % "3.1",
         "javax.servlet"      %  "javax.servlet-api"  % "3.0.1",
         "org.eclipse.jetty"  %  "jetty-server"       % jettyVersion,
-        "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion,
-        "org.specs2"         %% "specs2-core"        % "2.4.17"       % Test
+        "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion
       ) ++ slf4jApiDependencies ++ testDependencies
     )
   ).dependsOn(common)
@@ -121,7 +120,6 @@ object SkinnyFrameworkBuild extends Build {
     orm,
     mailer,
     httpClient,
-    httpTestSuite,
     worker
   )
 
