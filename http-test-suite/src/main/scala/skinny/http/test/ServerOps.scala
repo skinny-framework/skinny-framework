@@ -1,7 +1,7 @@
-package skinny.http
+package skinny.http.test
 
 import org.eclipse.jetty.server.Server
-import server.HttpServer
+import skinny.http.test.server.HttpServer
 
 trait ServerOps {
 

@@ -1,7 +1,7 @@
-package server.handler;
+package skinny.http.test.server.handler;
 
 import org.eclipse.jetty.server.Request;
-import skinny.http.Method;
+import skinny.http.test.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 public class OptionsMethodHandler extends MethodHandler {
 
     @Override
-    public Method getMethod() {
-        return Method.OPTIONS();
+    public HttpMethod getMethod() {
+        return HttpMethod.OPTIONS();
     }
 
-    public void _handle(Boolean isAllowed, Method method, Request baseRequest, HttpServletRequest request,
+    public void _handle(Boolean isAllowed, HttpMethod method, Request baseRequest, HttpServletRequest request,
                         HttpServletResponse response) throws Exception {
         if (isAllowed) {
             response.setStatus(HttpServletResponse.SC_OK);
