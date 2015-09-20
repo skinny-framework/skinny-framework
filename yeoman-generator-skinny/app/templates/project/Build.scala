@@ -15,7 +15,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.0-SNAPSHOT"
+  val skinnyVersion = "2.0.0.RC1"
   val theScalaVersion = "2.11.7"
   val jettyVersion = "9.2.13.v20150730"
 
@@ -53,7 +53,7 @@ object SkinnyAppBuild extends Build {
     ).map(applyDefaultExclusions),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     // Faster "./skinny idea"
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
