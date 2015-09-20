@@ -42,7 +42,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
       "org.skinny-framework"    %  "skinny-logback"       % "1.0.6",
       "org.apache.commons"      %  "commons-dbcp2"        % "2.1",
-      "com.h2database"          %  "h2"                   % "1.4.188",      // your own JDBC driver
+      "com.h2database"          %  "h2"                   % "1.4.189",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
       // for Skinny 1.x tests compatibility
@@ -53,7 +53,7 @@ object SkinnyAppBuild extends Build {
     ).map(applyDefaultExclusions),
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     // Faster "./skinny idea"
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),

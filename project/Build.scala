@@ -8,18 +8,17 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val currentVersion = "2.0.0-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "0.9.11"
+  lazy val skinnyMicroVersion = "0.9.12-SNAPSHOT"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val scalikeJDBCVersion = "2.2.8"
-  lazy val h2Version = "1.4.188"
-  lazy val kuromojiVersion = "5.2.1"
+  lazy val h2Version = "1.4.189"
+  lazy val kuromojiVersion = "5.3.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.13.v20150730"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.12"
-  lazy val json4SVersion = "3.3.0.RC5"
   lazy val scalaTestVersion = "2.2.5"
 
   lazy val baseSettings = Seq(
@@ -148,8 +147,8 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"    %  "flyway-core"    % "3.2.1"        % Compile,
-        "org.hibernate"   %  "hibernate-core" % "4.3.11.Final" % Test
+        "org.flywaydb"    %  "flyway-core"    % "3.2.1"       % Compile,
+        "org.hibernate"   %  "hibernate-core" % "5.0.1.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common) // TODO micro-common
@@ -183,7 +182,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.2.9"             % Compile exclude("org.thymeleaf", "thymeleaf"),
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
       ) ++ testDependencies
