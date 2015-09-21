@@ -1,7 +1,7 @@
-package server.handler;
+package skinny.http.test.server.handler;
 
 import org.eclipse.jetty.server.Request;
-import skinny.http.Method;
+import skinny.http.test.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,11 +12,11 @@ import java.io.InputStreamReader;
 public class PutBodyMethodHandler extends MethodHandler {
 
     @Override
-    public Method getMethod() {
-        return Method.PUT();
+    public HttpMethod getMethod() {
+        return HttpMethod.PUT();
     }
 
-    public void _handle(Boolean isAllowed, Method method,
+    public void _handle(Boolean isAllowed, HttpMethod method,
                         Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (isAllowed) {
             InputStream is = request.getInputStream();

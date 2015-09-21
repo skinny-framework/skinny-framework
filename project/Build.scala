@@ -83,7 +83,21 @@ object SkinnyFrameworkBuild extends Build {
         "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion % Test
       ) ++ slf4jApiDependencies ++ testDependencies
     )
-  ).dependsOn(common) // TODO
+  ).dependsOn(common, httpTestSuite % "test->test") // TODO
+
+  lazy val httpTestSuite = Project(id = "httpTestSuite", base = file("http-test-suite"),
+    settings = baseSettings ++ Seq(
+      name := "skinny-http-test-suite",
+      libraryDependencies ++= Seq(
+        "commons-fileupload" %  "commons-fileupload" % "1.3.1",
+        "commons-io"         %  "commons-io"         % "2.4",
+        "commons-httpclient" %  "commons-httpclient" % "3.1",
+        "javax.servlet"      %  "javax.servlet-api"  % "3.0.1",
+        "org.eclipse.jetty"  %  "jetty-server"       % jettyVersion,
+        "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion
+      ) ++ slf4jApiDependencies ++ testDependencies
+    )
+  ).dependsOn(common)
 
   lazy val framework = Project(id = "framework", base = file("framework"),
     settings = baseSettings ++ Seq(

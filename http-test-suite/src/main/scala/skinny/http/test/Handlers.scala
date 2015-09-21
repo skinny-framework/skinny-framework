@@ -1,9 +1,10 @@
-package skinny.http
+package skinny.http.test
+
+import javax.servlet.http._
 
 import org.eclipse.jetty.server.handler.AbstractHandler
-import org.eclipse.jetty.server.{ Request => BaseRequest }
-import javax.servlet.http._
-import server.handler.MethodHandler
+import org.eclipse.jetty.server.{Request => BaseRequest}
+import skinny.http.test.server.handler.MethodHandler
 
 trait Handlers {
 
@@ -60,15 +61,15 @@ trait Handlers {
   }
 
   val deleteHandler = new MethodHandler {
-    override def getMethod: Method = Method.DELETE
+    override def getMethod: HttpMethod = HttpMethod.DELETE
   }
 
   val traceHandler = new MethodHandler {
-    override def getMethod: Method = Method.TRACE
+    override def getMethod: HttpMethod = HttpMethod.TRACE
   }
 
   val optionsHandler = new MethodHandler {
-    override def getMethod: Method = Method.OPTIONS
+    override def getMethod: HttpMethod = HttpMethod.OPTIONS
   }
 
 }

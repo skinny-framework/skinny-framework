@@ -1,6 +1,7 @@
 package skinny.http
 
 import org.specs2.mutable.Specification
+import skinny.http.test.{ Handlers, ServerOps }
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.io.File
@@ -150,7 +151,7 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
     }
 
     "post with TextInput" in {
-      withServer(new _root_.server.PostFormdataServer(8888)) { server =>
+      withServer(new skinny.http.test.server.PostFormdataServer(8888)) { server =>
         start(server)
 
         val response = HTTP.postMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar")))
@@ -160,7 +161,7 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
     }
 
     "post with FileInput" in {
-      withServer(new _root_.server.PostFormdataServer(8888)) { server =>
+      withServer(new skinny.http.test.server.PostFormdataServer(8888)) { server =>
         start(server)
 
         val file = new File("http-client/src/test/resources/sample.txt")
@@ -198,7 +199,7 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
     }
 
     "post asynchronously with TextInput" in {
-      withServer(new _root_.server.PostFormdataServer(8888)) { server =>
+      withServer(new skinny.http.test.server.PostFormdataServer(8888)) { server =>
         start(server)
 
         val response = Await.result(HTTP.asyncPostMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar"))), 5.seconds)

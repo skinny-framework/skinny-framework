@@ -1,15 +1,15 @@
-package server.handler;
+package skinny.http.test.server.handler;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import skinny.http.Method;
+import skinny.http.test.HttpMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public abstract class MethodHandler extends AbstractHandler {
 
-    public abstract Method getMethod();
+    public abstract HttpMethod getMethod();
 
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) {
@@ -20,7 +20,7 @@ public abstract class MethodHandler extends AbstractHandler {
         }
     }
 
-    public void _handle(Boolean isAllowed, Method method, Request baseRequest, HttpServletRequest request,
+    public void _handle(Boolean isAllowed, HttpMethod method, Request baseRequest, HttpServletRequest request,
                         HttpServletResponse response) throws Exception {
         if (isAllowed) {
             if (request.getRequestURI().equals("/not_found")) {
