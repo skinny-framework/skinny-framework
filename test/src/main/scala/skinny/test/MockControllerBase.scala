@@ -45,7 +45,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   override implicit def servletContext: ServletContext = mock(classOf[ServletContext])
 
   override implicit def skinnyContext(implicit ctx: ServletContext): SkinnyContext = {
-    SkinnyContext.build(ctx, mockRequest, mockResponse, UnstableAccessValidation(true))
+    SkinnyContext.build(ctx, mockRequest, mockResponse, UnstableAccessValidation(true, false))
   }
 
   override def halt[T: Manifest](

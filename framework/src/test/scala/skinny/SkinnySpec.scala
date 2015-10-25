@@ -20,7 +20,7 @@ class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   val i18n = I18n()
   requestScope.put("i18n", i18n)
 
-  val skinnyObject = Skinny(SkinnyContext.buildWithRequest(request, UnstableAccessValidation(true)), requestScope)
+  val skinnyObject = Skinny(SkinnyContext.buildWithRequest(request, UnstableAccessValidation(true, false)), requestScope)
 
   it should "have #contextPath" in {
     skinnyObject.contextPath should equal("/foo")
@@ -105,7 +105,7 @@ class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   object Controller extends SkinnyController with Routes {
     val indexUrl = get("/")("ok").as('index)
     get("/redirect") {
-      val skinnyObject = Skinny(SkinnyContext.buildWithRequest(request, UnstableAccessValidation(true)), requestScope)
+      val skinnyObject = Skinny(SkinnyContext.buildWithRequest(request, UnstableAccessValidation(true, false)), requestScope)
       val urlString = skinnyObject.url(indexUrl, "id" -> "123")
       urlString should equal("/?id=123")
       redirect302(url(indexUrl))
