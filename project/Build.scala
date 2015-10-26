@@ -242,7 +242,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-oauth2",
       libraryDependencies ++= Seq(
         "org.skinny-framework"   %% "skinny-micro-common"           % skinnyMicroVersion % Compile,
-        "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.0"            % Compile exclude("org.slf4j", "slf4j-api")
+        "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.1"            % Compile exclude("org.slf4j", "slf4j-api")
       ) ++ servletApiDependencies ++ testDependencies
     )
   ).dependsOn(json)
@@ -260,7 +260,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-twitter-controller",
       libraryDependencies ++= Seq(
-        "org.twitter4j"        %  "twitter4j-core"    % "4.0.3"            % Compile,
+        "org.twitter4j"        %  "twitter4j-core"    % "4.0.4"            % Compile,
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ servletApiDependencies ++ testDependencies
     )
@@ -355,8 +355,8 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.8.2"  % Compile,
-    "org.joda"      %  "joda-convert"     % "1.8.1"  % Compile
+    "joda-time"     %  "joda-time"        % "2.9"   % Compile,
+    "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
     "javax.mail"              %  "mail"            % "1.4.7"          % Compile,
