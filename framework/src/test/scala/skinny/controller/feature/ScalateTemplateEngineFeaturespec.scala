@@ -85,7 +85,10 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
 
   before {
     // Delete any auto-generated templates
-    for (f <- templateFiles.filter(_.getName.startsWith("xyz"))) {
+    for {
+      files <- Option(templateFiles)
+      f <- files.filter(_.getName.startsWith("xyz"))
+    } {
       f.delete()
     }
   }

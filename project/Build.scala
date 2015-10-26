@@ -6,14 +6,14 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.0.RC1"
+  lazy val currentVersion = "2.0.0-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "0.9.12"
+  lazy val skinnyMicroVersion = "0.9.14"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
-  lazy val scalikeJDBCVersion = "2.2.8"
-  lazy val h2Version = "1.4.189"
-  lazy val kuromojiVersion = "5.3.0"
+  lazy val scalikeJDBCVersion = "2.2.9"
+  lazy val h2Version = "1.4.190"
+  lazy val kuromojiVersion = "5.3.1"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.13.v20150730"
@@ -27,7 +27,7 @@ object SkinnyFrameworkBuild extends Build {
     dependencyOverrides += "org.slf4j" % "slf4j-api" % slf4jApiVersion,
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
-      , "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     publishMavenStyle := true,
@@ -36,10 +36,14 @@ object SkinnyFrameworkBuild extends Build {
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     publishMavenStyle := true,
+    // NOTE: for stability
+    parallelExecution in Test := false,
     publishArtifact in Test := false,
     pomIncludeRepository := { x => false },
     transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
     incOptions := incOptions.value.withNameHashing(true),
+    // NOTE: forking when testing doesn't work for some existing tests
+    // fork in Test := true,
     logBuffered in Test := false,
     javaOptions in Test ++= Seq("-Dskinny.env=test"),
     updateOptions := updateOptions.value.withCachedResolution(true),
@@ -74,16 +78,17 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
-        "org.specs2"         %% "specs2-core"        % "2.4.17"     % Test,
-        "commons-fileupload" %  "commons-fileupload" % "1.3.1"      % Test,
-        "commons-io"         %  "commons-io"         % "2.4"        % Test,
-        "commons-httpclient" %  "commons-httpclient" % "3.1"        % Test,
-        "javax.servlet"      %  "javax.servlet-api"  % "3.0.1"      % Test,
-        "org.eclipse.jetty"  %  "jetty-server"       % jettyVersion % Test,
-        "org.eclipse.jetty"  %  "jetty-servlet"      % jettyVersion % Test
+        "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
+        "org.specs2"           %% "specs2-core"         % "2.4.17"           % Test,
+        "commons-fileupload"   %  "commons-fileupload"  % "1.3.1"            % Test,
+        "commons-io"           %  "commons-io"          % "2.4"              % Test,
+        "commons-httpclient"   %  "commons-httpclient"  % "3.1"              % Test,
+        "javax.servlet"        %  "javax.servlet-api"   % "3.0.1"            % Test,
+        "org.eclipse.jetty"    %  "jetty-server"        % jettyVersion       % Test,
+        "org.eclipse.jetty"    %  "jetty-servlet"       % jettyVersion       % Test
       ) ++ slf4jApiDependencies ++ testDependencies
     )
-  ).dependsOn(common) // TODO
+  )
 
   lazy val framework = Project(id = "framework", base = file("framework"),
     settings = baseSettings ++ Seq(
@@ -111,9 +116,11 @@ object SkinnyFrameworkBuild extends Build {
   lazy val worker = Project(id = "worker", base = file("worker"),
     settings = baseSettings ++ Seq(
       name := "skinny-worker",
-      libraryDependencies ++= testDependencies
+      libraryDependencies ++= jodaDependencies ++ testDependencies ++ Seq(
+        "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile
+      )
     )
-  ).dependsOn(common) // TODO
+  )
 
   // just keeping compatibility with 1.x
   lazy val standalone = Project(id = "standalone", base = file("standalone"),
@@ -139,19 +146,22 @@ object SkinnyFrameworkBuild extends Build {
   lazy val task = Project(id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
       name := "skinny-task",
-      libraryDependencies ++= Seq("commons-io" %  "commons-io" % "2.4") ++ testDependencies
+      libraryDependencies ++= Seq(
+        "commons-io"           %  "commons-io"          % "2.4"              % Compile,
+        "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile
+      ) ++ testDependencies
     )
-  ).dependsOn(common, orm % "provided->compile")
+  ).dependsOn(orm % "provided->compile")
 
   lazy val orm = Project(id = "orm", base = file("orm"), 
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"    %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate"   %  "hibernate-core" % "5.0.1.Final" % Test
+        "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
+        "org.hibernate" %  "hibernate-core" % "5.0.2.Final" % Test
       ) ++ testDependencies
     )
-  ).dependsOn(common) // TODO micro-common
+  ).dependsOn(common)
 
   lazy val factoryGirl = Project(id = "factoryGirl", base = file("factory-girl"),
     settings = baseSettings ++ Seq(
@@ -162,7 +172,7 @@ object SkinnyFrameworkBuild extends Build {
         ) ++ testDependencies
       }
     )
-  ).dependsOn(common, orm)
+  ).dependsOn(orm)
 
   lazy val freemarker = Project(id = "freemarker", base = file("freemarker"),
     settings = baseSettings ++ Seq(
@@ -173,23 +183,19 @@ object SkinnyFrameworkBuild extends Build {
         "org.skinny-framework" %% "skinny-micro-test"  % skinnyMicroVersion  % Test
       ) ++ testDependencies
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   lazy val thymeleaf = Project(id = "thymeleaf", base = file("thymeleaf"),
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.1"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
       ) ++ testDependencies
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   lazy val velocity = Project(id = "velocity", base = file("velocity"),
     settings = baseSettings ++ Seq(
@@ -204,9 +210,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ testDependencies 
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   lazy val scaldi = Project(id = "scaldi", base = file("scaldi"),
     settings = baseSettings ++ Seq(
@@ -221,9 +225,7 @@ object SkinnyFrameworkBuild extends Build {
         ) ++ testDependencies
       }
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   // just keeping compatibility with 1.x
   lazy val json = Project(id = "json", base = file("json"),
@@ -239,10 +241,11 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-oauth2",
       libraryDependencies ++= Seq(
+        "org.skinny-framework"   %% "skinny-micro-common"           % skinnyMicroVersion % Compile,
         "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.0"            % Compile exclude("org.slf4j", "slf4j-api")
       ) ++ servletApiDependencies ++ testDependencies
     )
-  ).dependsOn(common, json)
+  ).dependsOn(json)
 
   lazy val oauth2Controller = Project(id = "oauth2Controller", base = file("oauth2-controller"),
     settings = baseSettings ++ Seq(
@@ -251,10 +254,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ testDependencies
     )
-  ).dependsOn(
-    framework, 
-    oauth2
-  )
+  ).dependsOn(framework, oauth2)
 
   lazy val twitterController = Project(id = "twitterController", base = file("twitter-controller"),
     settings = baseSettings ++ Seq(
@@ -264,23 +264,21 @@ object SkinnyFrameworkBuild extends Build {
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ servletApiDependencies ++ testDependencies
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   lazy val validator = Project(id = "validator", base = file("validator"),
     settings = baseSettings ++ Seq(
       name := "skinny-validator",
       libraryDependencies ++= jodaDependencies ++ testDependencies
     )
-  ).dependsOn(common) // TODO micro?
+  ).dependsOn(common)
 
   lazy val mailer = Project( id = "mailer", base = file("mailer"),
     settings = baseSettings ++ Seq(
       name := "skinny-mailer",
-      libraryDependencies ++= mailDependencies ++ testDependencies
+      libraryDependencies ++= mailDependencies ++ jodaDependencies ++ testDependencies
     )
-  ).dependsOn(common) // TODO micro?
+  ).dependsOn(common)
 
   lazy val test = Project(id = "test", base = file("test"),
    settings = baseSettings ++ Seq(
@@ -291,9 +289,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.scalikejdbc"      %% "scalikejdbc-test"  % scalikeJDBCVersion % Compile  exclude("org.slf4j", "slf4j-api")
       )
     )
-  ).dependsOn(
-    framework
-  )
+  ).dependsOn(framework)
 
   // -----------------------------
   // example and tests with a real project
@@ -312,8 +308,6 @@ object SkinnyFrameworkBuild extends Build {
         "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"                   % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
-      // Scalatra tests become slower when multiple controller tests are loaded in the same time
-      parallelExecution in Test := false,
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
     ) 
   ).dependsOn(
@@ -362,7 +356,7 @@ object SkinnyFrameworkBuild extends Build {
   )
   lazy val jodaDependencies = Seq(
     "joda-time"     %  "joda-time"        % "2.8.2"  % Compile,
-    "org.joda"      %  "joda-convert"     % "1.7"    % Compile
+    "org.joda"      %  "joda-convert"     % "1.8.1"  % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
     "javax.mail"              %  "mail"            % "1.4.7"          % Compile,
