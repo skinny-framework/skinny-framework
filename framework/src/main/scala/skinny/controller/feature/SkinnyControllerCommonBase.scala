@@ -28,12 +28,10 @@ trait SkinnyControllerCommonBase
     with ActionDefinitionFeature
     with RequestScopeFeature
     with ChunkedResponseFeature
-    with BeforeAfterActionFeature
     with LocaleFeature
     with JSONFeature
     with ValidationFeature
     with TimeLoggingFeature
-    with ThreadLocalRequestFeature
     with SnakeCasedParamKeysFeature
     with XContentTypeOptionsNosniffHeaderFeature
     with RoutesAsImplicits

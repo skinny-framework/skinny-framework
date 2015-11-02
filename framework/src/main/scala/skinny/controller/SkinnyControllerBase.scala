@@ -5,6 +5,8 @@ import skinny.micro.ThreadLocalFeatures
 
 trait SkinnyControllerBase
     extends SkinnyControllerCommonBase
-    with ThreadLocalFeatures {
+    with ThreadLocalFeatures
+    with BeforeAfterActionFeature
+    with ThreadLocalRequestFeature {
 
 }

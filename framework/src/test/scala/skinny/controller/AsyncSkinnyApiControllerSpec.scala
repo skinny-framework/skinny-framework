@@ -27,6 +27,13 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
   }
 
   class CompaniesController extends AsyncSkinnyApiController {
+    beforeAction() { implicit ctx =>
+      set("foo" -> "bar")
+    }
+    afterAction() { implicit ctx =>
+      response.headers += "foo" -> "bar"
+    }
+
     def create(implicit ctx: Context) = {
       val count = Company.createWithAttributes(
         'name -> params.getAs[String]("name"),
@@ -38,10 +45,15 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
       Thread.sleep(10)
       toPrettyJSONString(Company.findAll())
     }
+
+    def filter(implicit ctx: Context) = {
+      requestScope.getOrElse("foo", "")
+    }
   }
   val controller = new CompaniesController with Routes {
     val creationUrl = post("/companies")(implicit ctx => create).as('list)
     val listUrl = get("/companies.json")(implicit ctx => list).as('list)
+    val beforeFilterUrl = get("/filter")(implicit ctx => filter).as('filter)
   }
   addFilter(controller, "/*")
 
@@ -58,6 +70,14 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
     }
     get("/companies.xml") {
       status should equal(404)
+    }
+  }
+
+  it should "work with async filters" in {
+    get("/filter") {
+      status should equal(200)
+      body should equal("bar")
+      header("foo") should equal("bar")
     }
   }
 
