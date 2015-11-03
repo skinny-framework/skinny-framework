@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val currentVersion = "2.0.0.RC3"
 
-  lazy val skinnyMicroVersion = "1.0.0.RC1"
+  lazy val skinnyMicroVersion = "1.0.0.RC2"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val scalikeJDBCVersion = "2.2.9"

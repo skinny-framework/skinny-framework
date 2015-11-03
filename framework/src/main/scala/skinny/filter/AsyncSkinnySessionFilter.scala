@@ -4,8 +4,8 @@ import scala.language.implicitConversions
 
 import skinny.micro.context.SkinnyContext
 import skinny.micro.contrib.csrf.CSRFTokenGenerator
-import skinny.micro.contrib.CSRFTokenSupport
 
+import skinny.micro.contrib.{ AsyncCSRFTokenSupport, CSRFTokenSupport }
 import skinny.controller.feature._
 
 /**
@@ -17,23 +17,22 @@ import skinny.controller.feature._
  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
  * }}}
  */
-trait SkinnySessionFilter extends SkinnySessionFilterBase with BeforeAfterActionFeature {
+trait AsyncSkinnySessionFilter extends SkinnySessionFilterBase with AsyncBeforeAfterActionFeature {
 
-  self: FlashFeature with CSRFTokenSupport with LocaleFeature =>
+  self: FlashFeature with AsyncCSRFTokenSupport with LocaleFeature =>
 
   // --------------------------------------
   // SkinnySession by using Skinny beforeAction/afterAction
 
-  beforeAction()(initializeSkinnySession(context))
+  beforeAction()(implicit ctx => initializeSkinnySession)
 
-  afterAction()(saveCurrentSkinnySession()(context))
+  afterAction()(implicit ctx => saveCurrentSkinnySession)
 
   // --------------------------------------
   // override CsrfTokenSupport
 
-  override protected def isForged: Boolean = {
-    implicit val ctx: SkinnyContext = context
-    if (skinnySession.getAttribute(csrfKey).isEmpty) {
+  override protected def isForged(implicit ctx: SkinnyContext): Boolean = {
+    if (skinnySession(context).getAttribute(csrfKey).isEmpty) {
       prepareCsrfToken()
     }
     !request.requestMethod.isSafe &&
@@ -41,14 +40,8 @@ trait SkinnySessionFilter extends SkinnySessionFilterBase with BeforeAfterAction
       !CSRFTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
   }
 
-  override protected def prepareCsrfToken() = {
-    skinnySession(context).getAttributeOrElseUpdate(csrfKey, CSRFTokenGenerator())
+  override protected def prepareCsrfToken()(implicit ctx: SkinnyContext) = {
+    skinnySession.getAttributeOrElseUpdate(csrfKey, CSRFTokenGenerator())
   }
-
-}
-
-object SkinnySessionFilter {
-
-  val ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE = SkinnySessionFilterBase.ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE
 
 }

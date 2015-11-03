@@ -1,6 +1,6 @@
 package skinny.filter
 
-import skinny.controller.SkinnyControllerBase
+import skinny.controller.feature.SkinnyControllerCommonBase
 
 /**
  * Skinny Filter.
@@ -29,5 +29,7 @@ import skinny.controller.SkinnyControllerBase
  * Because Scalatra's filters would be applied for all the controllers difined below in ScalatraBootstrap.
  * Just using beforeAction/afterAction is highly recommended.
  */
-trait SkinnyFilter extends SkinnyControllerBase with SkinnyFilterActivation
+trait SkinnyFilter
+  extends SkinnyControllerCommonBase
+  with SkinnyFilterActivation
 

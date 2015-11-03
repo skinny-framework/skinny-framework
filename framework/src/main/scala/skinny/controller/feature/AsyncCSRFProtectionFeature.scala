@@ -1,7 +1,8 @@
 package skinny.controller.feature
 
 import skinny.micro.SkinnyMicroBase
-import skinny.micro.contrib.CSRFTokenSupport
+import skinny.micro.context.SkinnyContext
+import skinny.micro.contrib.{ AsyncCSRFTokenSupport, CSRFTokenSupport }
 import skinny.logging.LoggerProvider
 
 object AsyncCSRFProtectionFeature {
@@ -14,7 +15,7 @@ object AsyncCSRFProtectionFeature {
 /**
  * Provides Cross-Site Request Forgery (CSRF) protection.
  */
-trait AsyncCSRFProtectionFeature extends CSRFTokenSupport {
+trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
 
   self: SkinnyMicroBase with ActionDefinitionFeature with AsyncBeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
@@ -53,7 +54,7 @@ trait AsyncCSRFProtectionFeature extends CSRFTokenSupport {
   /**
    * Overrides to skip execution when the current request matches excluded patterns.
    */
-  override def handleForgery() {
+  override def handleForgery()(implicit ctx: SkinnyContext) {
     if (forgeryProtectionEnabled) {
       logger.debug {
         s"""
