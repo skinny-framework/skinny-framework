@@ -8,4 +8,4 @@ import skinny.micro.AsyncSkinnyMicroServlet
 class AsyncSkinnyServlet
   extends AsyncSkinnyMicroServlet
   with AsyncSkinnyControllerBase
-  with SkinnyWebPageControllerFeatures
+  with AsyncSkinnyWebPageControllerFeatures

@@ -7,10 +7,10 @@ import skinny.micro.SkinnyMicroBase
  *
  * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
  */
-trait XXSSProtectionHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionFeature =>
+trait AsyncXXSSProtectionHeaderFeature { self: SkinnyMicroBase with AsyncBeforeAfterActionFeature =>
 
   // NOTE: for all HTML responses defined as Skinny routes
-  beforeAction() {
+  beforeAction() { implicit ctx =>
     response(context).setHeader("X-XSS-Protection", "1; mode=block")
   }
 

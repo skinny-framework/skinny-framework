@@ -7,7 +7,7 @@ import skinny.micro.SkinnyMicroBase
  *
  * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
  */
-trait XFrameOptionsHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionFeature =>
+trait AsyncXFrameOptionsHeaderFeature { self: SkinnyMicroBase with AsyncBeforeAfterActionFeature =>
 
   // NOTE: There are three possible values for the X-Frame-Options headers.
   // - "deny" which prevents any domain from framing the content.
@@ -16,8 +16,8 @@ trait XFrameOptionsHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionF
   lazy val xFrameOptionsPolicy = "sameorigin"
 
   // NOTE: for all HTML responses defined as Skinny routes
-  beforeAction() {
-    response(context).setHeader("X-Frame-Options", xFrameOptionsPolicy)
+  beforeAction() { implicit ctx =>
+    response.setHeader("X-Frame-Options", xFrameOptionsPolicy)
   }
 
 }

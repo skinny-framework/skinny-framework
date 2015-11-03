@@ -14,6 +14,7 @@ import skinny.micro.base.BeforeAfterDsl
 trait XContentTypeOptionsNosniffHeaderFeature { self: SkinnyMicroBase with BeforeAfterDsl =>
 
   // NOTE: To force this header to all responses
+  // beforeAction() {
   before() {
     response(context).setHeader("X-Content-Type-Options", "nosniff")
   }

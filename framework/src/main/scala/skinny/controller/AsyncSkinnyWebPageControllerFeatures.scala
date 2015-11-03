@@ -5,14 +5,14 @@ import skinny.controller.feature._
 /**
  * Additional web pages specific features for SkinnyControllers.
  */
-trait SkinnyWebPageControllerFeatures
+trait AsyncSkinnyWebPageControllerFeatures
     extends SkinnyControllerCommonBase
     with FlashFeature
     with TemplateEngineFeature
     with ScalateTemplateEngineFeature
-    with CSRFProtectionFeature
-    with XXSSProtectionHeaderFeature
-    with XFrameOptionsHeaderFeature { self: BeforeAfterActionFeature =>
+    with AsyncCSRFProtectionFeature
+    with AsyncXXSSProtectionHeaderFeature
+    with AsyncXFrameOptionsHeaderFeature { self: AsyncBeforeAfterActionFeature =>
 
   override def handleForgeryIfDetected() = haltWithBody(403)(context)
 

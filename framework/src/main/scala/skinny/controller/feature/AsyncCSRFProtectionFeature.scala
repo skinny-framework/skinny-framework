@@ -4,7 +4,7 @@ import skinny.micro.SkinnyMicroBase
 import skinny.micro.contrib.CSRFTokenSupport
 import skinny.logging.LoggerProvider
 
-object CSRFProtectionFeature {
+object AsyncCSRFProtectionFeature {
 
   // follows Rails default
   val DEFAULT_KEY: String = "csrf-token"
@@ -14,9 +14,9 @@ object CSRFProtectionFeature {
 /**
  * Provides Cross-Site Request Forgery (CSRF) protection.
  */
-trait CSRFProtectionFeature extends CSRFTokenSupport {
+trait AsyncCSRFProtectionFeature extends CSRFTokenSupport {
 
-  self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
+  self: SkinnyMicroBase with ActionDefinitionFeature with AsyncBeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
   /**
    * Overrides Scalatra's default key name.
@@ -89,7 +89,7 @@ trait CSRFProtectionFeature extends CSRFTokenSupport {
   def handleForgeryIfDetected(): Unit = halt(403)
 
   // Registers csrfKey & csrfToken to request scope.
-  beforeAction() {
+  beforeAction() { implicit ctx =>
     if (getFromRequestScope(RequestScopeFeature.ATTR_CSRF_KEY)(context).isEmpty) {
       set(RequestScopeFeature.ATTR_CSRF_KEY, csrfKey)(context)
       set(RequestScopeFeature.ATTR_CSRF_TOKEN, prepareCsrfToken())(context)

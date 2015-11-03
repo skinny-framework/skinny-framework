@@ -8,4 +8,4 @@ import skinny.micro.AsyncSkinnyMicroFilter
 trait AsyncSkinnyController
   extends AsyncSkinnyMicroFilter
   with AsyncSkinnyControllerBase
-  with SkinnyWebPageControllerFeatures
+  with AsyncSkinnyWebPageControllerFeatures
