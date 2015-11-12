@@ -355,7 +355,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.9"   % Compile,
+    "joda-time"     %  "joda-time"        % "2.9.1" % Compile,
     "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
