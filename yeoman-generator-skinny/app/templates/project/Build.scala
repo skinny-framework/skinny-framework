@@ -15,9 +15,9 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.0.RC3"
+  val skinnyVersion = "2.0.0.RC4"
   val theScalaVersion = "2.11.7"
-  val jettyVersion = "9.2.13.v20150730"
+  val jettyVersion = "9.2.14.v20151106"
 
   def applyDefaultExclusions(m: ModuleID) = m.excludeAll(
     ExclusionRule("commons-dbcp", "commons-dbcp")
@@ -34,7 +34,7 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-      "org.slf4j"              %  "slf4j-api"                % "1.7.12"
+      "org.slf4j"              %  "slf4j-api"                % "1.7.13"
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
