@@ -25,11 +25,10 @@ import skinny.controller.feature.SkinnyControllerCommonBase
  *   }
  * }}}
  *
- * If you use Scatatra's filter - before/after, be careful. It's pretty tricky.
- * Because Scalatra's filters would be applied for all the controllers difined below in ScalatraBootstrap.
+ * If you use Skinny Micro's filter - before/after, be careful. It's pretty tricky.
+ * Because Skinny Micro's filters would be applied for all the controllers defined below in Bootstrap.
  * Just using beforeAction/afterAction is highly recommended.
  */
 trait SkinnyFilter
   extends SkinnyControllerCommonBase
   with SkinnyFilterActivation
-
