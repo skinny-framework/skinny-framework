@@ -164,7 +164,7 @@ trait CRUDFeatureWithId[Id, Entity]
    *
    * @param namedValues named values
    * @param s db session
-   * @return created count
+   * @return generated id
    */
   override def createWithNamedValues(namedValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Id = {
     val (allNamedValues: Seq[(SQLSyntax, Any)], generatedIdOpt: Option[Id]) = {

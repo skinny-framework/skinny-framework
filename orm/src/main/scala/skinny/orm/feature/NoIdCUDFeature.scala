@@ -97,7 +97,7 @@ trait NoIdCUDFeature[Entity]
    *
    * @param strongParameters permitted parameters
    * @param s db session
-   * @return created count
+   * @return created count (actually useless)
    */
   def createWithPermittedAttributes(strongParameters: PermittedStrongParameters)(implicit s: DBSession = autoSession): Any = {
     createWithNamedValues(namedValuesForCreation(strongParameters): _*)
@@ -110,7 +110,7 @@ trait NoIdCUDFeature[Entity]
    *
    * @param parameters parameters
    * @param s db session
-   * @return created count
+   * @return created count (actually useless)
    */
   def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Any = {
     createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
