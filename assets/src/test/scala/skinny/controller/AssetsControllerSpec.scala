@@ -140,6 +140,11 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
         controller.js().toString should include("Awesome! :+1:")
         controller._path = "vendor/awesome.css"
         controller.css().toString should include(".awesome {")
+
+        controller._path = "vendor/awesome.min.js"
+        controller.js().toString should include("Awesome! :+1:")
+        controller._path = "vendor/you.are.great.css"
+        controller.css().toString should include(".you-are-great {")
       }
     }
   }

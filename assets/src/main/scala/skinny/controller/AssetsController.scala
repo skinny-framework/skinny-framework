@@ -91,10 +91,9 @@ class AssetsController extends SkinnyController {
   def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
 
   def path(extension: String): Option[String] = multiParams("splat").headOption.flatMap { fullPath =>
-    fullPath.split("\\.") match {
-      case Array(path, e) if e == extension => Some(path)
-      case _ => None
-    }
+    val elements = fullPath.split("\\.")
+    if (elements.size >= 2 && elements.last == extension) Some(elements.init.mkString("."))
+    else None
   }
   def sourceMapsPath(): Option[String] = path("map")
 
@@ -210,12 +209,7 @@ class AssetsController extends SkinnyController {
    * Returns css or less assets.
    */
   def css(): Any = if (isEnabled) {
-    multiParams("splat").headOption.flatMap { fullPath =>
-      fullPath.split("\\.") match {
-        case Array(path, "css") => Some(path)
-        case _ => None
-      }
-    }.map { path =>
+    path("css").map { path =>
       cssFromClassPath(path)
         .orElse(compiledCssFromClassPath(path))
         .orElse(cssFromFile(path))
