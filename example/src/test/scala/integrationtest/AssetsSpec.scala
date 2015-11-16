@@ -98,4 +98,19 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
     }
   }
 
+  it should "return assets in sub directories" in {
+    get("/assets/js/vendor/awesome.js") {
+      status should equal(200)
+    }
+    get("/assets/js/vendor/lgtm.js") {
+      status should equal(200)
+    }
+    get("/assets/css/vendor/awesome.css") {
+      status should equal(200)
+    }
+    get("/assets/css/vendor/lgtm.css") {
+      status should equal(200)
+    }
+  }
+
 }

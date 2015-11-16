@@ -83,17 +83,17 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
 
     for (
       env <- Seq("", "staging", "production");
-      disInStaging <- Seq(true, false);
-      disInProduction <- Seq(true, false)
+      disabledInStaging <- Seq(true, false);
+      disabledInProduction <- Seq(true, false)
     ) withClue(s"env: ${env}, " +
-      s"disabled: { staging: ${disInStaging}," +
-      s" prod: ${disInProduction} }") {
+      s"disabled: { staging: ${disabledInStaging}," +
+      s" prod: ${disabledInProduction} }") {
 
       System.setProperty(SkinnyEnv.PropertyKey, env)
-      controller._isDisabledInStaging = disInStaging
-      controller._isDisabledInProduction = disInProduction
-      if ((env == "staging" && disInStaging) ||
-        (env == "production" && disInProduction)) {
+      controller._isDisabledInStaging = disabledInStaging
+      controller._isDisabledInProduction = disabledInProduction
+      if ((env == "staging" && disabledInStaging) ||
+        (env == "production" && disabledInProduction)) {
         intercept[MockPassException] {
           controller._path = "AssetsControllerSpec.js"
           controller.js()
@@ -107,6 +107,39 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
         controller.js().toString should include("AssetsControllerSpec#js")
         controller._path = "AssetsControllerSpec.css"
         controller.css().toString should include("AssetsControllerSpec#css")
+      }
+    }
+  }
+
+  it should "work sub directories" in {
+    val controller = newController
+
+    for (
+      env <- Seq("", "staging", "production");
+      disabledInStaging <- Seq(true, false);
+      disabledInProduction <- Seq(true, false)
+    ) withClue(s"env: ${env}, " +
+      s"disabled: { staging: ${disabledInStaging}," +
+      s" prod: ${disabledInProduction} }") {
+
+      System.setProperty(SkinnyEnv.PropertyKey, env)
+      controller._isDisabledInStaging = disabledInStaging
+      controller._isDisabledInProduction = disabledInProduction
+      if ((env == "staging" && disabledInStaging) ||
+        (env == "production" && disabledInProduction)) {
+        intercept[MockPassException] {
+          controller._path = "vendor/awesome.js"
+          controller.js()
+        }
+        intercept[MockPassException] {
+          controller._path = "vendor/awesome.css"
+          controller.css()
+        }
+      } else {
+        controller._path = "vendor/awesome.js"
+        controller.js().toString should include("Awesome! :+1:")
+        controller._path = "vendor/awesome.css"
+        controller.css().toString should include(".awesome {")
       }
     }
   }
