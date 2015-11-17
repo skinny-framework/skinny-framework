@@ -2,10 +2,12 @@ package integrationtest
 
 import skinny.controller._
 import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
+import controller.Controllers
 
 class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   addFilter(AssetsController, "/*")
+  addFilter(Controllers.root, "/*")
 
   it should "show react jsx template resources" in {
     get("/assets/js/hello-react.js") {
@@ -101,15 +103,27 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
   it should "return assets in sub directories" in {
     get("/assets/js/vendor/awesome.js") {
       status should equal(200)
+      body should include("""console.log("Awesome! :+1:")""")
     }
     get("/assets/js/vendor/lgtm.js") {
       status should equal(200)
+      body should include("""console.log("LGTM")""")
     }
     get("/assets/css/vendor/awesome.css") {
       status should equal(200)
+      body should include(""".awesome {""")
     }
     get("/assets/css/vendor/lgtm.css") {
       status should equal(200)
+      body should include(""".lgtm {""")
+    }
+    get("/assets/css/vendor/jquery-ui-1.11.1.custom/jquery-ui.min.css") {
+      status should equal(200)
+      body should include(""".ui {""")
+    }
+    get("/assets/css/vendor/web-inf/jquery-ui-1.11.1.custom/jquery-ui.min.css") {
+      status should equal(200)
+      body should include(""".ui {""")
     }
   }
 
