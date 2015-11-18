@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 script_dir=`dirname $0`
 mkdir -p ${script_dir}/release

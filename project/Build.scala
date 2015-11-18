@@ -6,9 +6,9 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.0.RC4"
+  lazy val currentVersion = "2.0.0"
 
-  lazy val skinnyMicroVersion = "1.0.0.RC3"
+  lazy val skinnyMicroVersion = "1.0.0"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
   lazy val scalikeJDBCVersion = "2.3.0"
