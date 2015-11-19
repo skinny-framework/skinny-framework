@@ -8,7 +8,8 @@ var SkinnyGenerator = module.exports = function SkinnyGenerator(args, options, c
   this.on('end', function () {
     this.installDependencies({ skipInstall: options['skip-install'] });
   });
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+  var json = require("html-wiring").readFileAsString(path.join(__dirname, '../package.json'))
+  this.pkg = JSON.parse(json);
 };
 
 util.inherits(SkinnyGenerator, yeoman.generators.Base);

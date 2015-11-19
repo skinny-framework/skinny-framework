@@ -1,5 +1,5 @@
-<%@val body: String %>
-<%@val s: skinny.Skinny %>
+<%%@val body: String %>
+<%%@val s: skinny.Skinny %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
