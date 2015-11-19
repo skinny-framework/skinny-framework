@@ -24,14 +24,11 @@
     "test": "mocha"
   },
   "dependencies": {
-    "yeoman-generator": "~0.21.1"
+    "yeoman-generator": "^0.21.1",
+    "yo": "^1.5.0"
   },
   "devDependencies": {
     "mocha": "~1.12.0"
   },
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ]
+  "license": "MIT"
 }
