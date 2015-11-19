@@ -3,6 +3,8 @@ sudo: false
 scala:
 - 2.10.6
 - 2.11.7
+node_js:
+- 0.12.x
 jdk:
 - oraclejdk8
 cache:
