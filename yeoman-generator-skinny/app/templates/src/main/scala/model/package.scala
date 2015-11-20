@@ -1,3 +1,0 @@
-package object model {
-}
-

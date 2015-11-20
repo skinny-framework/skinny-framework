@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="utf-8"/>
+<!--/*
+ Be aware that Thymeleaf's OGNL getter support and Scala accessor methods.
+ (e.g.)
+ case class Person(id: Long, @BeanProperty name: String)
+ class PersonsController extends ApplicationController {
+   def show = {
+     params.getAs[Long]("id").map { id =>
+       set("person", Person(id, "Alice"))
+     }
+     render("/persons/show")
+    }
+ }
+ // src/main/webapp/WEB-INF/views/persons/index.html
+ <html layout:decorator="../layouts/default">
+ <div layout:fragment="title">Title</div>
+ <div layout:fragment="content">
+   <div th:text="${person.id}">id</div>     // ERROR!
+   <div th:text="${person.id()}">id</div>   // OK!
+   <div th:text="${person.name}">id</div>   // OK!
+   <div th:text="${person.name()}">id</div> // OK!
+*/-->
+  <meta content="dummy" name="csrf-token" th:name="${s.csrfKey}" th:content="${s.csrfToken}" />
+  <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container span12">
+  <div layout:fragment="title"><h3>Skinny Application</h3></div>
+  <hr/>
+  <div layout:fragment="content"></div>
+  <hr/>
+  <a class="btn btn-default" href="/" th:href="@{/}">Top</a>
+</div>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/js/skinny-framework.js" th:src="@{/assets/js/skinny-framework.js}"></script>
+</body>
+</html>
+

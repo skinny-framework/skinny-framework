@@ -1,14 +1,11 @@
 #!/bin/bash -x
 
-npm install -g yo
 rm -rf $HOME/.ivy2/cache/org.skinny-framework
 rm -rf $HOME/.ivy2/local/org.skinny-framework
 cd `dirname $0`
 ./publish_local.sh
 ./create_blank_app.sh test
 cd release/skinny-blank-app
-npm install
-grunt compile --force
 
 ./skinny g controller help && \
 ./skinny g controller admin.help && \
@@ -27,4 +24,3 @@ grunt compile --force
 ./skinny scalajs:package && \
 ./skinny package && \
 ./skinny package:standalone
-
