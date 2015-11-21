@@ -90,7 +90,10 @@ class AssetsController extends SkinnyController {
    */
   def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
 
-  def path(extension: String): Option[String] = multiParams("splat").headOption.flatMap { fullPath =>
+  def maybeFullpath: Option[String] = multiParams("splat").headOption
+  def fullpath = maybeFullpath.get
+
+  def path(extension: String): Option[String] = maybeFullpath.flatMap { fullPath =>
     val elements = fullPath.split("\\.")
     if (elements.size >= 2 && elements.last == extension) Some(elements.init.mkString("."))
     else None
@@ -136,24 +139,35 @@ class AssetsController extends SkinnyController {
 
   private def jsSourceMapsFile(): Option[Any] = {
     if (sourceMapsEnabled) {
-      sourceMapsPath match {
-        case Some(path) =>
-          contentType = "application/octet-stream"
-          sourceMapsFromFile(path, jsCompilers)
+      ClassPathResourceLoader.getClassPathResource(fullpath) match {
+        case Some(resource) =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              Some(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
         case _ =>
-          jsCompilers.find(c => path(c.extension).isDefined).flatMap { compiler =>
-            path(compiler.extension).map { path =>
+          sourceMapsPath match {
+            case Some(path) =>
               contentType = "application/octet-stream"
-              val foundFile: Option[File] = {
-                Seq(s"${basePath}/${compiler.extension}/${path}.${compiler.extension}",
-                  s"${publicBasePath}/${compiler.extension}/${path}.${compiler.extension}" // basically won't be found here
-                ).map(p => new File(servletContext.getRealPath(p))).find(_.exists())
+              sourceMapsFromResourceOrFile(path, jsCompilers)
+            case _ =>
+              jsCompilers.find(c => path(c.extension).isDefined).flatMap { compiler =>
+                path(compiler.extension).map { path =>
+                  contentType = "application/octet-stream"
+                  val foundFile: Option[File] = {
+                    Seq(
+                      s"${basePath}/${compiler.extension}/${path}.${compiler.extension}",
+                      s"${publicBasePath}/${compiler.extension}/${path}.${compiler.extension}"
+                    ).map(p => new File(servletContext.getRealPath(p))).find(_.exists())
+                  }
+                  foundFile match {
+                    case Some(file) => using(Source.fromFile(file))(_.mkString)
+                    case _ => pass()
+                  }
+                }
               }
-              foundFile match {
-                case Some(file) => using(Source.fromFile(file))(_.mkString)
-                case _ => ""
-              }
-            }
           }
       }
     } else None
@@ -188,64 +202,113 @@ class AssetsController extends SkinnyController {
   private def compiledJsFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, jsCompilers)
   private def compiledJsFromFile(path: String): Option[String] = compiledCodeFromFile(path, jsCompilers)
 
-  private def sourceMapsFromFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
+  private def sourceMapsFromResourceOrFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
+    def findResource(path: String, extension: String): Option[ClassPathResource] = {
+      import ClassPathResourceLoader.getClassPathResource
+      getClassPathResource(s"${publicBasePath}/js/${path}.map")
+        .orElse(getClassPathResource(s"${publicBasePath}/js/${path}.js.map"))
+        .orElse(getClassPathResource(s"${basePath}/${extension}/${path}.map"))
+        // Somehow, coffee-script 1.10.0 outputs differently named file.
+        .orElse(getClassPathResource(s"${basePath}/${extension}/${path}.js.map"))
+        .orElse(getClassPathResource(s"${publicBasePath}/css/${path}.map"))
+        .orElse(getClassPathResource(s"${publicBasePath}/css/${path}.css.map"))
+        .orElse(getClassPathResource(s"${basePath}/${extension}/${path}.map"))
+        .orElse(getClassPathResource(s"${basePath}/${extension}/${path}.css.map"))
+    }
     def findFile(path: String, extension: String): Option[File] = {
-      Seq(s"${publicBasePath}/${extension}/${path}.map", s"${basePath}/${extension}/${path}.map")
-        .map(path => new File(servletContext.getRealPath(path))).find(_.exists())
+      Seq(
+        s"${publicBasePath}/${extension}/${path}.map",
+        s"${publicBasePath}/js/${path}.map",
+        s"${publicBasePath}/js/${path}.js.map",
+        s"${publicBasePath}/css/${path}.map",
+        s"${publicBasePath}/css/${path}.css.map",
+        s"${basePath}/${extension}/${path}.map",
+        s"${basePath}/${extension}/${path}.map",
+        s"${basePath}/${extension}/${path}.js.map", // Somehow, coffee-script 1.10.0 outputs differently named file.
+        s"${basePath}/${extension}/${path}.map",
+        s"${basePath}/${extension}/${path}.css.map"
+      ).map(path => new File(servletContext.getRealPath(path))).find(_.exists())
     }
     compilers
-      .find { compiler => findFile(path, compiler.extension).isDefined }
-      .map { compiler =>
-        val mapFile: File = findFile(path, compiler.extension).getOrElse {
-          throw new IllegalStateException("this source map file must exist")
+      .find { compiler => findResource(path, compiler.extension).orElse(findFile(path, compiler.extension)).isDefined }
+      .flatMap { compiler =>
+        findResource(path, compiler.extension) match {
+          case Some(resource) =>
+            using(resource.stream) { stream =>
+              setLastModified(resource.lastModified)
+              if (isModified(resource.lastModified)) Some(using(Source.fromInputStream(resource.stream))(_.mkString))
+              else halt(304)
+            }
+          case _ =>
+            findFile(path, compiler.extension) match {
+              case Some(mapFile) =>
+                setLastModified(mapFile.lastModified)
+                if (isModified(mapFile.lastModified)) Some(using(Source.fromFile(mapFile))(map => map.mkString))
+                else halt(304)
+              case _ => None
+            }
         }
-        setLastModified(mapFile.lastModified)
-        if (isModified(mapFile.lastModified)) using(Source.fromFile(mapFile))(map => map.mkString)
-        else halt(304)
       }
   }
 
   /**
    * Returns css or less assets.
    */
-  def css(): Any = if (isEnabled) {
-    path("css").map { path =>
-      cssFromClassPath(path)
-        .orElse(compiledCssFromClassPath(path))
-        .orElse(cssFromFile(path))
-        .orElse(compiledCssFromFile(path))
-        .map { css =>
-          contentType = "text/css"
-          css
-        }.getOrElse(pass())
-    }.orElse(cssSourceMapsFile()).getOrElse(pass())
-  } else pass()
+  def css(): Any = {
+    if (isEnabled) {
+      path("css") match {
+        case Some(path) =>
+          cssFromClassPath(path)
+            .orElse(compiledCssFromClassPath(path))
+            .orElse(cssFromFile(path))
+            .orElse(compiledCssFromFile(path))
+            .map { css =>
+              contentType = "text/css"
+              css
+            }.getOrElse(pass())
+        case _ => cssSourceMapsFile().getOrElse(pass())
+      }
+    } else {
+      pass()
+    }
+  }
 
   private def cssSourceMapsFile(): Option[Any] = {
     if (sourceMapsEnabled) {
-      sourceMapsPath.flatMap { path =>
-        contentType = "application/octet-stream"
-        sourceMapsFromFile(path, cssCompilers)
-      }.orElse {
-        cssCompilers.find(c => path(c.extension).isDefined) match {
-          case Some(compiler) =>
-            path(compiler.extension) match {
-              case Some(path) =>
-                contentType = "application/octet-stream"
-                val foundFile: Option[File] = Seq(
-                  s"${publicBasePath}/${compiler.extension}/${path}.${compiler.extension}",
-                  s"${basePath}/${compiler.extension}/${path}.${compiler.extension}"
-                ).map(path => new File(servletContext.getRealPath(path))).find(_.exists())
-                foundFile match {
-                  case Some(file) => Some(using(Source.fromFile(file))(map => map.mkString))
-                  case _ => None
-                }
-              case _ => None
-            }
-          case _ => None
-        }
+      ClassPathResourceLoader.getClassPathResource(fullpath) match {
+        case Some(resource) =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              Some(using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+        case _ =>
+          sourceMapsPath match {
+            case Some(path) =>
+              contentType = "application/octet-stream"
+              sourceMapsFromResourceOrFile(path, cssCompilers)
+            case _ =>
+              cssCompilers.find(c => path(c.extension).isDefined) match {
+                case Some(compiler) =>
+                  path(compiler.extension) match {
+                    case Some(path) =>
+                      contentType = "application/octet-stream"
+                      val foundFile: Option[File] = Seq(
+                        s"${publicBasePath}/${compiler.extension}/${path}.${compiler.extension}",
+                        s"${basePath}/${compiler.extension}/${path}.${compiler.extension}"
+                      ).map(path => new File(servletContext.getRealPath(path))).find(_.exists())
+                      foundFile match {
+                        case Some(file) => Some(using(Source.fromFile(file))(map => map.mkString))
+                        case _ => None
+                      }
+                    case _ => None
+                  }
+                case _ => None
+              }
+          }
       }
-    } else None
+    } else pass()
   }
 
   def cssFromClassPath(path: String): Option[String] = {

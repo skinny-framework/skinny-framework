@@ -17,12 +17,11 @@
     <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
 
-    <!--
-    <script src="http://fb.me/react-0.13.3.js"></script>
-    <script type="text/javascript" src="${uri("/assets/js/react-all.js")}"></script>
-    <script type="text/javascript" src="${uri("/assets/js/coffee-all.js")}"></script>
-    <script type="text/javascript" src="${uri("/assets/js/ts-all.js")}"></script>
-    -->
+    <!-- React.js -->
+    <!--<script src="http://fb.me/react-0.13.3.js"></script>-->
+
+    <!-- example: src/main/webapp/WEB-INF/assets/coffee/hello.coffee -->
+    <!--<script type="text/javascript" src="${uri("/assets/js/hello.js")}"></script>-->
 
     <!-- Scala.js default JS filename -->
     <!--<script type="text/javascript" src="${uri("/assets/js/application-fastopt.js")}"></script>-->
