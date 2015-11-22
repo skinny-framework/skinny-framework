@@ -1,0 +1,31 @@
+<%@val body: String %>
+<%@val s: skinny.Skinny %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    ${unescape(s.csrfMetaTags)}
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+  </head>
+  <body>
+    <div class="container span12">
+      ${unescape(body)}
+      <hr/>
+      <a class="btn btn-default" href="${uri("/")}">${s.i18n.get("top")}</a>
+    </div>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
+
+    <!-- React.js -->
+    <!--<script src="http://fb.me/react-0.13.3.js"></script>-->
+
+    <!-- example: src/main/webapp/WEB-INF/assets/coffee/hello.coffee -->
+    <!--<script type="text/javascript" src="${uri("/assets/js/hello.js")}"></script>-->
+
+    <!-- Scala.js default JS filename -->
+    <!--<script type="text/javascript" src="${uri("/assets/js/application-fastopt.js")}"></script>-->
+  </body>
+</html>
+
+

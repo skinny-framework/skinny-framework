@@ -127,4 +127,22 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
     }
   }
 
+  it should "return scala.js assets" in {
+    get("/assets/js/application-fastopt.js") {
+      status should equal(200)
+    }
+    get("/assets/js/application-fastopt.js.map") {
+      status should equal(200)
+      body should startWith("""{"version": 3,""")
+    }
+    get("/assets/js/echo.map") {
+      status should equal(200)
+      body should startWith("""{"version": 3,""")
+    }
+    get("/assets/js/echo.js.map") {
+      status should equal(200)
+      body should startWith("""{"version": 3,""")
+    }
+  }
+
 }

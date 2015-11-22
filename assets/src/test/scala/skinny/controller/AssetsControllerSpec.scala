@@ -43,13 +43,6 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
 
     val controller = newController
 
-    // TODO: better tests
-    intercept[Throwable] {
-      controller.css()
-    }
-    intercept[Throwable] {
-      controller.js()
-    }
     controller.assetsRootPath should equal("/assets")
     controller.jsRootPath should equal("/assets/js")
     controller.cssRootPath should equal("/assets/css")

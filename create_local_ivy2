@@ -1,0 +1,21 @@
+#!/bin/bash
+cd `dirname $0`
+current_dir=`pwd`
+blank_app_dir=${current_dir}/release/skinny-blank-app
+sbt_config=${blank_app_dir}/.sbtconfig
+
+if [ ! -f ${sbt_config} ]; then
+  echo "#!/bin/bash
+java_major_version=\$(java -version 2>&1 | awk -F '\"' '/version/ {print \$2}' | awk -F'.' '{ print \$2 }')
+if [ \$java_major_version -ge 8 ]; then
+  PERM_OPT=\"-XX:MaxMetaspaceSize=386M\"
+else
+  PERM_OPT=\"-XX:MaxPermSize=256M\"
+fi
+export SBT_OPTS=\"-XX:+CMSClassUnloadingEnabled \${PERM_OPT}\"
+" > ${sbt_config}
+fi
+
+cd ${blank_app_dir}
+export SBT_OPTS="-Dsbt.ivy.home=./ivy2 -XX:+CMSClassUnloadingEnabled ${PERM_OPT}"
+exec java -Xmx1024M ${SBT_OPTS} -jar bin/sbt-launch.jar compile

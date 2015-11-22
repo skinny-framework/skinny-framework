@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.0"
+  lazy val currentVersion = "2.0.1-SNAPSHOT"
 
   lazy val skinnyMicroVersion = "1.0.0"
   // Scalatra 2.4 will be incompatible with Skinny
@@ -157,7 +157,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.3.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.0.4.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
