@@ -1,6 +1,7 @@
 # Skinny Framework 
 
 [![Build Status](https://travis-ci.org/skinny-framework/skinny-framework.svg?branch=master)](https://travis-ci.org/skinny-framework/skinny-framework)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.skinny-framework/skinny-framework_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.skinny-framework/skinny-framework_2.11)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/skinny-framework/skinny-framework?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
