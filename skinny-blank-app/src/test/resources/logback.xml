@@ -9,8 +9,7 @@
     <logger name="skinny" level="debug"/>
     <logger name="org.eclipse.jetty" level="warn"/>
     <logger name="org.fusesource.scalate" level="warn"/>
-    <logger name="skinny.engine.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#1.SourceMap" level="warn"/>
-    <logger name="skinny.engine.scalate.ScalateSupport##anonfun#createTemplateEngine#2##anon#2.SourceMap" level="warn"/>
+    <logger name="skinny.micro.contrib.ScalateSupport##anon#1.SourceMap" level="warn"/>
 
     <root level="debug">
         <appender-ref ref="default"/>
