@@ -33,12 +33,28 @@ http://skinny-framework.org/
 
 Skinny is built upon several stable OSS libraries.
 
+#### Skinny Micro
+
+Skinny Micro is at once a micro Web framework to build Servlet applications in Scala and the core part of Skinny Framework 2.
+Skinny Micro started as a fork of Scalatra. After that, many improvements have been made to be safer and more efficient when working with Scala Future values upon it.
+Basically, Skinny Micro’s DSLs are source compatible with Scalatra 2.3’s ones. But names of base traits and packages are mostly renamed and the structure of internal modules are re-designed.
+
+- http://skinny-framework.org/documentation/micro.html
+- https://github.com/skinny-framework/skinny-micro
+
 #### ScalikeJDBC
 
 Skinny ORM is built upon ScalikeJDBC which is a tidy JDBC wrapper library.
 Learning ScalikeJDBC will help you to understand how to work with RDB effeciently.
 
 http://scalikejdbc.org/
+
+#### Flyway
+
+Skinny's DB migration cames with Flyway.
+
+- http://skinny-framework.org/documentation/db-migration.html
+- http://flywaydb.org/
 
 #### Scalate
 
