@@ -7,6 +7,8 @@ rm -rf skinny-blank-app/target
 rm -rf skinny-blank-app/project/project
 cp -pr skinny-blank-app ${script_dir}/release/.
 if [[ "$1" != "test" ]]; then
+  # somehow, sbt ignores absent libs in local ivy home when they're already exists in global ivy home.
+  rm -rf $HOME/.ivy2/cache/org.skinny-framework
   ./create_local_ivy2
 fi
 cd ${script_dir}/release/skinny-blank-app

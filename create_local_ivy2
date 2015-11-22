@@ -18,4 +18,4 @@ fi
 
 cd ${blank_app_dir}
 export SBT_OPTS="-Dsbt.ivy.home=./ivy2 -XX:+CMSClassUnloadingEnabled ${PERM_OPT}"
-exec java -Xmx1024M ${SBT_OPTS} -jar bin/sbt-launch.jar compile
+exec java -Xmx1024M ${SBT_OPTS} -jar bin/sbt-launch.jar dev/test
