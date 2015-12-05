@@ -1,6 +1,6 @@
 #!/bin/bash
 
-current_dir=.
+current_dir=`dirname $0`
 current_project=`ls | grep project`
 script_dir=`dirname $0`
 sbt_path=${script_dir}/sbt
@@ -12,7 +12,6 @@ chmod +x ${sbt_debug_path}
 if [ -d "${current_dir}/ivy2" ]; then
   mkdir -p $HOME/.ivy2/cache/
   cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
-  rm -rf ${current_dir}/ivy2
 fi
 
 function verify_skinny_project() {
