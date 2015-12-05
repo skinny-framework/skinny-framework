@@ -1,6 +1,6 @@
 #!/bin/bash
 
-current_dir=`dirname $0`
+current_dir="."
 current_project=`ls | grep project`
 script_dir=`dirname $0`
 sbt_path=${script_dir}/sbt
@@ -9,9 +9,9 @@ chmod +x ${sbt_path}
 chmod +x ${sbt_debug_path}
 
 # prepared deps
-if [ -d "${current_dir}/ivy2" ]; then
+if [ -d "${script_dir}/ivy2" ]; then
   mkdir -p $HOME/.ivy2/cache/
-  cp -prn ${current_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
+  cp -prn ${script_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
 fi
 
 function verify_skinny_project() {
