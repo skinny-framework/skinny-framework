@@ -11,7 +11,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val skinnyMicroVersion = "1.0.0"
   // Scalatra 2.4 will be incompatible with Skinny
   lazy val compatibleScalatraVersion = "2.3.1"
-  lazy val scalikeJDBCVersion = "2.3.1"
+  lazy val scalikeJDBCVersion = "2.3.2"
   lazy val h2Version = "1.4.190"
   lazy val kuromojiVersion = "5.3.1"
   lazy val mockitoVersion = "1.10.19"
@@ -157,7 +157,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.4.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.0.5.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
