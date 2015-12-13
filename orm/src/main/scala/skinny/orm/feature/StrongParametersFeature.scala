@@ -17,15 +17,13 @@ trait StrongParametersFeature {
    */
   protected def getTypedValueFromStrongParameter(fieldName: String, value: Any, paramType: ParamType): Option[Any] = {
     val ParamTypeExtractor = paramType
-    Option(value).map { value =>
-      value match {
-        case Some(v) => recFlattenOption(getTypedValueFromStrongParameter(fieldName, v, paramType))
-        case None => null
-        case ParamTypeExtractor(v) => v
-        case v: String if v == "" => null
-        case v: String => v
-        case v => throw new IllegalArgumentException(s"Cannot convert '${v}' to ${paramType} value.")
-      }
+    Option(value).map {
+      case Some(v) => recFlattenOption(getTypedValueFromStrongParameter(fieldName, v, paramType))
+      case None => null
+      case ParamTypeExtractor(v) => v
+      case v: String if v == "" => null
+      case v: String => v
+      case v => throw new IllegalArgumentException(s"Cannot convert '${v}' to ${paramType} value.")
     }
   }
 
