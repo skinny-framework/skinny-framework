@@ -31,7 +31,7 @@ trait DBMigration {
           rootConfig.getConfig(migrationConfigPath).entrySet.asScala.foreach(println)
           val locations = rootConfig.getConfig(migrationConfigPath)
             .getStringList("locations").asScala.map(l => "db.migration." + l.replaceAll("/", "."))
-          if (!locations.isEmpty) {
+          if (locations.nonEmpty) {
             flyway.setLocations(locations: _*)
           }
         }
