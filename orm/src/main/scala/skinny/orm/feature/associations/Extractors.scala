@@ -1,7 +1,5 @@
 package skinny.orm.feature.associations
 
-import scalikejdbc.WrappedResultSet
-
 import scala.language.existentials
 
 import skinny.orm._

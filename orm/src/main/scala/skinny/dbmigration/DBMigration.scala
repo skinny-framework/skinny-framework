@@ -4,7 +4,6 @@ import org.flywaydb.core.Flyway
 import skinny.util.TypesafeConfigReader
 import skinny.{ SkinnyEnv, DBSettings }
 import scalikejdbc.ConnectionPool
-import com.typesafe.config.ConfigFactory
 import scala.collection.JavaConverters._
 import skinny.exception.DBSettingsException
 

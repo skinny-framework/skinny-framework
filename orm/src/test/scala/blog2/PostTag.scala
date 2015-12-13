@@ -1,6 +1,6 @@
 package blog2
 
-import skinny.orm._, feature._
+import skinny.orm._
 import scalikejdbc._
 import org.joda.time._
 
