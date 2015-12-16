@@ -16,8 +16,8 @@ import scala.util.Try
 
 object AssociationsFeature {
 
-  def defaultIncludesMerge[Entity, A] = (es: Seq[Entity], as: Seq[A]) =>
-    throw new AssociationSettingsException(
+  def defaultIncludesMerge[Entity, A]: (Seq[Entity], Seq[A]) => Seq[Entity] =
+    (_, _) => throw new AssociationSettingsException(
       """
         |--------- Invalid Association Settings ---------
         |
@@ -78,7 +78,7 @@ trait AssociationsFeature[Entity]
    */
   val defaultJoinDefinitions = new mutable.LinkedHashSet[JoinDefinition[_]]()
 
-  private def unshiftJoinDefinition(newOne: JoinDefinition[_], definitions: mutable.LinkedHashSet[JoinDefinition[_]]) = {
+  private def unshiftJoinDefinition(newOne: JoinDefinition[_], definitions: mutable.LinkedHashSet[JoinDefinition[_]]): mutable.LinkedHashSet[JoinDefinition[_]] = {
     val newDefinitions = new mutable.LinkedHashSet[JoinDefinition[_]]()
     newDefinitions.add(newOne)
     newDefinitions ++= definitions

@@ -31,7 +31,7 @@ trait NoIdCUDFeature[Entity]
    * @param namedValue named value
    * @return self
    */
-  protected def addAttributeForCreation(namedValue: => (SQLSyntax, Any)) = {
+  protected def addAttributeForCreation(namedValue: => (SQLSyntax, Any)): this.type = {
     acceptAttributeForCreation(namedValue)
     this
   }

@@ -19,7 +19,7 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
   /**
    * Lock version field name.
    */
-  def lockVersionFieldName = "lockVersion"
+  def lockVersionFieldName: String = "lockVersion"
 
   // add default lockVersion value to creation query
   addAttributeForCreation(column.field(lockVersionFieldName), 1L)
@@ -31,7 +31,7 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
    * @param version lock version
    * @return query part
    */
-  def updateByIdAndVersion(id: Long, version: Long) = {
+  def updateByIdAndVersion(id: Long, version: Long): UpdateOperationBuilder = {
     updateBy(sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 
@@ -66,7 +66,7 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession = autoSession) = {
+  def deleteByIdAndVersion(id: Long, version: Long)(implicit s: DBSession = autoSession): Int = {
     deleteBy(sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockVersionFieldName), version))
   }
 

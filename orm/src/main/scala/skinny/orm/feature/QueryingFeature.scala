@@ -269,7 +269,7 @@ trait QueryingFeatureWithId[Id, Entity]
             }.and(defaultScopeWithDefaultAlias)
           }
         }
-        def appendOrderingIfExists(query: SQLBuilder[Entity]) = {
+        def appendOrderingIfExists(query: SQLBuilder[Entity]): SQLBuilder[Entity] = {
           if (orderings.isEmpty) query
           else query.append(sqls"order by").append(sqls.csv(orderings: _*))
         }

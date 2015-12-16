@@ -16,7 +16,7 @@ trait SoftDeleteWithBooleanFeatureWithId[Id, Entity] extends CRUDFeatureWithId[I
   /**
    * is deleted flag field name.
    */
-  def isDeletedFieldName = "isDeleted"
+  def isDeletedFieldName: String = "isDeleted"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
     val c = defaultAlias.support.column
