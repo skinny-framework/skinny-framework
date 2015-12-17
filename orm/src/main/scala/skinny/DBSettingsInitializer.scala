@@ -60,6 +60,6 @@ trait DBSettingsInitializer {
   /**
    * Wipes out all DB settings.
    */
-  def destroy() = dbs.closeAll()
+  def destroy(): Unit = dbs.closeAll()
 
 }

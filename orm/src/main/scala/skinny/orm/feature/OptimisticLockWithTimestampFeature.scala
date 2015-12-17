@@ -29,7 +29,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
    * @param timestamp lock timestamp
    * @return query part
    */
-  protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = timestamp.map { t =>
+  protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]): SQLSyntax = timestamp.map { t =>
     sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockTimestampFieldName), t)
   }.getOrElse {
     sqls.eq(column.field(primaryKeyFieldName), id).and.isNull(column.field(lockTimestampFieldName))
@@ -42,7 +42,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
    * @param timestamp lock timestamp
    * @return updated count
    */
-  def updateByIdAndTimestamp(id: Long, timestamp: Option[DateTime]) = {
+  def updateByIdAndTimestamp(id: Long, timestamp: Option[DateTime]): UpdateOperationBuilder = {
     updateBy(byIdAndTimestamp(id, timestamp))
   }
 
@@ -53,7 +53,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
    * @param timestamp lock timestamp
    * @return updated count
    */
-  def updateByIdAndTimestamp(id: Long, timestamp: DateTime) = {
+  def updateByIdAndTimestamp(id: Long, timestamp: DateTime): UpdateOperationBuilder = {
     updateBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
@@ -88,7 +88,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession) = {
+  def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession): Int = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
@@ -100,7 +100,7 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
    * @param s db session
    * @return deleted count
    */
-  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession = autoSession) = {
+  def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession = autoSession): Int = {
     deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 

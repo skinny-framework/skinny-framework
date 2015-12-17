@@ -14,7 +14,7 @@ object DBMigration extends DBMigration
  */
 trait DBMigration {
 
-  def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name) = {
+  def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name): Int = {
     val skinnyEnv = SkinnyEnv.get()
     try {
       System.setProperty(SkinnyEnv.PropertyKey, env)
@@ -46,7 +46,7 @@ trait DBMigration {
     }
   }
 
-  def repair(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name) = {
+  def repair(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name): Unit = {
     val skinnyEnv = SkinnyEnv.get()
     try {
       System.setProperty(SkinnyEnv.PropertyKey, env)
@@ -67,4 +67,3 @@ trait DBMigration {
   }
 
 }
-

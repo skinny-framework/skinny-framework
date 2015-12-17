@@ -39,7 +39,7 @@ case class JoinDefinition[Entity](
    *
    * @return join definition
    */
-  def byDefaultEvenIfAssociated() = byDefault(true)
+  def byDefaultEvenIfAssociated(): JoinDefinition[Entity] = byDefault(true)
 
   /**
    * Enables by default.
