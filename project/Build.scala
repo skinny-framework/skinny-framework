@@ -9,11 +9,10 @@ object SkinnyFrameworkBuild extends Build {
   lazy val currentVersion = "2.0.2"
 
   lazy val skinnyMicroVersion = "1.0.0"
-  // Scalatra 2.4 will be incompatible with Skinny
-  lazy val compatibleScalatraVersion = "2.3.1"
+  lazy val scalatraTestVersion = "2.4.0"
   lazy val scalikeJDBCVersion = "2.3.2"
   lazy val h2Version = "1.4.190"
-  lazy val kuromojiVersion = "5.3.1"
+  lazy val kuromojiVersion = "5.4.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.14.v20151106"
@@ -94,11 +93,11 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework",
       libraryDependencies <++= (scalaVersion) { (sv) =>
         Seq(
-          "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion        % Compile,
-          "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion        % Compile,
-          "commons-io"           %  "commons-io"           % "2.4"                     % Compile,
-          "org.scalatra"         %% "scalatra-specs2"      % compatibleScalatraVersion % Test,
-          "org.scalatra"         %% "scalatra-scalatest"   % compatibleScalatraVersion % Test
+          "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion  % Compile,
+          "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion  % Compile,
+          "commons-io"           %  "commons-io"           % "2.4"               % Compile,
+          "org.scalatra"         %% "scalatra-specs2"      % scalatraTestVersion % Test,
+          "org.scalatra"         %% "scalatra-scalatest"   % scalatraTestVersion % Test
         ) ++ compileScalateDependencies(sv) ++ servletApiDependencies ++ testDependencies
       }
     )
@@ -157,7 +156,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.5.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.0.6.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -299,12 +298,12 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= Seq(
         "com.h2database"       %  "h2"                 % h2Version,
         "org.skinny-framework" %  "skinny-logback"     % "1.0.6",
-        "org.scalatra"         %% "scalatra-specs2"    % compatibleScalatraVersion % Test,
-        "org.scalatra"         %% "scalatra-scalatest" % compatibleScalatraVersion % Test,
-        "org.mockito"          %  "mockito-core"       % mockitoVersion            % Test,
-        "org.eclipse.jetty"    %  "jetty-webapp"       % jettyVersion              % "container",
-        "org.eclipse.jetty"    %  "jetty-plus"         % jettyVersion              % "container",
-        "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"                   % "container;provided;test"
+        "org.scalatra"         %% "scalatra-specs2"    % scalatraTestVersion % Test,
+        "org.scalatra"         %% "scalatra-scalatest" % scalatraTestVersion % Test,
+        "org.mockito"          %  "mockito-core"       % mockitoVersion      % Test,
+        "org.eclipse.jetty"    %  "jetty-webapp"       % jettyVersion        % "container",
+        "org.eclipse.jetty"    %  "jetty-plus"         % jettyVersion        % "container",
+        "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"             % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
       unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
