@@ -40,12 +40,12 @@ object SkinnyAppBuild extends Build {
       "com.h2database"          %  "h2"                   % "1.4.190",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
-      // for Skinny 1.x tests compatibility
-      // "org.scalatra"            %% "scalatra-scalatest"   % "2.3.1"         % "test"
       "org.eclipse.jetty"       %  "jetty-webapp"         % jettyVersion    % "container",
       "org.eclipse.jetty"       %  "jetty-plus"           % jettyVersion    % "container",
       "javax.servlet"           %  "javax.servlet-api"    % "3.1.0"         % "container;provided;test"
     ),
+    // https://github.com/sbt/sbt/issues/2217
+    fullResolvers ~= { _.filterNot(_.name == "jcenter") },
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -71,8 +71,6 @@ object SkinnyAppBuild extends Build {
       Some("templates")))
     }
   )
-
-  lazy val jettyOrbitHack = Seq(ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>)
 
   // -------------------------------------------------------
   // Development
@@ -131,8 +129,9 @@ object SkinnyAppBuild extends Build {
     settings = packagingBaseSettings ++ Seq(
       name := appName + "-standalone",
       libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion,
-      ideaIgnoreModule := true
-    ) ++ jettyOrbitHack
+      ideaIgnoreModule := true,
+      ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>
+    )
   )
 
 }
