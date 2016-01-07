@@ -10,7 +10,7 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val skinnyMicroVersion = "1.0.0"
   lazy val scalatraTestVersion = "2.4.0"
-  lazy val scalikeJDBCVersion = "2.3.3"
+  lazy val scalikeJDBCVersion = "2.3.4"
   lazy val h2Version = "1.4.190"
   lazy val kuromojiVersion = "5.4.0"
   lazy val mockitoVersion = "1.10.19"
@@ -18,7 +18,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val jettyVersion = "9.2.14.v20151106"
   lazy val logbackVersion = "1.1.3"
   lazy val slf4jApiVersion = "1.7.13"
-  lazy val scalaTestVersion = "2.2.5"
+  lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
@@ -79,7 +79,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-http-client",
       libraryDependencies ++= Seq(
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
-        "org.specs2"           %% "specs2-core"         % "2.4.17"           % Test,
+        "org.specs2"           %% "specs2-core"         % "2.5"              % Test,
         "commons-fileupload"   %  "commons-fileupload"  % "1.3.1"            % Test,
         "commons-io"           %  "commons-io"          % "2.4"              % Test,
         "commons-httpclient"   %  "commons-httpclient"  % "3.1"              % Test,
