@@ -25,13 +25,18 @@ import scala.util.control.NonFatal
 import skinny.logging.LoggerProvider
 import skinny.util.LoanPattern.using
 
+object HTTP extends HTTP {
+
+  val DEFAULT_CHARSET = "UTF-8"
+  private val RESPONSE_CONTENT_TYPE_REGEXP = "[^;]+;\\s*charset=(.+)".r
+
+}
+
 /**
  * HTTP/1.1
  */
-object HTTP extends LoggerProvider {
-
-  val DEFAULT_CHARSET = "UTF-8"
-  private[this] val RESPONSE_CONTENT_TYPE_REGEXP = "[^;]+;\\s*charset=(.+)".r
+class HTTP extends LoggerProvider {
+  import HTTP._
 
   var defaultConnectTimeoutMillis: Int = 1000
   var defaultReadTimeoutMillis: Int = 5000
