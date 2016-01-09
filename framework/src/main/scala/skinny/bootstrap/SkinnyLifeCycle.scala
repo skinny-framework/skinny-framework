@@ -2,6 +2,7 @@ package skinny.bootstrap
 
 import javax.servlet.ServletContext
 import skinny.micro.LifeCycle
+import skinny.micro.routing.RouteRegistry
 import skinny.worker._
 
 /**
@@ -38,12 +39,14 @@ trait SkinnyLifeCycle extends LifeCycle {
 
   override def init(ctx: ServletContext): Unit = {
     if (dbSettingsEnabled) skinny.DBSettings.initialize()
+    RouteRegistry.init()
     initSkinnyApp(ctx)
   }
 
   override def destroy(context: ServletContext) {
     if (dbSettingsEnabled) skinny.DBSettings.destroy()
     if (workerServiceEnabled) skinnyWorkerService.shutdownNow()
+    RouteRegistry.init()
     super.destroy(context)
   }
 

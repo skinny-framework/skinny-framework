@@ -19,7 +19,7 @@ trait CSRFProtectionFeature extends CSRFTokenSupport {
   self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
 
   /**
-   * Overrides Scalatra's default key name.
+   * Overrides Skinny Micro's default key name.
    */
   override def csrfKey: String = CSRFProtectionFeature.DEFAULT_KEY
 

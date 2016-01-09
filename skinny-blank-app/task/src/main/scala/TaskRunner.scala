@@ -4,6 +4,11 @@ object TaskRunner extends skinny.task.TaskLauncher {
     val buildDir = params.headOption.getOrElse("build")
     skinny.task.AssetsPrecompileTask.main(Array(buildDir))
   })
+  register("routes", (params) => {
+    import skinny.bootstrap._
+    (new Bootstrap()).initSkinnyApp(NOOPServletContext)
+    println(skinny.micro.routing.RouteRegistry.toString)
+  })
 
   // simple example
   /*

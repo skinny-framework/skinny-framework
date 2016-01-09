@@ -1,7 +1,7 @@
 package skinny.routing
 
 import skinny.controller.feature.SkinnyControllerCommonBase
-import skinny.controller.{ ActionDefinition, SkinnyControllerBase }
+import skinny.controller.ActionDefinition
 import skinny.micro.Handler
 import skinny.micro.constant.HttpMethod
 import skinny.micro.routing.Route

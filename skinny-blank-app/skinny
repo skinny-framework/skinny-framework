@@ -170,6 +170,10 @@ elif [ "$command" == "g" -o "$command" == "generate" ]; then
     command="task/run generate:$generator_type $@"
     ${sbt_path} "${command}"
   fi
+elif [ "$command" == "routes" ]; then
+  copy_resources_to_task
+  shift
+  ${sbt_path} "task/run routes $@"
 elif [ "$command" == "db:migrate" ]; then
   copy_resources_to_task
   shift
@@ -229,6 +233,7 @@ else
   echo "  ~compile        : will compile all the classes when changes are detected"
   echo "  db:migrate      : will execute database migration"
   echo "  db:repair       : will recover when previous migration failed"
+  echo "  routes          : will display routes information"
   echo "  test            : will run all the tests"
   echo "  ~test           : will run all the tests when changes are detected"
   echo "  testQuick       : will run only failed tests"
