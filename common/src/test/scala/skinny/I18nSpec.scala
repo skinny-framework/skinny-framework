@@ -20,4 +20,9 @@ class I18nSpec extends FlatSpec with Matchers {
     i18n.get("foo.bar.baz") should equal(Some("バズ"))
   }
 
+  it should "load user.name correctly" in {
+    val i18n = I18n()
+    i18n.get("user.name") should equal(Some("user-name"))
+  }
+
 }

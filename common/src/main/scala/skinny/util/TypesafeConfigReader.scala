@@ -4,6 +4,7 @@ import java.io.File
 import java.net.URL
 
 import com.typesafe.config._
+import com.typesafe.config.impl.ConfigImpl
 import scala.collection.JavaConverters._
 import scala.util.Try
 
@@ -26,12 +27,35 @@ object TypesafeConfigReader {
   def load(resource: String): Config = ConfigFactory.load(getClass.getClassLoader, resource)
 
   /**
+   * Loads config values without system properties.
+   *
+   * @param resource file resource
+   * @return config
+   */
+  def loadWithoutSystemProperties(resource: String): Config = {
+    val loader: ClassLoader = getClass.getClassLoader
+    val parseOptions: ConfigParseOptions = ConfigParseOptions.defaults.setClassLoader(loader)
+    val config: Config = ConfigImpl.parseResourcesAnySyntax(resource, parseOptions).toConfig
+    config.resolve(ConfigResolveOptions.defaults)
+  }
+
+  /**
    * Loads a configuration file as Map object.
    *
    * @param resource file resource
    * @return Map object
    */
   def loadAsMap(resource: String): Map[String, String] = fromConfigToMap(load(resource))
+
+  /**
+   * Loads config values without system properties.
+   *
+   * @param resource file resource
+   * @return Map object
+   */
+  def loadAsMapWithoutSystemProperties(resource: String): Map[String, String] = {
+    fromConfigToMap(loadWithoutSystemProperties(resource))
+  }
 
   /**
    * Loads a Map object from Typesafe-config object.

@@ -27,7 +27,7 @@ case class I18n(locale: Locale = null) extends LoggerProvider {
     val ext = ".conf"
     val prefix = "messages"
     val resource = Option(locale).map { l => prefix + "_" + l.toString + ext }.getOrElse(prefix + ext)
-    TypesafeConfigReader.loadAsMap(resource)
+    TypesafeConfigReader.loadAsMapWithoutSystemProperties(resource)
   })
 
   /**
