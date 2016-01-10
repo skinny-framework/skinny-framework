@@ -15,7 +15,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.3"
+  val skinnyVersion = "2.0.4-SNAPSHOT"
   val theScalaVersion = "2.11.7"
   val jettyVersion = "9.2.14.v20151106"
 
@@ -103,7 +103,8 @@ object SkinnyAppBuild extends Build {
   lazy val task = Project(id = "task", base = file("task"),
     settings = baseSettings ++ Seq(
       mainClass := Some("TaskRunner"),
-      name := appName + "-task"
+      name := appName + "-task",
+      libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0"
     )
   ) dependsOn(dev)
 

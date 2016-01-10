@@ -186,6 +186,15 @@ IF "%is_task_run%"=="true" (
   GOTO script_eof
 )
 
+IF "%command%"=="routes" (
+  RMDIR task\src\main\resources /S /q
+  RMDIR task\target /S /q
+  MKDIR task\src\main\resources
+  XCOPY src\main\resources task\src\main\resources /E /D /q
+  sbt "task/run routes"
+  GOTO script_eof
+)
+
 IF "%command%"=="db:migrate" (
   RMDIR task\src\main\resources /S /q
   RMDIR task\target /S /q
@@ -293,6 +302,7 @@ ECHO   compile            : will compile all the classes
 ECHO   ~compile           : will compile all the classes when changes are detected
 ECHO   db:migrate         : will execute database migration
 ECHO   db:repair          : will recover when previous migration failed
+ECHO   routes             : will display routes information"
 ECHO   test               : will run all the tests
 ECHO   ~test              : will run all the tests when changes are detected
 ECHO   testQuick          : will run only failed tests
