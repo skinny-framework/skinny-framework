@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.4-SNAPSHOT"
+  lazy val currentVersion = "2.0.4"
 
   lazy val skinnyMicroVersion = "1.0.1"
   lazy val scalatraTestVersion = "2.4.0"
