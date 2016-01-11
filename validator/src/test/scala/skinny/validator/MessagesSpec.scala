@@ -42,4 +42,9 @@ class MessagesSpec extends FlatSpec with Matchers {
     messages.size should equal(1)
   }
 
+  it should "load user.name correctly" in {
+    val msgs = Messages.loadFromConfig()
+    msgs.get("user.name") should equal(None)
+  }
+
 }
