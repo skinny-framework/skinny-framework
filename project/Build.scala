@@ -8,7 +8,7 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val currentVersion = "2.0.5-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "1.0.1"
+  lazy val skinnyMicroVersion = "1.0.2"
   lazy val scalatraTestVersion = "2.4.0"
   lazy val scalikeJDBCVersion = "2.3.4"
   lazy val h2Version = "1.4.190"
@@ -158,7 +158,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.6.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.0.7.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
