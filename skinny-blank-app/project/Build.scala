@@ -30,14 +30,14 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-      "org.slf4j"              %  "slf4j-api"                % "1.7.13"
+      "org.slf4j"              %  "slf4j-api"                % "1.7.14"
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"        % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
       "org.skinny-framework"    %  "skinny-logback"       % "1.0.6",
-      "com.h2database"          %  "h2"                   % "1.4.190",      // your own JDBC driver
+      "com.h2database"          %  "h2"                   % "1.4.191",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
       "org.eclipse.jetty"       %  "jetty-webapp"         % jettyVersion    % "container",

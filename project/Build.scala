@@ -11,13 +11,13 @@ object SkinnyFrameworkBuild extends Build {
   lazy val skinnyMicroVersion = "1.0.2"
   lazy val scalatraTestVersion = "2.4.0"
   lazy val scalikeJDBCVersion = "2.3.4"
-  lazy val h2Version = "1.4.190"
-  lazy val kuromojiVersion = "5.4.0"
+  lazy val h2Version = "1.4.191"
+  lazy val kuromojiVersion = "5.4.1"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.14.v20151106"
   lazy val logbackVersion = "1.1.3"
-  lazy val slf4jApiVersion = "1.7.13"
+  lazy val slf4jApiVersion = "1.7.14"
   lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
@@ -355,7 +355,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.9.1" % Compile,
+    "joda-time"     %  "joda-time"        % "2.9.2" % Compile,
     "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
