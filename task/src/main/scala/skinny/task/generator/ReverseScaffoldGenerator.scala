@@ -66,7 +66,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
         true
       }
       val pkName: Option[String] = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
-      val pkType: Option[ParamType] = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
+      val pkType: Option[ParamType] = if (hasId) {
+        columns.find(_.isPrimaryKey).map(_.typeCode).map { code =>
+          convertJdbcSqlTypeToParamType(code) match {
+            case ParamType.Int => ParamType.Long // auto boxing issue
+            case t => t
+          }
+        }
+      } else None
       val fields: List[String] = {
         val fields = if (hasId) {
           columns
