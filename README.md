@@ -34,6 +34,3 @@ https://github.com/skinny-framework/skinny-framework/releases
 (The MIT License)
 
 Copyright (c) skinny-framework.org
-
-
-
