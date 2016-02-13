@@ -11,7 +11,8 @@ class MessagesSpec extends FlatSpec with Matchers {
     msgs.get("foo").get should equal("bar")
     msgs.get("fooo").isDefined should equal(false)
     msgs.get("intMinValue", Seq("age", 20)).get should equal(
-      "age should be greater than or equal to 20.")
+      "age should be greater than or equal to 20."
+    )
 
     val messages = Validator(
       param("age" -> 12) is intMinValue(20)
@@ -29,7 +30,8 @@ class MessagesSpec extends FlatSpec with Matchers {
     msgs.get("foo").get should equal("bar")
     msgs.get("fooo").isDefined should equal(false)
     msgs.get("intMinValue", Seq("age", 20)).get should equal(
-      "age should be greater than or equal to 20.（日本語）")
+      "age should be greater than or equal to 20.（日本語）"
+    )
 
     val messages = Validator(
       param("age" -> 12) is intMinValue(20)

@@ -28,7 +28,8 @@ case class BelongsToExtractor[Entity](
   alias: Alias[_],
   merge: (Entity, Option[Any]) => Entity,
   includesMerge: (Seq[Entity], Seq[_]) => Seq[Entity] = AssociationsFeature.defaultIncludesMerge[Entity, Any],
-  var byDefault: Boolean = false) extends Extractor[Entity]
+  var byDefault: Boolean = false
+) extends Extractor[Entity]
 
 /**
  * HasOne association extractor.
@@ -46,7 +47,8 @@ case class HasOneExtractor[Entity](
   alias: Alias[_],
   merge: (Entity, Option[Any]) => Entity,
   includesMerge: (Seq[Entity], Seq[_]) => Seq[Entity] = AssociationsFeature.defaultIncludesMerge[Entity, Any],
-  var byDefault: Boolean = false) extends Extractor[Entity]
+  var byDefault: Boolean = false
+) extends Extractor[Entity]
 
 /**
  * HasMany association extractor.
@@ -64,4 +66,5 @@ case class HasManyExtractor[Entity](
   alias: Alias[_],
   merge: (Entity, Seq[Any]) => Entity,
   includesMerge: (Seq[Entity], Seq[_]) => Seq[Entity] = AssociationsFeature.defaultIncludesMerge[Entity, Any],
-  var byDefault: Boolean = false) extends Extractor[Entity]
+  var byDefault: Boolean = false
+) extends Extractor[Entity]

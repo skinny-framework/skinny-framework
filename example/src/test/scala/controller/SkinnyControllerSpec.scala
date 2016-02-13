@@ -24,7 +24,8 @@ class SkinnyControllerSpec extends FunSpec with Matchers {
         localDate: LocalDate,
         localDateOpt: Option[LocalDate],
         localTime: LocalTime,
-        localTimeOpt: Option[LocalTime])
+        localTimeOpt: Option[LocalTime]
+      )
 
       val datetime = DateTime.parse("2014-08-23T13:08:27")
       val datetime2 = DateTime.parse("1990-11-03T04:44:00")

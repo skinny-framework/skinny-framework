@@ -8,7 +8,8 @@ case class Tag(
   id: Long,
   name: String,
   createdAt: DateTime,
-  updatedAt: Option[DateTime] = None)
+  updatedAt: Option[DateTime] = None
+)
 
 object Tag extends SkinnyCRUDMapper[Tag] with TimestampsFeature[Tag] {
   override val connectionPoolName = 'fg

@@ -20,7 +20,8 @@ object ServletSession extends SkinnyMapper[ServletSession] {
   override def extract(rs: WrappedResultSet, n: ResultName[ServletSession]) = new ServletSession(
     jsessionId = rs.get(n.jsessionId),
     skinnySessionId = rs.get(n.skinnySessionId),
-    createdAt = rs.get(n.createdAt))
+    createdAt = rs.get(n.createdAt)
+  )
 
   private[this] val sv = defaultAlias
 

@@ -115,8 +115,8 @@ class ParamsSpec extends FlatSpec with Matchers {
 
   it should "have #withTime" in {
     val params = Params(Map(
-      "foo_hour" -> 4, "foo_minute" -> 5, "foo_second" -> 6)
-    ).withTime("foo")
+      "foo_hour" -> 4, "foo_minute" -> 5, "foo_second" -> 6
+    )).withTime("foo")
     params.getAs[String]("foo") should equal(Some("1970-01-01 04:05:06"))
   }
 

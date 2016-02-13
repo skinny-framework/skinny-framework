@@ -79,7 +79,8 @@ class DateTimeUtilSpec extends FlatSpec with Matchers {
 
   it should "have #toUnsafeDateTimeStringFromDateAndTime" in {
     DateTimeUtil.toUnsafeDateTimeStringFromDateAndTime(
-      Map("date" -> "2013-01-02", "time" -> "01:02:03")) should equal(Some("2013-01-02 01:02:03"))
+      Map("date" -> "2013-01-02", "time" -> "01:02:03")
+    ) should equal(Some("2013-01-02 01:02:03"))
   }
 
   it should "have #isLocalDateFormat(String)" in {

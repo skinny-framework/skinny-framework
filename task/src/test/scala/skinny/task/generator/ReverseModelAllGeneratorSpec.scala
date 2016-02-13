@@ -73,7 +73,8 @@ object Company extends SkinnyCRUDMapper[Company] {
     autoConstruct(rs, rn, "members")
   }
 }
-""".stripMargin)
+""".stripMargin
+      )
 
       val member = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/main/scala/model/Member.scala"))
       member should equal(
@@ -103,7 +104,8 @@ object Member extends SkinnyCRUDMapper[Member] {
     autoConstruct(rs, rn, "company")
   }
 }
-""".stripMargin)
+""".stripMargin
+      )
 
       val companySpec = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/test/scala/model/CompanySpec.scala"))
       companySpec should equal(

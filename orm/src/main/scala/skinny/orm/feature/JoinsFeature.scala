@@ -54,12 +54,15 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
   }
 
   override def extract(sql: SQL[Entity, NoExtractor])(
-    implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
+    implicit
+    includesRepository: IncludesQueryRepository[Entity]
+  ): SQL[Entity, HasExtractor] = {
     extractWithAssociations(
       sql,
       belongsToAssociations,
       hasOneAssociations,
-      hasManyAssociations)
+      hasManyAssociations
+    )
   }
 
 }

@@ -49,7 +49,8 @@ class Spec extends fixture.FunSpec with Matchers
       right = Blog -> Blog.defaultAlias,
       fk = "blogName",
       on = sqls.eq(defaultAlias.blogName, Blog.defaultAlias.name),
-      merge = (a, b) => a.copy(blog = b))
+      merge = (a, b) => a.copy(blog = b)
+    )
   }
 
   describe("associations by default") {

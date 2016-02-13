@@ -22,14 +22,16 @@ create table user (
   id bigserial not null,
   name varchar(100) not null,
   created_at timestamp not null default current_timestamp)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table article (
   id bigserial not null,
   title varchar(100) not null,
   user_id bigint references user(id))
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from article")
 }
 
@@ -112,7 +114,8 @@ class Issue263Spec extends fixture.FunSpec with Matchers
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
   }
 
@@ -133,7 +136,8 @@ class Issue263Spec extends fixture.FunSpec with Matchers
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
   }
 

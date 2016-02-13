@@ -100,20 +100,26 @@ class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
 
   it should "have #truncate" in {
     "Once upon a time in a world far far away".truncate(27) should equal(
-      "Once upon a time in a wo...")
+      "Once upon a time in a wo..."
+    )
     "Once upon a time in a world far far away".truncate(27, " ") should equal(
-      "Once upon a time in a...")
+      "Once upon a time in a..."
+    )
     "And they found that many people were sleeping better.".truncate(25, omission = "... (continued)") should equal(
-      "And they f... (continued)")
+      "And they f... (continued)"
+    )
   }
 
   it should "have #truncate_words" in {
     "Once upon a time in a world far far away".truncateWords(4) should equal(
-      "Once upon a time...")
+      "Once upon a time..."
+    )
     "Once<br>upon<br>a<br>time<br>in<br>a<br>world".truncateWords(5, separator = "<br>") should equal(
-      "Once<br>upon<br>a<br>time<br>in...")
+      "Once<br>upon<br>a<br>time<br>in..."
+    )
     "And they found that many people were sleeping better.".truncateWords(5, omission = "... (continued)") should equal(
-      "And they found that many... (continued)")
+      "And they found that many... (continued)"
+    )
   }
 
   it should "have #underscore" in {

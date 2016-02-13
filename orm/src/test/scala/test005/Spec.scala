@@ -46,7 +46,8 @@ class Spec extends fixture.FunSpec with Matchers
     data7: Seq[Data7] = Nil,
     data8: Seq[Data8] = Nil,
     data9: Seq[Data9] = Nil,
-    data10: Seq[Data10] = Nil)
+    data10: Seq[Data10] = Nil
+  )
 
   case class Data1(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
   case class Data2(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
@@ -66,25 +67,35 @@ class Spec extends fixture.FunSpec with Matchers
       autoConstruct(rs, rn, "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10")
     }
     lazy val d1 = hasMany[Data1](
-      Data1 -> Data1.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data1 = d))
+      Data1 -> Data1.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data1 = d)
+    )
     lazy val d2 = hasMany[Data2](
-      Data2 -> Data2.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data2 = d))
+      Data2 -> Data2.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data2 = d)
+    )
     lazy val d3 = hasMany[Data3](
-      Data3 -> Data3.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data3 = d))
+      Data3 -> Data3.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data3 = d)
+    )
     lazy val d4 = hasMany[Data4](
-      Data4 -> Data4.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data4 = d))
+      Data4 -> Data4.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data4 = d)
+    )
     lazy val d5 = hasMany[Data5](
-      Data5 -> Data5.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data5 = d))
+      Data5 -> Data5.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data5 = d)
+    )
     lazy val d6 = hasMany[Data6](
-      Data6 -> Data6.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data6 = d))
+      Data6 -> Data6.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data6 = d)
+    )
     lazy val d7 = hasMany[Data7](
-      Data7 -> Data7.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data7 = d))
+      Data7 -> Data7.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data7 = d)
+    )
     lazy val d8 = hasMany[Data8](
-      Data8 -> Data8.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data8 = d))
+      Data8 -> Data8.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data8 = d)
+    )
     lazy val d9 = hasMany[Data9](
-      Data9 -> Data9.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data9 = d))
+      Data9 -> Data9.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data9 = d)
+    )
     lazy val d10 = hasMany[Data10](
-      Data10 -> Data10.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data10 = d))
+      Data10 -> Data10.defaultAlias, (s, d) => sqls.eq(s.id, d.summaryId), (s, d) => s.copy(data10 = d)
+    )
 
     def withAssociations = joins(d1, d2, d3, d4, d5, d6, d7, d8, d9)
   }

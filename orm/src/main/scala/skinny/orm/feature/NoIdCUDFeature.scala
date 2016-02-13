@@ -183,7 +183,8 @@ trait NoIdCUDFeature[Entity]
       mapper: NoIdCUDFeature[Entity],
       where: SQLSyntax,
       beforeHandlers: Seq[BeforeUpdateByHandler],
-      afterHandlers: Seq[AfterUpdateByHandler]) {
+      afterHandlers: Seq[AfterUpdateByHandler]
+  ) {
 
     /**
      * Attributes to be updated.

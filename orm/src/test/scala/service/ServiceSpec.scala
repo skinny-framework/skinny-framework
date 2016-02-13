@@ -37,7 +37,8 @@ class ServiceSpec extends fixture.FunSpec with Matchers
 
       val afterService = Service.joins(Service.applications).findById(app.serviceNo).get
       afterService.applications.size should equal(
-        beforeService.applications.size - 1)
+        beforeService.applications.size - 1
+      )
     }
   }
 }

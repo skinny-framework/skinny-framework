@@ -26,7 +26,8 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
     val expectedMethod = route.metadata.get(Handler.RouteMetadataHttpMethodCacheKey)
       .map(_.asInstanceOf[HttpMethod]).getOrElse {
         throw new RouteMetadataException(
-          s"Metadata attribute ${Handler.RouteMetadataHttpMethodCacheKey} of Route should be set.")
+          s"Metadata attribute ${Handler.RouteMetadataHttpMethodCacheKey} of Route should be set."
+        )
       }
     controller.addActionDefinition(ActionDefinition(
       name = name,

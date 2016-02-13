@@ -9,7 +9,8 @@ case class OAuth2Provider(
   providerName: String,
   authorizationEndpoint: String,
   accessTokenEndpoint: String,
-  isJsonResponse: Boolean = true)
+  isJsonResponse: Boolean = true
+)
 
 object OAuth2Provider {
 

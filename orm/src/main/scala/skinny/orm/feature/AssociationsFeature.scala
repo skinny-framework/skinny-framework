@@ -31,7 +31,8 @@ object AssociationsFeature {
         |    }
         |
         |-------------------------------------------------
-        |""".stripMargin)
+        |""".stripMargin
+    )
 
 }
 
@@ -289,7 +290,8 @@ trait AssociationsFeature[Entity]
   def hasMany[M](
     many: (AssociationsFeature[M], Alias[M]),
     on: (Alias[Entity], Alias[M]) => SQLSyntax,
-    merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
+    merge: (Entity, Seq[M]) => Entity
+  ): HasManyAssociation[Entity] = {
     val fkOnManySide: String = {
       if (Try(many._1.primaryKeyFieldName).isFailure) toDefaultForeignKeyName(this)
       else many._1.primaryKeyFieldName
@@ -301,7 +303,8 @@ trait AssociationsFeature[Entity]
     many: (AssociationsFeature[M], Alias[M]),
     fk: String,
     on: (Alias[Entity], Alias[M]) => SQLSyntax,
-    merge: (Entity, Seq[M]) => Entity): HasManyAssociation[Entity] = {
+    merge: (Entity, Seq[M]) => Entity
+  ): HasManyAssociation[Entity] = {
 
     val joinDef = leftJoin(this -> this.defaultAlias, many, on.asInstanceOf[(Alias[_], Alias[_]) => SQLSyntax])
     val extractor = extractOneToMany[M](mapper = many._1, alias = many._2, fk = fk, merge = merge)
@@ -312,7 +315,8 @@ trait AssociationsFeature[Entity]
   def hasManyThrough[M2](
     through: AssociationsFeature[_],
     many: AssociationsWithIdFeature[_, M2],
-    merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+    merge: (Entity, Seq[M2]) => Entity
+  ): HasManyAssociation[Entity] = {
 
     val throughFk = toDefaultForeignKeyName[Entity](this)
     val manyFk = toDefaultForeignKeyName[M2](many)
@@ -321,7 +325,8 @@ trait AssociationsFeature[Entity]
       throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyFieldName), m1.field(throughFk)),
       many = many -> many.defaultAlias,
       on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyFieldName)),
-      merge = merge)
+      merge = merge
+    )
   }
 
   def hasManyThroughWithFk[M2](
@@ -329,14 +334,16 @@ trait AssociationsFeature[Entity]
     many: AssociationsWithIdFeature[_, M2],
     throughFk: String,
     manyFk: String,
-    merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+    merge: (Entity, Seq[M2]) => Entity
+  ): HasManyAssociation[Entity] = {
 
     hasManyThrough(
       through = through.asInstanceOf[AssociationsFeature[Any]] -> through.defaultAlias.asInstanceOf[Alias[Any]],
       throughOn = (entity, m1: Alias[_]) => sqls.eq(entity.field(primaryKeyFieldName), m1.field(throughFk)),
       many = many -> many.defaultAlias,
       on = (m1: Alias[_], m2: Alias[M2]) => sqls.eq(m1.field(manyFk), m2.field(many.primaryKeyFieldName)),
-      merge = merge)
+      merge = merge
+    )
   }
 
   def hasManyThrough[M1, M2](
@@ -344,7 +351,8 @@ trait AssociationsFeature[Entity]
     throughOn: (Alias[Entity], Alias[M1]) => SQLSyntax,
     many: (AssociationsWithIdFeature[_, M2], Alias[M2]),
     on: (Alias[M1], Alias[M2]) => SQLSyntax,
-    merge: (Entity, Seq[M2]) => Entity): HasManyAssociation[Entity] = {
+    merge: (Entity, Seq[M2]) => Entity
+  ): HasManyAssociation[Entity] = {
 
     val joinDef1 = leftJoin(through, throughOn.asInstanceOf[(Alias[_], Alias[_]) => SQLSyntax])
     val joinDef2 = leftJoin(through, many, on.asInstanceOf[(Alias[_], Alias[_]) => SQLSyntax])
@@ -370,12 +378,12 @@ trait AssociationsFeature[Entity]
     sql: SelectSQLBuilder[Entity],
     belongsToAssociations: Seq[BelongsToAssociation[Entity]],
     hasOneAssociations: Seq[HasOneAssociation[Entity]],
-    hasManyAssociations: Seq[HasManyAssociation[Entity]]): SelectSQLBuilder[Entity] = {
+    hasManyAssociations: Seq[HasManyAssociation[Entity]]
+  ): SelectSQLBuilder[Entity] = {
 
     val mergedJoinDefinitions = (belongsToAssociations.flatMap(_.joinDefinitions)
       ++ hasOneAssociations.flatMap(_.joinDefinitions)
-      ++ hasManyAssociations.flatMap(_.joinDefinitions)
-    ).filterNot { df =>
+      ++ hasManyAssociations.flatMap(_.joinDefinitions)).filterNot { df =>
         val currentName = df.rightAlias.tableAliasName
         val sameAsThis = this.defaultAlias.tableAliasName == currentName
         val foundInDefaults = defaultJoinDefinitions.exists(d => d.rightAlias.tableAliasName == currentName)
@@ -428,7 +436,9 @@ trait AssociationsFeature[Entity]
   // ----------------------
 
   private[this] def extractHasMany(ex: HasManyExtractor[Entity], rs: WrappedResultSet)(
-    implicit includesRepository: IncludesQueryRepository[Entity]): Option[Entity] = {
+    implicit
+    includesRepository: IncludesQueryRepository[Entity]
+  ): Option[Entity] = {
     if (rs.anyOpt(ex.alias.resultName.field(ex.fk)).isDefined) {
       val mapper = ex.mapper.asInstanceOf[AssociationsFeature[Any]]
       val alias = ex.alias.asInstanceOf[Alias[Any]]
@@ -437,7 +447,9 @@ trait AssociationsFeature[Entity]
   }
 
   def extract(sql: SQL[Entity, NoExtractor])(
-    implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
+    implicit
+    includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()
+  ): SQL[Entity, HasExtractor] = {
     extractWithAssociations(sql, belongsToAssociations, hasOneAssociations, hasManyAssociations)
   }
 
@@ -454,8 +466,11 @@ trait AssociationsFeature[Entity]
     sql: SQL[Entity, NoExtractor],
     belongsToAssociations: Seq[BelongsToAssociation[Entity]],
     hasOneAssociations: Seq[HasOneAssociation[Entity]],
-    oneToManyAssociations: Seq[HasManyAssociation[Entity]])(
-      implicit includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()): SQL[Entity, HasExtractor] = {
+    oneToManyAssociations: Seq[HasManyAssociation[Entity]]
+  )(
+    implicit
+    includesRepository: IncludesQueryRepository[Entity] = IncludesQueryRepository[Entity]()
+  ): SQL[Entity, HasExtractor] = {
 
     val enabledJoinDefinitions = defaultJoinDefinitions ++
       belongsToAssociations.map(_.joinDefinitions) ++
@@ -469,9 +484,11 @@ trait AssociationsFeature[Entity]
 
     } else if (enabledOneToManyExtractors.size > 0) {
       val oneExtractedSql: OneToXSQL[Entity, NoExtractor, Entity] = sql.one(rs =>
-        extractWithOneToOneTables(rs,
+        extractWithOneToOneTables(
+          rs,
           belongsToAssociations.map(_.extractor).toSet,
-          hasOneAssociations.map(_.extractor).toSet))
+          hasOneAssociations.map(_.extractor).toSet
+        ))
 
       if (enabledOneToManyExtractors.size == 1) {
         // one-to-many
@@ -540,9 +557,9 @@ trait AssociationsFeature[Entity]
             to5 = rs => extractHasMany(ex5, rs),
             to6 = rs => extractHasMany(ex6, rs)
           ).map {
-              case (one, m1, m2, m3, m4, m5, m6) =>
-                ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6)
-            }
+            case (one, m1, m2, m3, m4, m5, m6) =>
+              ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6)
+          }
         sql
 
       } else if (enabledOneToManyExtractors.size == 7) {
@@ -559,9 +576,9 @@ trait AssociationsFeature[Entity]
             to6 = rs => extractHasMany(ex6, rs),
             to7 = rs => extractHasMany(ex7, rs)
           ).map {
-              case (one, m1, m2, m3, m4, m5, m6, m7) =>
-                ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7)
-            }
+            case (one, m1, m2, m3, m4, m5, m6, m7) =>
+              ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7)
+          }
         sql
 
       } else if (enabledOneToManyExtractors.size == 8) {
@@ -579,9 +596,9 @@ trait AssociationsFeature[Entity]
             to7 = rs => extractHasMany(ex7, rs),
             to8 = rs => extractHasMany(ex8, rs)
           ).map {
-              case (one, m1, m2, m3, m4, m5, m6, m7, m8) =>
-                ex8.merge(ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7), m8)
-            }
+            case (one, m1, m2, m3, m4, m5, m6, m7, m8) =>
+              ex8.merge(ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7), m8)
+          }
         sql
 
       } else if (enabledOneToManyExtractors.size == 9) {
@@ -600,9 +617,9 @@ trait AssociationsFeature[Entity]
             to8 = rs => extractHasMany(ex8, rs),
             to9 = rs => extractHasMany(ex9, rs)
           ).map {
-              case (one, m1, m2, m3, m4, m5, m6, m7, m8, m9) =>
-                ex9.merge(ex8.merge(ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7), m8), m9)
-            }
+            case (one, m1, m2, m3, m4, m5, m6, m7, m8, m9) =>
+              ex9.merge(ex8.merge(ex7.merge(ex6.merge(ex5.merge(ex4.merge(ex3.merge(ex2.merge(ex1.merge(one, m1), m2), m3), m4), m5), m6), m7), m8), m9)
+          }
         sql
 
       } else {
@@ -611,9 +628,11 @@ trait AssociationsFeature[Entity]
 
     } else {
       // several one-to-one and so on
-      sql.map(rs => extractWithOneToOneTables(rs,
+      sql.map(rs => extractWithOneToOneTables(
+        rs,
         belongsToAssociations.map(_.extractor).toSet,
-        hasOneAssociations.map(_.extractor).toSet))
+        hasOneAssociations.map(_.extractor).toSet
+      ))
     }
   }
 
@@ -628,7 +647,8 @@ trait AssociationsFeature[Entity]
   def extractWithOneToOneTables(
     rs: WrappedResultSet,
     belongsToExtractors: Set[BelongsToExtractor[Entity]],
-    hasOneExtractors: Set[HasOneExtractor[Entity]])(implicit includesRepository: IncludesQueryRepository[Entity]): Entity = {
+    hasOneExtractors: Set[HasOneExtractor[Entity]]
+  )(implicit includesRepository: IncludesQueryRepository[Entity]): Entity = {
 
     val allBelongsTo = defaultBelongsToExtractors ++ belongsToExtractors
     val withBelongsTo = allBelongsTo.foldLeft(extract(rs, defaultAlias.resultName)) {
@@ -688,7 +708,8 @@ trait AssociationsFeature[Entity]
     fk: String,
     alias: Alias[That],
     merge: (Entity, Option[That]) => Entity,
-    includesMerge: (Seq[Entity], Seq[That]) => Seq[Entity] = defaultIncludesMerge[Entity, That]): HasOneExtractor[Entity] = {
+    includesMerge: (Seq[Entity], Seq[That]) => Seq[Entity] = defaultIncludesMerge[Entity, That]
+  ): HasOneExtractor[Entity] = {
 
     HasOneExtractor[Entity](
       mapper = mapper,
@@ -722,7 +743,8 @@ trait AssociationsFeature[Entity]
     fk: String,
     alias: Alias[M1],
     merge: (Entity, Seq[M1]) => Entity,
-    includesMerge: (Seq[Entity], Seq[M1]) => Seq[Entity] = defaultIncludesMerge[Entity, M1]): HasManyExtractor[Entity] = {
+    includesMerge: (Seq[Entity], Seq[M1]) => Seq[Entity] = defaultIncludesMerge[Entity, M1]
+  ): HasManyExtractor[Entity] = {
 
     if (defaultOneToManyExtractors.size > 5) {
       throw new IllegalStateException("Skinny ORM doesn't support more than 5 one-to-many tables.")

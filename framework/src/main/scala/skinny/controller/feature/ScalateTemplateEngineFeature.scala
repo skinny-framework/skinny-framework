@@ -65,7 +65,9 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * Creates a RenderContext instance for Skinny app.
    */
   override protected def createRenderContext(out: PrintWriter)(
-    implicit ctx: SkinnyContext): SkinnyScalateRenderContext = {
+    implicit
+    ctx: SkinnyContext
+  ): SkinnyScalateRenderContext = {
     val context = super.createRenderContext(out)(ctx)
     context.numberFormat = scalateRenderContextNumberFormat
     context
@@ -184,7 +186,9 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature
    * @return true/false
    */
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
+    implicit
+    ctx: SkinnyContext, format: Format = Format.HTML
+  ): String = {
     // Note: templateExists() should already have been called, so we know we have an actual template
     val templatePath = findFirstAvailableTemplate(templatePaths(path)).getOrElse("missing-template")
     layoutTemplate(templatePath, requestScope(ctx).toMap.toSeq: _*)(ctx)

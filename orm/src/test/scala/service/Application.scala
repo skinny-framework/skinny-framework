@@ -11,7 +11,8 @@ case class Application(
   serviceNo: Long,
   service: Option[Service] = None,
   createdAt: DateTime,
-  updatedAt: DateTime)
+  updatedAt: DateTime
+)
 
 object Application extends SkinnyCRUDMapper[Application]
     with TimestampsFeature[Application]

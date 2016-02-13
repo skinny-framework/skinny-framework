@@ -95,7 +95,8 @@ object DateTimeUtil {
     params: Map[String, Any],
     year: String = "year",
     month: String = "month",
-    day: String = "day"): Option[String] = {
+    day: String = "day"
+  ): Option[String] = {
 
     try {
       (params.get(year).filterNot(_.toString.isEmpty) orElse
@@ -114,7 +115,8 @@ object DateTimeUtil {
     params: Map[String, Any],
     year: String = "year",
     month: String = "month",
-    day: String = "day"): Option[String] = {
+    day: String = "day"
+  ): Option[String] = {
 
     (params.get(year).filterNot(_.toString.isEmpty) orElse
       params.get(month).filterNot(_.toString.isEmpty) orElse
@@ -131,7 +133,8 @@ object DateTimeUtil {
     params: Map[String, Any],
     hour: String = "hour",
     minute: String = "minute",
-    second: String = "second"): Option[String] = {
+    second: String = "second"
+  ): Option[String] = {
 
     try {
       (params.get(hour).filterNot(_.toString.isEmpty) orElse
@@ -150,7 +153,8 @@ object DateTimeUtil {
     params: Map[String, Any],
     hour: String = "hour",
     minute: String = "minute",
-    second: String = "second"): Option[String] = {
+    second: String = "second"
+  ): Option[String] = {
 
     (params.get(hour).filterNot(_.toString.isEmpty) orElse
       params.get(minute).filterNot(_.toString.isEmpty) orElse
@@ -170,7 +174,8 @@ object DateTimeUtil {
     day: String = "day",
     hour: String = "hour",
     minute: String = "minute",
-    second: String = "second"): Option[String] = {
+    second: String = "second"
+  ): Option[String] = {
 
     try {
       (params.get(year).filterNot(_.toString.isEmpty) orElse
@@ -198,7 +203,8 @@ object DateTimeUtil {
     day: String = "day",
     hour: String = "hour",
     minute: String = "minute",
-    second: String = "second"): Option[String] = {
+    second: String = "second"
+  ): Option[String] = {
 
     (params.get(year).filterNot(_.toString.isEmpty) orElse
       params.get(month).filterNot(_.toString.isEmpty) orElse
@@ -220,7 +226,8 @@ object DateTimeUtil {
   def toUnsafeDateTimeStringFromDateAndTime(
     params: Map[String, Any],
     date: String = "date",
-    time: String = "time"): Option[String] = {
+    time: String = "time"
+  ): Option[String] = {
 
     (params.get(date).filterNot(_.toString.isEmpty) orElse
       params.get(time).filterNot(_.toString.isEmpty)).map { _ =>

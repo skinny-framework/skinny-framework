@@ -8,7 +8,8 @@ case class PostTag(
   id: Long,
   tagId: Int,
   postId: Int,
-  createdAt: DateTime)
+  createdAt: DateTime
+)
 
 object PostTag extends SkinnyJoinTable[PostTag] {
   override val connectionPoolName = 'fg

@@ -8,7 +8,8 @@ class LessCompilerSpec extends FlatSpec with Matchers {
 
   it should "compile code" in {
     val compiler = LessCompiler
-    val css = compiler.compile("box.less",
+    val css = compiler.compile(
+      "box.less",
       """@base: #f938ab;
         |
         |.box-shadow(@style, @c) when (iscolor(@c)) {
@@ -24,7 +25,8 @@ class LessCompilerSpec extends FlatSpec with Matchers {
         |  border-color: lighten(@base, 30%);
         |  div { .box-shadow(0 0 5px, 30%) }
         |}
-      """.stripMargin)
+      """.stripMargin
+    )
 
     css should equal(
       """.box {
@@ -36,7 +38,8 @@ class LessCompilerSpec extends FlatSpec with Matchers {
         |  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         |  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         |}
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
 }

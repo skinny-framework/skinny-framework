@@ -46,9 +46,9 @@ class AngularXHRProgrammersController extends SkinnyApiResource with AngularXHRS
   override def resourcesBasePath = s"/angular/${resourcesName}"
 
   override def createParams = Params(params +
-    ("hashedPassword" -> params.getAs[PlainPassword]("plainTextPassword").map(_.hash("dummy salt")))
-  )
-  override def createForm = validation(createParams,
+    ("hashedPassword" -> params.getAs[PlainPassword]("plainTextPassword").map(_.hash("dummy salt"))))
+  override def createForm = validation(
+    createParams,
     paramKey("name") is required & maxLength(64),
     paramKey("favoriteNumber") is required & numeric,
     paramKey("companyId") is numeric,
@@ -62,7 +62,8 @@ class AngularXHRProgrammersController extends SkinnyApiResource with AngularXHRS
   )
 
   override def updateParams = Params(params).withDate("birthday")
-  override def updateForm = validation(updateParams,
+  override def updateForm = validation(
+    updateParams,
     paramKey("id") is required,
     paramKey("name") is required & maxLength(64),
     paramKey("favoriteNumber") is required & numeric,
@@ -72,7 +73,8 @@ class AngularXHRProgrammersController extends SkinnyApiResource with AngularXHRS
     "name" -> ParamType.String,
     "favoriteNumber" -> ParamType.Long,
     "companyId" -> ParamType.Long,
-    "birthday" -> ParamType.LocalDate)
+    "birthday" -> ParamType.LocalDate
+  )
 
   override def doDestroy(id: Long) = model.deleteByIdCascade(id)
 

@@ -24,5 +24,6 @@ case class SkinnyMailerSmtpConfig(
   override val startTLSEnabled: Boolean,
   override val authEnabled: Boolean,
   override val user: Option[String],
-  override val password: Option[String])
+  override val password: Option[String]
+)
     extends SkinnyMailerSmtpConfigApi

@@ -29,7 +29,8 @@ class RootController extends ApplicationController with TxPerRequestFilter with 
     redirect("/")
   }
 
-  def form = validation(Params(params),
+  def form = validation(
+    Params(params),
     paramKey("foo") is required & matches(".*OK.*", "ok")
   )
 

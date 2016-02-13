@@ -50,7 +50,8 @@ trait AsyncBeforeAfterActionFeature
             }
           }
         } getOrElse ().asInstanceOf[Any]
-      })
+      }
+    )
   }
 
   /**
@@ -79,7 +80,8 @@ trait AsyncBeforeAfterActionFeature
             }
           }
         } getOrElse ().asInstanceOf[Any]
-      })
+      }
+    )
   }
 
   // executing actions in this controller

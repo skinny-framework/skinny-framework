@@ -11,7 +11,8 @@ case class Company(
   url: Option[String] = None,
   createdAt: DateTime,
   updatedAt: Option[DateTime] = None,
-  deletedAt: Option[DateTime] = None)
+  deletedAt: Option[DateTime] = None
+)
 
 object Company extends SkinnyCRUDMapperWithId[CompanyId, Company]
     with TimestampsFeatureWithId[CompanyId, Company]

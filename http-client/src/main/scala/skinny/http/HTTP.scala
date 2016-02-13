@@ -180,13 +180,13 @@ class HTTP extends LoggerProvider {
       val response: Response = Response(
         status = conn.getResponseCode,
         charset = {
-          Option(conn.getHeaderField("Content-Type")).map { contentType =>
-            contentType.toLowerCase match {
-              case RESPONSE_CONTENT_TYPE_REGEXP(charset) => Some(charset)
-              case _ => None
-            }
-          }.getOrElse(request.charset)
-        },
+        Option(conn.getHeaderField("Content-Type")).map { contentType =>
+          contentType.toLowerCase match {
+            case RESPONSE_CONTENT_TYPE_REGEXP(charset) => Some(charset)
+            case _ => None
+          }
+        }.getOrElse(request.charset)
+      },
         headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }.toMap,
         headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
         rawCookies = Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>

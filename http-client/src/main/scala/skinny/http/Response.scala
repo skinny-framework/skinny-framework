@@ -25,7 +25,8 @@ case class Response(
     headerFields: Map[String, Seq[String]] = Map(),
     rawCookies: Map[String, String] = Map(),
     charset: Option[String] = None,
-    body: Array[Byte] = Array()) {
+    body: Array[Byte] = Array()
+) {
 
   def header(name: String): Option[String] = headers.get(name)
   def headerField(name: String): Seq[String] = headerFields.get(name).getOrElse(Nil)

@@ -139,7 +139,8 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateApplicationControllerIfAbsent() {
     val file = new File(s"${sourceDir}/${controllerPackageDir}/ApplicationController.scala")
-    writeIfAbsent(file,
+    writeIfAbsent(
+      file,
       s"""package ${controllerPackage}
         |
         |import skinny._
@@ -158,7 +159,8 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  // override def defaultLocale = Some(new java.util.Locale("ja"))
         |
         |}
-      """.stripMargin)
+      """.stripMargin
+    )
   }
 
   def controllerCode(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
@@ -174,7 +176,8 @@ trait ScaffoldGenerator extends CodeGenerator {
       .flatMap { arg =>
         val required = if (isOptionClassName(arg.typeName)) Nil else Seq("required")
         val varcharLength = if (arg.columnName.isDefined && (
-          arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR"))) {
+          arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR")
+        )) {
           arg.columnName.get.replaceAll("[varcharVARCHAR\\(\\)]", "")
         } else "512"
         val validationRules = required ++ (extractTypeIfOptionOrSeq(arg.typeName) match {

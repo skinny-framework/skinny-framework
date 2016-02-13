@@ -53,8 +53,10 @@ class SkinnySessionInitializer extends Filter with LoggerProvider {
     } else {
       val skinnySession = getSkinnyHttpSession(req)
       req.setAttribute(SkinnySessionFilter.ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE, skinnySession)
-      chain.doFilter(new SkinnyHttpRequestWrapper(req,
-        SkinnyHttpSessionWrapper(req.getSession, skinnySession)), response)
+      chain.doFilter(new SkinnyHttpRequestWrapper(
+        req,
+        SkinnyHttpSessionWrapper(req.getSession, skinnySession)
+      ), response)
     }
   }
 

@@ -23,8 +23,10 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
     val uberspect = new ScalaUberspect
     uberspect.init()
     uberspect
-      .getIterator(Map("key1" -> "value1",
-        "key2" -> "value2"), dummyInfo) should be(a[java.util.Iterator[_]])
+      .getIterator(Map(
+        "key1" -> "value1",
+        "key2" -> "value2"
+      ), dummyInfo) should be(a[java.util.Iterator[_]])
   }
 
   it should "mutable.ArrayBuffer to JavaIterator" in {
@@ -36,8 +38,10 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
   it should "mutable.Map to JavaIterator" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getIterator(mutable.Map("key1" -> "value1",
-      "key2" -> "value2"), dummyInfo) should be(a[java.util.Iterator[_]])
+    uberspect.getIterator(mutable.Map(
+      "key1" -> "value1",
+      "key2" -> "value2"
+    ), dummyInfo) should be(a[java.util.Iterator[_]])
   }
 
   it should "Iterator to JavaIterator" in {
@@ -70,46 +74,56 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
   it should "List#get to VelMethodImpl" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getMethod(List(1, 2, 3),
+    uberspect.getMethod(
+      List(1, 2, 3),
       "get",
       Array(new Integer(1)),
-      dummyInfo) should be(a[UberspectImpl.VelMethodImpl])
+      dummyInfo
+    ) should be(a[UberspectImpl.VelMethodImpl])
   }
 
   it should "Map#get to RewriteVelMethod" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getMethod(Map("key" -> "value"),
+    uberspect.getMethod(
+      Map("key" -> "value"),
       "get",
       Array("key"),
-      dummyInfo) should be(a[RewriteVelMethod])
+      dummyInfo
+    ) should be(a[RewriteVelMethod])
   }
 
   it should "Map#apply to not RewriteVelMethod" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getMethod(Map("key" -> "value"),
+    uberspect.getMethod(
+      Map("key" -> "value"),
       "apply",
       Array("key"),
-      dummyInfo) should not be (a[RewriteVelMethod])
+      dummyInfo
+    ) should not be (a[RewriteVelMethod])
   }
 
   it should "mutable.ArrayBuffer#get to VelMethodImpl" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getMethod(mutable.ArrayBuffer(1, 2, 3),
+    uberspect.getMethod(
+      mutable.ArrayBuffer(1, 2, 3),
       "get",
       Array(new Integer(1)),
-      dummyInfo) should be(a[UberspectImpl.VelMethodImpl])
+      dummyInfo
+    ) should be(a[UberspectImpl.VelMethodImpl])
   }
 
   it should "mutable.Map#get to RewriteVelMethod" in {
     val uberspect = new ScalaUberspect
     uberspect.init()
-    uberspect.getMethod(mutable.Map("key" -> "value"),
+    uberspect.getMethod(
+      mutable.Map("key" -> "value"),
       "get",
       Array("key"),
-      dummyInfo) should be(a[RewriteVelMethod])
+      dummyInfo
+    ) should be(a[RewriteVelMethod])
   }
 
 }

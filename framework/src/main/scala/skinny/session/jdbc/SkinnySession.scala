@@ -14,7 +14,8 @@ case class SkinnySession(
     createdAt: DateTime,
     expireAt: DateTime,
     servletSessions: Seq[ServletSession] = Nil,
-    attributes: Seq[SkinnySessionAttribute] = Nil) extends LoggerProvider {
+    attributes: Seq[SkinnySessionAttribute] = Nil
+) extends LoggerProvider {
 
   import SkinnySession._
 
@@ -108,7 +109,8 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
   override def extract(rs: WrappedResultSet, n: ResultName[SkinnySession]) = new SkinnySession(
     id = rs.get(n.id),
     createdAt = rs.get(n.createdAt),
-    expireAt = rs.get(n.expireAt))
+    expireAt = rs.get(n.expireAt)
+  )
 
   val servletSessionsAlias = ServletSession.createAlias("svs")
   val servletSessionsRef = {
@@ -224,7 +226,8 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
   }
   private[this] def findActiveByJsessionId(jsessionId: String): Option[SkinnySession] = {
     joins(attributesRef, servletSessionsRef).findBy(
-      sqls.eq(servletSessionsAlias.jsessionId, jsessionId).and.gt(defaultAlias.expireAt, DateTime.now))
+      sqls.eq(servletSessionsAlias.jsessionId, jsessionId).and.gt(defaultAlias.expireAt, DateTime.now)
+    )
   }
   private[this] def attachJsessionIdToSkinnySession(jsessionId: String, session: SkinnySession): Unit = {
     ServletSession.findByJsessionId(jsessionId).map { servletSession =>

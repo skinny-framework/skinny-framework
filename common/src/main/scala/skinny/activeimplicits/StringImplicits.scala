@@ -146,8 +146,7 @@ trait StringImplicits {
       withString(_
         .replaceAll("\\s+", sep)
         .replaceAll("\\.", "")
-        .toLowerCase(Locale.ENGLISH)
-      )
+        .toLowerCase(Locale.ENGLISH))
     }
 
     // pluralize(count = nil, locale = :en)

@@ -53,7 +53,8 @@ sealed trait Association[Entity] {
 case class BelongsToAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],
-    extractor: BelongsToExtractor[Entity]) extends Association[Entity] {
+    extractor: BelongsToExtractor[Entity]
+) extends Association[Entity] {
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
 
@@ -73,7 +74,8 @@ case class BelongsToAssociation[Entity](
 case class HasOneAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],
-    extractor: HasOneExtractor[Entity]) extends Association[Entity] {
+    extractor: HasOneExtractor[Entity]
+) extends Association[Entity] {
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
 
@@ -93,7 +95,8 @@ case class HasOneAssociation[Entity](
 case class HasManyAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],
-    extractor: HasManyExtractor[Entity]) extends Association[Entity] {
+    extractor: HasManyExtractor[Entity]
+) extends Association[Entity] {
 
   override def setExtractorByDefault() = mapper.setAsByDefault(extractor)
 

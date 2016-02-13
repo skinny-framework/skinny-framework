@@ -11,6 +11,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
     sql"""
 create table account (
   name varchar(128) not null)
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from account")
 }

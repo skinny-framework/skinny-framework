@@ -16,7 +16,8 @@ trait SkinnyTaskLauncher {
         |
         |${tasks.map(t => "  " + t._1).mkString("\n")}
         |
-        |""".stripMargin)
+        |""".stripMargin
+    )
   }
 
   def main(args: Array[String]) {

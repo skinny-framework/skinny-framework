@@ -82,7 +82,8 @@ object Developer extends SkinnyCRUDMapper[Developer] {
     autoConstruct(rs, rn, "userGroup", "organizations")
   }
 }
-""")
+"""
+      )
       val organization = FileUtils.readFileToString(new File("tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala/model/Organization.scala"))
       organization should equal(
         s"""package model
@@ -112,7 +113,8 @@ object Organization extends SkinnyCRUDMapper[Organization] {
     autoConstruct(rs, rn, "developers")
   }
 }
-""")
+"""
+      )
       val organizationDeveloper = FileUtils.readFileToString(new File("tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala/model/OrganizationDeveloper.scala"))
       organizationDeveloper should equal(
         s"""package model
@@ -140,7 +142,8 @@ object OrganizationDeveloper extends SkinnyNoIdCRUDMapper[OrganizationDeveloper]
     autoConstruct(rs, rn, "developer", "organization")
   }
 }
-""")
+"""
+      )
       val developersController = FileUtils.readFileToString(new File("tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala/controller/DevelopersController.scala"))
       developersController should equal(
         """package controller
@@ -187,7 +190,8 @@ class DevelopersController extends SkinnyResource with ApplicationController {
   )
 
 }
-""")
+"""
+      )
       val indexHtmlSsp = FileUtils.readFileToString(new File("tmp/ReverseScaffoldAllGeneratorSpec/src/main/webapp/WEB-INF/views/developers/index.html.ssp"))
       indexHtmlSsp should equal(
         """<%@val s: skinny.Skinny %>
@@ -260,7 +264,8 @@ class DevelopersController extends SkinnyResource with ApplicationController {
 </table>
 
 <a href="${s.url(Controllers.developers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
-""")
+"""
+      )
     }
   }
 

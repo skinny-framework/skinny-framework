@@ -23,7 +23,8 @@ case class SkinnyMailerConfig(
   override val contentType: String,
   override val defaultFrom: Option[String],
   override val transportProtocol: String,
-  override val smtp: SkinnyMailerSmtpConfigApi)
+  override val smtp: SkinnyMailerSmtpConfigApi
+)
     extends SkinnyMailerConfigApi {
 
 }

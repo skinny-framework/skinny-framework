@@ -13,7 +13,8 @@ private[skinny] case class RawDropboxUser(
     emailVerified: Boolean,
     isPaired: Boolean,
     team: Option[Team],
-    quotaInfo: QuotaInfo) {
+    quotaInfo: QuotaInfo
+) {
 
   def toDropboxUser: DropboxUser = new DropboxUser(
     id = uid.toString,
@@ -44,5 +45,6 @@ case class DropboxUser(
   emailVerified: Boolean,
   isPaired: Boolean,
   team: Option[Team],
-  quotaInfo: QuotaInfo)
+  quotaInfo: QuotaInfo
+)
     extends OAuth2User

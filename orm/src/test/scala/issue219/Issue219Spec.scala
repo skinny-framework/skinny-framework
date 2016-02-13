@@ -20,21 +20,24 @@ trait CreateTables extends DBSeeds { self: Connection =>
 create table user (
   id bigserial not null,
   name varchar(100) not null)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table article (
   id bigserial not null,
   title varchar(100) not null,
   user_id bigint references user(id))
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table tag (
   id bigserial not null,
   name varchar(100) not null,
   article_id bigint references article(id))
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from article")
 }
 
@@ -63,10 +66,10 @@ class Issue219Spec extends fixture.FunSpec with Matchers
         right = User,
         merge = (a, u) => a.copy(user = u)
       ).includes[User]((as, us) => as.map { a =>
-          us.find(u => a.user.exists(_.id == u.id))
-            .map(u => a.copy(user = Some(u)))
-            .getOrElse(a)
-        })
+        us.find(u => a.user.exists(_.id == u.id))
+          .map(u => a.copy(user = Some(u)))
+          .getOrElse(a)
+      })
     }
 
     lazy val tagsRef = hasMany[Tag](
@@ -74,8 +77,8 @@ class Issue219Spec extends fixture.FunSpec with Matchers
       on = (a, t) => sqls.eq(a.id, t.articleId),
       merge = (a, ts) => a.copy(tags = ts)
     ).includes[Tag]((as, tags) => as.map { a =>
-        a.copy(tags = tags.filter(_.articleId.exists(_ == a.id)))
-      })
+      a.copy(tags = tags.filter(_.articleId.exists(_ == a.id)))
+    })
   }
   object Tag extends SkinnyCRUDMapper[Tag] {
     override val connectionPoolName = 'issue219
@@ -87,10 +90,10 @@ class Issue219Spec extends fixture.FunSpec with Matchers
         right = Article,
         merge = (t, a) => t.copy(article = a)
       ).includes[Article]((ts, as) => ts.map { t =>
-          as.find(a => t.article.exists(_.id == a.id))
-            .map(a => t.copy(article = Some(a)))
-            .getOrElse(t)
-        })
+        as.find(a => t.article.exists(_.id == a.id))
+          .map(a => t.copy(article = Some(a)))
+          .getOrElse(t)
+      })
     }
   }
 

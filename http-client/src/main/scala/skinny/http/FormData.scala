@@ -43,7 +43,8 @@ case class FormData(
     var name: String,
     var bytes: Option[Array[Byte]] = None,
     var textInput: TextInput = NoTextInput,
-    var fileInput: FileInput = NoFileInput) {
+    var fileInput: FileInput = NoFileInput
+) {
 
   private[this] def returningThis(f: => Any): FormData = {
     f

@@ -15,4 +15,5 @@ import skinny.micro.constant.HttpMethod
 case class ActionDefinition(
   name: Symbol,
   method: HttpMethod,
-  matcher: (HttpMethod, String) => Boolean)
+  matcher: (HttpMethod, String) => Boolean
+)

@@ -14,7 +14,8 @@ object SnakeCaseKeyExamplesController extends SkinnyResource {
   override def resourcesBasePath = "/snake_case_key_examples"
   override def useSnakeCasedParamKeys = true
 
-  override def createForm = validation(createParams,
+  override def createForm = validation(
+    createParams,
     paramKey("first_name") is required & maxLength(512),
     paramKey("luckey_number") is required & numeric & intValue
   )
@@ -25,7 +26,8 @@ object SnakeCaseKeyExamplesController extends SkinnyResource {
     "luckey_number" -> ParamType.Int
   )
 
-  override def updateForm = validation(updateParams,
+  override def updateForm = validation(
+    updateParams,
     paramKey("first_name") is required & maxLength(512),
     paramKey("luckey_number") is required & numeric & intValue
   )

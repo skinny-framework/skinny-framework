@@ -7,8 +7,10 @@ import skinny.micro.util.UrlGenerator
 /**
  * Global object for accessing Skinny common APIs & request scope attributes in views.
  */
-case class Skinny(context: SkinnyContext,
-    requestScope: collection.mutable.Map[String, Any]) {
+case class Skinny(
+  context: SkinnyContext,
+    requestScope: collection.mutable.Map[String, Any]
+) {
 
   import skinny.controller.feature.RequestScopeFeature._
 
@@ -79,9 +81,9 @@ case class Skinny(context: SkinnyContext,
       UrlGenerator.url(
         route,
         params
-          .map { case (k, v) => k -> convertOptionalValue(v) }
-          .filter { case (k, v) => k != null && v != null }
-          .toMap[String, String],
+        .map { case (k, v) => k -> convertOptionalValue(v) }
+        .filter { case (k, v) => k != null && v != null }
+        .toMap[String, String],
         Nil
       )(context)
     } catch {

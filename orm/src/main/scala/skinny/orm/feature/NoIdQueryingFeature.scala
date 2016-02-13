@@ -39,7 +39,8 @@ trait NoIdQueryingFeature[Entity]
    * @return query builder
    */
   def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
-    mapper = this, conditions = Seq(condition))
+    mapper = this, conditions = Seq(condition)
+  )
 
   /**
    * Appends pagination settings as limit/offset.
@@ -49,7 +50,8 @@ trait NoIdQueryingFeature[Entity]
    */
   def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
     new EntitiesSelectOperationBuilder(
-      mapper = this, limit = Some(pagination.limit), offset = Some(pagination.offset))
+      mapper = this, limit = Some(pagination.limit), offset = Some(pagination.offset)
+    )
   }
 
   /**
@@ -82,7 +84,8 @@ trait NoIdQueryingFeature[Entity]
       orderings: Seq[SQLSyntax] = Nil,
       limit: Option[Int] = None,
       offset: Option[Int] = None,
-      isCountOnly: Boolean = false) {
+      isCountOnly: Boolean = false
+  ) {
 
     /**
      * Appends where conditions.
@@ -93,13 +96,13 @@ trait NoIdQueryingFeature[Entity]
     def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
       mapper = this.mapper,
       conditions = conditions ++ additionalConditions.flatMap {
-        case (key, value) =>
-          value match {
-            case Nil => None
-            case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
-            case value => Some(sqls.eq(defaultAlias.field(key.name), value))
-          }
-      },
+      case (key, value) =>
+        value match {
+          case Nil => None
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+          case value => Some(sqls.eq(defaultAlias.field(key.name), value))
+        }
+    },
       orderings = orderings,
       limit = limit,
       offset = offset
@@ -133,7 +136,8 @@ trait NoIdQueryingFeature[Entity]
     conditions: Seq[SQLSyntax] = Nil,
     orderings: Seq[SQLSyntax] = Nil,
     limit: Option[Int] = None,
-    offset: Option[Int] = None)
+    offset: Option[Int] = None
+  )
       extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false)
       with CalculationFeature[Entity] {
 

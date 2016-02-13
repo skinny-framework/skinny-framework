@@ -30,7 +30,8 @@ case class JoinDefinition[Entity](
     on: SQLSyntax,
     fk: Option[(Any) => Option[Long]] = None,
     var enabledEvenIfAssociated: Boolean = false,
-    var enabledByDefault: Boolean = false) {
+    var enabledByDefault: Boolean = false
+) {
 
   private[this] val logger = LoggerFactory.getLogger(classOf[JoinDefinition[Entity]])
 

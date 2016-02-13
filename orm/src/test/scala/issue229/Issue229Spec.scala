@@ -20,14 +20,16 @@ trait CreateTables extends DBSeeds { self: Connection =>
 create table user (
   id bigserial not null,
   name varchar(100) not null)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table article (
   id bigserial not null,
   title varchar(100) not null,
   user_id bigint references user(id))
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from article")
 }
 
@@ -55,10 +57,10 @@ class Issue229Spec extends fixture.FunSpec with Matchers
         right = User,
         merge = (a, u) => a.copy(user = u)
       ).includes[User]((as, us) => as.map { a =>
-          us.find(u => a.user.exists(_.id == u.id))
-            .map(u => a.copy(user = Some(u)))
-            .getOrElse(a)
-        })
+        us.find(u => a.user.exists(_.id == u.id))
+          .map(u => a.copy(user = Some(u)))
+          .getOrElse(a)
+      })
     }
   }
 

@@ -12,7 +12,9 @@ trait MockWebPageControllerFeatures { self: MockControllerBase with SkinnyWebPag
   var renderCall: Option[RenderCall] = None
 
   override def render(path: String)(
-    implicit ctx: SkinnyContext = skinnyContext, format: Format = Format.HTML): String = {
+    implicit
+    ctx: SkinnyContext = skinnyContext, format: Format = Format.HTML
+  ): String = {
     // If Content-Type is already set, never overwrite it.
     if (contentType(ctx) == null) {
       (contentType = format.contentType + charset.map(c => s"; charset=${c}").getOrElse(""))(ctx)

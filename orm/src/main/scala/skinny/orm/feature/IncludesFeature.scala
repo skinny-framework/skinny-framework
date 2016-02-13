@@ -91,13 +91,15 @@ trait IncludesFeatureWithId[Id, Entity]
           try Some(v.asInstanceOf[Id])
           catch {
             case e: ClassCastException => throw new IllegalStateException(
-              s"Casting ${v.getClass.getCanonicalName} value to expected identity type is failed.")
+              s"Casting ${v.getClass.getCanonicalName} value to expected identity type is failed."
+            )
           }
         case v =>
           try Some(v.asInstanceOf[Id])
           catch {
             case e: ClassCastException => throw new IllegalStateException(
-              s"Casting ${v.getClass.getCanonicalName} value to expected identity type is failed.")
+              s"Casting ${v.getClass.getCanonicalName} value to expected identity type is failed."
+            )
           }
       }
     }
@@ -112,7 +114,9 @@ trait IncludesFeatureWithId[Id, Entity]
    * @return entities with included attributes
    */
   def appendIncludedAttributes(entities: List[Entity])(
-    implicit s: DBSession, repository: IncludesQueryRepository[Entity]): List[Entity] = {
+    implicit
+    s: DBSession, repository: IncludesQueryRepository[Entity]
+  ): List[Entity] = {
     def toFinder(mapper: AssociationsFeature[_]): FinderFeatureWithId[Id, Entity] = {
       mapper.asInstanceOf[FinderFeatureWithId[Id, Entity]]
     }
@@ -121,24 +125,30 @@ trait IncludesFeatureWithId[Id, Entity]
         val ids: Seq[Id] = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         if (ids.isEmpty) entities
         else {
-          assoc.extractor.includesMerge(entities,
-            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+          assoc.extractor.includesMerge(
+            entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)
+          ).toList
         }
       }
       val withHasOne = includedHasOneAssociations.foldLeft(withBelongsTo) { (entities, assoc) =>
         val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         if (ids.isEmpty) entities
         else {
-          assoc.extractor.includesMerge(entities,
-            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+          assoc.extractor.includesMerge(
+            entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)
+          ).toList
         }
       }
       includedHasManyAssociations.foldLeft(withHasOne) { (entities, assoc) =>
         val ids = toIds(repository.entitiesFor(assoc.extractor), assoc.mapper.primaryKeyFieldName)
         if (ids.isEmpty) entities
         else {
-          assoc.extractor.includesMerge(entities,
-            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)).toList
+          assoc.extractor.includesMerge(
+            entities,
+            toFinder(assoc.extractor.mapper).findAllByIds(ids: _*)
+          ).toList
         }
       }
 
@@ -153,7 +163,8 @@ trait IncludesFeatureWithId[Id, Entity]
       defaultSelectQuery,
       belongsToAssociations ++ includedBelongsToAssociations,
       hasOneAssociations ++ includedHasOneAssociations,
-      hasManyAssociations ++ includedHasManyAssociations.toSet)
+      hasManyAssociations ++ includedHasManyAssociations.toSet
+    )
   }
 
   /**
@@ -165,7 +176,9 @@ trait IncludesFeatureWithId[Id, Entity]
    * @return entity with included attributes
    */
   def appendIncludedAttributes(entity: Option[Entity])(
-    implicit s: DBSession, repository: IncludesQueryRepository[Entity]): Option[Entity] = {
+    implicit
+    s: DBSession, repository: IncludesQueryRepository[Entity]
+  ): Option[Entity] = {
     appendIncludedAttributes(entity.toList).headOption
   }
 

@@ -13,7 +13,8 @@ import skinny.SkinnyEnv
  * VelocityView extension for Scala
  */
 class ScalaVelocityView(
-    ctx: ServletContext, sbtProjectPath: Option[String]) extends VelocityView(ctx) {
+    ctx: ServletContext, sbtProjectPath: Option[String]
+) extends VelocityView(ctx) {
 
   override protected def configure(config: JeeConfig, velocity: VelocityEngine): Unit = {
     super.configure(config, velocity)

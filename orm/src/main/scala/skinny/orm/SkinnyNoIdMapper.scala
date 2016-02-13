@@ -22,10 +22,12 @@ trait SkinnyNoIdMapper[Entity]
 
   override def hasOne[A](
     right: AssociationsFeature[A],
-    merge: (Entity, Option[A]) => Entity): HasOneAssociation[Entity] = {
+    merge: (Entity, Option[A]) => Entity
+  ): HasOneAssociation[Entity] = {
 
     throw new IllegalAssociationException(
-      s"SkinnyNoIdMapper doesn't support `hasOne` relationship through single primary key (e.g. id).")
+      s"SkinnyNoIdMapper doesn't support `hasOne` relationship through single primary key (e.g. id)."
+    )
   }
 
 }

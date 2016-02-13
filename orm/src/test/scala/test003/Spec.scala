@@ -19,7 +19,8 @@ class Spec extends fixture.FunSpec with Matchers
   case class Employee(
     companyId: Int, personId: Int, role: Option[String],
     company: Option[Company] = None,
-    person: Option[Person] = None)
+    person: Option[Person] = None
+  )
 
   // mappers
   object Person extends SkinnyCRUDMapper[Person] {

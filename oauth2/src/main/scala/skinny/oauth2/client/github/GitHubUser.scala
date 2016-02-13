@@ -11,4 +11,5 @@ case class GitHubUser(
   login: String,
   url: String,
   name: String,
-  email: Option[String]) extends OAuth2User
+  email: Option[String]
+) extends OAuth2User

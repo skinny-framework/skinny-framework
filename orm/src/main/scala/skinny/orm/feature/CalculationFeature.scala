@@ -21,7 +21,9 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
    * Count only.
    */
   def count(fieldName: Symbol = Symbol(""), distinct: Boolean = false)(
-    implicit s: DBSession = autoSession): Long = {
+    implicit
+    s: DBSession = autoSession
+  ): Long = {
     if (fieldName == Symbol("")) {
       withSQL {
         select(sqls.count).from(as(syntax))

@@ -5,7 +5,8 @@ package skinny.validator
  */
 case class Error(
   override val name: String,
-  override val messageParams: Seq[Any]) extends ErrorLike
+  override val messageParams: Seq[Any]
+) extends ErrorLike
 
 /**
  * Factory

@@ -25,7 +25,8 @@ object SkinnyJapaneseAnalyzerFactory {
           |   libraryDependencies += "org.apache.lucene" % "lucene-analyzers-kuromoji" % "<luceneLatestVersion>"
           |
           |-------------------------------------------
-          |""".stripMargin)
+          |""".stripMargin
+      )
     }
   }
 
@@ -51,7 +52,8 @@ object SkinnyJapaneseAnalyzerFactory {
       userDictionary,
       JapaneseTokenizer.Mode.NORMAL,
       new CharArraySet(0, true),
-      Set.empty[String].asJava))
+      Set.empty[String].asJava
+    ))
   }
 
 }

@@ -56,7 +56,8 @@ trait ControllerGenerator extends CodeGenerator {
 
   def generateApplicationControllerIfAbsent() {
     val file = new File(s"${sourceDir}/${controllerPackageDir}/ApplicationController.scala")
-    writeIfAbsent(file,
+    writeIfAbsent(
+      file,
       s"""package ${controllerPackage}
         |
         |import skinny._
@@ -75,7 +76,8 @@ trait ControllerGenerator extends CodeGenerator {
         |  // override def defaultLocale = Some(new java.util.Locale("ja"))
         |
         |}
-      """.stripMargin)
+      """.stripMargin
+    )
   }
 
   def generate(namespaces: Seq[String], name: String) {

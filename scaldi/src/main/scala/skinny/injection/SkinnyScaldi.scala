@@ -26,10 +26,12 @@ object SkinnyScaldi extends SkinnyScaldi {
             } catch {
               case NonFatal(e) =>
                 throw new ScaldiConfigException(
-                  s"Failed to load a Scaldi module because of ${e.getClass.getCanonicalName} (${e.getMessage})", e)
+                  s"Failed to load a Scaldi module because of ${e.getClass.getCanonicalName} (${e.getMessage})", e
+                )
             }
           }.toList
-        }.getOrElse(Nil))
+        }.getOrElse(Nil)
+      )
     })
   }
 

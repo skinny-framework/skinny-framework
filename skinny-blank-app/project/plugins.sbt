@@ -21,7 +21,7 @@ addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.7.1.0")
 
 // --------
 // format Scala source code automatically
-//addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
+//addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
 
 // --------
 // IntelliJ IDEA setting files generator

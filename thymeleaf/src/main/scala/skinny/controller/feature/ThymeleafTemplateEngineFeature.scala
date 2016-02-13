@@ -89,7 +89,9 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
+    implicit
+    ctx: SkinnyContext, format: Format = Format.HTML
+  ): String = {
     val context = new WebContext(ctx.request, ctx.response, ctx.servletContext)
     requestScope(ctx).foreach {
       case (key, value) => context.setVariable(key, value)

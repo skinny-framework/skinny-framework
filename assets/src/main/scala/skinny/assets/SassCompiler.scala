@@ -29,7 +29,8 @@ class SassCompiler {
       case e: IOException =>
         throw new AssetsPrecompileFailureException(
           "Failed to run sass command! sass should be prepared in advance. " +
-            "If you haven't install sass yet, just run `gem install sass` now.")
+            "If you haven't install sass yet, just run `gem install sass` now."
+        )
     }
   }
 

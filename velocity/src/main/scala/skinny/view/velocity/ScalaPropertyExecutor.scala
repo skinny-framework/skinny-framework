@@ -12,7 +12,8 @@ import org.apache.velocity.util.introspection.Introspector
  * @param property target property
  */
 class ScalaPropertyExecutor(
-  log: Log, introspector: Introspector, clazz: Class[_], property: String)
+  log: Log, introspector: Introspector, clazz: Class[_], property: String
+)
     extends PropertyExecutor(log, introspector, clazz, property) {
 
   override protected def discover(clazz: Class[_], property: String): Unit = {

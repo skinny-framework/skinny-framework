@@ -17,7 +17,8 @@ case class Member(
   mentor: Option[Member] = None,
   mentorees: Seq[Member] = Nil,
   groups: Seq[Group] = Nil,
-  skills: Seq[Skill] = Nil)
+  skills: Seq[Skill] = Nil
+)
 
 object Member extends SkinnyCRUDMapper[Member] {
   override val tableName = "members"
@@ -66,8 +67,8 @@ object Member extends SkinnyCRUDMapper[Member] {
     on = (m, mentorees) => sqls.eq(m.id, mentorees.mentorId),
     merge = (member, mentorees) => member.copy(mentorees = mentorees)
   ).includes[Member]((ms, mts) => ms.map { m =>
-      m.copy(mentorees = mts.filter(_.mentorId.exists(_ == m.id)))
-    }).byDefault
+    m.copy(mentorees = mts.filter(_.mentorId.exists(_ == m.id)))
+  }).byDefault
 
   override def extract(rs: WrappedResultSet, n: ResultName[Member]): Member = new Member(
     id = rs.long(n.id),

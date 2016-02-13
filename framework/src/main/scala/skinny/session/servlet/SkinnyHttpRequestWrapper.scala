@@ -8,7 +8,8 @@ import javax.servlet.{ ServletResponse, ServletRequest }
  */
 case class SkinnyHttpRequestWrapper(
     request: HttpServletRequest,
-    session: SkinnyHttpSessionWrapper) extends HttpServletRequest {
+    session: SkinnyHttpSessionWrapper
+) extends HttpServletRequest {
 
   def getSession(create: Boolean) = session // already created
   def getSession = session

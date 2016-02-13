@@ -47,13 +47,15 @@ class ManualIdControllerSpec extends ScalatraFlatSpec {
       "name" -> ParamType.String,
       "url" -> ParamType.String
     )
-    override protected def createForm = validation(createParams,
+    override protected def createForm = validation(
+      createParams,
       paramKey("id") is required & numeric,
       paramKey("name") is required & maxLength(64),
       paramKey("url") is required & maxLength(128)
     )
     override protected def updateFormStrongParameters = createFormStrongParameters
-    override protected def updateForm = validation(updateParams,
+    override protected def updateForm = validation(
+      updateParams,
       paramKey("id") is required & numeric,
       paramKey("name") is required & maxLength(64),
       paramKey("url") is required & maxLength(128)

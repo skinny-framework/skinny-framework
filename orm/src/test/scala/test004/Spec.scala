@@ -21,14 +21,16 @@ class Spec extends fixture.FunSpec with Matchers
       abilityTypeId: Option[Long],
       createdAt: DateTime,
       updatedAt: Option[DateTime],
-      abilityType: Option[AbilityType] = None) extends SkinnyRecord[Ability] {
+      abilityType: Option[AbilityType] = None
+  ) extends SkinnyRecord[Ability] {
 
     override def skinnyCRUDMapper = Ability
     override def excludedFieldNamesWhenSaving = Seq(Ability.createdAtFieldName, Ability.updatedAtFieldName)
   }
   case class AbilityType(
     id: Long,
-    name: String)
+    name: String
+  )
 
   // mappers
   object Ability extends SkinnyCRUDMapper[Ability] with TimestampsFeature[Ability] {

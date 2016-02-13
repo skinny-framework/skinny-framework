@@ -25,7 +25,9 @@ trait ValidationFeature {
    * @return validator
    */
   def validationWithParams(validations: NewValidation*)(
-    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    implicit
+    locale: Locale = currentLocale(context).orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(Params(params(context)), null, validations: _*)(context)
   }
 
@@ -38,7 +40,9 @@ trait ValidationFeature {
    * @return validator
    */
   def validation(params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    implicit
+    locale: Locale = currentLocale(context).orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(params, null, validations: _*)(context)
   }
 
@@ -52,7 +56,9 @@ trait ValidationFeature {
    * @return validator
    */
   def validationWithParamsAndPrefix(prefix: String, params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    implicit
+    locale: Locale = currentLocale(context).orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(params, prefix, validations: _*)(context)
   }
 
@@ -65,7 +71,9 @@ trait ValidationFeature {
    * @return validator
    */
   def validationWithPrefix(params: Params, prefix: String, validations: NewValidation*)(
-    implicit ctx: SkinnyContext): MapValidator = {
+    implicit
+    ctx: SkinnyContext
+  ): MapValidator = {
     implicit val locale: Locale = currentLocale(ctx).orNull[Locale]
 
     if (params == null) {
@@ -107,12 +115,16 @@ trait ValidationFeature {
 object ValidationFeature {
 
   def buildErrorMessages(validations: Seq[NewValidation], errors: Errors)(
-    implicit locale: Locale): Seq[String] = {
+    implicit
+    locale: Locale
+  ): Seq[String] = {
     buildErrorMessagesWithPrefix(null, validations, errors)
   }
 
   def buildErrorMessagesWithPrefix(prefix: String, validations: Seq[NewValidation], errors: Errors)(
-    implicit locale: Locale): Seq[String] = {
+    implicit
+    locale: Locale
+  ): Seq[String] = {
     val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
     val i18n = I18n(locale)
     def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
@@ -122,21 +134,25 @@ object ValidationFeature {
         skinnyValidationMessages.get(
           key = error.name,
           params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
-            case I18nKeyParam(key) => i18n.getOrKey(key)
-            case value => value
-          }.toList
+          case I18nKeyParam(key) => i18n.getOrKey(key)
+          case value => value
+        }.toList
         ).getOrElse(error.name)
       }
     }
   }
 
   def buildKeyAndErrorMessages(validations: Seq[NewValidation], errors: Errors)(
-    implicit locale: Locale): KeyAndErrorMessages = {
+    implicit
+    locale: Locale
+  ): KeyAndErrorMessages = {
     buildKeyAndErrorMessagesWithPrefix(null, validations, errors)
   }
 
   def buildKeyAndErrorMessagesWithPrefix(prefix: String, validations: Seq[NewValidation], errors: Errors)(
-    implicit locale: Locale): KeyAndErrorMessages = {
+    implicit
+    locale: Locale
+  ): KeyAndErrorMessages = {
     val skinnyValidationMessages = Messages.loadFromConfig(locale = Option(locale))
     val i18n = I18n(locale)
     def withPrefix(key: String): String = if (prefix != null) s"${prefix}.${key}" else key
@@ -146,9 +162,9 @@ object ValidationFeature {
         skinnyValidationMessages.get(
           key = error.name,
           params = i18n.get(withPrefix(toCamelCase(key))).getOrElse(key) :: error.messageParams.map {
-            case I18nKeyParam(key) => i18n.getOrKey(key)
-            case value => value
-          }.toList
+          case I18nKeyParam(key) => i18n.getOrKey(key)
+          case value => value
+        }.toList
         ).getOrElse(error.name)
       }
     }.toMap)

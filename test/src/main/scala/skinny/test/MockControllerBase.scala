@@ -52,13 +52,15 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
     status: Integer = null,
     body: T = (),
     headers: Map[String, String] = Map.empty,
-    reason: String = null): Nothing = {
+    reason: String = null
+  ): Nothing = {
 
     throw new MockHaltException(
       status = Option(status).map(_.intValue()),
       reason = Option(reason),
       headers = headers,
-      body = body)
+      body = body
+    )
   }
 
   def getOutputStreamContents: String = {

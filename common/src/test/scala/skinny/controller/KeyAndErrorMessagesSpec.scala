@@ -20,7 +20,8 @@ class KeyAndErrorMessagesSpec extends FlatSpec with Matchers {
   "+" should "be available" in {
     val messages = KeyAndErrorMessages(Map("id" -> Seq("required", "numeric")))
     (messages + ("name" -> Seq("required"))) should equal(
-      Map("id" -> Seq("required", "numeric"), "name" -> Seq("required")))
+      Map("id" -> Seq("required", "numeric"), "name" -> Seq("required"))
+    )
   }
 
   "-" should "be available" in {

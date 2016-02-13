@@ -41,7 +41,8 @@ class SampleApiControllerSpec extends FunSpec with Matchers with DBSettings
           |      "message_params" : [ ]
           |    } ]
           |  }
-          |}""".stripMargin)
+          |}""".stripMargin
+      )
     }
 
     it("shows companies") {

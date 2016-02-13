@@ -16,7 +16,8 @@ class VelocitySpec extends FlatSpec with Matchers with VelocityTestSupport {
     eval(template, "list" -> List(1, 2, 3)) should include(
       """|1
          |2
-         |3""".stripMargin)
+         |3""".stripMargin
+    )
   }
 
   it should "#foreach Option(Some)" in {
@@ -45,7 +46,8 @@ class VelocitySpec extends FlatSpec with Matchers with VelocityTestSupport {
 
     eval(template, "map" -> Map("key1" -> "value1", "key2" -> "value2")) should include(
       """|value1
-         |value2""".stripMargin)
+         |value2""".stripMargin
+    )
   }
 
   it should "#foreach JavaList" in {
@@ -57,7 +59,8 @@ class VelocitySpec extends FlatSpec with Matchers with VelocityTestSupport {
     eval(template, "list" -> java.util.Arrays.asList(1, 2, 3)) should include(
       """|1
          |2
-         |3""".stripMargin)
+         |3""".stripMargin
+    )
   }
 
   it should "access property val" in {

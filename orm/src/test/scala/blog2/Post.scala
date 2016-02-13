@@ -10,7 +10,8 @@ case class Post(
   body: String,
   tags: Seq[Tag] = Nil,
   createdAt: DateTime,
-  updatedAt: Option[DateTime] = None)
+  updatedAt: Option[DateTime] = None
+)
 
 object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
   override val connectionPoolName = 'blog2
@@ -20,7 +21,8 @@ object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
   val tagsRef = hasManyThrough[Tag](
     through = PostTag,
     many = Tag,
-    merge = (p, t) => p.copy(tags = t)).byDefault
+    merge = (p, t) => p.copy(tags = t)
+  ).byDefault
 
   override def extract(rs: WrappedResultSet, rn: ResultName[Post]): Post = new Post(
     id = rs.get(rn.id),

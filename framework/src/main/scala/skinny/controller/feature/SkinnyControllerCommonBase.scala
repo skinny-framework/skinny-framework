@@ -78,7 +78,9 @@ trait SkinnyControllerCommonBase
    * @return body if possible
    */
   protected def haltWithBody[A](httpStatus: Int)(
-    implicit ctx: SkinnyContext, format: Format = Format.HTML): A = {
+    implicit
+    ctx: SkinnyContext, format: Format = Format.HTML
+  ): A = {
     halt(httpStatus, renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message)))
   }
 

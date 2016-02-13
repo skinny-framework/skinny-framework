@@ -127,7 +127,8 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
   describe("Integration Test Spec for Controller (SkinnyResource)") {
     it("should be created as expected without namespaces") {
       val code = generator.integrationSpecCode(Nil, "members", "member", Seq(
-        "name" -> "String"))
+        "name" -> "String"
+      ))
 
       val expected =
         """package integrationtest

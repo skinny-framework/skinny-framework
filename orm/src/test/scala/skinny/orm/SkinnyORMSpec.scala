@@ -128,7 +128,8 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
       val member = Member.findBy(
         sqls.eq(m.countryId, mentor.countryId)
           .and.eq(m.companyId, mentor.companyId)
-          .and.eq(m.mentorId, mentor.id))
+          .and.eq(m.mentorId, mentor.id)
+      )
 
       // depends on default ordering
       member.get.id should (
@@ -234,8 +235,7 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
     it("should have #countBy(SQLSyntax)") { implicit session =>
       val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       Member.withAlias(s =>
-        Member.countBy(sqls.eq(s.countryId, countryId))
-      ) should be > (0L)
+        Member.countBy(sqls.eq(s.countryId, countryId))) should be > (0L)
     }
 
     it("should have #updateById(Long)") { implicit session =>
@@ -289,7 +289,8 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
       ) foreach { createdAt =>
           intercept[Exception] {
             Skill.createWithPermittedAttributes(
-              StrongParameters(Map("name" -> "Java Programming", "createdAt" -> createdAt)).permit("name" -> ParamType.String, "createdAt" -> ParamType.DateTime))
+              StrongParameters(Map("name" -> "Java Programming", "createdAt" -> createdAt)).permit("name" -> ParamType.String, "createdAt" -> ParamType.DateTime)
+            )
           }
         }
     }
@@ -596,7 +597,8 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
         params.permit(
           "countryId" -> ParamType.Int,
           "mentorId" -> ParamType.Int,
-          "createdAt" -> ParamType.DateTime)
+          "createdAt" -> ParamType.DateTime
+        )
       }
 
       // empty string is often passed from controllers

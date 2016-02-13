@@ -55,12 +55,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
       val hasId = if (columns.find(_.isPrimaryKey).isEmpty) {
         println(
           s"""
-            |Since this table (${tableName}) has no primary key, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
+            |Since this table (${tableName}) has no primary key, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin
+        )
         false
       } else if (columns.filter(_.isPrimaryKey).size > 1) {
         println(
           s"""
-            |Since this table (${tableName}) has compound primary keys, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin)
+            |Since this table (${tableName}) has compound primary keys, generator created only NoIdCRUDMapper file and skipped creating controller and view files.""".stripMargin
+        )
         false
       } else {
         true

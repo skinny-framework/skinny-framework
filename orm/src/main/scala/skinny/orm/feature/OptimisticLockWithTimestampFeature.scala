@@ -60,7 +60,8 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})"
+      )
     }
   }
   afterUpdateBy(updateByHandler _)
@@ -108,7 +109,8 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
     val count = super.deleteBy(where)(s)
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})"
+      )
     } else {
       count
     }

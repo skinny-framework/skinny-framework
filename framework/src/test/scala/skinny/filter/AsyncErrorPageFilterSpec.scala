@@ -55,7 +55,8 @@ class AsyncErrorPageFilterSpec extends ScalatraFlatSpec {
       body should equal(
         """error page
           |<p>Jade footer</p>
-          |""".stripMargin)
+          |""".stripMargin
+      )
       header("Content-Type") should startWith("text/html;")
     }
 
@@ -65,7 +66,8 @@ class AsyncErrorPageFilterSpec extends ScalatraFlatSpec {
       body should equal(
         """error page
           |<p>Jade footer</p>
-          |""".stripMargin)
+          |""".stripMargin
+      )
       header("Content-Type") should startWith("text/html;")
     }
   }

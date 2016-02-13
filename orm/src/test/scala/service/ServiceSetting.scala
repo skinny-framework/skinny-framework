@@ -11,7 +11,8 @@ case class ServiceSetting(
   serviceNo: Long,
   service: Option[Service] = None,
   createdAt: DateTime,
-  updatedAt: DateTime)
+  updatedAt: DateTime
+)
 
 object ServiceSetting extends SkinnyCRUDMapper[ServiceSetting] with TimestampsFeature[ServiceSetting] {
   override val connectionPoolName = 'service

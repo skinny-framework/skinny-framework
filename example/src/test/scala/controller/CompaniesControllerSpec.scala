@@ -88,7 +88,8 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
       controller.prepareParams(
         "id" -> company.id.value.toString,
         "name" -> s"Updated at ${System.currentTimeMillis}",
-        "updatedAt" -> "2013-01-02 12:34:56")
+        "updatedAt" -> "2013-01-02 12:34:56"
+      )
       controller.updateResource(company.id)
       controller.status should equal(200)
     }

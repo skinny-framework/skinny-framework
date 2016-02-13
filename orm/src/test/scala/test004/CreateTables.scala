@@ -12,7 +12,8 @@ trait CreateTables extends DBSeeds { self: Connection =>
 create table ability_type (
   id serial not null,
   name varchar(100) not null)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table ability (
@@ -21,6 +22,7 @@ create table ability (
   ability_type_id int references ability_type(id),
   created_at timestamp not null,
   updated_at timestamp)
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from ability_type")
 }

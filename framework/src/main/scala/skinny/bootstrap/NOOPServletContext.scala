@@ -9,8 +9,8 @@ import javax.servlet.descriptor.JspConfigDescriptor
 import scala.collection.JavaConverters._
 
 /**
-  * NOOP ServletContext mainly used for loading routes without a Servlet container.
-  */
+ * NOOP ServletContext mainly used for loading routes without a Servlet container.
+ */
 class NOOPServletContext extends ServletContext {
 
   val dummyServletRegistrationDynamic = new ServletRegistration.Dynamic {

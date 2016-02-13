@@ -11,7 +11,8 @@ case class GoogleUser(
   name: Name,
   url: Option[String],
   image: Option[Image],
-  emails: Seq[Email]) extends OAuth2User
+  emails: Seq[Email]
+) extends OAuth2User
 
 case class Name(givenName: String, familyName: String)
 case class Image(url: String, isDefault: Boolean)

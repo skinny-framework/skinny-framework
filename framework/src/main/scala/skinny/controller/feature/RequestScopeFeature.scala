@@ -52,7 +52,8 @@ object RequestScopeFeature extends LoggerProvider {
       case values: scala.collection.concurrent.Map[_, _] =>
         values.asInstanceOf[scala.collection.concurrent.Map[String, Any]]
       case _ => throw new RequestScopeConflictException(
-        s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name.")
+        s"Don't use '${REQUEST_SCOPE_KEY}' for request attribute key name."
+      )
     }
   }
 
@@ -65,7 +66,8 @@ object RequestScopeFeature extends LoggerProvider {
       catch {
         case e: ClassCastException =>
           throw new RequestScopeConflictException(
-            s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})""")
+            s"""\"${key}\" value in request scope is unexpected. (actual: ${v}, error: ${e.getMessage}})"""
+          )
       }
     }
   }
@@ -299,7 +301,8 @@ trait RequestScopeFeature
     } else {
       val actual = getFromRequestScope(ATTR_PARAMS)(ctx)
       throw new RequestScopeConflictException(
-        s"""Skinny Framework expects that $${params} is a SkinnyParams value. (actual: "${actual}", class: ${actual.getClass.getName})""")
+        s"""Skinny Framework expects that $${params} is a SkinnyParams value. (actual: "${actual}", class: ${actual.getClass.getName})"""
+      )
     }
   }
 

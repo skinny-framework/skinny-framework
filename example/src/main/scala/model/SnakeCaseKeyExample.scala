@@ -9,7 +9,8 @@ case class SnakeCaseKeyExample(
   firstName: String,
   luckeyNumber: Int,
   createdAt: DateTime,
-  updatedAt: Option[DateTime] = None)
+  updatedAt: Option[DateTime] = None
+)
 
 object SnakeCaseKeyExample extends SkinnyCRUDMapper[SnakeCaseKeyExample] with TimestampsFeature[SnakeCaseKeyExample] {
   override val tableName = "snake_case_key_examples"

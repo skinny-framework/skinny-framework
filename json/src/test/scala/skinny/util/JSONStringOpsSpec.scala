@@ -47,10 +47,12 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
     it("converts Scala objects to JSON string value") {
       val value = Map(
         "name" -> Seq("name is required", "name's length must be less than 32."),
-        "somethingLikeThat" -> Nil)
+        "somethingLikeThat" -> Nil
+      )
       val result = JSONStringOps.toJSONString(value, true)
       result should equal(
-        """{"name":["name is required","name's length must be less than 32."],"something_like_that":[]}""")
+        """{"name":["name is required","name's length must be less than 32."],"something_like_that":[]}"""
+      )
     }
 
   }
@@ -97,10 +99,12 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
     it("converts JSON string value to Map object") {
       val source: Map[String, Any] = Map(
         "name" -> "name's length must be less than 32.",
-        "something_like_that" -> "")
+        "something_like_that" -> ""
+      )
 
       val result: Try[Map[String, Any]] = JSONStringOps.fromJSONString[Map[String, String]](
-        JSONStringOps.toJSONString(source), true)
+        JSONStringOps.toJSONString(source), true
+      )
 
       result should equal(Success(source))
     }

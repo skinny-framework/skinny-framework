@@ -40,7 +40,9 @@ trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
+    implicit
+    ctx: SkinnyContext, format: Format = Format.HTML
+  ): String = {
     freeMarker.render(templatePath(path), requestScope(ctx).toMap)
   }
 

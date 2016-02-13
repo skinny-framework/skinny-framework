@@ -171,7 +171,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         response.asString must equalTo(
           """foo
             |bar
-            |バズ""".stripMargin)
+            |バズ""".stripMargin
+        )
       }
     }
 

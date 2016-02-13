@@ -13,4 +13,5 @@ case class FacebookUser(
   lastName: String,
   email: Option[String],
   link: String,
-  website: Option[String]) extends OAuth2User
+  website: Option[String]
+) extends OAuth2User

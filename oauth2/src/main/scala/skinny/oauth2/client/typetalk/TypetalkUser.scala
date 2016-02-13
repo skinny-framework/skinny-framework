@@ -10,5 +10,6 @@ case class TypetalkUser(
   suggestion: String,
   imageUrl: String,
   createdAt: DateTime,
-  updatedAt: DateTime) extends OAuth2User
+  updatedAt: DateTime
+) extends OAuth2User
 

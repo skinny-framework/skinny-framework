@@ -38,7 +38,8 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
   private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})"
+      )
     }
   }
   afterUpdateBy(updateByHandler _)
@@ -74,7 +75,8 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
     val count = super.deleteBy(where)
     if (count == 0) {
       throw new OptimisticLockException(
-        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})")
+        s"Conflict ${lockVersionFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})"
+      )
     } else {
       count
     }

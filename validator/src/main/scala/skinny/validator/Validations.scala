@@ -139,5 +139,6 @@ trait Validations {
  */
 private class ValidationsImpl(
   override val paramsMap: Map[String, Any],
-  override val states: Seq[ValidationState]) extends Validations
+  override val states: Seq[ValidationState]
+) extends Validations
 

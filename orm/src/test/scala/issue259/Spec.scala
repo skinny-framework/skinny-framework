@@ -22,20 +22,23 @@ create table user (
   id bigserial not null,
   name varchar(100) not null,
   created_at timestamp not null default current_timestamp)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table nickname (
   name varchar(100) not null,
   user_id bigint not null references user(id),
   created_at timestamp not null default current_timestamp)
-""")
+"""
+  )
   addSeedSQL(
     sql"""
 create table article (
   title varchar(100) not null,
   user_id bigint references user(id))
-""")
+"""
+  )
   runIfFailed(sql"select count(1) from article")
 }
 
@@ -49,7 +52,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
     name: String,
     createdAt: DateTime,
     articles: Seq[Article] = Nil,
-    nickname: Option[Nickname] = None)
+    nickname: Option[Nickname] = None
+  )
 
   case class Nickname(name: String, userId: Long, user: Option[User] = None)
   case class Article(title: String, userId: Option[Long], user: Option[User] = None)
@@ -143,7 +147,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
       users.forall(_.nickname.isEmpty) should be(true)
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
 
     it("should return has-one associations") { implicit session =>
@@ -172,7 +177,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
       users.find(_.name == "Chris").exists(_.nickname.isDefined) should be(false)
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
   }
 
@@ -193,7 +199,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
       users.forall(_.nickname.isEmpty) should be(true)
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
 
     it("should return has-one associations") { implicit session =>
@@ -222,7 +229,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
       users.find(_.name == "Chris").exists(_.nickname.isDefined) should be(false)
       // ascending order, shouldn't include "The Better Java?"
       users.find(_.name == "Bob").map(_.articles.map(_.title)) should equal(
-        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala")))
+        Some(Seq("Bob's Scala Lesson 1", "Getting Started with Scala"))
+      )
     }
   }
 

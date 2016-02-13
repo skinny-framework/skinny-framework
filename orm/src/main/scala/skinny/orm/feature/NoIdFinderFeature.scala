@@ -13,12 +13,15 @@ trait NoIdFinderFeature[Entity]
     with CalculationFeature[Entity] {
 
   override def extract(sql: SQL[Entity, NoExtractor])(
-    implicit includesRepository: IncludesQueryRepository[Entity]): SQL[Entity, HasExtractor] = {
+    implicit
+    includesRepository: IncludesQueryRepository[Entity]
+  ): SQL[Entity, HasExtractor] = {
     extractWithAssociations(
       sql,
       belongsToAssociations,
       hasOneAssociations,
-      hasManyAssociations)
+      hasManyAssociations
+    )
   }
 
   /**
@@ -52,7 +55,9 @@ trait NoIdFinderFeature[Entity]
    * Finds all entities with pagination.
    */
   def findAllWithPagination(pagination: Pagination, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     findAllWithLimitOffset(pagination.limit, pagination.offset, orderings)
   }
 
@@ -60,7 +65,9 @@ trait NoIdFinderFeature[Entity]
    * Finds all entities with pagination.
    */
   def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     extract(withSQL {
       val sql = selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
       if (orderings.isEmpty) sql.limit(limit).offset(offset)
@@ -81,7 +88,9 @@ trait NoIdFinderFeature[Entity]
    * Finds all entities by condition.
    */
   def findAllBy(where: SQLSyntax, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     extract(withSQL {
       val sql = selectQueryWithAssociations.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
       if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))
@@ -92,7 +101,9 @@ trait NoIdFinderFeature[Entity]
    * Finds all entities by condition and with pagination.
    */
   def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     extract(withSQL {
       val sql = selectQueryWithAssociations
         .where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
@@ -104,7 +115,9 @@ trait NoIdFinderFeature[Entity]
    * Finds all entities by condition and with pagination.
    */
   def findAllByWithPagination(where: SQLSyntax, pagination: Pagination, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     findAllByWithLimitOffset(where, pagination.limit, pagination.offset, orderings)
   }
 

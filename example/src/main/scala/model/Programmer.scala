@@ -16,7 +16,8 @@ case class Programmer(
     birthday: Option[LocalDate] = None,
     createdAt: DateTime,
     updatedAt: Option[DateTime] = None,
-    deletedAt: Option[DateTime] = None) {
+    deletedAt: Option[DateTime] = None
+) {
 
   def addSkill(skill: Skill)(implicit session: DBSession = ProgrammerSkill.autoSession): Unit = {
     ProgrammerSkill.withColumns { c =>
@@ -52,8 +53,10 @@ object Programmer extends SkinnyCRUDMapper[Programmer]
 
   def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = extract {
     withSQL {
-      defaultSelectQuery.where.notIn(p.id,
-        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)).and(defaultScopeForUpdateOperations)
+      defaultSelectQuery.where.notIn(
+        p.id,
+        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)
+      ).and(defaultScopeForUpdateOperations)
     }
   }.list.apply()
 

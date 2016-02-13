@@ -7,4 +7,5 @@ case class MockHaltException(
   status: Option[Int],
   reason: Option[String],
   headers: Map[String, String],
-  body: Any) extends Throwable
+  body: Any
+) extends Throwable

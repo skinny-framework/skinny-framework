@@ -39,7 +39,8 @@ class NOOPServletContextSpec extends FunSpec with Matchers {
         """GET	/1/echo
           |POST	/2/echo
           |GET	/3/micro
-          |""".stripMargin)
+          |""".stripMargin
+      )
     }
   }
 

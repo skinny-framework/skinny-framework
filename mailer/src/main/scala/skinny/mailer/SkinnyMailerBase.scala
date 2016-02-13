@@ -14,10 +14,12 @@ trait SkinnyMailerBase {
   /**
    * Creates SkinnyMessage object.
    */
-  def mail(from: String = config.defaultFrom.orNull[String],
+  def mail(
+    from: String = config.defaultFrom.orNull[String],
     to: Seq[String] = Nil,
     subject: String = "",
-    body: String = "")(implicit s: Session = session): SkinnyMessage = {
+    body: String = ""
+  )(implicit s: Session = session): SkinnyMessage = {
 
     val auth: Option[SmtpAuthentication] = {
       if (smtpConfig.authEnabled) {

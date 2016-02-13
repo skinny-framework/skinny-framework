@@ -8,4 +8,5 @@ case class BacklogUser(
   name: String,
   roleType: Int,
   lang: Option[String] = None,
-  mailAddress: Option[String] = None) extends OAuth2User
+  mailAddress: Option[String] = None
+) extends OAuth2User

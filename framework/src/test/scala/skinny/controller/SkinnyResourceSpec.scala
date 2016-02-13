@@ -23,7 +23,8 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
     override def connectionPoolName = 'SkinnyResource
     override def defaultAlias = createAlias("api")
     override def extract(rs: WrappedResultSet, n: ResultName[Api]) = new Api(
-      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url))
+      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url)
+    )
   }
 
   object ApisController extends SkinnyResource {
@@ -32,14 +33,18 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
     override def model = Api
     override def resourcesBasePath = "/foo/apis"
 
-    override def createForm = validation(createParams,
+    override def createForm = validation(
+      createParams,
       paramKey("name") is required & maxLength(64),
-      paramKey("url") is required & maxLength(128))
+      paramKey("url") is required & maxLength(128)
+    )
     override def createFormStrongParameters = Seq("name" -> ParamType.String, "url" -> ParamType.String)
 
-    override def updateForm = validation(updateParams,
+    override def updateForm = validation(
+      updateParams,
       paramKey("name") is required & maxLength(64),
-      paramKey("url") is maxLength(128))
+      paramKey("url") is maxLength(128)
+    )
     override def updateFormStrongParameters = createFormStrongParameters
 
     override def deleteApiAction = {

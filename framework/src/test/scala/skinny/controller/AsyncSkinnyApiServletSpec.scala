@@ -23,7 +23,8 @@ class AsyncSkinnyApiServletSpec extends ScalatraFlatSpec {
     override def connectionPoolName = 'AsyncSkinnyServlet
     override def defaultAlias = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = new Company(
-      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url))
+      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url)
+    )
   }
 
   class CompaniesController extends AsyncSkinnyServlet {

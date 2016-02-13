@@ -16,7 +16,8 @@ object ScssAssetCompiler extends AssetCompiler {
 
   override def findClassPathResource(basePath: String, path: String): Option[ClassPathResource] = {
     ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.${extension}").orElse(
-      ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.${extension}"))
+      ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.${extension}")
+    )
   }
 
   override def findRealFile(servletContext: ServletContext, basePath: String, path: String): File = {

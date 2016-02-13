@@ -52,7 +52,8 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     def fromJSON4: Try[List[Sample]] = fromJSONString[List[Sample]]("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
 
     def fromJSON5: Try[Person] = fromJSONString[Person](
-      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
+      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}"""
+    )
   }
 
   object Sample2Controller extends SkinnyController {
@@ -74,7 +75,8 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
         |}, {
         |  "id" : 2,
         |  "first_name" : "Bob"
-        |} ]""".stripMargin)
+        |} ]""".stripMargin
+    )
 
     SampleController.toJSONString4 should equal("""{"id":1,"firstName":"Alice"}""")
     SampleController.toJSONString5 should equal("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
@@ -85,10 +87,12 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
         |}, {
         |  "id" : 2,
         |  "firstName" : "Bob"
-        |} ]""".stripMargin)
+        |} ]""".stripMargin
+    )
 
     SampleController.toJSONString7 should equal(
-      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}""")
+      """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}"""
+    )
 
     // Normal synced responseAsJson should work
     addServlet(SampleController, "/*")
@@ -115,10 +119,12 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
   it should "have toJSON for camelCase" in {
     Sample2Controller.toJSONString1 should equal(
       """)]}',
-        |{"id":1,"firstName":"Alice"}""".stripMargin)
+        |{"id":1,"firstName":"Alice"}""".stripMargin
+    )
     Sample2Controller.toJSONString2 should equal(
       """)]}',
-        |[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""".stripMargin)
+        |[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""".stripMargin
+    )
   }
 
 }

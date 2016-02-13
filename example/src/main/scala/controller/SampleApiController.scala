@@ -8,7 +8,8 @@ import skinny.util.LoanPattern
 
 class SampleApiController extends SkinnyApiController {
 
-  def createForm = validation(Params(params),
+  def createForm = validation(
+    Params(params),
     paramKey("name") is required & maxLength(60),
     paramKey("url") is maxLength(256)
   )

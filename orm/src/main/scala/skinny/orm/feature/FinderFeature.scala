@@ -56,7 +56,9 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllWithPagination(pagination: Pagination, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
     if (hasManyAssociations.size > 0) {
       findAllWithLimitOffsetForOneToManyRelations(pagination.limit, pagination.offset, orderings)
     } else {
@@ -65,7 +67,9 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
 
     if (hasManyAssociations.size > 0) {
       findAllWithLimitOffsetForOneToManyRelations(limit, offset, orderings)
@@ -79,7 +83,9 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   def findAllWithLimitOffsetForOneToManyRelations(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
 
     // find ids for pagination
     val ids: List[Any] = withSQL {
@@ -114,7 +120,9 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllBy(where: SQLSyntax, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
@@ -125,7 +133,9 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit s: DBSession = autoSession): List[Entity] = {
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
 
     if (hasManyAssociations.size > 0) {
       findAllByWithLimitOffsetForOneToManyRelations(where, limit, offset, orderings)
@@ -141,8 +151,11 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   def findAllByWithLimitOffsetForOneToManyRelations(
-    where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-      implicit s: DBSession = autoSession): List[Entity] = {
+    where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings
+  )(
+    implicit
+    s: DBSession = autoSession
+  ): List[Entity] = {
 
     // find ids for pagination
     val ids: Seq[Any] = withSQL {
@@ -159,7 +172,8 @@ trait FinderFeatureWithId[Id, Entity]
           select(columnsToFetch: _*).from(as(defaultAlias)),
           belongsToAssociations ++ includedBelongsToAssociations,
           hasOneAssociations ++ includedHasOneAssociations,
-          hasManyAssociations ++ includedHasManyAssociations.toSet)
+          hasManyAssociations ++ includedHasManyAssociations.toSet
+        )
       }
       val query = baseQuery.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
 
@@ -189,7 +203,8 @@ trait FinderFeatureWithId[Id, Entity]
       s.value
         .replaceFirst(" desc$", "").replaceFirst(" asc$", "")
         .replaceFirst(" DESC$", "").replaceFirst(" ASC$", ""),
-      s.parameters)
+      s.parameters
+    )
   }
 
   private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {

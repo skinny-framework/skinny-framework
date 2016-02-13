@@ -51,9 +51,11 @@ sealed trait ResultsProjection[+A] {
  * @param onFailures failure event handler
  * @tparam A result type
  */
-case class SuccessesProjection[+A](override val results: Validations,
+case class SuccessesProjection[+A](
+  override val results: Validations,
     override val onSuccess: (Parameters) => A,
-    override val onFailures: (Parameters, Errors) => A) extends ResultsProjection[A] {
+    override val onFailures: (Parameters, Errors) => A
+) extends ResultsProjection[A] {
 
   def map[B >: A](f: (Parameters) => B): SuccessesProjection[B] = {
     SuccessesProjection[B](results, f, onFailures.asInstanceOf[(Parameters, Errors) => B])
@@ -69,9 +71,11 @@ case class SuccessesProjection[+A](override val results: Validations,
  * @param onFailures failure event handler
  * @tparam A result type
  */
-case class FailuresProjection[+A](override val results: Validations,
+case class FailuresProjection[+A](
+  override val results: Validations,
     override val onSuccess: (Parameters) => A,
-    override val onFailures: (Parameters, Errors) => A) extends ResultsProjection[A] {
+    override val onFailures: (Parameters, Errors) => A
+) extends ResultsProjection[A] {
 
   def map[B >: A](f: (Parameters, Errors) => B): FailuresProjection[B] = {
     FailuresProjection[B](results, onSuccess.asInstanceOf[(Parameters) => B], f)

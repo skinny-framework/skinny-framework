@@ -22,7 +22,8 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
          |  React.createElement("h1", null, "Hello, world!"),
          |  document.getElementById('example')
          |);
-         |""".stripMargin)
+         |""".stripMargin
+      )
     }
   }
 

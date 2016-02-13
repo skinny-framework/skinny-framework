@@ -56,7 +56,9 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
    * @return validator
    */
   override def validation(params: Params, validations: NewValidation*)(
-    implicit locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
+    implicit
+    locale: Locale = currentLocale(context).orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(params, resourceName, validations: _*)(context)
   }
 
@@ -210,7 +212,8 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
         doCreateAndReturnId(parameters)
       } else {
         throw new StrongParametersException(
-          "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined.")
+          "'createFormStrongParameters' or 'createFormTypedStrongParameters' must be defined."
+        )
       }
       status = 201
       val ext = if (format == Format.HTML) "" else "." + format.name
@@ -267,7 +270,8 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
           doUpdate(id, parameters)
         } else {
           throw new StrongParametersException(
-            "'updateFormStrongParameters' or 'updateFormTypedStrongParameters' must be defined.")
+            "'updateFormStrongParameters' or 'updateFormTypedStrongParameters' must be defined."
+          )
         }
         status = 200
       } else {
