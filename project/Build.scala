@@ -6,18 +6,18 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.7-SNAPSHOT"
+  lazy val currentVersion = "2.0.7"
 
-  lazy val skinnyMicroVersion = "1.0.2"
+  lazy val skinnyMicroVersion = "1.0.3"
   lazy val scalatraTestVersion = "2.4.0"
   lazy val scalikeJDBCVersion = "2.3.5"
   lazy val h2Version = "1.4.191"
   lazy val kuromojiVersion = "5.4.1"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
-  lazy val jettyVersion = "9.2.14.v20151106"
-  lazy val logbackVersion = "1.1.3"
-  lazy val slf4jApiVersion = "1.7.14"
+  lazy val jettyVersion = "9.2.15.v20160210"
+  lazy val logbackVersion = "1.1.4"
+  lazy val slf4jApiVersion = "1.7.16"
   lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
@@ -299,7 +299,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
         "com.h2database"       %  "h2"                 % h2Version,
-        "org.skinny-framework" %  "skinny-logback"     % "1.0.6",
+        "org.skinny-framework" %  "skinny-logback"     % "1.0.7",
         "org.scalatra"         %% "scalatra-specs2"    % scalatraTestVersion % Test,
         "org.scalatra"         %% "scalatra-scalatest" % scalatraTestVersion % Test,
         "org.mockito"          %  "mockito-core"       % mockitoVersion      % Test,
@@ -368,7 +368,7 @@ object SkinnyFrameworkBuild extends Build {
     "ch.qos.logback"          %  "logback-classic" % logbackVersion   % Test,
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"            % Test,
     "com.h2database"          %  "h2"              % h2Version        % Test,
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.6"          % Test,
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.7"          % Test,
     "com.h2database"          %  "h2"              % h2Version        % Test
   )
 

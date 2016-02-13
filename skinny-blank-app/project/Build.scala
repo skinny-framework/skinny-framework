@@ -15,9 +15,9 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.6"
+  val skinnyVersion = "2.0.7"
   val theScalaVersion = "2.11.7"
-  val jettyVersion = "9.2.14.v20151106"
+  val jettyVersion = "9.2.15.v20160210"
 
   lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
@@ -30,13 +30,13 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-      "org.slf4j"              %  "slf4j-api"                % "1.7.14"
+      "org.slf4j"              %  "slf4j-api"                % "1.7.16"
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"        % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"       % "1.0.6",
+      "org.skinny-framework"    %  "skinny-logback"       % "1.0.7",
       "com.h2database"          %  "h2"                   % "1.4.191",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
