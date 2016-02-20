@@ -3,6 +3,8 @@
 // --------------------------------------------
 resolvers += Classpaths.sbtPluginReleases
 resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+// https://github.com/sbt/sbt/issues/2217
+fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 
 // Internally uses Eclipse Aether to resolve Maven dependencies instead of Apache Ivy
 // https://github.com/sbt/sbt/releases/tag/v0.13.8

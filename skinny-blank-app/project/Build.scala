@@ -36,7 +36,7 @@ object SkinnyAppBuild extends Build {
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
       "org.skinny-framework"    %% "skinny-assets"        % skinnyVersion,
       "org.skinny-framework"    %% "skinny-task"          % skinnyVersion,
-      "org.skinny-framework"    %  "skinny-logback"       % "1.0.7",
+      "org.skinny-framework"    %  "skinny-logback"       % "1.0.8",
       "com.h2database"          %  "h2"                   % "1.4.191",      // your own JDBC driver
       "org.skinny-framework"    %% "skinny-factory-girl"  % skinnyVersion   % "test",
       "org.skinny-framework"    %% "skinny-test"          % skinnyVersion   % "test",
