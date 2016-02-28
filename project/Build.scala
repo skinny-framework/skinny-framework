@@ -12,20 +12,18 @@ object SkinnyFrameworkBuild extends Build {
   lazy val scalatraTestVersion = "2.4.0"
   lazy val scalikeJDBCVersion = "2.3.5"
   lazy val h2Version = "1.4.191"
-  lazy val kuromojiVersion = "5.4.1"
+  lazy val kuromojiVersion = "5.5.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.15.v20160210"
   lazy val logbackVersion = "1.1.5"
-  lazy val slf4jApiVersion = "1.7.16"
+  lazy val slf4jApiVersion = "1.7.18"
   lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
     organization := "org.skinny-framework",
     version := currentVersion,
     dependencyOverrides += "org.slf4j" % "slf4j-api" % slf4jApiVersion,
-    // https://github.com/sbt/sbt/issues/2217
-    fullResolvers ~= { _.filterNot(_.name == "jcenter") },
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -45,7 +43,8 @@ object SkinnyFrameworkBuild extends Build {
     // NOTE: forking when testing doesn't work for some existing tests
     // fork in Test := true,
     logBuffered in Test := false,
-    javaOptions in Test ++= Seq("-Dskinny.env=test"),
+    // TODO: Fix warning - javaOptions will be ignored, fork is set to false
+    // javaOptions in Test ++= Seq("-Dskinny.env=test"),
     updateOptions := updateOptions.value.withCachedResolution(true),
     javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-encoding", "UTF-8", "-Xlint:-options"),
     javacOptions in doc := Seq("-source", "1.7"),
@@ -158,7 +157,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.7.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.0.8.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -190,7 +189,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.1"             % Compile exclude("org.thymeleaf", "thymeleaf"),
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.3"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
       ) ++ testDependencies

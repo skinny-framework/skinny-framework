@@ -44,8 +44,6 @@ object SkinnyAppBuild extends Build {
       "org.eclipse.jetty"       %  "jetty-plus"           % jettyVersion    % "container",
       "javax.servlet"           %  "javax.servlet-api"    % "3.1.0"         % "container;provided;test"
     ),
-    // https://github.com/sbt/sbt/issues/2217
-    fullResolvers ~= { _.filterNot(_.name == "jcenter") },
     resolvers ++= Seq(
       "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
       //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
