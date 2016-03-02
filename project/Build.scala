@@ -16,7 +16,7 @@ object SkinnyFrameworkBuild extends Build {
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.15.v20160210"
-  lazy val logbackVersion = "1.1.5"
+  lazy val logbackVersion = "1.1.6"
   lazy val slf4jApiVersion = "1.7.18"
   lazy val scalaTestVersion = "2.2.6"
 
@@ -156,7 +156,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"  %  "flyway-core"    % "3.2.1"       % Compile,
+        "org.flywaydb"  %  "flyway-core"    % "4.0"         % Compile,
         "org.hibernate" %  "hibernate-core" % "5.0.8.Final" % Test
       ) ++ testDependencies
     )
