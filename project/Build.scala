@@ -30,7 +30,7 @@ object SkinnyFrameworkBuild extends Build {
     ),
     publishTo <<= version { (v: String) => _publishTo(v) },
     sbtPlugin := false,
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8",
     ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
     publishMavenStyle := true,
@@ -157,7 +157,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "4.0"         % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.0.8.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.1.0.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)

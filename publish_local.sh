@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sbt ++2.11.7 \
+sbt ++2.11.8 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -22,7 +22,7 @@ sbt ++2.11.7 \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
   velocity/publishLocal \
-  ++2.10.5 \
+  ++2.10.6 \
   clean \
   common/publishLocal \
   assets/publishLocal \
