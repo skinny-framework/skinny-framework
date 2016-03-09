@@ -8,7 +8,7 @@ import skinny.micro.util.UrlGenerator
  * Global object for accessing Skinny common APIs & request scope attributes in views.
  */
 case class Skinny(
-  context: SkinnyContext,
+    context: SkinnyContext,
     requestScope: collection.mutable.Map[String, Any]
 ) {
 

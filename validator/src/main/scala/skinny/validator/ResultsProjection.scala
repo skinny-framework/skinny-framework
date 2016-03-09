@@ -52,7 +52,7 @@ sealed trait ResultsProjection[+A] {
  * @tparam A result type
  */
 case class SuccessesProjection[+A](
-  override val results: Validations,
+    override val results: Validations,
     override val onSuccess: (Parameters) => A,
     override val onFailures: (Parameters, Errors) => A
 ) extends ResultsProjection[A] {
@@ -72,7 +72,7 @@ case class SuccessesProjection[+A](
  * @tparam A result type
  */
 case class FailuresProjection[+A](
-  override val results: Validations,
+    override val results: Validations,
     override val onSuccess: (Parameters) => A,
     override val onFailures: (Parameters, Errors) => A
 ) extends ResultsProjection[A] {
