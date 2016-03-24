@@ -17,7 +17,7 @@ object SkinnyFrameworkBuild extends Build {
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.15.v20160210"
   lazy val logbackVersion = "1.1.6"
-  lazy val slf4jApiVersion = "1.7.18"
+  lazy val slf4jApiVersion = "1.7.19"
   lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
