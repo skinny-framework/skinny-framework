@@ -22,7 +22,7 @@ sbt ++2.11.8 \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
   velocity/publishSigned \
-  ++2.10.7 \
+  ++2.10.6 \
   clean \
   common/publishSigned \
   assets/publishSigned \

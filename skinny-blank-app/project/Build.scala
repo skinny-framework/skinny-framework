@@ -15,8 +15,8 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.0.7"
-  val theScalaVersion = "2.11.7"
+  val skinnyVersion = "2.0.8"
+  val theScalaVersion = "2.11.8"
   val jettyVersion = "9.2.15.v20160210"
 
   lazy val baseSettings = servletSettings ++ Seq(
@@ -30,7 +30,7 @@ object SkinnyAppBuild extends Build {
       "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
       "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
       "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-      "org.slf4j"              %  "slf4j-api"                % "1.7.16"
+      "org.slf4j"              %  "slf4j-api"                % "1.7.19"
     ),
     libraryDependencies ++= Seq(
       "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
