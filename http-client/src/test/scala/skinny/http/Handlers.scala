@@ -71,4 +71,20 @@ trait Handlers {
     override def getMethod: Method = Method.OPTIONS
   }
 
+  val setCookieHandler = new AbstractHandler {
+    def handle(target: String, baseReq: BaseRequest, req: HttpServletRequest, resp: HttpServletResponse) = {
+      try {
+        if (req.getMethod().equals("GET")) {
+          resp.setCharacterEncoding("UTF-8")
+          resp.addHeader("Set-Cookie", "foo=bar; path=/; HttpOnly")
+          resp.getWriter().print("Click Cookie!")
+          baseReq.setHandled(true)
+          resp.setStatus(HttpServletResponse.SC_OK)
+        } else {
+          resp.setStatus(HttpServletResponse.SC_FORBIDDEN)
+        }
+      } catch { case e: Throwable => e.printStackTrace() }
+    }
+  }
+
 }

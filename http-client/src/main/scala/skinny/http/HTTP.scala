@@ -191,7 +191,7 @@ class HTTP extends LoggerProvider {
         headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
         rawCookies = Option(conn.getHeaderFields.get("Set-Cookie")).map { setCookies =>
           setCookies.asScala.flatMap { setCookie =>
-            setCookie.split("=") match {
+            setCookie.split("=", 2) match {
               case Array(name, _) => Some(name -> setCookie)
               case _ => None
             }

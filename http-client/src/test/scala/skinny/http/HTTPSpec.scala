@@ -123,6 +123,18 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         response.asString must equalTo("foo:bar")
       }
     }
+    
+    "get and parse cookie" in {
+      withServer(8701) { server =>
+        server.setHandler(setCookieHandler)
+        start(server)
+
+        val response = HTTP.get("http://localhost:8701/?foo=bar", "UTF-8")
+        response.status must equalTo(200)
+        response.rawCookies.contains("foo")
+        response.rawCookies.get("foo") must equalTo(Some("foo=bar; path=/; HttpOnly"))
+      }
+    }
 
     // --------
     // POST
