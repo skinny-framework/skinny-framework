@@ -40,7 +40,7 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def startAsync(): AsyncContext = asyncContext
 
   var servletContext: ServletContext = {
-    val ctx = mock(classOf[ServletContext], RETURNS_DEEP_STUBS)
+    val ctx = mock(classOf[ServletContext])
     when(ctx.getSessionCookieConfig).thenReturn(mock(classOf[SessionCookieConfig]))
     ctx
   }
