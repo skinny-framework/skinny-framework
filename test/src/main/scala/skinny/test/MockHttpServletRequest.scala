@@ -39,7 +39,11 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def startAsync(servletRequest: ServletRequest, servletResponse: ServletResponse): AsyncContext = asyncContext
   override def startAsync(): AsyncContext = asyncContext
 
-  var servletContext: ServletContext = mock(classOf[ServletContext])
+  var servletContext: ServletContext = {
+    val ctx = mock(classOf[ServletContext])
+    when(ctx.getSessionCookieConfig).thenReturn(mock(classOf[SessionCookieConfig]))
+    ctx
+  }
 
   override def getServletContext: ServletContext = servletContext
   override def getRealPath(path: String): String = servletContext.getRealPath(path)
