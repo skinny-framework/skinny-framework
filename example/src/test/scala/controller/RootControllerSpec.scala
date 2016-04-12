@@ -2,8 +2,9 @@ package controller
 
 import org.scalatest._
 import skinny.test.MockController
+import skinny.DBSettings
 
-class RootControllerSpec extends FunSpec with Matchers {
+class RootControllerSpec extends FunSpec with Matchers with DBSettings {
 
   describe("RootController") {
 
