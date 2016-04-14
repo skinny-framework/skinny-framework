@@ -27,5 +27,11 @@ class userAdminSpec extends fixture.FunSpec with Matchers
       user.java should equal("8")
       user.user should equal("sera")
     }
+
+    it("should be the same") { implicit session =>
+      val user = FactoryGirl(User).withAttributes('os -> "0001", 'user -> "true").create()
+      user.os should equal("0001")
+      user.user should equal("true")
+    }
   }
 }
