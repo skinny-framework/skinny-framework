@@ -66,13 +66,20 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     this
   }
 
-  private def toTypedValue(value: Any): Any = value match {
-    case str: String if Try(str.toBoolean).isSuccess => str.toBoolean
-    case str: String if Try(str.toLong).isSuccess => str.toLong
-    case str: String if Try(str.toDouble).isSuccess => str.toDouble
-    case str: String if DateTimeUtil.isDateTimeFormat(str) => DateTimeUtil.parseDateTime(str)
-    case str: String if DateTimeUtil.isLocalDateFormat(str) => DateTimeUtil.parseLocalDate(str)
-    case value => value
+  private def toTypedValue(value: Any): Any = {
+    val typedValue = value match {
+      case str: String if Try(str.toBoolean).isSuccess => str.toBoolean
+      case str: String if Try(str.toLong).isSuccess => str.toLong
+      case str: String if Try(str.toDouble).isSuccess => str.toDouble
+      case str: String if DateTimeUtil.isDateTimeFormat(str) => DateTimeUtil.parseDateTime(str)
+      case str: String if DateTimeUtil.isLocalDateFormat(str) => DateTimeUtil.parseLocalDate(str)
+      case value => value
+    }
+
+    value match {
+      case str: String if typedValue != str => str
+      case str => typedValue
+    }
   }
 
   private def eval(v: String): Any = {
