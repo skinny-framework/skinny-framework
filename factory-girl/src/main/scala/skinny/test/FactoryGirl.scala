@@ -1,5 +1,7 @@
 package skinny.test
 
+import java.io.File
+
 import com.typesafe.config.ConfigFactory
 import skinny.logging.LoggerProvider
 import scala.collection.JavaConverters._
@@ -51,8 +53,22 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    * @return attributes in conf file
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
-    // TODO directory scan and work with factories/*.conf
-    val config = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve().getConfig(factoryName.name)
+    val rootResolve = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve()
+    val confDir = "factories"
+
+    val resolves = getClass.getClassLoader
+      .getResources(confDir)
+      .asScala.flatMap { uri =>
+        new File(uri.getFile).listFiles
+          .withFilter { f => f.isFile && f.getName.endsWith(".conf") }
+          .map { f => s"${confDir}/${f.getName}" }
+      }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
+
+    val config = (rootResolve +: resolves)
+      .collectFirst({
+        case c if Try { c.getConfig(factoryName.name) }.isSuccess => c.getConfig(factoryName.name)
+      }).getOrElse(rootResolve.getConfig(factoryName.name))
+
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
