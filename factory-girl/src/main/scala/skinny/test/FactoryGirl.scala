@@ -53,10 +53,10 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    * @return attributes in conf file
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
-    val rootResolve = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve()
+    val rootResolvedConfig = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve()
     val confDir = "factories"
 
-    val resolves = getClass.getClassLoader
+    val resolvedConfigs = getClass.getClassLoader
       .getResources(confDir)
       .asScala.flatMap { uri =>
         new File(uri.getFile).listFiles
@@ -64,10 +64,10 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
           .map { f => s"${confDir}/${f.getName}" }
       }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
 
-    val config = (rootResolve +: resolves)
+    val config = (rootResolvedConfig +: resolvedConfigs)
       .collectFirst({
         case c if Try { c.getConfig(factoryName.name) }.isSuccess => c.getConfig(factoryName.name)
-      }).getOrElse(rootResolve.getConfig(factoryName.name))
+      }).getOrElse(rootResolvedConfig.getConfig(factoryName.name))
 
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
