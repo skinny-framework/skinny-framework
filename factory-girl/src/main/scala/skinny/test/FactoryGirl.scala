@@ -2,7 +2,7 @@ package skinny.test
 
 import java.io.File
 
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{ Config, ConfigFactory }
 import skinny.logging.LoggerProvider
 import scala.collection.JavaConverters._
 import scalikejdbc._
@@ -10,6 +10,7 @@ import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
 import skinny.util.{ DateTimeUtil, JavaReflectAPI }
 
+import scala.collection.concurrent.TrieMap
 import scala.util.Try
 
 /**
@@ -25,6 +26,19 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
 
   private[this] val valuesToReplaceVariablesInConfig = new scala.collection.concurrent.TrieMap[Symbol, Any]()
   private[this] val additionalNamedValues = new scala.collection.concurrent.TrieMap[Symbol, Any]()
+
+  private[this] val cachedFactoryConfig: TrieMap[String, Config] = new TrieMap[String, Config]()
+  private[this] lazy val resolvedConfigs: Seq[Config] = {
+    val confDir = "factories"
+
+    getClass.getClassLoader
+      .getResources(confDir)
+      .asScala.flatMap { uri =>
+        new File(uri.getFile).listFiles
+          .withFilter { f => f.isFile && f.getName.endsWith(".conf") }
+          .map { f => s"${confDir}/${f.getName}" }
+      }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
+  }
 
   /**
    * Set named values to bind #{name} in "src/test/resources/factories.conf".
@@ -54,20 +68,13 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
    */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     val rootResolvedConfig = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve()
-    val confDir = "factories"
 
-    val resolvedConfigs = getClass.getClassLoader
-      .getResources(confDir)
-      .asScala.flatMap { uri =>
-        new File(uri.getFile).listFiles
-          .withFilter { f => f.isFile && f.getName.endsWith(".conf") }
-          .map { f => s"${confDir}/${f.getName}" }
-      }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
-
-    val config = (rootResolvedConfig +: resolvedConfigs)
-      .collectFirst({
-        case c if Try { c.getConfig(factoryName.name) }.isSuccess => c.getConfig(factoryName.name)
-      }).getOrElse(rootResolvedConfig.getConfig(factoryName.name))
+    val config = cachedFactoryConfig.getOrElseUpdate(factoryName.name, {
+      (rootResolvedConfig +: resolvedConfigs)
+        .collectFirst({
+          case c if Try { c.getConfig(factoryName.name) }.isSuccess => c.getConfig(factoryName.name)
+        }).getOrElse(rootResolvedConfig.getConfig(factoryName.name))
+    })
 
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
