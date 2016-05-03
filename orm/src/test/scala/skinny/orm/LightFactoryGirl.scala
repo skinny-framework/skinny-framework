@@ -2,9 +2,11 @@ package skinny.test
 
 import scalikejdbc._
 import com.typesafe.config.ConfigFactory
+
 import scala.collection.JavaConverters._
 import skinny.util.JavaReflectAPI
 import org.slf4j.LoggerFactory
+import skinny.orm.ParameterBinderOps
 import skinny.orm.feature.CRUDFeatureWithId
 
 /**
@@ -77,18 +79,21 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
       case (xs, (Symbol(key), value)) =>
         if (xs.exists(_._1 == mapper.column.field(key))) {
           xs.map {
-            case (k, _) if k == mapper.column.field(key) => k -> value
+            case (k, _) if k == mapper.column.field(key) => (k, value)
             case (k, v) => (k, v)
           }
         } else xs.updated(c.field(key), value)
-    }.map {
+
+    }.map(ParameterBinderOps.extractValueFromParameterBinder).map {
       case (key, value) => {
         // will replace only value which starts with #{ ... } because '#' might be used for test data in some case
         if (value.toString.startsWith("#")) {
           val variableKey = value.toString.trim.replaceAll("[#{}]", "")
           val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).orNull[Any]
-          key -> replacedValue
-        } else key -> value
+          (key, replacedValue)
+        } else {
+          (key, value)
+        }
       }
     }.toSeq
 

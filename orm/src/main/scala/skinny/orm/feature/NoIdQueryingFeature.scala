@@ -23,10 +23,11 @@ trait NoIdQueryingFeature[Entity]
     mapper = this,
     conditions = conditions.flatMap {
       case (key, value) =>
+        implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
         value match {
           case None => Some(sqls.isNull(defaultAlias.field(key.name)))
           case Nil => None
-          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
           case value => Some(sqls.eq(defaultAlias.field(key.name), value))
         }
     }
@@ -97,9 +98,10 @@ trait NoIdQueryingFeature[Entity]
       mapper = this.mapper,
       conditions = conditions ++ additionalConditions.flatMap {
       case (key, value) =>
+        implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
         value match {
           case Nil => None
-          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values))
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
           case value => Some(sqls.eq(defaultAlias.field(key.name), value))
         }
     },
@@ -234,6 +236,7 @@ trait NoIdQueryingFeature[Entity]
 
           if (ids.isEmpty) return Nil
           else {
+            implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
             appendOrderingIfExists(query(conditions :+ sqls.in(defaultAlias.field(primaryKeyFieldName), ids)))
           }
         } else {

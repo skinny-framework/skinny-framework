@@ -66,8 +66,14 @@ trait NoIdCUDFeature[Entity]
 
     namedValues.foldLeft(attributesForCreation) {
       case (xs, (column, newValue)) =>
-        if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
-        else xs + (column -> newValue)
+        if (xs.exists(_._1 == column)) xs.map {
+          case (c, v) =>
+            if (c == column) (column, newValue) else (c, v)
+        }
+        else {
+          val kv = (column, newValue)
+          xs + kv
+        }
     }
     val toBeInserted = attributesForCreation.++(namedValues).toSeq
     toBeInserted
@@ -81,14 +87,14 @@ trait NoIdCUDFeature[Entity]
    */
   protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
     mergeNamedValuesForCreation(strongParameters.params.map {
-      case (name, (value, paramType)) =>
-        column.field(name) -> getTypedValueFromStrongParameter(name, value, paramType)
+      case (name, (value, paramType)) => (column.field(name), getTypedValueFromStrongParameter(name, value, paramType))
     }.toSeq)
   }
 
   def createWithNamedValues(namesAndValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Any = {
     withSQL {
-      insert.into(this).namedValues(namesAndValues: _*)
+      insert.into(this)
+        .namedValues(namesAndValues.map { case (k, v) => k -> AsIsParameterBinder(v) }: _*)
     }.update.apply()
   }
 
@@ -114,8 +120,8 @@ trait NoIdCUDFeature[Entity]
    */
   def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Any = {
     createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
-      case (name, value) => column.field(name.name) -> value
-    }.toSeq): _*)
+      case (name, value) => (column.field(name.name), value)
+    }): _*)
   }
 
   // -------------
@@ -227,7 +233,7 @@ trait NoIdCUDFeature[Entity]
     protected def toNamedValuesToBeUpdated(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
       strongParameters.params.map {
         case (name, (value, paramType)) =>
-          column.field(name) -> getTypedValueFromStrongParameter(name, value, paramType)
+          (column.field(name), getTypedValueFromStrongParameter(name, value, paramType))
       }.toSeq
     }
 
@@ -240,8 +246,14 @@ trait NoIdCUDFeature[Entity]
     protected def mergeNamedValues(namedValues: Seq[(SQLSyntax, Any)]): Seq[(SQLSyntax, Any)] = {
       namedValues.foldLeft(attributesToBeUpdated) {
         case (xs, (column, newValue)) =>
-          if (xs.exists(_._1 == column)) xs.map { case (c, v) => if (c == column) (column -> newValue) else (c, v) }
-          else xs.+=(column -> newValue)
+          if (xs.exists(_._1 == column)) xs.map {
+            case (c, v) =>
+              if (c == column) (column, newValue) else (c, v)
+          }
+          else {
+            val kv = (column, newValue)
+            xs += kv
+          }
       }.toSeq
     }
 
@@ -284,7 +296,7 @@ trait NoIdCUDFeature[Entity]
      */
     def withAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(parameters.map {
-        case (name, value) => column.field(name.name) -> value
+        case (name, value) => (column.field(name.name), value)
       }: _*)
     }
 
@@ -299,8 +311,11 @@ trait NoIdCUDFeature[Entity]
       val allValues = mergeNamedValues(namedValues)
       beforeHandlers.foreach(_.apply(s, where, allValues))
       val updatedCount = withSQL {
-        mergeAdditionalUpdateSQLs(update(mapper).set(allValues: _*), allValues.isEmpty)
-          .where.append(where).and(defaultScopeForUpdateOperations)
+        mergeAdditionalUpdateSQLs(
+          update(mapper)
+            .set(allValues.map { case (k, v) => k -> AsIsParameterBinder(v) }: _*),
+          allValues.isEmpty
+        ).where.append(where).and(defaultScopeForUpdateOperations)
       }.update.apply()
       afterHandlers.foreach(_.apply(s, where, allValues, updatedCount))
       updatedCount
