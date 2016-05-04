@@ -165,7 +165,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
       val namedValues = Seq(
         c.skinnySessionId -> id,
         c.name -> name,
-        c.value -> toSerializable(value)
+        c.value -> AsIsParameterBinder(toSerializable(value))
       )
       // easy-upsert
       try {

@@ -77,7 +77,9 @@ trait SkinnyRecordBaseWithId[Id, Entity] {
     JavaReflectAPI.getterNames(this)
       .filter { name => skinnyCRUDMapper.isValidFieldName(name) }
       .filterNot { name => excludedFieldNamesWhenSaving.exists(_ == name) }
-      .map { name => skinnyCRUDMapper.column.field(name) -> JavaReflectAPI.getter(this, name) }
+      .map { name =>
+        (skinnyCRUDMapper.column.field(name), JavaReflectAPI.getter(this, name))
+      }
   }
 
 }

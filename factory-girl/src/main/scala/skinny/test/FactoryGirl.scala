@@ -2,10 +2,12 @@ package skinny.test
 
 import com.typesafe.config.ConfigFactory
 import skinny.logging.LoggerProvider
+
 import scala.collection.JavaConverters._
 import scalikejdbc._
 import skinny.orm.feature.CRUDFeatureWithId
 import skinny.exception.FactoryGirlException
+import skinny.orm.ParameterBinderOps
 import skinny.util.{ DateTimeUtil, JavaReflectAPI }
 
 import scala.util.Try
@@ -99,12 +101,12 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
       case (xs, (Symbol(key), value)) =>
         if (xs.exists(_._1 == mapper.column.field(key))) {
           xs.map {
-            case (k, _) if k == mapper.column.field(key) => k -> value
+            case (k, _) if k == mapper.column.field(key) => (k, value)
             case (k, v) => (k, v)
           }
         } else xs.updated(c.field(key), value)
 
-    }.map {
+    }.map(ParameterBinderOps.extractValueFromParameterBinder(_)).map {
       case (key, value) => {
         if (value.toString.contains("#{")) {
           val replacements: Seq[(String, String)] = "#\\{[^\\}]+\\}".r.findAllIn(value.toString).map { matched =>
@@ -121,15 +123,15 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
             case (result, replacement) =>
               result.replaceAll(replacement._1, replacement._2)
           }
-          key -> eval(replacedValue)
+          (key, eval(replacedValue))
 
         } else {
           value match {
-            case null => key -> null
-            case None => key -> None
-            case Some(v: String) => key -> eval(v)
-            case v: String => key -> eval(v)
-            case _ => key -> value
+            case null => (key, null)
+            case None => (key, None)
+            case Some(v: String) => (key, eval(v))
+            case v: String => (key, eval(v))
+            case _ => (key, value)
           }
         }
       }

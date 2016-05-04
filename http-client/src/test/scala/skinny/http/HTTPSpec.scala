@@ -123,7 +123,7 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         response.asString must equalTo("foo:bar")
       }
     }
-    
+
     "get and parse cookie" in {
       withServer(8701) { server =>
         server.setHandler(setCookieHandler)

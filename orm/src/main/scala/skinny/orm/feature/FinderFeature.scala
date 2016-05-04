@@ -30,6 +30,7 @@ trait FinderFeatureWithId[Id, Entity]
    * Finds a single entity by primary key.
    */
   def findById(id: Id)(implicit s: DBSession = autoSession): Option[Entity] = {
+    implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations.where.eq(primaryKeyField, idToRawValue(id)).and(defaultScopeWithDefaultAlias)
@@ -40,6 +41,7 @@ trait FinderFeatureWithId[Id, Entity]
    * Finds all entities by several primary keys.
    */
   def findAllByIds(ids: Id*)(implicit s: DBSession = autoSession): List[Entity] = {
+    implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       selectQueryWithAssociations
@@ -100,6 +102,7 @@ trait FinderFeatureWithId[Id, Entity]
     if (ids.isEmpty) {
       Nil
     } else {
+      implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
         val sql = selectQueryWithAssociations.where(sqls.toAndConditionOpt(
@@ -185,6 +188,7 @@ trait FinderFeatureWithId[Id, Entity]
     if (ids.isEmpty) {
       Nil
     } else {
+      implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
         val sql = selectQueryWithAssociations
