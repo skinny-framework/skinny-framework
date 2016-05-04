@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.0.9"
+  lazy val currentVersion = "2.0.9-SNAPSHOT"
 
   lazy val skinnyMicroVersion = "1.0.4"
   lazy val scalatraTestVersion = "2.4.0"
@@ -15,9 +15,9 @@ object SkinnyFrameworkBuild extends Build {
   lazy val kuromojiVersion = "5.5.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
-  lazy val jettyVersion = "9.2.15.v20160210"
-  lazy val logbackVersion = "1.1.6"
-  lazy val slf4jApiVersion = "1.7.19"
+  lazy val jettyVersion = "9.2.16.v20160414"
+  lazy val logbackVersion = "1.1.7"
+  lazy val slf4jApiVersion = "1.7.21"
   lazy val scalaTestVersion = "2.2.6"
 
   lazy val baseSettings = Seq(
@@ -80,7 +80,7 @@ object SkinnyFrameworkBuild extends Build {
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
         "org.specs2"           %% "specs2-core"         % "2.5"              % Test,
         "commons-fileupload"   %  "commons-fileupload"  % "1.3.1"            % Test,
-        "commons-io"           %  "commons-io"          % "2.4"              % Test,
+        "commons-io"           %  "commons-io"          % "2.5"              % Test,
         "commons-httpclient"   %  "commons-httpclient"  % "3.1"              % Test,
         "javax.servlet"        %  "javax.servlet-api"   % "3.0.1"            % Test,
         "org.eclipse.jetty"    %  "jetty-server"        % jettyVersion       % Test,
@@ -96,7 +96,7 @@ object SkinnyFrameworkBuild extends Build {
         Seq(
           "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion  % Compile,
           "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion  % Compile,
-          "commons-io"           %  "commons-io"           % "2.4"               % Compile,
+          "commons-io"           %  "commons-io"           % "2.5"               % Compile,
           "org.scalatra"         %% "scalatra-specs2"      % scalatraTestVersion % Test,
           "org.scalatra"         %% "scalatra-scalatest"   % scalatraTestVersion % Test
         ) ++ compileScalateDependencies(sv) ++ servletApiDependencies ++ testDependencies
@@ -134,7 +134,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-assets",
       libraryDependencies ++= Seq(
         "ro.isdc.wro4j" %  "rhino"      % "1.7R5-20130223-1",
-        "commons-io"    %  "commons-io" % "2.4"
+        "commons-io"    %  "commons-io" % "2.5"
       ) ++ servletApiDependencies ++ testDependencies
     )
   ).dependsOn(
@@ -146,7 +146,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-task",
       libraryDependencies ++= Seq(
-        "commons-io"           %  "commons-io"          % "2.4"              % Compile,
+        "commons-io"           %  "commons-io"          % "2.5"              % Compile,
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile
       ) ++ testDependencies
     )
@@ -298,7 +298,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-framework-example",
       libraryDependencies ++= Seq(
         "com.h2database"       %  "h2"                 % h2Version,
-        "org.skinny-framework" %  "skinny-logback"     % "1.0.8",
+        "org.skinny-framework" %  "skinny-logback"     % "1.0.9",
         "org.scalatra"         %% "scalatra-specs2"    % scalatraTestVersion % Test,
         "org.scalatra"         %% "scalatra-scalatest" % scalatraTestVersion % Test,
         "org.mockito"          %  "mockito-core"       % mockitoVersion      % Test,
@@ -354,7 +354,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.9.2" % Compile,
+    "joda-time"     %  "joda-time"        % "2.9.3" % Compile,
     "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
@@ -367,7 +367,7 @@ object SkinnyFrameworkBuild extends Build {
     "ch.qos.logback"          %  "logback-classic" % logbackVersion   % Test,
     "org.jvnet.mock-javamail" %  "mock-javamail"   % "1.9"            % Test,
     "com.h2database"          %  "h2"              % h2Version        % Test,
-    "org.skinny-framework"    %  "skinny-logback"  % "1.0.8"          % Test,
+    "org.skinny-framework"    %  "skinny-logback"  % "1.0.9"          % Test,
     "com.h2database"          %  "h2"              % h2Version        % Test
   )
 
