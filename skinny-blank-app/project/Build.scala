@@ -15,7 +15,7 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.1.0.RC1"
+  val skinnyVersion = "2.1.0-SNAPSHOT"
   val theScalaVersion = "2.11.8"
   val jettyVersion = "9.2.16.v20160414"
 
