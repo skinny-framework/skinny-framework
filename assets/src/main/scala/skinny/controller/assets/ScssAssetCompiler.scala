@@ -20,10 +20,13 @@ object ScssAssetCompiler extends AssetCompiler {
     )
   }
 
-  override def findRealFile(servletContext: ServletContext, basePath: String, path: String): File = {
+  override def findRealFile(servletContext: ServletContext, basePath: String, path: String): Option[File] = {
     val inScssDir = new File(servletContext.getRealPath(s"${basePath}/scss/${path}.${extension}"))
-    if (inScssDir.exists) inScssDir
-    else new File(servletContext.getRealPath(s"${basePath}/sass/${path}.${extension}"))
+    if (inScssDir.exists) {
+      Some(inScssDir)
+    } else {
+      Some(new File(servletContext.getRealPath(s"${basePath}/sass/${path}.${extension}")))
+    }
   }
 
 }

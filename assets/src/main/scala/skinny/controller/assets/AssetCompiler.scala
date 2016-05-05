@@ -46,8 +46,9 @@ trait AssetCompiler {
    * @param path path
    * @return real file
    */
-  def findRealFile(servletContext: ServletContext, basePath: String, path: String): File = {
-    new File(servletContext.getRealPath(s"${dir(basePath)}/${path}.${extension}"))
+  def findRealFile(servletContext: ServletContext, basePath: String, path: String): Option[File] = {
+    Option(servletContext.getRealPath(s"${dir(basePath)}/${path}.${extension}"))
+      .map(path => new File(path))
   }
 
 }

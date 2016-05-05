@@ -386,7 +386,7 @@ class AssetsController extends SkinnyController {
       val foundFile: Option[File] = Seq(
         c.findRealFile(servletContext, publicBasePath, path),
         c.findRealFile(servletContext, basePath, path)
-      ).find(_.exists())
+      ).flatten.find(_.exists())
 
       foundFile match {
         case Some(file) => Some((c, file))
