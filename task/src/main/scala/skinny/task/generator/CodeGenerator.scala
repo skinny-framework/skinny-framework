@@ -1,8 +1,10 @@
 package skinny.task.generator
 
 import java.io.File
+import java.nio.charset.Charset
 import java.sql.Types._
 import java.util.Locale
+
 import org.apache.commons.io.FileUtils
 import scalikejdbc.DB
 import scalikejdbc.metadata.Column
@@ -19,6 +21,8 @@ trait CodeGenerator {
 
   // ------------------------
   // configuration
+
+  def charset: Charset = Charset.defaultCharset()
 
   def sourceDir = "src/main/scala"
 
@@ -46,10 +50,10 @@ trait CodeGenerator {
   def forceWrite(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
-      FileUtils.write(file, code)
+      FileUtils.write(file, code, charset)
       println("  \"" + file.getPath + "\" modified.")
     } else {
-      FileUtils.write(file, code)
+      FileUtils.write(file, code, charset)
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -59,7 +63,7 @@ trait CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, code)
+      FileUtils.write(file, code, charset)
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -67,10 +71,10 @@ trait CodeGenerator {
   def writeAppending(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
-      FileUtils.write(file, code, true)
+      FileUtils.write(file, code, charset, true)
       println("  \"" + file.getPath + "\" modified.")
     } else {
-      FileUtils.write(file, code)
+      FileUtils.write(file, code, charset)
       println("  \"" + file.getPath + "\" created.")
     }
   }

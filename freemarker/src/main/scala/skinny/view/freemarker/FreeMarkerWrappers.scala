@@ -162,10 +162,13 @@ class ScalaMethodWrapper(
             case v: SimpleNumber => v.getAsNumber.longValue
             case v: SimpleObjectWrapper => v
             case v: SimpleScalar => v.getAsString
-            case v: SimpleSequence => v.toList
+            case v: SimpleSequence => {
+              // NOTE: @deprecated No replacement exists; not a reliable way of getting back the original list elemnts.
+              v.toList
+            }
             case v => v
           }
-        }.toSeq.map(_.asInstanceOf[Object])
+        }.map(_.asInstanceOf[Object])
 
         val paramTypes = params.map(_.getClass).map { clazz =>
           clazz match {
@@ -333,7 +336,7 @@ class ScalaBaseWrapper(val obj: Any, val wrapper: ObjectWrapper)
       }
     }
     // nothing found
-    if (delegateToDefault) ObjectWrapper.DEFAULT_WRAPPER.wrap(obj)
+    if (delegateToDefault) new DefaultObjectWrapperBuilder(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS).build().wrap(obj)
     else wrapper.wrap(null)
   }
 

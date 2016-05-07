@@ -10,9 +10,9 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val skinnyMicroVersion = "1.0.5"
   lazy val scalatraTestVersion = "2.4.0"
-  lazy val scalikeJDBCVersion = "2.4.0.RC2"
+  lazy val scalikeJDBCVersion = "2.4.0"
   lazy val h2Version = "1.4.191"
-  lazy val kuromojiVersion = "5.5.0"
+  lazy val kuromojiVersion = "6.0.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.16.v20160414"
@@ -158,7 +158,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"  %  "flyway-core"    % "4.0"         % Compile,
+        "org.flywaydb"  %  "flyway-core"    % "4.0.1"       % Compile,
         "org.hibernate" %  "hibernate-core" % "5.1.0.Final" % Test
       ) ++ testDependencies
     )
@@ -191,7 +191,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
         "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
-        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.3.3"             % Compile exclude("org.thymeleaf", "thymeleaf"),
+        "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.4.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
       ) ++ testDependencies
