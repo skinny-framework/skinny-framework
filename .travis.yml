@@ -11,8 +11,8 @@ cache:
     - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
 script: 
   - travis_retry "./travis.sh"
-  - find $HOME/.sbt -name "*.lock" | xargs rm
-  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+  - find $HOME/.sbt -name "*.lock" | xargs rm -f
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm -f
 #after_success: "./travis_after.sh"
 env:
   matrix:

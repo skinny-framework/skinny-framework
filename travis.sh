@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$TRAVIS_SCALA_VERSION" == "" ]]; then
-  TRAVIS_SCALA_VERSION=2.11.7
+  TRAVIS_SCALA_VERSION=2.11.8
 fi
 if [[ "$TEST_TYPE" == "" ]]; then
   TEST_TYPE=framework
