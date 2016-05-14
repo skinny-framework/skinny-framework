@@ -22,23 +22,25 @@ import scala.util.Try
  */
 case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends LoggerProvider {
 
-  private[this] val c = mapper.column
+  private[this] val c: ColumnName[Entity] = mapper.column
 
-  val autoSession = AutoSession
+  val autoSession: AutoSession.type = AutoSession
 
-  private[this] val valuesToReplaceVariablesInConfig = new scala.collection.concurrent.TrieMap[Symbol, Any]()
-  private[this] val additionalNamedValues = new scala.collection.concurrent.TrieMap[Symbol, Any]()
+  private[this] val valuesToReplaceVariablesInConfig: TrieMap[Symbol, Any] = new TrieMap[Symbol, Any]()
+
+  private[this] val additionalNamedValues: TrieMap[Symbol, Any] = new TrieMap[Symbol, Any]()
+
+  var factoriesDir = "factories"
 
   private[this] val cachedFactoryConfig: TrieMap[String, Config] = new TrieMap[String, Config]()
-  private[this] lazy val resolvedConfigs: Seq[Config] = {
-    val confDir = "factories"
 
+  private[this] lazy val resolvedConfigs: Seq[Config] = {
     getClass.getClassLoader
-      .getResources(confDir)
+      .getResources(factoriesDir)
       .asScala.flatMap { uri =>
-        new File(uri.getFile).listFiles
+        new File(uri.toURI).listFiles
           .withFilter { f => f.isFile && f.getName.endsWith(".conf") }
-          .map { f => s"${confDir}/${f.getName}" }
+          .map { f => s"${factoriesDir}/${f.getName}" }
       }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
   }
 
@@ -83,6 +85,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
 
   /**
    * Appends additional named values.
+   *
    * @param attributes attributes
    * @return self
    */
