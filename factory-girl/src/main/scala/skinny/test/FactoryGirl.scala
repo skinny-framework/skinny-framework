@@ -1,6 +1,7 @@
 package skinny.test
 
 import java.io.File
+import java.net.URI
 
 import com.typesafe.config.{ Config, ConfigFactory }
 import skinny.logging.LoggerProvider
@@ -35,8 +36,15 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
 
     getClass.getClassLoader
       .getResources(confDir)
-      .asScala.flatMap { uri =>
-        new File(uri.getFile).listFiles
+      .asScala.flatMap { url =>
+
+        // url.getFile() may contain %-escaped characters if the path contains spaces
+        // for example. It's a reported issue at
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4466485 and won't be fixed.
+        // The following line is a suggested workaround in the above url.
+        val path = new URI(url.toString).getPath
+
+        new File(path).listFiles
           .withFilter { f => f.isFile && f.getName.endsWith(".conf") }
           .map { f => s"${confDir}/${f.getName}" }
       }.map(ConfigFactory.parseResources(getClass.getClassLoader, _).resolve()).toSeq
