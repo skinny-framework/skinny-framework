@@ -64,10 +64,10 @@ class MockControllerSpec extends FunSpec with Matchers {
         "foo[]" -> "baz value"
       )
 
-      controller.returnMultiParams("foo[]").size should equal(3)
-      controller.returnMultiParams("foo[]")(0) should equal("foo value")
-      controller.returnMultiParams("foo[]")(1) should equal("bar value")
-      controller.returnMultiParams("foo[]")(2) should equal("baz value")
+      controller.returnMultiParams("foo").size should equal(3)
+      controller.returnMultiParams("foo")(0) should equal("foo value")
+      controller.returnMultiParams("foo")(1) should equal("bar value")
+      controller.returnMultiParams("foo")(2) should equal("baz value")
     }
 
   }
