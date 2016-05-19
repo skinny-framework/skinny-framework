@@ -9,6 +9,9 @@ class MockControllerSpec extends FunSpec with Matchers {
   class AppTest extends SkinnyController {
     def useUrl = url("/foo")
     def useUrl2 = url(app.hoge, "a" -> "b")
+
+    def returnParams(key: String): String = params.getAs[String](key).getOrElse("")
+    def returnMultiParams(key: String): Seq[String] = multiParams.getAs[String](key).getOrElse(Seq[String]())
   }
   object app extends AppTest with Routes {
     get("/api/useUrl")(useUrl)
@@ -40,4 +43,32 @@ class MockControllerSpec extends FunSpec with Matchers {
     }
   }
 
+  describe("prepareParams") {
+    it("params works") {
+      val controller = new AppTest with MockController
+      controller.prepareParams(
+        "foo" -> "foo value",
+        "foo" -> "bar value"
+      )
+
+      controller.returnParams("foo") should equal("foo value")
+    }
+
+    it("multiParams works") {
+      val controller = new AppTest with MockController
+      controller.prepareParams(
+        "foo[]" -> "foo value",
+        "foo[]" -> "bar value"
+      )
+      controller.prepareParams(
+        "foo[]" -> "baz value"
+      )
+
+      controller.returnMultiParams("foo").size should equal(3)
+      controller.returnMultiParams("foo")(0) should equal("foo value")
+      controller.returnMultiParams("foo")(1) should equal("bar value")
+      controller.returnMultiParams("foo")(2) should equal("baz value")
+    }
+
+  }
 }

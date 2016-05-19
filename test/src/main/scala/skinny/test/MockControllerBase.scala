@@ -86,7 +86,16 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   def prepareParams(params: (String, String)*) = {
-    _params ++= params.map { case (k, v) => k -> Seq(v) }
+    params.foreach {
+      case (k, v) =>
+        _params += (k -> (_params.getOrElse(k, Seq[String]()) :+ v))
+    }
+  }
+
+  override def multiParams(implicit ctx: SkinnyContext) = {
+    _params.foldLeft(super.multiParams(ctx)) { (params, kv) =>
+      params + (kv._1 -> params.get(kv._1).map(_ ++ kv._2).getOrElse(kv._2))
+    }
   }
 
   private[this] var _parsedBody: Option[JValue] = None
