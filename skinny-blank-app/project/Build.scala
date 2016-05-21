@@ -15,9 +15,9 @@ object SkinnyAppBuild extends Build {
   val appName = "skinny-blank-app"
   val appVersion = "0.1.0-SNAPSHOT"
 
-  val skinnyVersion = "2.1.0"
+  val skinnyVersion = "2.1.1"
   val theScalaVersion = "2.11.8"
-  val jettyVersion = "9.2.16.v20160414"
+  val jettyVersion = "9.2.17.v20160517"
 
   lazy val baseSettings = servletSettings ++ Seq(
     organization := appOrganization,
