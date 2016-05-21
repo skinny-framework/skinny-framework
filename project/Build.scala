@@ -6,16 +6,16 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.1.0"
+  lazy val currentVersion = "2.1.1"
 
   lazy val skinnyMicroVersion = "1.0.5"
-  lazy val scalatraTestVersion = "2.4.0"
-  lazy val scalikeJDBCVersion = "2.4.0"
+  lazy val scalatraTestVersion = "2.4.1"
+  lazy val scalikeJDBCVersion = "2.4.1"
   lazy val h2Version = "1.4.191"
   lazy val kuromojiVersion = "6.0.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
-  lazy val jettyVersion = "9.2.16.v20160414"
+  lazy val jettyVersion = "9.2.17.v20160517"
   lazy val logbackVersion = "1.1.7"
   lazy val slf4jApiVersion = "1.7.21"
   lazy val scalaTestVersion = "2.2.6"
