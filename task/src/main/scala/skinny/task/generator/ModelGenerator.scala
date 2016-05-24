@@ -2,7 +2,9 @@ package skinny.task.generator
 
 import skinny.ParamType
 import java.io.File
+
 import org.apache.commons.io.FileUtils
+import skinny.nlp.Inflector
 
 /**
  * Model generator.
@@ -71,10 +73,7 @@ trait ModelGenerator extends CodeGenerator {
     }
     def toManyThroughNameAndTypeName(entityName: String): (String, String) = {
       val _entityName = entityName.replaceFirst(modelClassName, "")
-      val _name = {
-        if (_entityName.endsWith("s")) toFirstCharLower(_entityName)
-        else toFirstCharLower(_entityName) + "s"
-      }
+      val _name = toFirstCharLower(Inflector.pluralize(_entityName))
       (_name, _entityName)
     }
     def filterHasManyThrough(nameAntTypeName: (String, String), modelClassName: String): (String, String) = {
@@ -107,11 +106,29 @@ trait ModelGenerator extends CodeGenerator {
       else {
         nameAndTypeNamePairs
           .map((v) => filterHasManyThrough(v, modelClassName))
-          .map { case (name, typeName) => s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}" }
+          .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
+          .map { case (name, typeName) =>
+              s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
+          }
           .mkString(attributePrefix, ",\n", "")
       }
     }${timestamps}
         |""".stripMargin
+
+    val nameConverters = {
+      val parts = nameAndTypeNamePairs.map(_._1).flatMap { name =>
+        CodeGenerator.reservedWordConversionRules.find { case (k, _) => k == name }
+      }.map {
+        case (original, converted) =>
+          s""""^${converted}$$" -> "${original}""""
+      }
+      if (parts.isEmpty) {
+        ""
+      } else {
+        s"""
+           |  override lazy val nameConverters = Map(${parts.mkString(", ")})""".stripMargin
+      }
+    }
 
     val extractors =
       s"""${extractorsPrimaryKeyRow}${
@@ -220,7 +237,7 @@ trait ModelGenerator extends CodeGenerator {
         |
         |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
-        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}
+        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}${nameConverters}
         |${associations}
         |${extractMethod}
         |}

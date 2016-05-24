@@ -1,6 +1,8 @@
 package skinny.task.generator
 
 import java.io.File
+import java.nio.charset.Charset
+
 import org.joda.time._
 import org.apache.commons.io.FileUtils
 import skinny.ParamType
@@ -110,17 +112,19 @@ trait ScaffoldGenerator extends CodeGenerator {
           val nameAndTypeNamePairsForModel = generatorArgs.map(a => (a.name, a.typeName))
           modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), nameAndTypeNamePairsForModel)
           modelGenerator.generateSpec(namespaces, resource, nameAndTypeNamePairsForModel)
+          val convertedNameAndTypeNamePairs = nameAndTypeNamePairs
+            .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
 
           if (withId) {
             // Views
-            generateFormView(namespaces, resources, resource, nameAndTypeNamePairs)
-            generateNewView(namespaces, resources, resource, nameAndTypeNamePairs)
-            generateEditView(namespaces, resources, resource, nameAndTypeNamePairs)
-            generateIndexView(namespaces, resources, resource, nameAndTypeNamePairs)
-            generateShowView(namespaces, resources, resource, nameAndTypeNamePairs)
+            generateFormView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
+            generateNewView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
+            generateEditView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
+            generateIndexView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
+            generateShowView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
 
             // messages.conf
-            generateMessages(resources, resource, nameAndTypeNamePairs)
+            generateMessages(resources, resource, convertedNameAndTypeNamePairs)
           }
 
           // migration SQL
@@ -660,7 +664,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, formHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs))
+      FileUtils.write(file, formHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -673,7 +677,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, newHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs))
+      FileUtils.write(file, newHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -686,7 +690,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, editHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs))
+      FileUtils.write(file, editHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -699,7 +703,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, indexHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs))
+      FileUtils.write(file, indexHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
@@ -712,7 +716,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, showHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs))
+      FileUtils.write(file, showHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }

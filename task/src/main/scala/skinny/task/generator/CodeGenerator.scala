@@ -14,6 +14,70 @@ import skinny.util.StringUtil
 
 import scala.io.Source
 
+object CodeGenerator {
+
+  def convertReservedWord(name: String): String = {
+    CodeGenerator.reservedWordConversionRules.find { case (k, _) => k == name } match {
+      case Some((_, newName)) => newName
+      case _ => name
+    }
+  }
+
+  val reservedWordConversionRules = Map(
+    "abstract" -> "theAbstract",
+    "case" -> "theCase",
+    "catch" -> "theCatch",
+    "class" -> "theClass",
+    "def" -> "theDef",
+    "do" -> "theDo",
+    "else" -> "theElse",
+    "extends" -> "theExtends",
+    "false" -> "theFalse",
+    "final" -> "theFinal",
+    "finally" -> "theFinally",
+    "for" -> "theFor",
+    "forSome" -> "theForSome",
+    "if" -> "theIf",
+    "implicit" -> "theImplicit",
+    "import" -> "theImport",
+    "lazy" -> "theLazy",
+    "match" -> "theMatch",
+    "new" -> "theNew",
+    "null" -> "theNull",
+    "object" -> "theObject",
+    "override" -> "theOverride",
+    "package" -> "thePackage",
+    "private" -> "isPrivate",
+    "protected" -> "isProtected",
+    "return" -> "theReturn",
+    "sealed" -> "isSealed",
+    "super" -> "isSuper",
+    "this" -> "theThis",
+    "throw" -> "theThrow",
+    "trait" -> "theTrait",
+    "try" -> "theTry",
+    "true" -> "theTrue",
+    "type" -> "theType",
+    "val" -> "theVal",
+    "var" -> "theVar",
+    "while" -> "theWhile",
+    "with" -> "theWith",
+    "yield" -> "theYield",
+    "clone" -> "theClone",
+    "equals" -> "theEquals",
+    "hashCode" -> "theHashCode",
+    "toString" -> "theToString",
+    "finalize" -> "finalizeRequired",
+    "getClass" -> "theGetClass",
+    "notify" -> "notifyRequired",
+    "notifyAll" -> "notifyAllRequired",
+    "wait" -> "waitRequired",
+    "asInstanceOf" -> "theAsInstanceOf",
+    "isInstanceOf" -> "instanceOf",
+    "synchronized" -> "isSynchronized"
+  )
+}
+
 /**
  * Code generator.
  */

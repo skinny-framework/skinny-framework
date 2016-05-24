@@ -1,7 +1,10 @@
 package skinny.task.generator
 
+import java.util.Locale
+
 import scalikejdbc.DB
-import scalikejdbc.metadata.{ Table, ForeignKey }
+import scalikejdbc.metadata.{ ForeignKey, Table }
+import skinny.nlp.Inflector
 
 trait ReverseGenerator extends CodeGenerator {
 
@@ -23,7 +26,8 @@ trait ReverseGenerator extends CodeGenerator {
     val hasManyAssociations: Seq[String] = {
       if (cachedTables.isEmpty) Nil
       else {
-        val expectedFkName = s"${toFirstCharLower(toCamelCase(tableName))}${pkName.map(toFirstCharUpper).getOrElse("Id")}"
+        val singularized = Inflector.singularize(toClassName(tableName))
+        val expectedFkName = s"${toFirstCharLower(singularized)}${pkName.map(toFirstCharUpper).getOrElse("Id")}"
         val hasManyTables: Seq[Table] = cachedTables.filter { table =>
           table.foreignKeys.exists { (fk) =>
             fk.foreignTableName.toLowerCase == tableName.toLowerCase &&
@@ -31,7 +35,7 @@ trait ReverseGenerator extends CodeGenerator {
           }
         }
         hasManyTables.map { table =>
-          val name = toCamelCase(table.name.toLowerCase)
+          val name = toCamelCase(Inflector.singularize(table.name.toLowerCase(Locale.ENGLISH)))
           s"${name}s:Seq[${toClassName(name)}]"
         }
       }

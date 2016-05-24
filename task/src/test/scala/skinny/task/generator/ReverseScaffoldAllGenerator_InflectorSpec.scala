@@ -8,7 +8,7 @@ import org.scalatest._
 import scalikejdbc._
 import skinny.{ DBSettings, SkinnyEnv }
 
-class ReverseScaffoldAllGeneratorSpec extends FunSpec with Matchers {
+class ReverseScaffoldAllGenerator_InflectorSpec extends FunSpec with Matchers {
 
   val generator = new ReverseScaffoldAllGenerator {
     override def sourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala"
@@ -24,25 +24,36 @@ class ReverseScaffoldAllGeneratorSpec extends FunSpec with Matchers {
       DBSettings.initialize()
       DB.localTx { implicit s =>
         sql"""
-create table user_group (
+drop table user_group if exists;
+drop table user_groups if exists;
+create table user_groups (
   id bigserial not null primary key,
   name varchar(100) not null,
   url varchar(512)
 );
-create table organization (
+
+drop table organization if exists;
+drop table organizations if exists;
+create table organizations (
   id bigserial not null primary key,
   name varchar(100) not null,
   url varchar(512) not null
 );
-create table developer (
+
+drop table developer if exists;
+drop table developers if exists;
+create table developers (
   id bigserial not null primary key,
   name varchar(512) not null,
   nickname varchar(32),
-  user_group_id bigint references user_group(id)
+  user_group_id bigint references user_groups(id)
 );
-create table organization_developer (
-  organization_id bigint not null references organization(id),
-  developer_id bigint not null references developer(id)
+
+drop table organization_developer if exists;
+drop table organization_developers if exists;
+create table organization_developers (
+  organization_id bigint not null references organizations(id),
+  developer_id bigint not null references developers(id)
 );
 """.execute.apply()
       }
@@ -71,7 +82,7 @@ case class Developer(
 )
 
 object Developer extends SkinnyCRUDMapper[Developer] {
-  override lazy val tableName = "developer"
+  override lazy val tableName = "developers"
   override lazy val defaultAlias = createAlias("d")
 
   lazy val userGroupRef = belongsTo[UserGroup](UserGroup, (d, ug) => d.copy(userGroup = ug))
@@ -107,7 +118,7 @@ case class Organization(
 )
 
 object Organization extends SkinnyCRUDMapper[Organization] {
-  override lazy val tableName = "organization"
+  override lazy val tableName = "organizations"
   override lazy val defaultAlias = createAlias("o")
 
   lazy val developersRef = hasManyThrough[Developer](
@@ -141,7 +152,7 @@ case class OrganizationDeveloper(
 )
 
 object OrganizationDeveloper extends SkinnyNoIdCRUDMapper[OrganizationDeveloper] {
-  override lazy val tableName = "organization_developer"
+  override lazy val tableName = "organization_developers"
   override lazy val defaultAlias = createAlias("od")
 
   lazy val developerRef = belongsTo[Developer](Developer, (od, d) => od.copy(developer = d))

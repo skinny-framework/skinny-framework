@@ -1,11 +1,12 @@
 package skinny.task.generator
 
 import java.io.File
+import java.nio.charset.Charset
 
 import org.apache.commons.io.FileUtils
 import org.scalatest._
 import scalikejdbc._
-import skinny.{ SkinnyEnv, DBSettings }
+import skinny.{ DBSettings, SkinnyEnv }
 
 class ReverseModelAllGeneratorSpec extends FunSpec with Matchers {
 
@@ -43,7 +44,10 @@ create table member (
       FileUtils.deleteDirectory(new File("tmp/ReverseModelAllGeneratorSpec"))
       generator.run(List(SkinnyEnv.getOrDevelopment()))
 
-      val company = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/main/scala/model/Company.scala"))
+      val company = FileUtils.readFileToString(
+        new File("tmp/ReverseModelAllGeneratorSpec/src/main/scala/model/Company.scala"),
+        Charset.defaultCharset()
+      )
       company should equal(
         s"""package model
 
@@ -76,7 +80,10 @@ object Company extends SkinnyCRUDMapper[Company] {
 """.stripMargin
       )
 
-      val member = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/main/scala/model/Member.scala"))
+      val member = FileUtils.readFileToString(
+        new File("tmp/ReverseModelAllGeneratorSpec/src/main/scala/model/Member.scala"),
+        Charset.defaultCharset()
+      )
       member should equal(
         s"""package model
 
@@ -107,7 +114,10 @@ object Member extends SkinnyCRUDMapper[Member] {
 """.stripMargin
       )
 
-      val companySpec = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/test/scala/model/CompanySpec.scala"))
+      val companySpec = FileUtils.readFileToString(
+        new File("tmp/ReverseModelAllGeneratorSpec/src/test/scala/model/CompanySpec.scala"),
+        Charset.defaultCharset()
+      )
       companySpec should equal(
         s"""package model
 
@@ -124,7 +134,10 @@ class CompanySpec extends FlatSpec with Matchers with DBSettings with AutoRollba
 """
       )
 
-      val memberSpec = FileUtils.readFileToString(new File("tmp/ReverseModelAllGeneratorSpec/src/test/scala/model/MemberSpec.scala"))
+      val memberSpec = FileUtils.readFileToString(
+        new File("tmp/ReverseModelAllGeneratorSpec/src/test/scala/model/MemberSpec.scala"),
+        Charset.defaultCharset()
+      )
       memberSpec should equal(
         s"""package model
 
