@@ -3,6 +3,7 @@ package skinny.task.generator
 import skinny.{ DBSettings, SkinnyEnv }
 import scalikejdbc._
 import scalikejdbc.metadata.Table
+import skinny.nlp.Inflector
 
 /**
  * Reverse Model All generator.
@@ -49,7 +50,8 @@ trait ReverseModelAllGenerator extends CodeGenerator {
     }
     tables.map { table =>
       val tableName = table.name.toLowerCase
-      val args: List[String] = Seq(Some(tableName), Some(toCamelCase(tableName)), skinnyEnv).flatten.toList
+      val className = Inflector.singularize(toCamelCase(tableName))
+      val args: List[String] = Seq(Some(tableName), Some(className), skinnyEnv).flatten.toList
       generator.run(args)
     }
   }

@@ -1,8 +1,10 @@
 package skinny.task.generator
 
 import java.util.Locale
-import skinny.{ DBSettings, SkinnyEnv, ParamType }
-import scalikejdbc.metadata.{ Table, Column }
+
+import skinny.{ DBSettings, ParamType, SkinnyEnv }
+import scalikejdbc.metadata.{ Column, Table }
+import skinny.nlp.Inflector
 
 /**
  * Reverse Model generator.
@@ -110,7 +112,9 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
       override def modelPackageDir = self.modelPackageDir
     }
 
-    val _nameWithPackage = nameWithPackage.getOrElse(toClassName(tableName.toLowerCase))
+    val _nameWithPackage = nameWithPackage.getOrElse(
+      Inflector.singularize(toClassName(tableName.toLowerCase))
+    )
     val namespace = _nameWithPackage.split("\\.").init.mkString(".")
     val name = _nameWithPackage.split("\\.").last
     generator.run(Seq(namespace, name) ++ fields)

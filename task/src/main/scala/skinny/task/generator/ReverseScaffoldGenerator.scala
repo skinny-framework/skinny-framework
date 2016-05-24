@@ -77,16 +77,18 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
         }
       } else None
       val fields: List[String] = {
-        val fields = if (hasId) {
-          columns
-            .map(column => toScaffoldFieldDef(column))
-            .filter(param => param != "id:Long" && param != "id:Option[Long]")
-            .filter(param => !param.startsWith(pkName.get + ":"))
-            .map(param => toCamelCase(param))
-        } else {
-          columns
-            .map(column => toScaffoldFieldDef(column))
-            .map(param => toCamelCase(param))
+        val fields: List[String] = {
+          if (hasId) {
+            columns
+              .map(column => toScaffoldFieldDef(column))
+              .filter(param => param != "id:Long" && param != "id:Option[Long]")
+              .filter(param => !param.startsWith(pkName.get + ":"))
+              .map(param => toCamelCase(param))
+          } else {
+            columns
+              .map(column => toScaffoldFieldDef(column))
+              .map(param => toCamelCase(param))
+          }
         }
         if (createAssociationsForForeignKeys) {
           fields ++ extractAssociationParams(tableName, pkName, cachedTables)
