@@ -60,7 +60,10 @@ trait ModelGenerator extends CodeGenerator {
   def code(namespaces: Seq[String], name: String, tableName: Option[String], nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val namespace = toNamespace(modelPackage, namespaces)
     val modelClassName = toClassName(name)
-    val alias = modelClassName.filter(_.isUpper).map(_.toLower).mkString
+    val alias = {
+      val a = modelClassName.filter(_.isUpper).map(_.toLower).mkString
+      if (CodeGenerator.SQLReservedWords.contains(a)) a + "_" else a
+    }
     val timestampPrefix = if (withId) ",\n" else { if (nameAndTypeNamePairs.isEmpty) "" else ",\n" }
     val caseClassFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
     val extractorsPrimaryKeyRow = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""

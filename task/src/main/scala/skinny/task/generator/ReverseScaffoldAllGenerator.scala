@@ -58,17 +58,18 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
   }
 
   private def toNormalizedEntityName(tableName: String, tables: Seq[Table]): String = {
-    if (isJoinTable(tableName, tables)) {
+    val _tableName = tableName.toLowerCase(Locale.ENGLISH)
+    if (isJoinTable(_tableName, tables)) {
       // normalize join table entity name
       val joinedTableNames = tables.map(_.name.toLowerCase(Locale.ENGLISH))
-        .filter(t => tableName != t && (tableName.startsWith(t) || tableName.endsWith(t)))
+        .filter(t => _tableName != t && (_tableName.startsWith(t) || _tableName.endsWith(t)))
 
-      val normalizedName = joinedTableNames.foldLeft(tableName.toLowerCase(Locale.ENGLISH)) {
-        case (tableName, joined) => tableName.replaceFirst(joined, Inflector.singularize(joined))
+      val normalizedName = joinedTableNames.foldLeft(_tableName.toLowerCase(Locale.ENGLISH)) {
+        case (table, joined) => tableName.replaceFirst(joined, Inflector.singularize(joined))
       }
       Inflector.singularize(toClassName(normalizedName))
     } else {
-      Inflector.singularize(toClassName(tableName))
+      Inflector.singularize(toClassName(_tableName))
     }
   }
 
