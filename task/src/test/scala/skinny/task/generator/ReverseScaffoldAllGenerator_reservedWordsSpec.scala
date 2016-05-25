@@ -51,6 +51,7 @@ create table developers (
 
 drop table organization_developer if exists;
 drop table organization_developers if exists;
+drop table organizations_developers if exists;
 create table organization_developers (
   organization_id bigint not null references organizations(id),
   developer_id bigint not null references developers(id)
