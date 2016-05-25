@@ -61,7 +61,7 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
     if (isJoinTable(tableName, tables)) {
       // normalize join table entity name
       val joinedTableNames = tables.map(_.name.toLowerCase(Locale.ENGLISH))
-        .filter(t => tableName.startsWith(t) || tableName.endsWith(t))
+        .filter(t => tableName != t && (tableName.startsWith(t) || tableName.endsWith(t)))
 
       val normalizedName = joinedTableNames.foldLeft(tableName.toLowerCase(Locale.ENGLISH)) {
         case (tableName, joined) => tableName.replaceFirst(joined, Inflector.singularize(joined))
