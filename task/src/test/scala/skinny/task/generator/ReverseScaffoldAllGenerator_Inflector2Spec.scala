@@ -8,7 +8,7 @@ import org.scalatest._
 import scalikejdbc._
 import skinny.{ DBSettings, SkinnyEnv }
 
-class ReverseScaffoldAllGenerator_InflectorSpec extends FunSpec with Matchers {
+class ReverseScaffoldAllGenerator_Inflector2Spec extends FunSpec with Matchers {
 
   val generator = new ReverseScaffoldAllGenerator {
     override def sourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala"
@@ -52,7 +52,7 @@ create table developers (
 drop table organization_developer if exists;
 drop table organization_developers if exists;
 drop table organizations_developers if exists;
-create table organization_developers (
+create table organizations_developers (
   organization_id bigint not null references organizations(id),
   developer_id bigint not null references developers(id)
 );
@@ -153,7 +153,7 @@ case class OrganizationDeveloper(
 )
 
 object OrganizationDeveloper extends SkinnyNoIdCRUDMapper[OrganizationDeveloper] {
-  override lazy val tableName = "organization_developers"
+  override lazy val tableName = "organizations_developers"
   override lazy val defaultAlias = createAlias("od")
 
   lazy val developerRef = belongsTo[Developer](Developer, (od, d) => od.copy(developer = d))

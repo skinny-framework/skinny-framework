@@ -69,7 +69,31 @@ trait ModelGenerator extends CodeGenerator {
     val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
 
     def isHasManyThrough(entityName: String, modelClassName: String): Boolean = {
-      entityName.startsWith(modelClassName) || entityName.endsWith(modelClassName)
+      entityName.startsWith(Inflector.pluralize(modelClassName)) ||
+        entityName.endsWith(Inflector.pluralize(modelClassName)) ||
+        entityName.startsWith(Inflector.singularize(modelClassName)) ||
+        entityName.endsWith(Inflector.singularize(modelClassName))
+    }
+    def singularizeHasManyThroughTypeName(entityName: String, modelClassName: String): String = {
+      if (entityName.startsWith(Inflector.pluralize(modelClassName))
+        || entityName.startsWith(Inflector.singularize(modelClassName))) {
+        val second = Inflector.singularize(
+          entityName
+            .replaceFirst(Inflector.pluralize(modelClassName), "")
+            .replaceFirst(Inflector.singularize(modelClassName), "")
+        )
+        modelClassName + second
+      } else if (entityName.endsWith(Inflector.pluralize(modelClassName))
+        || entityName.endsWith(Inflector.singularize(modelClassName))) {
+        val first = Inflector.singularize(
+          entityName
+            .replaceFirst(Inflector.pluralize(modelClassName), "")
+            .replaceFirst(Inflector.singularize(modelClassName), "")
+        )
+        first + modelClassName
+      } else {
+        entityName
+      }
     }
     def toManyThroughNameAndTypeName(entityName: String): (String, String) = {
       val _entityName = entityName.replaceFirst(modelClassName, "")
@@ -79,7 +103,9 @@ trait ModelGenerator extends CodeGenerator {
     def filterHasManyThrough(nameAntTypeName: (String, String), modelClassName: String): (String, String) = {
       val entityName = extractTypeIfOptionOrSeq(nameAntTypeName._2)
       if (isHasManyThrough(entityName, modelClassName)) {
-        val (name, typeName) = toManyThroughNameAndTypeName(entityName)
+        val (name, typeName) = toManyThroughNameAndTypeName(
+          singularizeHasManyThroughTypeName(entityName, modelClassName)
+        )
         (name, s"Seq[${typeName}]")
       } else {
         nameAntTypeName
@@ -107,7 +133,8 @@ trait ModelGenerator extends CodeGenerator {
         nameAndTypeNamePairs
           .map((v) => filterHasManyThrough(v, modelClassName))
           .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
-          .map { case (name, typeName) =>
+          .map {
+            case (name, typeName) =>
               s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
           }
           .mkString(attributePrefix, ",\n", "")
@@ -156,7 +183,7 @@ trait ModelGenerator extends CodeGenerator {
         case (name, typeName) =>
           val entityName = extractTypeIfOptionOrSeq(typeName)
           if (isHasManyThrough(entityName, modelClassName)) {
-            toManyThroughNameAndTypeName(entityName)
+            toManyThroughNameAndTypeName(singularizeHasManyThroughTypeName(entityName, modelClassName))
           } else {
             (name, typeName)
           }
@@ -174,11 +201,11 @@ trait ModelGenerator extends CodeGenerator {
           case (name, typeName) if typeName.startsWith("Seq[") =>
             val entityName = extractTypeIfOptionOrSeq(typeName)
             if (isHasManyThrough(entityName, modelClassName)) {
-              toManyThroughNameAndTypeName(entityName)
-              val (_name, _entityName) = toManyThroughNameAndTypeName(entityName)
+              val throughEntity = singularizeHasManyThroughTypeName(entityName, modelClassName)
+              val (_name, _entityName) = toManyThroughNameAndTypeName(throughEntity)
               val entityAlias = toFirstCharUpper(_entityName).filter(_.isUpper).map(_.toLower).mkString
               s"""  lazy val ${_name}Ref = hasManyThrough[${_entityName}](
-               |    through = ${entityName},
+               |    through = ${throughEntity},
                |    many = ${_entityName},
                |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${_name} = ${entityAlias}s)
                |  )""".stripMargin

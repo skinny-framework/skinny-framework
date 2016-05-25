@@ -1,5 +1,7 @@
 package skinny.task.generator
 
+import java.util.Locale
+
 import skinny.{ DBSettings, SkinnyEnv }
 import scalikejdbc._
 import scalikejdbc.metadata.Table
@@ -49,10 +51,32 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
     }
     tables.map { table =>
       val tableName = table.name.toLowerCase
-      val className = Inflector.singularize(toClassName(tableName))
+      val className = toNormalizedEntityName(tableName, tables)
       val args: List[String] = List(tableName, Inflector.pluralize(className), className)
       generator.run(templateType, args, SkinnyEnv.get())
     }
+  }
+
+  private def toNormalizedEntityName(tableName: String, tables: Seq[Table]): String = {
+    if (isJoinTable(tableName, tables)) {
+      // normalize join table entity name
+      val joinedTableNames = tables.map(_.name.toLowerCase(Locale.ENGLISH))
+        .filter(t => tableName.startsWith(t) || tableName.endsWith(t))
+
+      val normalizedName = joinedTableNames.foldLeft(tableName.toLowerCase(Locale.ENGLISH)) {
+        case (tableName, joined) => tableName.replaceFirst(joined, Inflector.singularize(joined))
+      }
+      Inflector.singularize(toClassName(normalizedName))
+    } else {
+      Inflector.singularize(toClassName(tableName))
+    }
+  }
+
+  private def isJoinTable(tableName: String, tables: Seq[Table]): Boolean = {
+    val _tableName = tableName.toLowerCase(Locale.ENGLISH)
+    tables.exists(t =>
+      _tableName.startsWith(t.name.toLowerCase(Locale.ENGLISH)) ||
+        _tableName.endsWith(t.name.toLowerCase(Locale.ENGLISH)))
   }
 
 }
