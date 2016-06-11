@@ -10,9 +10,9 @@ object SkinnyFrameworkBuild extends Build {
 
   lazy val skinnyMicroVersion = "1.0.6"
   lazy val scalatraTestVersion = "2.4.1"
-  lazy val scalikeJDBCVersion = "2.4.1"
-  lazy val h2Version = "1.4.191"
-  lazy val kuromojiVersion = "6.0.0"
+  lazy val scalikeJDBCVersion = "2.4.2"
+  lazy val h2Version = "1.4.192"
+  lazy val kuromojiVersion = "6.0.1"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.17.v20160517"
@@ -81,7 +81,7 @@ object SkinnyFrameworkBuild extends Build {
       libraryDependencies ++= Seq(
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
         "org.specs2"           %% "specs2-core"         % "2.5"              % Test,
-        "commons-fileupload"   %  "commons-fileupload"  % "1.3.1"            % Test,
+        "commons-fileupload"   %  "commons-fileupload"  % "1.3.2"            % Test,
         "commons-io"           %  "commons-io"          % commonsIoVersion   % Test,
         "commons-httpclient"   %  "commons-httpclient"  % "3.1"              % Test,
         "javax.servlet"        %  "javax.servlet-api"   % "3.0.1"            % Test,
@@ -158,8 +158,8 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"  %  "flyway-core"    % "4.0.1"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.1.0.Final" % Test
+        "org.flywaydb"  %  "flyway-core"    % "4.0.2"       % Compile,
+        "org.hibernate" %  "hibernate-core" % "5.2.0.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -356,7 +356,7 @@ object SkinnyFrameworkBuild extends Build {
     "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
   )
   lazy val jodaDependencies = Seq(
-    "joda-time"     %  "joda-time"        % "2.9.3" % Compile,
+    "joda-time"     %  "joda-time"        % "2.9.4" % Compile,
     "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
   )
   lazy val mailDependencies = slf4jApiDependencies ++ Seq(
