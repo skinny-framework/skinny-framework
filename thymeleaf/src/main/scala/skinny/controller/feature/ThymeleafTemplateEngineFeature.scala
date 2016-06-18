@@ -51,10 +51,10 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   /**
    * Resolver.
    */
-  lazy val thymeleafResolver: TemplateResolver = {
-    val resolver: TemplateResolver = {
+  lazy val thymeleafResolver: ITemplateResolver = {
+    val resolver: AbstractConfigurableTemplateResolver = {
       if (SkinnyEnv.isTest()) new ClassLoaderTemplateResolver
-      else new ServletContextTemplateResolver
+      else new ServletContextTemplateResolver(context.servletContext)
     }
     resolver.setCacheable(thymeleafCacheable)
     resolver.setTemplateMode(thymeleafResolverTemplateMode)

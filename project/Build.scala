@@ -6,13 +6,13 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.1.2"
+  lazy val currentVersion = "2.2.0-SNAPSHOT"
 
-  lazy val skinnyMicroVersion = "1.0.6"
+  lazy val skinnyMicroVersion = "1.1.0"
   lazy val scalatraTestVersion = "2.4.1"
   lazy val scalikeJDBCVersion = "2.4.2"
   lazy val h2Version = "1.4.192"
-  lazy val kuromojiVersion = "6.0.1"
+  lazy val kuromojiVersion = "6.1.0"
   lazy val mockitoVersion = "1.10.19"
   // Jetty 9.3 dropped Java 7
   lazy val jettyVersion = "9.2.17.v20160517"
@@ -158,7 +158,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-        "org.flywaydb"  %  "flyway-core"    % "4.0.2"       % Compile,
+        "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
         "org.hibernate" %  "hibernate-core" % "5.2.0.Final" % Test
       ) ++ testDependencies
     )
@@ -190,7 +190,7 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
-        "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
+        "org.thymeleaf"            %  "thymeleaf"                % "3.0.0.RELEASE"     % Compile,
         "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.4.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
