@@ -190,7 +190,9 @@ object SkinnyFrameworkBuild extends Build {
     settings = baseSettings ++ Seq(
       name := "skinny-thymeleaf",
       libraryDependencies ++= servletApiDependencies ++ Seq(
-        "org.thymeleaf"            %  "thymeleaf"                % "3.0.0.RELEASE"     % Compile,
+        // TODO: thymeleaf 3 support
+        // see also https://github.com/ultraq/thymeleaf-layout-dialect/issues/68
+        "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
         "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.4.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
         "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
         "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test

@@ -9,6 +9,7 @@ class ThymeleafControllerSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
   it should "render as expected" in {
     get("/thymeleaf/") {
+      logBodyUnless(200)
       status should equal(200)
       body should include("three")
       body should include("nested-<span>1</span>")
