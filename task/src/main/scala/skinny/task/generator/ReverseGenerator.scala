@@ -2,7 +2,7 @@ package skinny.task.generator
 
 import java.util.Locale
 
-import scalikejdbc.DB
+import scalikejdbc.NamedDB
 import scalikejdbc.metadata.{ ForeignKey, Table }
 import skinny.nlp.Inflector
 
@@ -13,7 +13,8 @@ trait ReverseGenerator extends CodeGenerator {
     // belongsTo associations
     val foreignKeys: Seq[ForeignKey] = {
       val table: Option[Table] = {
-        cachedTables.find((t) => t.name.toLowerCase == tableName.toLowerCase).orElse(DB.getTable(tableName))
+        cachedTables.find((t) => t.name.toLowerCase == tableName.toLowerCase)
+          .orElse(NamedDB(connectionPoolName).getTable(tableName))
       }
       table.map(_.foreignKeys.toSeq).getOrElse(Nil)
     }

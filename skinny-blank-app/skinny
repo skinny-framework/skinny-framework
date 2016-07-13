@@ -177,12 +177,16 @@ elif [ "$command" == "routes" ]; then
   ${sbt_path} "task/run routes $@"
 elif [ "$command" == "db:migrate" ]; then
   copy_resources_to_task
+  env="$2"
+  db_name="$3"
   shift
-  ${sbt_path} "task/run db:migrate $@"
+  ${sbt_path} "task/run db:migrate $env $db_name"
 elif [ "$command" == "db:repair" ]; then
   copy_resources_to_task
+  env="$2"
+  db_name="$3"
   shift
-  ${sbt_path} "task/run db:repair $@"
+  ${sbt_path} "task/run db:repair $env $db_name"
 elif [ "$command" == "eclipse" ]; then
   setting_file="${current_dir}/project/_skinny_eclipse.sbt"
   if [ ! -f "${setting_file}" ]; then

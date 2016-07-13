@@ -6,7 +6,7 @@ import java.sql.Types._
 import java.util.Locale
 
 import org.apache.commons.io.FileUtils
-import scalikejdbc.DB
+import scalikejdbc.{ ConnectionPool, NamedDB }
 import scalikejdbc.metadata.Column
 import skinny.ParamType
 import skinny.ParamType._
@@ -211,6 +211,8 @@ trait CodeGenerator {
 
   def webInfDir = "src/main/webapp/WEB-INF"
 
+  def connectionPoolName: Any = ConnectionPool.DEFAULT_NAME
+
   // If you prefer Play Framework's style, override this and specify "controllers"
   def controllerPackage: String = "controller"
 
@@ -283,7 +285,7 @@ trait CodeGenerator {
         |""".stripMargin
     }
 
-    val file = new File(s"${sourceDir}/${controllerPackage}/Controllers.scala")
+    val file = new File(s"${toDirectoryPath(sourceDir, controllerPackage.split('.'))}/Controllers.scala")
     if (file.exists()) {
       val code = Source.fromFile(file).mkString
         .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
@@ -363,11 +365,9 @@ trait CodeGenerator {
   }
 
   def extractColumns(tableName: String): List[Column] = {
-    DB.getTable(tableName).map { table =>
-      table.columns
-    }.getOrElse {
-      throw new IllegalStateException(s"Failed to retrieve meta data about columns for ${tableName}")
-    }
+    NamedDB(connectionPoolName).getTable(tableName)
+      .map { table => table.columns }
+      .getOrElse { throw new IllegalStateException(s"Failed to retrieve meta data about columns for ${tableName}") }
   }
 
   def toScalaTypeName(paramTypeName: String): String = paramTypeName match {

@@ -5,6 +5,7 @@ import java.nio.charset.Charset
 
 import org.joda.time._
 import org.apache.commons.io.FileUtils
+import scalikejdbc.ConnectionPool
 import skinny.ParamType
 
 /**
@@ -33,6 +34,10 @@ trait ScaffoldGenerator extends CodeGenerator {
   protected def customPrimaryKeyName: Option[String] = if (primaryKeyName == "id") None else Option(primaryKeyName)
 
   protected def useAutoConstruct: Boolean = false
+
+  protected def descendingOrderForIndexPage: Boolean = false
+
+  protected def operationLinksInIndexPageRequired: Boolean = true
 
   private def showUsage = {
     showSkinnyGenerator()
@@ -90,12 +95,15 @@ trait ScaffoldGenerator extends CodeGenerator {
             appendToControllers(namespaces, resources)
             generateControllerSpec(namespaces, resources, resource, nameAndTypeNamePairs)
             generateIntegrationTestSpec(namespaces, resources, resource, nameAndTypeNamePairs)
-            appendToFactoriesConf(resource, nameAndTypeNamePairs)
+
+            val name = toFactoryName(namespaces, resource).map(_.replaceFirst("'", "")).getOrElse(resource)
+            appendToFactoriesConf(name, nameAndTypeNamePairs)
           }
 
           // Model
           val self = this
           val modelGenerator = new ModelGenerator {
+            override def connectionPoolName = self.connectionPoolName
             override def primaryKeyName = self.primaryKeyName
             override def primaryKeyType = self.primaryKeyType
             override def withId = self.withId
@@ -210,6 +218,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         }
     }.mkString
 
+    val overrideMethods = {
+      if (descendingOrderForIndexPage) {
+        s"""  override protected def findResources(pageSize: Int, pageNo: Int): List[${modelClassName}] = {
+           |    model.findModelsDesc(pageSize, pageNo)
+           |  }
+           |
+           |""".stripMargin
+      } else {
+        ""
+      }
+    }
+
     val resourceNameLine = s"""override def resourceName = "${resource}"${primaryKeyNameIfNotId}"""
     s"""package ${namespace}
         |
@@ -246,7 +266,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |${filteredArgs.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + extractTypeIfOptionOrSeq(a.typeName) }.mkString(",\n")}
         |  )
         |
-        |}
+        |${overrideMethods}}
         |""".stripMargin
   }
 
@@ -282,6 +302,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val namespace = toNamespace(controllerPackage, namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
+    val factoryNamePart: String = toFactoryName(namespaces, resource).map(", " + _).getOrElse("")
 
     val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${resources}"
     val resourcesInLabel = toSplitName(resources)
@@ -305,7 +326,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       |  }
       |
       |  def createMockController = new ${controllerClassName} with MockController
-      |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
+      |  def ${newResourceName} = FactoryGirl(${modelClassName}${factoryNamePart}).create()
       |
       |  describe("${controllerClassName}") {
       |
@@ -408,6 +429,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val controllerName = toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
+    val factoryNamePart: String = toFactoryName(namespaces, resource).map(", " + _).getOrElse("")
 
     val resourcesInLabel = toSplitName(resources)
     val resourceInLabel = toSplitName(resource)
@@ -431,7 +453,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |    ${modelClassName}.deleteAll()
         |  }
         |
-        |  def ${newResourceName} = FactoryGirl(${modelClassName}).create()
+        |  def ${newResourceName} = FactoryGirl(${modelClassName}${factoryNamePart}).create()
         |
         |  it should "show ${resourcesInLabel}" in {
         |    get("${resourceBaseUrl}") {
@@ -551,7 +573,22 @@ trait ScaffoldGenerator extends CodeGenerator {
   // factories.conf
   // --------------------------
 
-  def appendToFactoriesConf(resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def toFactoryName(namespaces: Seq[String], resource: String): Option[String] = {
+    if (namespaces.isEmpty) None
+    else {
+      val modelClassName = toClassName(resource)
+      val factoryName: String = {
+        (namespaces.foldLeft("'") {
+          case (name, ns) =>
+            if (name == "'") "'" + toCamelCase(ns)
+            else name + toFirstCharUpper(toCamelCase(ns))
+        }) + toFirstCharUpper(toCamelCase(modelClassName))
+      }
+      Some(factoryName)
+    }
+  }
+
+  def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${testResourceDir}/factories.conf")
     val params = nameAndTypeNamePairs.map { case (k, t) => k -> extractTypeIfOptionOrSeq(t) }.map {
       case (k, "Long") => "  " + k + "=\"" + Long.MaxValue.toString() + "\""
@@ -568,7 +605,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     }.mkString("\n")
 
     val code =
-      s"""${resource} {
+      s"""${factoryName} {
           |${params}
           |}
           |""".stripMargin
@@ -641,7 +678,21 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean, withId: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
-    val file = new File(s"${resourceDir}/db/migration/V${version}__Create_${resources}_table.sql")
+    val file: File = {
+      val filepath = {
+        val filename: String = s"V${version}__Create_${resources}_table.sql"
+        if (connectionPoolName != ConnectionPool.DEFAULT_NAME) {
+          val dbName: String = {
+            if (connectionPoolName.isInstanceOf[Symbol]) connectionPoolName.asInstanceOf[Symbol].name
+            else connectionPoolName.toString
+          }
+          s"${resourceDir}/db/${dbName}/migration/${filename}"
+        } else {
+          s"${resourceDir}/db/migration/${filename}"
+        }
+      }
+      new File(filepath)
+    }
     val sql = migrationSQL(resources, resource, generatorArgs, withId)
     writeIfAbsent(file, if (skip) s"/*\n${sql}\n*/" else sql)
   }

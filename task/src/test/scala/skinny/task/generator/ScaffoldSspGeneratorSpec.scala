@@ -282,6 +282,93 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |""".stripMargin
       code should equal(expected)
     }
+
+    it("should be created as expected when disabling edit/delete links") {
+      val generator = new ScaffoldSspGenerator {
+        override lazy val operationLinksInIndexPageRequired = false
+      }
+      val code = generator.indexHtmlCode(Seq("admin"), "members", "member", Seq(
+        "name" -> "String",
+        "favoriteNumber" -> "Long",
+        "magicNumber" -> "Option[Int]",
+        "isActivated" -> "Boolean",
+        "birthday" -> "Option[LocalDate]"
+      ))
+      val expected =
+        """<%@val s: skinny.Skinny %>
+          |<%@val items: Seq[model.admin.Member] %>
+          |<%@val totalPages: Int %>
+          |<%@val page: Int = s.params.page.map(_.toString.toInt).getOrElse(1) %>
+          |
+          |<%-- Be aware of package imports.
+          | 1. src/main/scala/templates/ScalatePackage.scala
+          | 2. scalateTemplateConfig in project/Build.scala
+          |--%>
+          |
+          |<h3>${s.i18n.getOrKey("member.list")}</h3>
+          |<hr/>
+          |#for (notice <- s.flash.notice)
+          |  <p class="alert alert-info">${notice}</p>
+          |#end
+          |
+          |#if (totalPages > 1)
+          |  <ul class="pagination">
+          |    <li>
+          |      <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> 1)}">&laquo;</a>
+          |    </li>
+          |    <% val maxPage = Math.min(totalPages, if (page <= 5) 11 else page + 5) %>
+          |    #for (i <- Math.max(1, maxPage - 10) to maxPage)
+          |      <li class="${if (i == page) "active" else ""}">
+          |        <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> i)}">${i}</a>
+          |      </li>
+          |    #end
+          |    <li>
+          |      <a href="${s.url(Controllers.adminMembers.indexUrl, "page" -> totalPages)}">&raquo;</a>
+          |    </li>
+          |    <li>
+          |      <span>${Math.min(page, totalPages)} / ${totalPages}</span>
+          |    </li>
+          |  </ul>
+          |#end
+          |
+          |<table class="table table-bordered">
+          |<thead>
+          |  <tr>
+          |    <th>${s.i18n.getOrKey("member.id")}</th>
+          |    <th>${s.i18n.getOrKey("member.name")}</th>
+          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
+          |    <th></th>
+          |  </tr>
+          |</thead>
+          |<tbody>
+          |  #for (item <- items)
+          |  <tr>
+          |    <td>${item.id}</td>
+          |    <td>${item.name}</td>
+          |    <td>${item.favoriteNumber}</td>
+          |    <td>${item.magicNumber}</td>
+          |    <td>${item.isActivated}</td>
+          |    <td>${item.birthday}</td>
+          |    <td>
+          |      <a href="${s.url(Controllers.adminMembers.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.getOrKey("detail")}</a>
+          |    </td>
+          |  </tr>
+          |  #end
+          |  #if (items.isEmpty)
+          |  <tr>
+          |    <td colspan="7">${s.i18n.getOrKey("empty")}</td>
+          |  </tr>
+          |  #end
+          |</tbody>
+          |</table>
+          |
+          |<a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
+          |""".stripMargin
+      code should equal(expected)
+    }
   }
 
   describe("/show.html.ssp") {

@@ -147,6 +147,15 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
   override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
+    val operations = {
+      if (operationLinksInIndexPageRequired) {
+        s"""|        %a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.getOrKey("detail")}
+            |        %a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.getOrKey("edit")}
+            |        %a(data-method="delete" data-confirm={s.i18n.getOrKey("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}""".stripMargin
+      } else {
+        s"""|        %a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.getOrKey("detail")}""".stripMargin
+      }
+    }
     s"""-@val s: skinny.Skinny
         |-@val items: Seq[${toNamespace(modelPackage, namespaces)}.${modelClassName}]
         |-@val totalPages: Int
@@ -182,9 +191,7 @@ trait ScaffoldScamlGenerator extends ScaffoldGenerator {
         |    %tr
         |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "      %td #{item." + k + "}" }.mkString("\n")}
         |      %td
-        |        %a(href={s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-default") #{s.i18n.getOrKey("detail")}
-        |        %a(href={s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} class="btn btn-info") #{s.i18n.getOrKey("edit")}
-        |        %a(data-method="delete" data-confirm={s.i18n.getOrKey("${resource}.delete.confirm")} href={s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
+        |${operations}
         |  -if (items.isEmpty)
         |    %tr
         |      %td(colspan="${2 + nameAndTypeNamePairs.size}") #{s.i18n.getOrKey("empty")}

@@ -31,6 +31,10 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
 
   def createAssociationsForForeignKeys: Boolean = false
 
+  def descendingOrderForIndexPage: Boolean = false
+
+  def operationLinksInIndexPageRequired: Boolean = true
+
   def run(templateType: String, args: List[String], skinnyEnv: Option[String]): Unit = {
     if (args.size < 3) {
       showUsage
@@ -101,6 +105,7 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
         s"""
         | *** Skinny Reverse Engineering Task ***
         |
+        |  Database  : ${connectionPoolName}
         |  Table     : ${tableName}
         |  ID        : ${pkName.getOrElse("")}:${pkType.getOrElse("")}
         |  Resources : ${resources}
@@ -112,7 +117,8 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
         s"""
         | *** Skinny Reverse Engineering Task ***
         |
-        |  Table  : ${tableName}
+        |  Database  : ${connectionPoolName}
+        |  Table     : ${tableName}
         |
         |  Columns:
         |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin
@@ -125,10 +131,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
+          override def connectionPoolName = self.connectionPoolName
           override def withTimestamps: Boolean = false
           override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
+          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
           override def sourceDir = self.sourceDir
           override def testSourceDir = self.testSourceDir
@@ -144,10 +154,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
+          override def connectionPoolName = self.connectionPoolName
           override def withTimestamps: Boolean = false
           override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
+          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
           override def sourceDir = self.sourceDir
           override def testSourceDir = self.testSourceDir
@@ -163,10 +177,14 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
           override def withId = hasId
           override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
           override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
+          override def connectionPoolName = self.connectionPoolName
           override def withTimestamps: Boolean = false
           override def useAutoConstruct = self.useAutoConstruct
           override def skipDBMigration = true
           override def tableName = Some(table)
+
+          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
+          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
           override def sourceDir = self.sourceDir
           override def testSourceDir = self.testSourceDir

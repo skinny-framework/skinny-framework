@@ -3,7 +3,7 @@ package skinny.task.generator
 import java.util.Locale
 
 import skinny.{ DBSettings, SkinnyEnv }
-import scalikejdbc._
+import scalikejdbc.NamedDB
 import scalikejdbc.metadata.Table
 import skinny.nlp.Inflector
 
@@ -14,6 +14,17 @@ object ReverseScaffoldAllGenerator extends ReverseScaffoldAllGenerator {
 }
 
 trait ReverseScaffoldAllGenerator extends CodeGenerator {
+
+  def namespace: Option[String] = None
+
+  def descendingOrderForIndexPage: Boolean = false
+
+  def operationLinksInIndexPageRequired: Boolean = true
+
+  // if empty, all tables are targets to generate scaffold
+  def targetTableNames: Seq[String] = Seq.empty
+
+  def tableNamesToBeExcluded: Seq[String] = Seq.empty
 
   protected def showUsage = {
     showSkinnyGenerator()
@@ -30,14 +41,18 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
 
     initializeDB(skinnyEnv)
 
-    val tables: Seq[Table] = DB.getAllTableNames.filter(_.toLowerCase != "schema_version").flatMap { tableName =>
-      DB.getTable(tableName)
-    }
+    val tables: Seq[Table] = NamedDB(connectionPoolName).getTableNames("%")
+      .filter(_.toLowerCase != "schema_version")
+      .flatMap { tableName => NamedDB(connectionPoolName).getTable(tableName) }
+
     val self = this
     val generator = new ReverseScaffoldGenerator {
       override def cachedTables = tables
       override def useAutoConstruct = true
       override def createAssociationsForForeignKeys = true
+      override def connectionPoolName = self.connectionPoolName
+      override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
+      override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
       override def sourceDir = self.sourceDir
       override def testSourceDir = self.testSourceDir
@@ -49,12 +64,25 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
       override def modelPackage = self.modelPackage
       override def modelPackageDir = self.modelPackageDir
     }
-    tables.map { table =>
-      val tableName = table.name.toLowerCase
-      val className = toNormalizedEntityName(tableName, tables)
-      val args: List[String] = List(tableName, Inflector.pluralize(className), className)
-      generator.run(templateType, args, SkinnyEnv.get())
-    }
+
+    val whiteList = targetTableNames.map(_.toLowerCase(Locale.ENGLISH))
+    val blackList = tableNamesToBeExcluded.map(_.toLowerCase(Locale.ENGLISH))
+
+    tables
+      .filter { table =>
+        if (whiteList.isEmpty) true
+        else whiteList.contains(table.name.toLowerCase(Locale.ENGLISH))
+      }
+      .filter { table =>
+        if (blackList.isEmpty) true
+        else blackList.contains(table.name.toLowerCase(Locale.ENGLISH)) == false
+      }
+      .map { table =>
+        val tableName = table.name.toLowerCase
+        val className = toNormalizedEntityName(tableName, tables)
+        val args: List[String] = List(Some(tableName), namespace, Some(Inflector.pluralize(className)), Some(className)).flatten
+        generator.run(templateType, args, SkinnyEnv.get())
+      }
   }
 
   private def toNormalizedEntityName(tableName: String, tables: Seq[Table]): String = {

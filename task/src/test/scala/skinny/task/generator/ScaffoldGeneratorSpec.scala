@@ -282,7 +282,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |    Member.deleteAll()
           |  }
           |
-          |  def newMember = FactoryGirl(Member).create()
+          |  def newMember = FactoryGirl(Member, 'adminMember).create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {
@@ -440,7 +440,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |    GroupMember.deleteAll()
           |  }
           |
-          |  def newGroupMember = FactoryGirl(GroupMember).create()
+          |  def newGroupMember = FactoryGirl(GroupMember, 'adminGroupMember).create()
           |
           |  it should "show group members" in {
           |    get("/admin/group_members") {
@@ -581,7 +581,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |    Member.deleteAll()
           |  }
           |
-          |  def newMember = FactoryGirl(Member).create()
+          |  def newMember = FactoryGirl(Member, 'adminMember).create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {

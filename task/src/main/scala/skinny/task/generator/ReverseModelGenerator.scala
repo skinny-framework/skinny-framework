@@ -77,6 +77,7 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
       s"""
         | *** Skinny Reverse Engineering Task ***
         |
+        |  Database  : ${connectionPoolName}
         |  Table     : ${tableName}
         |  ID        : ${pkName.getOrElse("")}:${pkType.getOrElse("")}
         |
@@ -86,7 +87,8 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
       s"""
         | *** Skinny Reverse Engineering Task ***
         |
-        |  Table  : ${tableName}
+        |  Database  : ${connectionPoolName}
+        |  Table     : ${tableName}
         |
         |  Columns:
         |${fields.map(f => s"   - ${f}").mkString("\n")}""".stripMargin
@@ -99,6 +101,7 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
       override def primaryKeyType = pkType.getOrElse(self.primaryKeyType)
       override def withTimestamps: Boolean = false
       override def useAutoConstruct = self.useAutoConstruct
+      override def connectionPoolName = self.connectionPoolName
       override def tableName = Some(_tableName)
 
       override def sourceDir = self.sourceDir

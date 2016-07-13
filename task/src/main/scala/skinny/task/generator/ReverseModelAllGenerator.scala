@@ -1,7 +1,7 @@
 package skinny.task.generator
 
+import scalikejdbc.NamedDB
 import skinny.{ DBSettings, SkinnyEnv }
-import scalikejdbc._
 import scalikejdbc.metadata.Table
 import skinny.nlp.Inflector
 
@@ -29,9 +29,9 @@ trait ReverseModelAllGenerator extends CodeGenerator {
 
     initializeDB(skinnyEnv)
 
-    val tables: Seq[Table] = DB.getAllTableNames.filter(_.toLowerCase != "schema_version").flatMap { tableName =>
-      DB.getTable(tableName)
-    }
+    val tables: Seq[Table] = NamedDB(connectionPoolName).getTableNames("%")
+      .filter(_.toLowerCase != "schema_version")
+      .flatMap { tableName => NamedDB(connectionPoolName).getTable(tableName) }
     val self = this
     val skipInitializeDB = (env: Option[String]) => {}
 
@@ -39,6 +39,7 @@ trait ReverseModelAllGenerator extends CodeGenerator {
       override def cachedTables = tables
       override def useAutoConstruct = true
       override def createAssociationsForForeignKeys = true
+      override def connectionPoolName = self.connectionPoolName
 
       override def sourceDir = self.sourceDir
       override def testSourceDir = self.testSourceDir

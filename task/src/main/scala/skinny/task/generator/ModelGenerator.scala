@@ -4,6 +4,7 @@ import skinny.ParamType
 import java.io.File
 
 import org.apache.commons.io.FileUtils
+import scalikejdbc.ConnectionPool
 import skinny.nlp.Inflector
 
 /**
@@ -124,6 +125,16 @@ trait ModelGenerator extends CodeGenerator {
       s"""${timestampPrefix}    createdAt = rs.get(rn.createdAt),
          |    updatedAt = rs.get(rn.updatedAt)""".stripMargin
     } else ""
+
+    val customConnectionPoolName = {
+      if (connectionPoolName != null && connectionPoolName != ConnectionPool.DEFAULT_NAME) {
+        if (connectionPoolName.isInstanceOf[Symbol]) {
+          "\n  override lazy val connectionPoolName = " + connectionPoolName
+        } else {
+          "\n  override lazy val connectionPoolName = \"" + connectionPoolName + "\""
+        }
+      } else ""
+    }
 
     val customPkName = {
       if (primaryKeyName != "id") "\n  override lazy val primaryKeyFieldName = \"" + primaryKeyName + "\""
@@ -267,7 +278,7 @@ trait ModelGenerator extends CodeGenerator {
         |
         |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
-        |  override lazy val defaultAlias = createAlias("${alias}")${customPkName}${primaryKeyTypeIfNotLong}${nameConverters}
+        |  override lazy val defaultAlias = createAlias("${alias}")${customConnectionPoolName}${customPkName}${primaryKeyTypeIfNotLong}${nameConverters}
         |${associations}
         |${extractMethod}
         |}

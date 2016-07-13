@@ -286,7 +286,13 @@ trait CRUDFeatureWithId[Id, Entity]
 
   override def countAllModels(): Long = count()
 
-  override def findModels(pageSize: Int, pageNo: Int) = findAllWithLimitOffset(pageSize, pageSize * (pageNo - 1))
+  override def findModels(pageSize: Int, pageNo: Int) = {
+    findAllWithLimitOffset(pageSize, pageSize * (pageNo - 1))
+  }
+
+  override def findModelsDesc(pageSize: Int, pageNo: Int) = {
+    findAllWithLimitOffset(pageSize, pageSize * (pageNo - 1), Seq(defaultOrdering.desc))
+  }
 
   override def findModel(id: Id) = findById(id)
 

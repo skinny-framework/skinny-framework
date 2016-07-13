@@ -56,6 +56,15 @@ trait SkinnyModel[Id, Model] {
   def findModels(pageSize: Int, pageNo: Int): List[Model]
 
   /**
+   * Returns models by paging in descending order.
+   *
+   * @param pageSize page size
+   * @param pageNo page no
+   * @return models
+   */
+  def findModelsDesc(pageSize: Int, pageNo: Int): List[Model]
+
+  /**
    * Returns the specified entity if exists.
    * @param id id
    * @return entity if exists
