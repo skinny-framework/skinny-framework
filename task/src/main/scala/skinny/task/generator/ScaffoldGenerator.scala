@@ -578,11 +578,13 @@ trait ScaffoldGenerator extends CodeGenerator {
     else {
       val modelClassName = toClassName(resource)
       val factoryName: String = {
-        (namespaces.foldLeft("'") {
+        val namespacePart = (namespaces.foldLeft("") {
           case (name, ns) =>
-            if (name == "'") "'" + toCamelCase(ns)
+            if (name == "") toCamelCase(ns)
             else name + toFirstCharUpper(toCamelCase(ns))
-        }) + toFirstCharUpper(toCamelCase(modelClassName))
+        })
+        if (namespacePart.isEmpty) "'" + toCamelCase(modelClassName)
+        else "'" + namespacePart + toFirstCharUpper(toCamelCase(modelClassName))
       }
       Some(factoryName)
     }
