@@ -136,7 +136,9 @@ trait ScaffoldGenerator extends CodeGenerator {
           }
 
           // migration SQL
-          generateMigrationSQL(resources, resource, generatorArgs, skipDBMigration, withId)
+          if (skipDBMigration == false) {
+            generateMigrationSQL(resources, resource, generatorArgs, withId)
+          }
 
           println("")
 
@@ -678,7 +680,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 
-  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], skip: Boolean, withId: Boolean) {
+  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], withId: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file: File = {
       val filepath = {
@@ -696,7 +698,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       new File(filepath)
     }
     val sql = migrationSQL(resources, resource, generatorArgs, withId)
-    writeIfAbsent(file, if (skip) s"/*\n${sql}\n*/" else sql)
+    writeIfAbsent(file, sql)
   }
 
   // --------------------------
