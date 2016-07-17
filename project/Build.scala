@@ -6,7 +6,7 @@ import scala.language.postfixOps
 
 object SkinnyFrameworkBuild extends Build {
 
-  lazy val currentVersion = "2.2.0-SNAPSHOT"
+  lazy val currentVersion = "2.2.0-RC1"
 
   lazy val skinnyMicroVersion = "1.1.0"
   lazy val scalatraTestVersion = "2.4.1"
@@ -73,7 +73,7 @@ object SkinnyFrameworkBuild extends Build {
         })
       }
     )
-  ) 
+  )
 
   lazy val httpClient = Project(id = "httpClient", base = file("http-client"),
     settings = baseSettings ++ Seq(
@@ -154,12 +154,12 @@ object SkinnyFrameworkBuild extends Build {
     )
   ).dependsOn(orm % "provided->compile")
 
-  lazy val orm = Project(id = "orm", base = file("orm"), 
+  lazy val orm = Project(id = "orm", base = file("orm"),
     settings = baseSettings ++ Seq(
       name := "skinny-orm",
       libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
         "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-        "org.hibernate" %  "hibernate-core" % "5.2.0.Final" % Test
+        "org.hibernate" %  "hibernate-core" % "5.2.1.Final" % Test
       ) ++ testDependencies
     )
   ).dependsOn(common)
@@ -211,7 +211,7 @@ object SkinnyFrameworkBuild extends Build {
           ExclusionRule("commons-loggin", "commons-logging")
         ),
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
-      ) ++ testDependencies 
+      ) ++ testDependencies
     )
   ).dependsOn(framework)
 
@@ -220,7 +220,7 @@ object SkinnyFrameworkBuild extends Build {
       name := "skinny-scaldi",
       libraryDependencies <++= (scalaVersion) { (sv) =>
         servletApiDependencies ++ Seq(
-          sv match { 
+          sv match {
             case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
             case _ =>                          "org.scaldi" %% "scaldi" % "0.5.7"
           },
@@ -296,7 +296,7 @@ object SkinnyFrameworkBuild extends Build {
 
   // -----------------------------
   // example and tests with a real project
-  
+
   lazy val example = Project(id = "example", base = file("example"),
     settings = baseSettings ++ servletSettings ++ scalateSettings ++ Seq(
       name := "skinny-framework-example",
@@ -311,19 +311,19 @@ object SkinnyFrameworkBuild extends Build {
         "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"             % "container;provided;test"
       ),
       mainClass := Some("TaskLauncher"),
-      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") } 
-    ) 
+      unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
+    )
   ).dependsOn(
-    framework, 
-    assets, 
-    thymeleaf, 
-    freemarker, 
-    velocity, 
-    factoryGirl, 
-    test % Test, 
-    task, 
-    scaldi, 
-    oauth2Controller, 
+    framework,
+    assets,
+    thymeleaf,
+    freemarker,
+    velocity,
+    factoryGirl,
+    test % Test,
+    task,
+    scaldi,
+    oauth2Controller,
     twitterController
   )
 
