@@ -12,6 +12,9 @@ chmod +x ${sbt_debug_path}
 if [ -d "${script_dir}/ivy2" ]; then
   mkdir -p $HOME/.ivy2/cache/
   cp -prn ${script_dir}/ivy2/cache/* $HOME/.ivy2/cache/.
+  if [[ ! "$0" =~ /usr/local/Cellar/skinny/.* ]]; then
+      rm -rf ${script_dir}/ivy2
+  fi
 fi
 
 function verify_skinny_project() {
