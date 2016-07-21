@@ -8,6 +8,8 @@ import org.apache.commons.io.FileUtils
 import scalikejdbc.ConnectionPool
 import skinny.ParamType
 
+import scala.io.Source
+
 /**
  * Skinny Generator Task.
  */
@@ -594,6 +596,7 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${testResourceDir}/factories.conf")
+
     val params = nameAndTypeNamePairs.map { case (k, t) => k -> extractTypeIfOptionOrSeq(t) }.map {
       case (k, "Long") => "  " + k + "=\"" + Long.MaxValue.toString() + "\""
       case (k, "Int") => "  " + k + "=\"" + Int.MaxValue.toString() + "\""
@@ -614,7 +617,10 @@ trait ScaffoldGenerator extends CodeGenerator {
           |}
           |""".stripMargin
 
-    writeAppending(file, code)
+    val currentCode = if (file.exists()) Source.fromFile(file).mkString else ""
+    if (currentCode.contains(s"${factoryName} {") == false) {
+      writeAppending(file, code)
+    }
   }
 
   // --------------------------
@@ -645,7 +651,11 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def generateMessages(resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${resourceDir}/messages.conf")
-    writeAppending(file, messagesConfCode(resources, resource, nameAndTypeNamePairs))
+
+    val currentCode = if (file.exists()) Source.fromFile(file).mkString else ""
+    if (currentCode.contains(s"${resources} {") == false) {
+      writeAppending(file, messagesConfCode(resources, resource, nameAndTypeNamePairs))
+    }
   }
 
   // --------------------------
@@ -697,6 +707,7 @@ trait ScaffoldGenerator extends CodeGenerator {
       }
       new File(filepath)
     }
+
     val sql = migrationSQL(resources, resource, generatorArgs, withId)
     writeIfAbsent(file, sql)
   }

@@ -226,6 +226,12 @@ trait CodeGenerator {
   // ------------------------
   // generator methods
 
+  def prepareDirectories(): Unit = {
+    Seq(sourceDir, testSourceDir, resourceDir, testResourceDir, webInfDir).foreach { dir =>
+      FileUtils.forceMkdir(new File(dir))
+    }
+  }
+
   def forceWrite(file: File, code: String) {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
@@ -271,7 +277,7 @@ trait CodeGenerator {
     println(messages.mkString("  Error: ", "\n", "\n"))
   }
 
-  def appendToControllers(namespaces: Seq[String], name: String) {
+  def appendToControllers(namespaces: Seq[String], name: String): Unit = {
     val controllerName = toControllerName(namespaces, name)
     val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(name)
     val newMountCode =
@@ -287,7 +293,12 @@ trait CodeGenerator {
 
     val file = new File(s"${toDirectoryPath(sourceDir, controllerPackage.split('.'))}/Controllers.scala")
     if (file.exists()) {
-      val code = Source.fromFile(file).mkString
+      val currentCode = Source.fromFile(file).mkString
+      if (currentCode.contains(s"object ${controllerName} extends ${controllerClassName}")) {
+        // skip appending because it already exists
+        return
+      }
+      val code = currentCode
         .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
         .replaceFirst("(}[\\s\\r\\n]+)$", newControllerDefCode)
       forceWrite(file, code)
