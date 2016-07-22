@@ -1,1 +1,1 @@
-scalacOptions += s"-P:scalajs:relSourceMap:${dev.base.toURI}/src/main/webapp/WEB-INF/assets/scala/"
+scalacOptions += s"-P:scalajs:relSourceMap:src/main/webapp/WEB-INF/assets/scala/"

@@ -37,13 +37,11 @@ function setup_build() {
   rm -rf build
   mkdir build
   cp -pr src build/src
-  cp -pr build.sbt build/build.sbt
 }
 function setup_standalone_build() {
   rm -rf standalone-build
   mkdir standalone-build
   cp -pr src standalone-build/src
-  cp -p build.sbt standalone-build/
   cp -p _skinny_assembly_settings.sbt standalone-build/
 }
 function copy_resources_to_task() {
@@ -55,7 +53,7 @@ function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "resolvers += \"scala-js-release\" at \"http://dl.bintray.com/scala-js/scala-js-releases\"
-addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.9\")" > ${setting_file}
+addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.10\")" > ${setting_file}
 
 echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).settings(
   name := \"application\", // JavaScript file name
@@ -63,9 +61,9 @@ echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).s
   unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
   fullResolvers ~= { _.filterNot(_.name == \"jcenter\") },
   libraryDependencies ++= Seq(
-    \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.9.0\",
+    \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.9.1\",
     \"be.doeraene\"  %%% \"scalajs-jquery\" % \"0.9.0\",
-    \"io.monix\"     %%  \"minitest\"       % \"0.21\" % \"test\"
+    \"io.monix\"     %%  \"minitest\"       % \"0.22\" % \"test\"
   ),
   crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
 ).enablePlugins(ScalaJSPlugin)" > ${current_dir}/_skinny_scalajs_settings.sbt
@@ -221,7 +219,7 @@ resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (manage
   setup_standalone_build
   copy_resources_to_task
   ${sbt_path} "task/run assets:precompile standalone-build"
-  ${sbt_path} standalone-build/assembly
+  ${sbt_path} standaloneBuild/assembly
 elif [ "$command" == "publish" ]; then
   setup_build
   copy_resources_to_task
