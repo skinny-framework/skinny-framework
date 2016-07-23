@@ -69,7 +69,7 @@ DBSettings.initialize()
 // ------------------------------
 // Automated code formatter before compilaion
 // Disabled by default because this is confusing for beginners
-//.settings(scalariformSettings)
+// ++ scalariformSettings
 
 lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
   scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
