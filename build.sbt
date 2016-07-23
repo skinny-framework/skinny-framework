@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.2.0-RC1"
+lazy val currentVersion = "2.2.0-RC2"
 
 lazy val skinnyMicroVersion = "1.1.0"
 lazy val scalatraTestVersion = "2.4.1"
@@ -169,7 +169,7 @@ lazy val thymeleaf = (project in file("thymeleaf")).settings(baseSettings).setti
   libraryDependencies ++= servletApiDependencies ++ Seq(
     // TODO: thymeleaf 3 support
     // see also https://github.com/ultraq/thymeleaf-layout-dialect/issues/68
-    "org.thymeleaf"            %  "thymeleaf"                % "2.1.4.RELEASE"     % Compile,
+    "org.thymeleaf"            %  "thymeleaf"                % "2.1.5.RELEASE"     % Compile,
     "nz.net.ultraq.thymeleaf"  %  "thymeleaf-layout-dialect" % "1.4.0"             % Compile exclude("org.thymeleaf", "thymeleaf"),
     "net.sourceforge.nekohtml" %  "nekohtml"                 % "1.9.22"            % Compile,
     "org.skinny-framework"     %% "skinny-micro-test"        % skinnyMicroVersion  % Test
@@ -214,7 +214,7 @@ lazy val oauth2 = (project in file("oauth2")).settings(baseSettings).settings(
   name := "skinny-oauth2",
   libraryDependencies ++= Seq(
     "org.skinny-framework"   %% "skinny-micro-common"           % skinnyMicroVersion % Compile,
-    "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.1"            % Compile exclude("org.slf4j", "slf4j-api")
+    "org.apache.oltu.oauth2" %  "org.apache.oltu.oauth2.client" % "1.0.2"            % Compile exclude("org.slf4j", "slf4j-api")
   ) ++ servletApiDependencies ++ testDependencies
 ).dependsOn(json)
 
