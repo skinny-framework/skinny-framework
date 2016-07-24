@@ -48,6 +48,27 @@ trait ScaffoldGenerator extends CodeGenerator {
     println("")
   }
 
+  protected def toResourceNameWithNamespace(namespaces: Seq[String], resource: String): String = {
+    if (namespaces.isEmpty) resource
+    else {
+      val modelClassName = toClassName(resource)
+      val resourceNameWithNamespace: String = {
+        val namespacePart = (namespaces.foldLeft("") {
+          case (name, ns) =>
+            if (name == "") toCamelCase(ns)
+            else name + toFirstCharUpper(toCamelCase(ns))
+        })
+        if (namespacePart.isEmpty) toCamelCase(modelClassName)
+        else namespacePart + toFirstCharUpper(toCamelCase(modelClassName))
+      }
+      resourceNameWithNamespace
+    }
+  }
+
+  protected def toFactoryName(namespaces: Seq[String], resource: String): String = {
+    "'" + toResourceNameWithNamespace(namespaces, resource)
+  }
+
   def run(args: Seq[String]) {
     if (args.size < 3) {
       showUsage
@@ -98,7 +119,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             generateControllerSpec(namespaces, resources, resource, nameAndTypeNamePairs)
             generateIntegrationTestSpec(namespaces, resources, resource, nameAndTypeNamePairs)
 
-            val name = toFactoryName(namespaces, resource).map(_.replaceFirst("'", "")).getOrElse(resource)
+            val name = toResourceNameWithNamespace(namespaces, resource).replaceFirst("'", "")
             appendToFactoriesConf(name, nameAndTypeNamePairs)
           }
 
@@ -134,7 +155,7 @@ trait ScaffoldGenerator extends CodeGenerator {
             generateShowView(namespaces, resources, resource, convertedNameAndTypeNamePairs)
 
             // messages.conf
-            generateMessages(resources, resource, convertedNameAndTypeNamePairs)
+            generateMessages(namespaces, resources, resource, convertedNameAndTypeNamePairs)
           }
 
           // migration SQL
@@ -181,6 +202,8 @@ trait ScaffoldGenerator extends CodeGenerator {
 
   def controllerCode(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
     val namespace = toNamespace(controllerPackage, namespaces)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
+    val messagesResourceNameIfExists = if (resourceWithNamespace != resource) "\n  override def messageResourceName = \"" + resourceWithNamespace + "\"" else ""
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
 
@@ -234,7 +257,8 @@ trait ScaffoldGenerator extends CodeGenerator {
       }
     }
 
-    val resourceNameLine = s"""override def resourceName = "${resource}"${primaryKeyNameIfNotId}"""
+    val resourceNameLine = s"""override def resourceName = "${resource}"${messagesResourceNameIfExists}${primaryKeyNameIfNotId}"""
+
     s"""package ${namespace}
         |
         |import skinny._
@@ -306,7 +330,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     val namespace = toNamespace(controllerPackage, namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
     val modelClassName = toClassName(resource)
-    val factoryNamePart: String = toFactoryName(namespaces, resource).map(", " + _).getOrElse("")
+    val factoryNamePart: String = {
+      val name = toResourceNameWithNamespace(namespaces, resource)
+      if (name != resource) ", '" + name else ""
+    }
 
     val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${resources}"
     val resourcesInLabel = toSplitName(resources)
@@ -433,7 +460,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     val controllerClassName = toClassName(resources) + "Controller"
     val controllerName = toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
-    val factoryNamePart: String = toFactoryName(namespaces, resource).map(", " + _).getOrElse("")
+    val factoryNamePart: String = {
+      val name = toResourceNameWithNamespace(namespaces, resource)
+      if (name != resource) ", '" + name else ""
+    }
 
     val resourcesInLabel = toSplitName(resources)
     val resourceInLabel = toSplitName(resource)
@@ -577,23 +607,6 @@ trait ScaffoldGenerator extends CodeGenerator {
   // factories.conf
   // --------------------------
 
-  def toFactoryName(namespaces: Seq[String], resource: String): Option[String] = {
-    if (namespaces.isEmpty) None
-    else {
-      val modelClassName = toClassName(resource)
-      val factoryName: String = {
-        val namespacePart = (namespaces.foldLeft("") {
-          case (name, ns) =>
-            if (name == "") toCamelCase(ns)
-            else name + toFirstCharUpper(toCamelCase(ns))
-        })
-        if (namespacePart.isEmpty) "'" + toCamelCase(modelClassName)
-        else "'" + namespacePart + toFirstCharUpper(toCamelCase(modelClassName))
-      }
-      Some(factoryName)
-    }
-  }
-
   def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${testResourceDir}/factories.conf")
 
@@ -627,12 +640,12 @@ trait ScaffoldGenerator extends CodeGenerator {
   // messages.conf
   // --------------------------
 
-  def messagesConfCode(resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
+  def messagesConfCode(messageResource: String, resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val _resources = toCapitalizedSplitName(resources)
     val _resource = toCapitalizedSplitName(resource)
 
     s"""
-        |${resource} {
+        |${messageResource} {
         |  flash {
         |    created="The ${toSplitName(resource)} was created."
         |    updated="The ${toSplitName(resource)} was updated."
@@ -649,12 +662,13 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateMessages(resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def generateMessages(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${resourceDir}/messages.conf")
+    val messageResource = toResourceNameWithNamespace(namespaces, resource)
 
     val currentCode = if (file.exists()) Source.fromFile(file).mkString else ""
-    if (currentCode.contains(s"${resources} {") == false) {
-      writeAppending(file, messagesConfCode(resources, resource, nameAndTypeNamePairs))
+    if (currentCode.contains(s"${messageResource} {") == false) {
+      writeAppending(file, messagesConfCode(messageResource, resources, resource, nameAndTypeNamePairs))
     }
   }
 

@@ -38,6 +38,11 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
   protected def resourceName: String
 
   /**
+   * Resource name in messages.conf
+   */
+  protected def messageResourceName: String = resourceName
+
+  /**
    * Root element name in the XML response.
    */
   override protected def xmlRootName = resourcesName
@@ -59,7 +64,7 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
     implicit
     locale: Locale = currentLocale(context).orNull[Locale]
   ): MapValidator = {
-    validationWithPrefix(params, resourceName, validations: _*)(context)
+    validationWithPrefix(params, messageResourceName, validations: _*)(context)
   }
 
   /**

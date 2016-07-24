@@ -27,7 +27,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |
           |<div class="form-group">
           |  <label class="control-label" for="name">
-          |    ${s.i18n.getOrKey("member.name")}
+          |    ${s.i18n.getOrKey("adminMember.name")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""}">
@@ -46,7 +46,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="favorite_number">
-          |    ${s.i18n.getOrKey("member.favoriteNumber")}
+          |    ${s.i18n.getOrKey("adminMember.favoriteNumber")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("favorite_number")) "has-error" else ""}">
@@ -65,7 +65,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="magic_number">
-          |    ${s.i18n.getOrKey("member.magicNumber")}
+          |    ${s.i18n.getOrKey("adminMember.magicNumber")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("magic_number")) "has-error" else ""}">
@@ -84,7 +84,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label" for="is_activated">
-          |    ${s.i18n.getOrKey("member.isActivated")}
+          |    ${s.i18n.getOrKey("adminMember.isActivated")}
           |  </label>
           |  <div class="controls row">
           |    <div class="col-xs-12">
@@ -94,7 +94,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |</div>
           |<div class="form-group">
           |  <label class="control-label">
-          |    ${s.i18n.getOrKey("member.birthday")}
+          |    ${s.i18n.getOrKey("adminMember.birthday")}
           |  </label>
           |  <div class="controls row">
           |    <div class="${if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""}">
@@ -144,7 +144,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.getOrKey("member.new")}</h3>
+          |<h3>${s.i18n.getOrKey("adminMember.new")}</h3>
           |<hr/>
           |
           |<%--
@@ -178,7 +178,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.getOrKey("member.edit")} : #${s.params.id}</h3>
+          |<h3>${s.i18n.getOrKey("adminMember.edit")} : #${s.params.id}</h3>
           |<hr/>
           |
           |<%--
@@ -215,7 +215,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.getOrKey("member.list")}</h3>
+          |<h3>${s.i18n.getOrKey("adminMember.list")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
@@ -244,12 +244,12 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<table class="table table-bordered">
           |<thead>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.id")}</th>
-          |    <th>${s.i18n.getOrKey("member.name")}</th>
-          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
-          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
-          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
-          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.id")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.name")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.birthday")}</th>
           |    <th></th>
           |  </tr>
           |</thead>
@@ -265,7 +265,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |    <td>
           |      <a href="${s.url(Controllers.adminMembers.showUrl, "id" -> item.id)}" class="btn btn-default">${s.i18n.getOrKey("detail")}</a>
           |      <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.getOrKey("edit")}</a>
-          |      <a data-method="delete" data-confirm="${s.i18n.getOrKey("member.delete.confirm")}"
+          |      <a data-method="delete" data-confirm="${s.i18n.getOrKey("adminMember.delete.confirm")}"
           |        href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.getOrKey("delete")}</a>
           |    </td>
           |  </tr>
@@ -305,7 +305,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.getOrKey("member.list")}</h3>
+          |<h3>${s.i18n.getOrKey("adminMember.list")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
@@ -334,12 +334,12 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<table class="table table-bordered">
           |<thead>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.id")}</th>
-          |    <th>${s.i18n.getOrKey("member.name")}</th>
-          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
-          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
-          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
-          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.id")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.name")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.birthday")}</th>
           |    <th></th>
           |  </tr>
           |</thead>
@@ -389,7 +389,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           | 2. scalateTemplateConfig in project/Build.scala
           |--%>
           |
-          |<h3>${s.i18n.getOrKey("member.detail")}</h3>
+          |<h3>${s.i18n.getOrKey("adminMember.detail")}</h3>
           |<hr/>
           |#for (notice <- s.flash.notice)
           |  <p class="alert alert-info">${notice}</p>
@@ -397,27 +397,27 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<table class="table table-bordered">
           |<tbody>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.id")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.id")}</th>
           |    <td>${item.id}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.name")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.name")}</th>
           |    <td>${item.name}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.favoriteNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.favoriteNumber")}</th>
           |    <td>${item.favoriteNumber}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.magicNumber")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.magicNumber")}</th>
           |    <td>${item.magicNumber}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.isActivated")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.isActivated")}</th>
           |    <td>${item.isActivated}</td>
           |  </tr>
           |  <tr>
-          |    <th>${s.i18n.getOrKey("member.birthday")}</th>
+          |    <th>${s.i18n.getOrKey("adminMember.birthday")}</th>
           |    <td>${item.birthday}</td>
           |  </tr>
           |
@@ -428,7 +428,7 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |<div class="form-actions">
           |  <a class="btn btn-default" href="${s.url(Controllers.adminMembers.indexUrl)}">${s.i18n.getOrKey("backToList")}</a>
           |  <a href="${s.url(Controllers.adminMembers.editUrl, "id" -> item.id)}" class="btn btn-info">${s.i18n.getOrKey("edit")}</a>
-          |  <a data-method="delete" data-confirm="${s.i18n.getOrKey("member.delete.confirm")}"
+          |  <a data-method="delete" data-confirm="${s.i18n.getOrKey("adminMember.delete.confirm")}"
           |    href="${s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)}" rel="nofollow" class="btn btn-danger">${s.i18n.getOrKey("delete")}</a>
           |</div>
           |""".stripMargin

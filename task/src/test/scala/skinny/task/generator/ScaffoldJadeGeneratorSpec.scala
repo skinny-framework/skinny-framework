@@ -25,7 +25,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
           |div(class="form-group")
-          |  label(class="control-label" for="name") #{s.i18n.getOrKey("member.name")}
+          |  label(class="control-label" for="name") #{s.i18n.getOrKey("adminMember.name")}
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("name")) "has-error" else ""})
           |      div(class="col-xs-12")
@@ -36,7 +36,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |          label(class="control-label") #{error}
           |    - }
           |div(class="form-group")
-          |  label(class="control-label" for="favorite_number") #{s.i18n.getOrKey("member.favoriteNumber")}
+          |  label(class="control-label" for="favorite_number") #{s.i18n.getOrKey("adminMember.favoriteNumber")}
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("favorite_number")) "has-error" else ""})
           |      div(class="col-xs-12")
@@ -47,7 +47,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |          label(class="control-label") #{error}
           |    - }
           |div(class="form-group")
-          |  label(class="control-label" for="magic_number") #{s.i18n.getOrKey("member.magicNumber")}
+          |  label(class="control-label" for="magic_number") #{s.i18n.getOrKey("adminMember.magicNumber")}
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("magic_number")) "has-error" else ""})
           |      div(class="col-xs-12")
@@ -58,12 +58,12 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |          label(class="control-label") #{error}
           |    - }
           |div(class="form-group")
-          |  label(class="control-label" for="is_activated") #{s.i18n.getOrKey("member.isActivated")}
+          |  label(class="control-label" for="is_activated") #{s.i18n.getOrKey("adminMember.isActivated")}
           |  div(class="controls row")
           |    div(class="col-xs-12")
           |      input(type="checkbox" name="is_activated" class="form-control" value="true" checked={s.params.is_activated==Some(true)})
           |div(class="form-group")
-          |  label(class="control-label") #{s.i18n.getOrKey("member.birthday")}
+          |  label(class="control-label") #{s.i18n.getOrKey("adminMember.birthday")}
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("birthday")) "has-error" else ""})
           |      div(class="col-xs-2")
@@ -103,7 +103,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 1. src/main/scala/templates/ScalatePackage.scala
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
-          |h3 #{s.i18n.getOrKey("member.new")}
+          |h3 #{s.i18n.getOrKey("adminMember.new")}
           |hr
           |
           |-#-for (e <- s.errorMessages)
@@ -133,7 +133,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 1. src/main/scala/templates/ScalatePackage.scala
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
-          |h3 #{s.i18n.getOrKey("member.edit")} : ##{s.params.id}
+          |h3 #{s.i18n.getOrKey("adminMember.edit")} : ##{s.params.id}
           |hr
           |
           |-#-for (e <- s.errorMessages)
@@ -166,7 +166,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 1. src/main/scala/templates/ScalatePackage.scala
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
-          |h3 #{s.i18n.getOrKey("member.list")}
+          |h3 #{s.i18n.getOrKey("adminMember.list")}
           |hr
           |-for (notice <- s.flash.notice)
           |  p(class="alert alert-info") #{notice}
@@ -187,12 +187,12 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |table(class="table table-bordered")
           |  thead
           |    tr
-          |      th #{s.i18n.getOrKey("member.id")}
-          |      th #{s.i18n.getOrKey("member.name")}
-          |      th #{s.i18n.getOrKey("member.favoriteNumber")}
-          |      th #{s.i18n.getOrKey("member.magicNumber")}
-          |      th #{s.i18n.getOrKey("member.isActivated")}
-          |      th #{s.i18n.getOrKey("member.birthday")}
+          |      th #{s.i18n.getOrKey("adminMember.id")}
+          |      th #{s.i18n.getOrKey("adminMember.name")}
+          |      th #{s.i18n.getOrKey("adminMember.favoriteNumber")}
+          |      th #{s.i18n.getOrKey("adminMember.magicNumber")}
+          |      th #{s.i18n.getOrKey("adminMember.isActivated")}
+          |      th #{s.i18n.getOrKey("adminMember.birthday")}
           |      th
           |  tbody
           |  -for (item <- items)
@@ -206,7 +206,7 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |      td
           |        a(href={s.url(Controllers.adminMembers.showUrl, "id" -> item.id)} class="btn btn-default") #{s.i18n.getOrKey("detail")}
           |        a(href={s.url(Controllers.adminMembers.editUrl, "id" -> item.id)} class="btn btn-info") #{s.i18n.getOrKey("edit")}
-          |        a(data-method="delete" data-confirm={s.i18n.getOrKey("member.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
+          |        a(data-method="delete" data-confirm={s.i18n.getOrKey("adminMember.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
           |  -if (items.isEmpty)
           |    tr
           |      td(colspan="7") #{s.i18n.getOrKey("empty")}
@@ -235,36 +235,36 @@ class ScaffoldJadeGeneratorSpec extends FunSpec with Matchers {
           |-# 1. src/main/scala/templates/ScalatePackage.scala
           |-# 2. scalateTemplateConfig in project/Build.scala
           |
-          |h3 #{s.i18n.getOrKey("member.detail")}
+          |h3 #{s.i18n.getOrKey("adminMember.detail")}
           |hr
           |-for (notice <- s.flash.notice)
           |  p(class="alert alert-info") #{notice}
           |table(class="table table-bordered")
           |  thead
           |    tr
-          |      th #{s.i18n.getOrKey("member.id")}
+          |      th #{s.i18n.getOrKey("adminMember.id")}
           |      td #{item.id}
           |    tr
-          |      th #{s.i18n.getOrKey("member.name")}
+          |      th #{s.i18n.getOrKey("adminMember.name")}
           |      td #{item.name}
           |    tr
-          |      th #{s.i18n.getOrKey("member.favoriteNumber")}
+          |      th #{s.i18n.getOrKey("adminMember.favoriteNumber")}
           |      td #{item.favoriteNumber}
           |    tr
-          |      th #{s.i18n.getOrKey("member.magicNumber")}
+          |      th #{s.i18n.getOrKey("adminMember.magicNumber")}
           |      td #{item.magicNumber}
           |    tr
-          |      th #{s.i18n.getOrKey("member.isActivated")}
+          |      th #{s.i18n.getOrKey("adminMember.isActivated")}
           |      td #{item.isActivated}
           |    tr
-          |      th #{s.i18n.getOrKey("member.birthday")}
+          |      th #{s.i18n.getOrKey("adminMember.birthday")}
           |      td #{item.birthday}
           |
           |hr
           |div(class="form-actions")
           |  a(class="btn btn-default" href={s.url(Controllers.adminMembers.indexUrl)}) #{s.i18n.getOrKey("backToList")}
           |  a(href={s.url(Controllers.adminMembers.editUrl, "id" -> item.id)} class="btn btn-info") #{s.i18n.getOrKey("edit")}
-          |  a(data-method="delete" data-confirm={s.i18n.getOrKey("member.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
+          |  a(data-method="delete" data-confirm={s.i18n.getOrKey("adminMember.delete.confirm")} href={s.url(Controllers.adminMembers.destroyUrl, "id" -> item.id)} rel="nofollow" class="btn btn-danger") #{s.i18n.getOrKey("delete")}
           |""".stripMargin
       code should equal(expected)
     }

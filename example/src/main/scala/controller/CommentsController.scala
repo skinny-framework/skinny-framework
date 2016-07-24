@@ -15,7 +15,7 @@ object CommentsController extends SkinnyController
   override def resourcesName = "comments"
   override def resourceName = "comment"
 
-  override def createForm = validation(createParams, paramKey("author") is required & maxLength(64))
+  override def createForm = validationWithPrefix(createParams, resourceName, paramKey("author") is required & maxLength(64))
   override def createFormStrongParameters = Seq("author" -> ParamType.String, "text" -> ParamType.String)
 
   override def updateForm = createForm
