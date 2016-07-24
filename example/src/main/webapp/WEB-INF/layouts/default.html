@@ -21,8 +21,8 @@ class PersonsController extends ApplicationController {
 <div th:text="${person.name()}">id</div> // OK!
 */-->
 <meta content="dummy" name="csrf-token" th:name="${s.csrfKey}" th:content="${s.csrfToken}" />
-<script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+<script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
 </head>
 <body>
 <div class="container span12">
@@ -34,7 +34,7 @@ class PersonsController extends ApplicationController {
         <p layout:fragment="custom-footer">Custom footer here</p>
     </footer>
 </div>
-<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/assets/js/skinny-framework.js" th:src="@{/assets/js/skinny-framework.js}"></script>
 </body>
 </html>

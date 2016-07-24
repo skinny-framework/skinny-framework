@@ -27,7 +27,7 @@ object Controllers {
     dashboard.mount(ctx)
 
     SkillsController.mount(ctx)
-    CommentsController.mount(ctx)
+    comments.mount(ctx)
     SnakeCaseKeyExamplesController.mount(ctx)
 
     AngularXHRProgrammersController.mount(ctx)
@@ -45,6 +45,8 @@ object Controllers {
     AssetsController.mount(ctx)
   }
 
+  object comments extends CommentsController {
+  }
   object companies extends CompaniesController {
   }
 

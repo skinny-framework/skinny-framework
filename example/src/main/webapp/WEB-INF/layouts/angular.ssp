@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8"/>
     ${unescape(s.csrfMetaTags)}
-    <script type="text/javascript" src="//code.jquery.com/jquery-2.1.0.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-resource.min.js"></script>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
 
     <!-- npm install; npm install -g grunt-cli; grunt -->
     <!--
@@ -22,7 +22,7 @@
       <hr/>
       <a class="btn btn-default" href="${uri("/")}">${s.i18n.get("top")}</a>
     </div>
-    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
 
     <!-- npm install; npm install -g grunt-cli; grunt -->

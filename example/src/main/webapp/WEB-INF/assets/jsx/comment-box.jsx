@@ -59,7 +59,6 @@ var CommentList = React.createClass({
     var commentNodes = this.props.data.map(function (comment, index) {
       return <Comment key={index} author={comment.author}>{comment.text}</Comment>;
     });
-    return <div className="commentList">{commentNodes}</div>;
   }
 });
 
@@ -83,7 +82,7 @@ var CommentForm = React.createClass({
   }
 });
 
-React.renderComponent(
+React.render(
   <CommentBox url="/example/comments.json" pollInterval={2000} />,
   document.getElementById('container')
 );
