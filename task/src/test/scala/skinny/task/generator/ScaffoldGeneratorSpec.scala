@@ -39,6 +39,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |  override def model = Member
           |  override def resourcesName = "members"
           |  override def resourceName = "member"
+          |  override def messageResourceName = "adminMember"
           |
           |  override def resourcesBasePath = s"/admin/${toSnakeCase(resourcesName)}"
           |  override def useSnakeCasedParamKeys = true
@@ -696,7 +697,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("messages.conf") {
     it("should be created as expected") {
-      val code = generator.messagesConfCode("groupMembers", "groupMember", Seq(
+      val code = generator.messagesConfCode("groupMember", "groupMembers", "groupMember", Seq(
         "name" -> "String",
         "isActivated" -> "Boolean",
         "birthday" -> "Option[LocalDate]"

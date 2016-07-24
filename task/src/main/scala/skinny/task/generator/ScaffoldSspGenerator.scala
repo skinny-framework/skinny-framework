@@ -20,13 +20,14 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     "<%@val s: skinny.Skinny %>\n<%@val keyAndErrorMessages: skinny.KeyAndErrorMessages %>\n\n" +
       packageImportsWarning + "\n\n" +
       nameAndTypeNamePairs.toList.map { case (k, t) => (k, extractTypeIfOptionOrSeq(t)) }.map {
         case (name, "Boolean") =>
           s"""<div class="form-group">
         |  <label class="control-label" for="${toSnakeCase(name)}">
-        |    $${s.i18n.getOrKey("${resource}.${name}")}
+        |    $${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="col-xs-12">
@@ -38,7 +39,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         case (name, "DateTime") =>
           s"""<div class="form-group">
         |  <label class="control-label">
-        |    $${s.i18n.getOrKey("${resource}.${name}")}
+        |    $${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
@@ -74,7 +75,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         case (name, "LocalDate") =>
           s"""<div class="form-group">
         |  <label class="control-label">
-        |    $${s.i18n.getOrKey("${resource}.${name}")}
+        |    $${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
@@ -101,7 +102,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         case (name, "LocalTime") =>
           s"""<div class="form-group">
         |  <label class="control-label">
-        |    $${s.i18n.getOrKey("${resource}.${name}")}
+        |    $${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
@@ -128,7 +129,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         case (name, _) =>
           s"""<div class="form-group">
         |  <label class="control-label" for="${toSnakeCase(name)}">
-        |    $${s.i18n.getOrKey("${resource}.${name}")}
+        |    $${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
         |  </label>
         |  <div class="controls row">
         |    <div class="$${if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""}">
@@ -157,11 +158,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     s"""<%@val s: skinny.Skinny %>
         |
         |${packageImportsWarning}
         |
-        |<h3>$${s.i18n.getOrKey("${resource}.new")}</h3>
+        |<h3>$${s.i18n.getOrKey("${resourceWithNamespace}.new")}</h3>
         |<hr/>
         |
         |<%--
@@ -178,11 +180,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
 
   override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     s"""<%@val s: skinny.Skinny %>
         |
         |${packageImportsWarning}
         |
-        |<h3>$${s.i18n.getOrKey("${resource}.edit")} : #$${s.params.id}</h3>
+        |<h3>$${s.i18n.getOrKey("${resourceWithNamespace}.edit")} : #$${s.params.id}</h3>
         |<hr/>
         |
         |<%--
@@ -200,11 +203,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
   override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     val operations = {
       if (operationLinksInIndexPageRequired) {
         s"""|      <a href="$${s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-default">$${s.i18n.getOrKey("detail")}</a>
             |      <a href="$${s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-info">$${s.i18n.getOrKey("edit")}</a>
-            |      <a data-method="delete" data-confirm="$${s.i18n.getOrKey("${resource}.delete.confirm")}"
+            |      <a data-method="delete" data-confirm="$${s.i18n.getOrKey("${resourceWithNamespace}.delete.confirm")}"
             |        href="$${s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" rel="nofollow" class="btn btn-danger">$${s.i18n.getOrKey("delete")}</a>""".stripMargin
       } else {
         s"""|      <a href="$${s.url(${controllerName}.showUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-default">$${s.i18n.getOrKey("detail")}</a>""".stripMargin
@@ -217,7 +221,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |${packageImportsWarning}
         |
-        |<h3>$${s.i18n.getOrKey("${resource}.list")}</h3>
+        |<h3>$${s.i18n.getOrKey("${resourceWithNamespace}.list")}</h3>
         |<hr/>
         |#for (notice <- s.flash.notice)
         |  <p class="alert alert-info">$${notice}</p>
@@ -246,7 +250,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<table class="table table-bordered">
         |<thead>
         |  <tr>
-        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "    <th>${s.i18n.getOrKey(\"" + resource + "." + k + "\")}</th>" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "    <th>${s.i18n.getOrKey(\"" + resourceWithNamespace + "." + k + "\")}</th>" }.mkString("\n")}
         |    <th></th>
         |  </tr>
         |</thead>
@@ -275,10 +279,12 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
     val controllerName = "Controllers." + toControllerName(namespaces, resources)
     val modelClassName = toClassName(resource)
     val modelNamespace = toNamespace(modelPackage, namespaces)
+    val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
+
     val attributesPart = ((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map {
       case (name, _) =>
         s"""  <tr>
-        |    <th>$${s.i18n.getOrKey("${resource}.${name}")}</th>
+        |    <th>$${s.i18n.getOrKey("${resourceWithNamespace}.${name}")}</th>
         |    <td>$${item.${name}}</td>
         |  </tr>
         |""".stripMargin
@@ -289,7 +295,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |
         |${packageImportsWarning}
         |
-        |<h3>$${s.i18n.getOrKey("${resource}.detail")}</h3>
+        |<h3>$${s.i18n.getOrKey("${resourceWithNamespace}.detail")}</h3>
         |<hr/>
         |#for (notice <- s.flash.notice)
         |  <p class="alert alert-info">$${notice}</p>
@@ -304,7 +310,7 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |<div class="form-actions">
         |  <a class="btn btn-default" href="$${s.url(${controllerName}.indexUrl)}">$${s.i18n.getOrKey("backToList")}</a>
         |  <a href="$${s.url(${controllerName}.editUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" class="btn btn-info">$${s.i18n.getOrKey("edit")}</a>
-        |  <a data-method="delete" data-confirm="$${s.i18n.getOrKey("${resource}.delete.confirm")}"
+        |  <a data-method="delete" data-confirm="$${s.i18n.getOrKey("${resourceWithNamespace}.delete.confirm")}"
         |    href="$${s.url(${controllerName}.destroyUrl, "${snakeCasedPrimaryKeyName}" -> item.${primaryKeyName})}" rel="nofollow" class="btn btn-danger">$${s.i18n.getOrKey("delete")}</a>
         |</div>
         |""".stripMargin
