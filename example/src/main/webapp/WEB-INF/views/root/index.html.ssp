@@ -15,7 +15,7 @@ To put it simply, Skinny framework's concept is Scala on Rails. Skinny is highly
 
 <ul>
   <li>Servlet 3.0</li>
-  <li>Scalatra 2.3</li>
+  <li>Skinny Micro 1.1</li>
   <li>Scalate 1.7</li>
   <li>ScalikeJDBC 2.2</li>
 </ul>

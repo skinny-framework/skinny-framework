@@ -18,7 +18,7 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
       body.replaceFirst("\n$", "") should equal(
         """/** @jsx React.DOM */
-         |React.renderComponent(
+         |React.render(
          |  React.createElement("h1", null, "Hello, world!"),
          |  document.getElementById('example')
          |);

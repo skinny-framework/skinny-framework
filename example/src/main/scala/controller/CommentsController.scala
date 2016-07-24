@@ -3,11 +3,10 @@ package controller
 import skinny._
 import skinny.validator._
 import model._
-import skinny.controller.SkinnyResourceActions
+import skinny.controller.SkinnyApiResource
 
 // This controller is just used for ReactJS demo
-object CommentsController extends SkinnyController
-    with SkinnyResourceActions[Long] with ApplicationController {
+class CommentsController extends SkinnyApiResource {
 
   //protectFromForgery()
 
