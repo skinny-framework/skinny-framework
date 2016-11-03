@@ -3,6 +3,8 @@
 // --------------------------------------------
 resolvers += Classpaths.sbtPluginReleases
 resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+// https://github.com/sbt/sbt/issues/2217
+fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 
 // Much fatster dependency resolver - https://github.com/alexarchambault/coursier
 addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M14")
