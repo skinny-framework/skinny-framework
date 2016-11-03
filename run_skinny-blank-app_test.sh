@@ -3,7 +3,7 @@
 rm -rf $HOME/.ivy2/cache/org.skinny-framework
 rm -rf $HOME/.ivy2/local/org.skinny-framework
 cd `dirname $0`
-./publish_local.sh
+./publish_local.sh test
 ./create_blank_app.sh test
 cd release/skinny-blank-app
 

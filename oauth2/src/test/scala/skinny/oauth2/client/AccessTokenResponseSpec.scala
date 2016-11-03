@@ -2,7 +2,7 @@ package skinny.oauth2.client
 
 import org.apache.oltu.oauth2.client.response.OAuthAccessTokenResponse
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
 
 class AccessTokenResponseSpec extends FlatSpec with Matchers with MockitoSugar {

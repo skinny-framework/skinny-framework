@@ -1,7 +1,6 @@
 package skinny.util
 
 import org.scalatest._
-import skinny.json.JSONStringOps
 
 import scala.util.{ Success, Try }
 

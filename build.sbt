@@ -4,19 +4,17 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.2.0"
+lazy val currentVersion = "2.3.0-M1"
 
-lazy val skinnyMicroVersion = "1.1.0"
-lazy val scalatraTestVersion = "2.4.1"
-lazy val scalikeJDBCVersion = "2.4.2"
-lazy val h2Version = "1.4.192"
-lazy val kuromojiVersion = "6.1.0"
+lazy val skinnyMicroVersion = "1.2.0-M1"
+lazy val scalikeJDBCVersion = "2.5.0-RC2"
+lazy val h2Version = "1.4.193"
+lazy val kuromojiVersion = "6.2.1"
 lazy val mockitoVersion = "1.10.19"
-// Jetty 9.3 dropped Java 7
-lazy val jettyVersion = "9.2.17.v20160517"
+lazy val jettyVersion = "9.3.14.v20161028"
 lazy val logbackVersion = "1.1.7"
 lazy val slf4jApiVersion = "1.7.21"
-lazy val scalaTestVersion = "2.2.6"
+lazy val scalaTestVersion = "3.0.0"
 lazy val commonsIoVersion = "2.5"
 lazy val skinnyLogbackVersion = "1.0.9"
 
@@ -28,9 +26,9 @@ lazy val baseSettings = Seq(
     "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
     //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   ),
-  publishTo <<= version { (v: String) => _publishTo(v) },
+  publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.0",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,
@@ -46,26 +44,26 @@ lazy val baseSettings = Seq(
   // TODO: Fix warning - javaOptions will be ignored, fork is set to false
   // javaOptions in Test ++= Seq("-Dskinny.env=test"),
   updateOptions := updateOptions.value.withCachedResolution(true),
-  javacOptions ++= Seq("-source", "1.7", "-target", "1.7", "-encoding", "UTF-8", "-Xlint:-options"),
-  javacOptions in doc := Seq("-source", "1.7"),
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options"),
+  javacOptions in doc := Seq("-source", "1.8"),
   pomExtra := _pomExtra
-)
+) ++ scalariformSettings
 
 // -----------------------------
 // skinny libraries
 
 lazy val common = (project in file("common")).settings(baseSettings).settings(
   name := "skinny-common",
-  libraryDependencies  <++= (scalaVersion) { (sv) =>
+  libraryDependencies  ++= {
     jodaDependencies ++ testDependencies ++ Seq(
       "org.skinny-framework" %% "skinny-micro-common"       % skinnyMicroVersion % Compile,
-      // NOTE: 1.3.0 requires Java 8 or higher
-      "com.typesafe"         %  "config"                    % "1.2.1"            % Compile,
+      "com.typesafe"         %  "config"                    % "1.3.1"            % Compile,
       "org.apache.lucene"    %  "lucene-core"               % kuromojiVersion    % Provided,
       "org.apache.lucene"    %  "lucene-analyzers-common"   % kuromojiVersion    % Provided,
       "org.apache.lucene"    %  "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
-    ) ++ (sv match {
-      case v if v.startsWith("2.11.") => Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" % Compile)
+    ) ++ (scalaVersion.value match {
+      case v if v.startsWith("2.11.") || v.startsWith("2.12.") =>
+        Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" % Compile)
       case _ => Nil
     })
   }
@@ -75,11 +73,10 @@ lazy val httpClient = (project in file("http-client")).settings(baseSettings).se
   name := "skinny-http-client",
   libraryDependencies ++= Seq(
     "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
-    "org.specs2"           %% "specs2-core"         % "2.5"              % Test,
     "commons-fileupload"   %  "commons-fileupload"  % "1.3.2"            % Test,
     "commons-io"           %  "commons-io"          % commonsIoVersion   % Test,
     "commons-httpclient"   %  "commons-httpclient"  % "3.1"              % Test,
-    "javax.servlet"        %  "javax.servlet-api"   % "3.0.1"            % Test,
+    "javax.servlet"        %  "javax.servlet-api"   % "3.1.0"            % Test,
     "org.eclipse.jetty"    %  "jetty-server"        % jettyVersion       % Test,
     "org.eclipse.jetty"    %  "jetty-servlet"       % jettyVersion       % Test
   ) ++ slf4jApiDependencies ++ testDependencies
@@ -87,15 +84,12 @@ lazy val httpClient = (project in file("http-client")).settings(baseSettings).se
 
 lazy val framework = (project in file("framework")).settings(baseSettings).settings(
   name := "skinny-framework",
-  libraryDependencies <++= (scalaVersion) { (sv) =>
-    Seq(
-      "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion  % Compile,
-      "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion  % Compile,
-      "commons-io"           %  "commons-io"           % commonsIoVersion    % Compile,
-      "org.scalatra"         %% "scalatra-specs2"      % scalatraTestVersion % Test,
-      "org.scalatra"         %% "scalatra-scalatest"   % scalatraTestVersion % Test
-    ) ++ compileScalateDependencies(sv) ++ servletApiDependencies ++ testDependencies
-  }
+  libraryDependencies ++= Seq(
+    "org.skinny-framework" %% "skinny-micro"         % skinnyMicroVersion  % Compile,
+    "org.skinny-framework" %% "skinny-micro-scalate" % skinnyMicroVersion  % Compile,
+    "commons-io"           %  "commons-io"           % commonsIoVersion    % Compile,
+    "org.skinny-framework" %% "scalatra-test"        % skinnyMicroVersion  % Test
+  ) ++ compileScalateDependencies ++ servletApiDependencies ++ testDependencies
 ).dependsOn(
   common,
   json,
@@ -142,15 +136,15 @@ lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
     "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.1.Final" % Test
+    "org.hibernate" %  "hibernate-core" % "5.2.4.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 
 lazy val factoryGirl = (project in file("factory-girl")).settings(baseSettings).settings(
   name := "skinny-factory-girl",
-  libraryDependencies <++= (scalaVersion) { (sv) =>
+  libraryDependencies ++= {
     scalikejdbcDependencies ++ Seq(
-      "org.scala-lang" % "scala-compiler" % sv
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value
     ) ++ testDependencies
   }
 ).dependsOn(orm)
@@ -158,7 +152,7 @@ lazy val factoryGirl = (project in file("factory-girl")).settings(baseSettings).
 lazy val freemarker = (project in file("freemarker")).settings(baseSettings).settings(
   name := "skinny-freemarker",
   libraryDependencies ++= servletApiDependencies ++ Seq(
-    "commons-beanutils"    %  "commons-beanutils"  % "1.9.2"             % Compile,
+    "commons-beanutils"    %  "commons-beanutils"  % "1.9.3"             % Compile,
     "org.freemarker"       %  "freemarker"         % "2.3.23"            % Compile,
     "org.skinny-framework" %% "skinny-micro-test"  % skinnyMicroVersion  % Test
   ) ++ testDependencies
@@ -191,11 +185,11 @@ lazy val velocity = (project in file("velocity")).settings(baseSettings).setting
 
 lazy val scaldi = (project in file("scaldi")).settings(baseSettings).settings(
   name := "skinny-scaldi",
-  libraryDependencies <++= (scalaVersion) { (sv) =>
+  libraryDependencies ++= {
     servletApiDependencies ++ Seq(
-      sv match {
+      scalaVersion.value match {
         case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
-        case _ =>                          "org.scaldi" %% "scaldi" % "0.5.7"
+        case _ =>                          "org.skinny-framework.org.scaldi" %% "scaldi" % "0.5.8-M1"
       },
       "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
     ) ++ testDependencies
@@ -228,7 +222,7 @@ lazy val oauth2Controller = (project in file("oauth2-controller")).settings(base
 lazy val twitterController = (project in file("twitter-controller")).settings(baseSettings).settings(
   name := "skinny-twitter-controller",
   libraryDependencies ++= Seq(
-    "org.twitter4j"        %  "twitter4j-core"    % "4.0.4"            % Compile,
+    "org.twitter4j"        %  "twitter4j-core"    % "4.0.5"            % Compile,
     "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
   ) ++ servletApiDependencies ++ testDependencies
 ).dependsOn(framework)
@@ -260,15 +254,14 @@ lazy val example = (project in file("example")).settings(baseSettings, servletSe
   libraryDependencies ++= Seq(
     "com.h2database"       %  "h2"                 % h2Version,
     "org.skinny-framework" %  "skinny-logback"     % skinnyLogbackVersion,
-    "org.scalatra"         %% "scalatra-specs2"    % scalatraTestVersion % Test,
-    "org.scalatra"         %% "scalatra-scalatest" % scalatraTestVersion % Test,
+    "org.skinny-framework" %% "scalatra-test"      % skinnyMicroVersion  % Test,
     "org.mockito"          %  "mockito-core"       % mockitoVersion      % Test,
     "org.eclipse.jetty"    %  "jetty-webapp"       % jettyVersion        % "container",
     "org.eclipse.jetty"    %  "jetty-plus"         % jettyVersion        % "container",
-    "javax.servlet"        %  "javax.servlet-api"  % "3.0.1"             % "container;provided;test"
+    "javax.servlet"        %  "javax.servlet-api"  % "3.1.0"             % "container;provided;test"
   ),
   mainClass := Some("TaskLauncher"),
-  unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") }
+  unmanagedClasspath in Test += Attributed.blank(baseDirectory.value / "src/main/webapp")
 ).dependsOn(
   framework,
   assets,
@@ -293,12 +286,10 @@ lazy val fullExclusionRules = Seq(
   ExclusionRule("log4j",     "log4j"),
   ExclusionRule("org.slf4j", "slf4j-log4j12")
 )
-def compileScalateDependencies(sv: String) = Seq(
-   sv match {
-     case v if v.startsWith("2.11.") => "org.scalatra.scalate"   %% "scalamd" % "1.6.1" % Compile
-     case _ =>                          "org.fusesource.scalamd" %% "scalamd" % "1.6"   % Compile
-   }
- ) ++ Seq("org.scalatra.scalate" %% "scalate-core" % "1.7.1" % Compile excludeAll(fullExclusionRules: _*))
+lazy val compileScalateDependencies = Seq(
+  "org.scalatra.scalate" %% "scalamd"      % "1.7.0"     % Compile,
+  "org.scalatra.scalate" %% "scalate-core" % "1.8.0-RC1" % Compile excludeAll(fullExclusionRules: _*)
+ )
 
 lazy val scalikejdbcDependencies = Seq(
   "org.scalikejdbc" %% "scalikejdbc"                      % scalikeJDBCVersion % Compile excludeAll(fullExclusionRules: _*),
@@ -308,7 +299,7 @@ lazy val scalikejdbcDependencies = Seq(
 )
 
 lazy val servletApiDependencies = Seq(
-  "javax.servlet" % "javax.servlet-api" % "3.0.1"  % Provided
+  "javax.servlet" % "javax.servlet-api" % "3.1.0"  % Provided
 )
 lazy val slf4jApiDependencies   = Seq(
   "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile

@@ -1,15 +1,13 @@
 package skinny.http
 
-import org.specs2.mutable.Specification
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.io.File
 
-class HTTPSpec extends Specification with Handlers with ServerOps {
+import org.scalatest.{ Matchers, WordSpec }
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  sequential
-
-  override def intToRichLong(v: Int) = super.intToRichLong(v)
+class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
 
   "HTTP" should {
 
@@ -22,9 +20,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get("http://localhost:8077/?foo=bar")
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -34,9 +32,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get("http://localhost:8177/", "foo" -> "bar")
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -46,9 +44,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get(Request("http://localhost:8277/").queryParams("foo" -> "bar"))
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -58,9 +56,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get(Request("http://localhost:8278/").queryParam("foo" -> "bar").queryParam("bar" -> "baz"))
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar,bar:baz")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar,bar:baz")
       }
     }
 
@@ -70,9 +68,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get("http://localhost:8377/?foo=bar", "UTF-8")
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -82,9 +80,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncGet("http://localhost:8077/?foo=bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -94,9 +92,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncGet("http://localhost:8177/", "foo" -> "bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -106,9 +104,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncGet(Request("http://localhost:8278/").queryParams("foo" -> "bar")), 5.seconds)
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -118,9 +116,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncGet("http://localhost:8377/?foo=bar", "UTF-8"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString.length must be_>(0)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString.length should be > (0)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -130,9 +128,9 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.get("http://localhost:8701/?foo=bar", "UTF-8")
-        response.status must equalTo(200)
+        response.status should equal(200)
         response.rawCookies.contains("foo")
-        response.rawCookies.get("foo") must equalTo(Some("foo=bar; path=/; HttpOnly"))
+        response.rawCookies.get("foo") should equal(Some("foo=bar; path=/; HttpOnly"))
       }
     }
 
@@ -145,8 +143,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.post("http://localhost:8187/", "foo=bar")
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -156,8 +154,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.post("http://localhost:8287/", "foo" -> "bar")
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -166,8 +164,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.postMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar")))
-        response.status must equalTo(200)
-        response.asString must equalTo("bar")
+        response.status should equal(200)
+        response.asString should equal("bar")
       }
     }
 
@@ -176,11 +174,11 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val file = new File("http-client/src/test/resources/sample.txt")
-        file.exists must equalTo(true)
+        file.exists should equal(true)
 
         val response = HTTP.postMultipart("http://localhost:8888/", FormData("toResponse", FileInput(file, "text/plain")))
-        response.status must equalTo(200)
-        response.asString must equalTo(
+        response.status should equal(200)
+        response.asString should equal(
           """foo
             |bar
             |バズ""".stripMargin
@@ -194,8 +192,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncPost("http://localhost:8187/", "foo=bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -205,8 +203,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncPost("http://localhost:8287/", "foo" -> "bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -215,8 +213,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncPostMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar"))), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("bar")
+        response.status should equal(200)
+        response.asString should equal("bar")
       }
     }
 
@@ -229,8 +227,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.put("http://localhost:8186/", "foo=bar")
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -240,8 +238,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.put("http://localhost:8285/", "foo" -> "bar")
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -251,8 +249,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncPut("http://localhost:8186/", "foo=bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -262,8 +260,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncPut("http://localhost:8286/", "foo" -> "bar"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("foo:bar")
+        response.status should equal(200)
+        response.asString should equal("foo:bar")
       }
     }
 
@@ -276,8 +274,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.delete("http://localhost:8485/resource")
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 
@@ -287,8 +285,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncDelete("http://localhost:8486/resource"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 
@@ -301,8 +299,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.trace("http://localhost:8585/resource")
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 
@@ -312,8 +310,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncTrace("http://localhost:8586/resource"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 
@@ -326,8 +324,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = HTTP.options("http://localhost:8685/resource")
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 
@@ -337,8 +335,8 @@ class HTTPSpec extends Specification with Handlers with ServerOps {
         start(server)
 
         val response = Await.result(HTTP.asyncOptions("http://localhost:8686/resource"), 5.seconds)
-        response.status must equalTo(200)
-        response.asString must equalTo("")
+        response.status should equal(200)
+        response.asString should equal("")
       }
     }
 

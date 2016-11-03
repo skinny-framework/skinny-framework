@@ -4,7 +4,7 @@ import javax.mail.Address
 import javax.mail.internet.MimeMessage
 
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 class RichMimeMessageSpec extends FlatSpec with Matchers with MockitoSugar {
 

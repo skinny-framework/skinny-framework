@@ -3,7 +3,7 @@ package skinny.mailer
 import javax.mail.internet.MimeMessage
 
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 class HeaderLinesSpec extends FlatSpec with Matchers with MockitoSugar {
 

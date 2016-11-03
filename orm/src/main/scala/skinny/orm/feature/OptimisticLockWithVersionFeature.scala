@@ -14,8 +14,6 @@ trait OptimisticLockWithVersionFeature[Entity]
 
 trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
-  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithVersionFeatureWithId[Id, Entity]])
-
   /**
    * Lock version field name.
    */
