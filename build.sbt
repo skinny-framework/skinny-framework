@@ -28,12 +28,14 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.11.8", // somehow, specifying 2.12 by default makes builds CPU heavy and unstable
+  scalaVersion := "2.11.8",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,
   // NOTE: for stability
   parallelExecution in Test := false,
+  pollInterval in Test := 10,
+  maxErrors in Test := 10,
   publishArtifact in Test := false,
   pomIncludeRepository := { x => false },
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
@@ -41,6 +43,7 @@ lazy val baseSettings = Seq(
   // NOTE: forking when testing doesn't work for some existing tests
   // fork in Test := true,
   logBuffered in Test := false,
+  testForkedParallel in Test := true,
   // TODO: Fix warning - javaOptions will be ignored, fork is set to false
   // javaOptions in Test ++= Seq("-Dskinny.env=test"),
   updateOptions := updateOptions.value.withCachedResolution(true),

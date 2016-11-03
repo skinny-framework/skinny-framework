@@ -2,7 +2,7 @@
 
 if [[ "$1" == "test" ]]; then
 
-sbt ++2.12.0 \
+sbt ++2.11.8 \
   clean \
   common/publishLocal \
   assets/publishLocal \
