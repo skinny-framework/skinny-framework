@@ -10,8 +10,6 @@ fi
 if [[ "$TEST_TYPE" == "framework" ]]; then
   export SKINNY_ENV=test
   export APP_ENV=test
-  rm -rf target
-  rm -rf */target
   gem install sass &&
   sbt "example/run db:migrate test" &&
   sbt ++$TRAVIS_SCALA_VERSION test

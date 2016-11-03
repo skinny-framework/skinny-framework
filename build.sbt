@@ -28,7 +28,7 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.0",
+  scalaVersion := "2.11.8", // somehow, specifying 2.12 by default makes builds CPU heavy and unstable
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,
