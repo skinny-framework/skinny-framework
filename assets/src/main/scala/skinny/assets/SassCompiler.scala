@@ -47,7 +47,9 @@ class SassCompiler {
       (e: String) => err ++= e ++= "\n"
     )
     using(new ByteArrayInputStream(scssCode.getBytes)) { stdin =>
-      val exitCode = (Seq(sassCommand, "--stdin", "--trace", "--scss") #< stdin) ! processLogger
+      val process: Process = (Seq(sassCommand, "--stdin", "--trace", "--scss") #< stdin).run(processLogger)
+      process.wait(5000)
+      val exitCode = process.exitValue()
       if (exitCode == 0) out.toString
       else {
         val message = s"Failed to compile scss code! (exit code: ${exitCode})\n\n${err.toString}"
@@ -72,9 +74,12 @@ class SassCompiler {
       (e: String) => err ++= e ++= "\n"
     )
     using(new ByteArrayInputStream(sassCode.getBytes)) { stdin =>
-      val exitCode = (Seq(sassCommand, "--stdin", "--trace") #< stdin) ! processLogger
-      if (exitCode == 0) out.toString
-      else {
+      val process: Process = (Seq(sassCommand, "--stdin", "--trace") #< stdin).run(processLogger)
+      process.wait(5000)
+      val exitCode = process.exitValue()
+      if (exitCode == 0) {
+        out.toString
+      } else {
         val message = s"Failed to compile sass code! (exit code: ${exitCode})\n\n${err.toString}"
         log.error(message)
         throw new AssetsPrecompileFailureException(message)
