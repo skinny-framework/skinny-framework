@@ -73,13 +73,10 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
     }
   }
 
-  if (ScalaVersion.is_2_12) {
+  it should "skip sass testing" in {
+  }
 
-    it should "skip sass testing in Scala 2.12" in {
-    }
-
-  } else {
-
+  /*
     it should "show scss resources" in {
       get("/assets/css/variables-in-scss.css") {
         status should equal(200)
@@ -108,7 +105,7 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
         status should equal(304)
       }
     }
-  }
+  */
 
   it should "return assets in sub directories" in {
     get("/assets/js/vendor/awesome.js") {
