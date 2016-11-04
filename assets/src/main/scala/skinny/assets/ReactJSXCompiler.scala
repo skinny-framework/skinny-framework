@@ -1,9 +1,9 @@
 package skinny.assets
 
-import org.mozilla.javascript._
 import java.io.{ ByteArrayInputStream, IOException, InputStreamReader }
+
 import skinny.util.LoanPattern._
-import skinny.ClassPathResourceLoader
+import skinny.{ ClassPathResourceLoader, ScalaVersion }
 
 import scala.sys.process._
 import org.slf4j.LoggerFactory
@@ -47,8 +47,15 @@ class ReactJSXCompiler {
   private[this] def nativeCompilerCommand = Seq(jsxCommand)
 
   private[this] def nativeCompilerExists: Boolean = {
-    try !Seq(jsxCommand, "--version").lines.mkString.isEmpty
-    catch { case e: IOException => false }
+    if (ScalaVersion.is_2_12) {
+      // calling an external process here fails in 2.12
+      // java.lang.IllegalMonitorStateException:
+      //  at java.lang.Object.wait(Native Method)
+      false
+    } else {
+      try !Seq(jsxCommand, "--version").lines.mkString.isEmpty
+      catch { case e: IOException => false }
+    }
   }
 
   /**
@@ -68,9 +75,12 @@ class ReactJSXCompiler {
         (e: String) => err ++= e ++= "\n"
       )
       using(new ByteArrayInputStream(jsxCode.getBytes)) { stdin =>
-        val exitCode = (nativeCompilerCommand #< stdin) ! processLogger
-        if (exitCode == 0) out.toString
-        else {
+        val process: Process = (nativeCompilerCommand #< stdin).run(processLogger)
+        process.wait(5000)
+        val exitCode = process.exitValue()
+        if (exitCode == 0) {
+          out.toString
+        } else {
           val message = s"Failed to compile React jsx script code! (exit code: ${exitCode})\n\n${err.toString}"
           log.error(message)
           throw new AssetsPrecompileFailureException(message)

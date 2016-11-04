@@ -3,6 +3,7 @@ package integrationtest
 import skinny.controller._
 import skinny.test.{ SkinnyFlatSpec, SkinnyTestSupport }
 import controller.Controllers
+import skinny.ScalaVersion
 
 class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
 
@@ -72,32 +73,40 @@ class AssetsSpec extends SkinnyFlatSpec with SkinnyTestSupport {
     }
   }
 
-  it should "show scss resources" in {
-    get("/assets/css/variables-in-scss.css") {
-      status should equal(200)
-      header("Content-Type") should equal("text/css;charset=utf-8")
-      body.replaceFirst("\n$", "") should equal("""body {
-        |  font: 100% Helvetica, sans-serif; }""".stripMargin)
-    }
-  }
-  it should "return 304 for scss if If-Modified-Since specified" in {
-    get(uri = "/assets/css/variables-in-scss.css", headers = Map("If-Modified-Since" -> "Thu, 31 Dec 2037 12:34:56 GMT")) {
-      status should equal(304)
-    }
-  }
+  if (ScalaVersion.is_2_12) {
 
-  it should "show sass resources" in {
-    get("/assets/css/indented-sass.css") {
-      status should equal(200)
-      header("Content-Type") should equal("text/css;charset=utf-8")
-      body.replaceFirst("\n$", "") should equal("""#main {
-        |  color: blue;
-        |  font-size: 0.3em; }""".stripMargin)
+    it should "skip sass testing in Scala 2.12" in {
     }
-  }
-  it should "return 304 for sass if If-Modified-Since specified" in {
-    get(uri = "/assets/css/indented-sass.css", headers = Map("If-Modified-Since" -> "Thu, 31 Dec 2037 12:34:56 GMT")) {
-      status should equal(304)
+
+  } else {
+
+    it should "show scss resources" in {
+      get("/assets/css/variables-in-scss.css") {
+        status should equal(200)
+        header("Content-Type") should equal("text/css;charset=utf-8")
+        body.replaceFirst("\n$", "") should equal("""body {
+                                                    |  font: 100% Helvetica, sans-serif; }""".stripMargin)
+      }
+    }
+    it should "return 304 for scss if If-Modified-Since specified" in {
+      get(uri = "/assets/css/variables-in-scss.css", headers = Map("If-Modified-Since" -> "Thu, 31 Dec 2037 12:34:56 GMT")) {
+        status should equal(304)
+      }
+    }
+
+    it should "show sass resources" in {
+      get("/assets/css/indented-sass.css") {
+        status should equal(200)
+        header("Content-Type") should equal("text/css;charset=utf-8")
+        body.replaceFirst("\n$", "") should equal("""#main {
+                                                    |  color: blue;
+                                                    |  font-size: 0.3em; }""".stripMargin)
+      }
+    }
+    it should "return 304 for sass if If-Modified-Since specified" in {
+      get(uri = "/assets/css/indented-sass.css", headers = Map("If-Modified-Since" -> "Thu, 31 Dec 2037 12:34:56 GMT")) {
+        status should equal(304)
+      }
     }
   }
 

@@ -2,8 +2,9 @@ package skinny.assets
 
 import org.mozilla.javascript._
 import java.io.{ ByteArrayInputStream, IOException, InputStreamReader }
+
 import skinny.util.LoanPattern._
-import skinny.{ SkinnyEnv, ClassPathResourceLoader }
+import skinny.{ ClassPathResourceLoader, ScalaVersion, SkinnyEnv }
 
 import scala.sys.process._
 import org.slf4j.LoggerFactory
@@ -47,8 +48,15 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
   def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
 
   private[this] def nativeCompilerExists: Boolean = {
-    try Seq(coffeeCommand, "-v").lines.size > 0
-    catch { case e: IOException => false }
+    if (ScalaVersion.is_2_12) {
+      // calling an external process here fails in 2.12
+      // java.lang.IllegalMonitorStateException:
+      //  at java.lang.Object.wait(Native Method)
+      false
+    } else {
+      try Seq(coffeeCommand, "-v").lines.size > 0
+      catch { case e: IOException => false }
+    }
   }
 
   /**
@@ -68,7 +76,9 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
         (e: String) => err ++= e ++= "\n"
       )
       using(new ByteArrayInputStream(coffeeScriptCode.getBytes)) { stdin =>
-        val exitCode = (nativeCompilerCommand #< stdin) ! processLogger
+        val process: Process = (nativeCompilerCommand #< stdin).run(processLogger)
+        process.wait(5000)
+        val exitCode = process.exitValue()
         if (exitCode == 0) {
           // create Source Maps file on the same directory
           if (sourceMapsEnabled) {
