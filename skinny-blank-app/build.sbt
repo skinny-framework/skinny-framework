@@ -13,9 +13,9 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "2.2.0"
-val theScalaVersion = "2.11.8"
-val jettyVersion = "9.2.17.v20160517"
+val skinnyVersion = "2.3.0-M1"
+val theScalaVersion = "2.11.8" // you can choose 2.12.0 :)
+val jettyVersion = "9.3.14.v20161028"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -26,7 +26,7 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang"         %  "scala-library"            % scalaVersion.value,
     "org.scala-lang"         %  "scala-reflect"            % scalaVersion.value,
     "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml"                % "1.0.5",
+    "org.scala-lang.modules" %% "scala-xml"                % "1.0.6",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
     "org.slf4j"              %  "slf4j-api"                % "1.7.21"
   ),
@@ -65,14 +65,11 @@ DBSettings.initialize()
   fork in Test := true,
   scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
   ideaExcludeFolders := Seq(".idea", ".idea_modules", "db", "target", "task/target", "build", "standalone-build", "node_modules")
-)
-// ------------------------------
-// Automated code formatter before compilaion
-// Disabled by default because this is confusing for beginners
-// ++ scalariformSettings
+) ++ scalariformSettings // If you don't prefer auto code formatter, remove this line and sbt-scalariform
 
 lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
-  scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
+  scalateTemplateConfig in Compile := {
+    val base = (sourceDirectory in Compile).value
     Seq( TemplateConfig(file(".") / "src" / "main" / "webapp" / "WEB-INF",
       // These imports should be same as src/main/scala/templates/ScalatePackage.scala
       Seq("import controller._", "import model._"),
@@ -86,7 +83,7 @@ lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
 // -------------------------------------------------------
 
 lazy val devBaseSettings = baseSettings ++ Seq(
-  unmanagedClasspath in Test <+= (baseDirectory) map { bd =>  Attributed.blank(bd / "src/main/webapp") },
+  unmanagedClasspath in Test += Attributed.blank(baseDirectory.value / "src/main/webapp"),
   // Integration tests become slower when multiple controller tests are loaded in the same time
   parallelExecution in Test := false,
   port in container.Configuration := 8080
@@ -123,9 +120,9 @@ lazy val task = (project in file("task")).settings(baseSettings).settings(
 
 lazy val packagingBaseSettings = baseSettings ++ scalatePrecompileSettings ++ Seq(
   sources in doc in Compile := List(),
-  publishTo <<= version { (v: String) =>
+  publishTo := {
     val base = "https://oss.sonatype.org/"
-    if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
+    if (version.value.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
     else Some("releases" at base + "service/local/staging/deploy/maven2")
   }
 )

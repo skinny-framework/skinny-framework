@@ -3,7 +3,10 @@ package skinny.session.servlet
 import javax.servlet.http.HttpSession
 import skinny.session.SkinnyHttpSession
 
-case class SkinnyHttpSessionWrapper(session: HttpSession, skinnySession: SkinnyHttpSession) extends HttpSession {
+case class SkinnyHttpSessionWrapper(
+    session: HttpSession,
+    skinnySession: SkinnyHttpSession
+) extends HttpSession {
 
   /**
    * Just to sync invalidate event to skinny session.

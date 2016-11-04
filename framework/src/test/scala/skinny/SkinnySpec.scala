@@ -5,7 +5,7 @@ import skinny.micro.UnstableAccessValidation
 import skinny.micro.context.SkinnyContext
 import org.scalatra.test.scalatest.ScalatraFlatSpec
 import scala.collection.mutable.HashMap
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   behavior of "Skinny"

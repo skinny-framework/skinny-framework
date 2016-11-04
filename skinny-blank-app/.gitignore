@@ -31,8 +31,10 @@ standalone-build/
 .scala_dependencies
 
 # IntelliJ IDEA settings
-#.idea
-#*.iml
+.idea*
+*.iml
+*.ipr
+*.iws
 
 # building
 target
@@ -64,3 +66,6 @@ ivy2
 
 node_modules
 
+# ensime
+.ensime*
+.sbtconfig

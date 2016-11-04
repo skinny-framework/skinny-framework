@@ -74,6 +74,7 @@ ivy2
 skinny-*.tar.gz
 tmp
 .sbtconfig
+.ensime*
 
 velocity.log*
 skinny-engine-blank-app.zip

@@ -1,7 +1,7 @@
 package skinny.session.servlet
 
-import javax.servlet.http.{ HttpServletResponse, HttpServletRequest }
-import javax.servlet.{ ServletResponse, ServletRequest }
+import javax.servlet.http.{ HttpServletRequest, HttpServletResponse, HttpUpgradeHandler }
+import javax.servlet.{ ServletRequest, ServletResponse }
 
 /**
  * Http request wrapper for SkinnySession
@@ -28,7 +28,7 @@ case class SkinnyHttpRequestWrapper(
   def getQueryString = request.getQueryString
   def getRemoteUser = request.getRemoteUser
   def isUserInRole(role: String) = request.isUserInRole(role)
-  def getUserPrincipal = request.getUserPrincipal
+  def getUserPrincipal() = request.getUserPrincipal()
   def getRequestedSessionId = request.getRequestedSessionId
   def getRequestURI = request.getRequestURI
   def getRequestURL = request.getRequestURL
@@ -80,5 +80,9 @@ case class SkinnyHttpRequestWrapper(
   def isAsyncSupported = request.isAsyncSupported
   def getAsyncContext = request.getAsyncContext
   def getDispatcherType = request.getDispatcherType
+
+  override def changeSessionId(): String = request.changeSessionId()
+  override def upgrade[T <: HttpUpgradeHandler](handlerClass: Class[T]): T = request.upgrade(handlerClass)
+  override def getContentLengthLong: Long = request.getContentLengthLong
 
 }

@@ -7,9 +7,6 @@ import skinny.micro.async.AsyncOperations
 
 import scala.concurrent._
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import javax.servlet.http.HttpServletRequest
 
 case class DashboardOps(controller: DashboardController) {
   def setCurrentUser(implicit ctx: SkinnyContext) = {

@@ -1,10 +1,8 @@
 package skinny.http
 
-import org.specs2.mutable.Specification
+import org.scalatest.{ Matchers, WordSpec }
 
-class RequestSpec extends Specification {
-
-  sequential
+class RequestSpec extends WordSpec with Matchers {
 
   val request = new Request("http://example.com/")
 
@@ -18,9 +16,9 @@ class RequestSpec extends Specification {
       request.referer("foo")
       request.userAgent("ua")
       request.contentType("text/html")
-      request.header("foo") should equalTo(None)
+      request.header("foo") should equal(None)
       request.header("foo", "bar")
-      request.headerNames.size should equalTo(1)
+      request.headerNames.size should equal(1)
     }
   }
 

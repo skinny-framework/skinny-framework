@@ -185,6 +185,8 @@ class NOOPServletContext extends ServletContext {
 
   override def createFilter[T <: Filter](clazz: Class[T]): T = clazz.newInstance()
 
+  override def getVirtualServerName: String = null
+
 }
 
 object NOOPServletContext extends NOOPServletContext

@@ -15,8 +15,6 @@ trait OptimisticLockWithTimestampFeature[Entity]
 
 trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
-  private[this] val logger = LoggerFactory.getLogger(classOf[OptimisticLockWithTimestampFeatureWithId[Id, Entity]])
-
   /**
    * Lock timestamp field name.
    */
