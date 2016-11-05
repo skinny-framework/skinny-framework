@@ -15,7 +15,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // --------
 // Servlet app packager/runner plugin
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.0.6")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.0")
 
 // Scalate template files precompilation
 addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.8.0.0")

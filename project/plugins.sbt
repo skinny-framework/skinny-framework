@@ -5,7 +5,7 @@ fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 addSbtPlugin("io.get-coursier"      % "sbt-coursier"            % "1.0.0-M14")
 
 addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.8.0.0")
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin"      % "2.0.6")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin"      % "2.1.0")
 addSbtPlugin("org.scalariform"      % "sbt-scalariform"         % "1.6.0")
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea"                % "1.6.0")
 addSbtPlugin("com.jsuereth"         % "sbt-pgp"                 % "1.0.0")
