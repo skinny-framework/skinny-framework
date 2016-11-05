@@ -243,18 +243,19 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.0^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.3^"^) > "project\_skinny_assembly.sbt"
     (
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
       ECHO _root_.sbt.Keys.test in assembly := {}
-      ECHO.resourceGenerators in Compile ^<+= ^(resourceManaged, baseDirectory^) ^map { ^(managedBase, base^) =^>
+      ECHO.resourceGenerators in Compile += ^(Def.task {
+      ECHO.  val ^(managedBase, base^) = ^(resourceManaged.value, baseDirectory.value^)
       ECHO.  val webappBase = base / "src" / "main" / "webapp"
       ECHO.  for ^( ^(from, to^) ^<- ^webappBase ** "*" `pair` rebase(webappBase, managedBase / "main/"^) ^)
-      ECHO.  yield {
-      ECHO.    Sync.copy^(from, to^)
-      ECHO.    to
-      ECHO.  }
-      ECHO.}
+      ECHO.    yield {
+      ECHO.      Sync.copy^(from, to^)
+      ECHO.      to
+      ECHO.    }
+      ECHO.}^).taskValue
     )> "_skinny_assembly_settings.sbt"
   )
   RMDIR standalone-build /S /q
@@ -374,19 +375,19 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.10"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.13"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
   ECHO   scalaVersion := "2.11.8", >> "_skinny_scalajs_settings.sbt"
-  ECHO   unmanagedSourceDirectories in Compile ^<+= baseDirectory^(_ / "scala"^), >> "_skinny_scalajs_settings.sbt"
+  ECHO   unmanagedSourceDirectories in Compile ^<= baseDirectory^(_ / "scala"^).value, >> "_skinny_scalajs_settings.sbt"
   ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
   ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.1", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.0", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "io.monix"     %%%%  "minitest"        %% "0.22" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.1", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "io.monix"     %%%%  "minitest"        %% "0.27" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO   ^), >> "_skinny_scalajs_settings.sbt"
-  ECHO   crossTarget in Compile ^<^<= baseDirectory^(_ / ".." / ".." / "assets" / "js"^) >> "_skinny_scalajs_settings.sbt"
+  ECHO   crossTarget in Compile := baseDirectory^(_ / ".." / ".." / "assets" / "js"^).value >> "_skinny_scalajs_settings.sbt"
   ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"
 )
 sbt "project scalajs" %SUB_COMMAND%

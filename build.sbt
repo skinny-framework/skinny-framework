@@ -4,10 +4,10 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.0-M1"
+lazy val currentVersion = "2.3.0-RC1"
 
-lazy val skinnyMicroVersion = "1.2.0-M1"
-lazy val scalikeJDBCVersion = "2.5.0-RC2"
+lazy val skinnyMicroVersion = "1.2.0-RC1"
+lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.2.1"
 lazy val mockitoVersion = "1.10.19"
@@ -290,8 +290,8 @@ lazy val fullExclusionRules = Seq(
   ExclusionRule("org.slf4j", "slf4j-log4j12")
 )
 lazy val compileScalateDependencies = Seq(
-  "org.scalatra.scalate" %% "scalamd"      % "1.7.0"     % Compile,
-  "org.scalatra.scalate" %% "scalate-core" % "1.8.0-RC1" % Compile excludeAll(fullExclusionRules: _*)
+  "org.scalatra.scalate" %% "scalamd"      % "1.7.0" % Compile,
+  "org.scalatra.scalate" %% "scalate-core" % "1.8.0" % Compile excludeAll(fullExclusionRules: _*)
  )
 
 lazy val scalikejdbcDependencies = Seq(
@@ -308,7 +308,7 @@ lazy val slf4jApiDependencies   = Seq(
   "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time"     %  "joda-time"        % "2.9.4" % Compile,
+  "joda-time"     %  "joda-time"        % "2.9.5" % Compile,
   "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(

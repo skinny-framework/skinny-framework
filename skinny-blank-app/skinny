@@ -53,19 +53,19 @@ function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
   if [ ! -f "${setting_file}" ]; then
     echo "resolvers += \"scala-js-release\" at \"http://dl.bintray.com/scala-js/scala-js-releases\"
-addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.10\")" > ${setting_file}
+addSbtPlugin(\"org.scala-js\" % \"sbt-scalajs\" % \"0.6.13\")" > ${setting_file}
 
 echo "lazy val scalajs = (project in file(\"src/main/webapp/WEB-INF/assets\")).settings(
   name := \"application\", // JavaScript file name
   scalaVersion := \"2.11.8\",
-  unmanagedSourceDirectories in Compile <+= baseDirectory(_ / \"scala\"),
+  unmanagedSourceDirectories in Compile += baseDirectory(_ / \"scala\").value,
   fullResolvers ~= { _.filterNot(_.name == \"jcenter\") },
   libraryDependencies ++= Seq(
     \"org.scala-js\" %%% \"scalajs-dom\"    % \"0.9.1\",
-    \"be.doeraene\"  %%% \"scalajs-jquery\" % \"0.9.0\",
-    \"io.monix\"     %%  \"minitest\"       % \"0.22\" % \"test\"
+    \"be.doeraene\"  %%% \"scalajs-jquery\" % \"0.9.1\",
+    \"io.monix\"     %%  \"minitest\"       % \"0.27\" % \"test\"
   ),
-  crossTarget in Compile <<= baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\")
+  crossTarget in Compile := baseDirectory(_ / \"..\" / \"..\" / \"assets\" / \"js\").value
 ).enablePlugins(ScalaJSPlugin)" > ${current_dir}/_skinny_scalajs_settings.sbt
   fi
 }
@@ -203,17 +203,18 @@ elif [ "$command" == "package" ]; then
 elif [ "$command" == "package:standalone" ]; then
   setting_file="${current_dir}/project/_skinny_assembly.sbt"
   if [ ! -f "${setting_file}" ]; then
-    echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.14.0\")" > ${setting_file}
+    echo "addSbtPlugin(\"com.eed3si9n\" % \"sbt-assembly\" % \"0.14.3\")" > ${setting_file}
     echo "mainClass in assembly := Some(\"skinny.standalone.JettyLauncher\")
 _root_.sbt.Keys.test in assembly := {}
-resourceGenerators in Compile <+= (resourceManaged, baseDirectory) map { (managedBase, base) =>
+resourceGenerators in Compile += (Def.task {
+  val (managedBase, base) = (resourceManaged.value, baseDirectory.value)
   val webappBase = base / \"src\" / \"main\" / \"webapp\"
   for ( (from, to) <- webappBase ** \"*\" \`pair\` rebase(webappBase, managedBase / \"main/\") )
-  yield {
-    Sync.copy(from, to)
-    to
-  }
-}" > "${current_dir}/_skinny_assembly_settings.sbt"
+    yield {
+      Sync.copy(from, to)
+      to
+    }
+}).taskValue" > "${current_dir}/_skinny_assembly_settings.sbt"
   fi
 
   setup_standalone_build

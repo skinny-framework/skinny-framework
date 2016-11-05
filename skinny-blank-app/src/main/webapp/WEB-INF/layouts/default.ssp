@@ -6,7 +6,7 @@
     <meta charset="utf-8"/>
     ${unescape(s.csrfMetaTags)}
     <script type="text/javascript" src="//code.jquery.com/jquery-2.2.4.min.js"></script>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
   </head>
   <body>
     <div class="container span12">
@@ -14,7 +14,7 @@
       <hr/>
       <a class="btn btn-default" href="${uri("/")}">${s.i18n.get("top")}</a>
     </div>
-    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${uri("/assets/js/skinny-framework.js")}"></script>
     <!-- Scala.js default JS filename -->
     <!--<script type="text/javascript" src="${uri("/assets/js/application-fastopt.js")}"></script>-->
