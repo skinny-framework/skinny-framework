@@ -2,7 +2,7 @@ resolvers += Classpaths.sbtPluginReleases
 resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
 // https://github.com/sbt/sbt/issues/2217
 fullResolvers ~= { _.filterNot(_.name == "jcenter") }
-addSbtPlugin("io.get-coursier"      % "sbt-coursier"            % "1.0.0-M14")
+addSbtPlugin("io.get-coursier"      % "sbt-coursier"            % "1.0.0-M14-7")
 
 addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.8.0.0")
 addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin"      % "2.1.0")
