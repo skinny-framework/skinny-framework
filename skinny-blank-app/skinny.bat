@@ -153,6 +153,7 @@ IF "%is_generator%"=="true" (
     RMDIR task\target /S /q
     MKDIR task\src\main\resources
     XCOPY src\main\resources task\src\main\resources /E /D /q
+    DEL task\src\main\resources\logback.xml /Q
     sbt "task/run generate:%generator_params%"
   )
   GOTO script_eof
@@ -162,6 +163,7 @@ IF "%command%"=="task:clean" (
   RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/clean"
   GOTO script_eof
 )
@@ -182,6 +184,7 @@ IF "%is_task_run%"=="true" (
   RMDIR task\src\main\resources /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run %task_run_params%"
   GOTO script_eof
 )
@@ -191,6 +194,7 @@ IF "%command%"=="routes" (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run routes"
   GOTO script_eof
 )
@@ -200,6 +204,7 @@ IF "%command%"=="db:migrate" (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run db:migrate %2"
   GOTO script_eof
 )
@@ -209,6 +214,7 @@ IF "%command%"=="db:repair" (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run db:repair %2"
   GOTO script_eof
 )
@@ -237,6 +243,7 @@ IF %command%==package (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run assets:precompile" "build/package"
   GOTO script_eof
 )
@@ -266,6 +273,7 @@ IF "%command%"=="package:standalone" (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run assets:precompile" "standaloneBuild/assembly"
   GOTO script_eof
 )
@@ -278,6 +286,7 @@ IF %command%==publish (
   RMDIR task\target /S /q
   MKDIR task\src\main\resources
   XCOPY src\main\resources task\src\main\resources /E /D /q
+  DEL task\src\main\resources\logback.xml /Q
   sbt "task/run assets:precompile" "build/publish"
   GOTO script_eof
 )

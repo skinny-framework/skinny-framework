@@ -48,6 +48,7 @@ function copy_resources_to_task() {
   rm -rf task/src/main/resources
   mkdir -p task/src/main/resources
   cp -pr src/main/resources/* task/src/main/resources/.
+  rm -f task/src/main/resources/logback.*
 }
 function setup_scalajs() {
   setting_file="${current_dir}/project/_skinny_scalajs.sbt"
