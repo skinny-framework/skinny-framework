@@ -33,9 +33,9 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
-// addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
 // Coveralls integration - http://coveralls.io/
-//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0")
+//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
 
 // check the latest version of dependencies
 // addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.10")

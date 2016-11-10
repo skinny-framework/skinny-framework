@@ -24,7 +24,7 @@ cd release/skinny-blank-app
 ./skinny g reverse-scaffold members2 rev2.members2 member2 && \
 ./skinny routes && \
 ./skinny test && \
-#./skinny test:coverage && \
+./skinny test:coverage && \
 ./skinny scalajs:package && \
 ./skinny package && \
 ./skinny package:standalone
