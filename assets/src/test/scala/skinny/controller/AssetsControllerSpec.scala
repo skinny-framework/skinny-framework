@@ -7,7 +7,7 @@ import javax.servlet.ServletContext
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.mockito.Matchers.anyString
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.internal.stubbing.answers._
 import skinny.SkinnyEnv
 import skinny.micro.context.SkinnyContext

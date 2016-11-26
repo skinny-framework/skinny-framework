@@ -10,7 +10,7 @@ lazy val skinnyMicroVersion = "1.2.0"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "1.10.19"
+lazy val mockitoVersion = "2.2.25"
 lazy val jettyVersion = "9.3.14.v20161028"
 lazy val logbackVersion = "1.1.7"
 lazy val slf4jApiVersion = "1.7.21"
@@ -139,7 +139,7 @@ lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
     "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.4.Final" % Test
+    "org.hibernate" %  "hibernate-core" % "5.2.5.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 
@@ -308,7 +308,7 @@ lazy val slf4jApiDependencies   = Seq(
   "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time"     %  "joda-time"        % "2.9.5" % Compile,
+  "joda-time"     %  "joda-time"        % "2.9.6" % Compile,
   "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
