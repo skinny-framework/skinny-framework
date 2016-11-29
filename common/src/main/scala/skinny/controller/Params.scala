@@ -3,7 +3,6 @@ package skinny.controller
 import scala.language.dynamics
 import skinny._
 import skinny.util.DateTimeUtil
-import org.joda.time.DateTime
 
 object Params {
 

@@ -2,7 +2,6 @@ package skinny.time
 
 import org.joda.time._
 import skinny.util.DateTimeUtil
-import scala.collection.mutable.WrappedArray
 
 private[time] object LastParam
 private[time] sealed trait JodaType
