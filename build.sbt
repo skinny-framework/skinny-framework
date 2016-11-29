@@ -4,13 +4,13 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.0"
+lazy val currentVersion = "2.3.1"
 
 lazy val skinnyMicroVersion = "1.2.0"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "2.2.25"
+lazy val mockitoVersion = "2.2.26"
 lazy val jettyVersion = "9.3.14.v20161028"
 lazy val logbackVersion = "1.1.7"
 lazy val slf4jApiVersion = "1.7.21"
