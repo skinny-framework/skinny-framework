@@ -215,8 +215,8 @@ trait StringImplicits {
       val o = Option(omission).getOrElse("")
       val sep = Option(separator).getOrElse("")
       withString { s =>
-        val regexpToRemove = s.split(separator).drop(count).foldLeft("") {
-          case (res, word) => res + separator + word
+        val regexpToRemove = s.split(sep).drop(count).foldLeft("") {
+          case (res, word) => res + sep + word
         }
         s.replaceFirst(regexpToRemove + "$", "") + o
       }
