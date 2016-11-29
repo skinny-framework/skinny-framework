@@ -120,6 +120,9 @@ class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
     "And they found that many people were sleeping better.".truncateWords(5, omission = "... (continued)") should equal(
       "And they found that many... (continued)"
     )
+    "treat null as empty string.".truncateWords(10, separator = null, omission = null) should equal(
+      "treat null"
+    )
   }
 
   it should "have #underscore" in {
