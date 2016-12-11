@@ -10,9 +10,9 @@ lazy val skinnyMicroVersion = "1.2.0"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "2.2.26"
+lazy val mockitoVersion = "2.3.0"
 lazy val jettyVersion = "9.3.14.v20161028"
-lazy val logbackVersion = "1.1.7"
+lazy val logbackVersion = "1.1.8"
 lazy val slf4jApiVersion = "1.7.21"
 lazy val scalaTestVersion = "3.0.1"
 lazy val commonsIoVersion = "2.5"
@@ -28,7 +28,7 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.0",
+  scalaVersion := "2.12.1",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,

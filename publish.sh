@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sbt ++2.12.0 \
+sbt ++2.12.1 \
   clean \
   common/publishSigned \
   assets/publishSigned \

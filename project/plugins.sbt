@@ -3,7 +3,7 @@ resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositor
 // https://github.com/sbt/sbt/issues/2217
 fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 // https://github.com/alexarchambault/coursier/issues/378
-//addSbtPlugin("io.get-coursier"      % "sbt-coursier"            % "1.0.0-M14-7")
+//addSbtPlugin("io.get-coursier"      % "sbt-coursier"            % "1.0.0-M15-1")
 
 addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.8.0.0")
 addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin"      % "2.1.0")
