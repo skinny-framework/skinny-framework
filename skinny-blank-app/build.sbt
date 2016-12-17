@@ -13,8 +13,8 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "2.3.1"
-val theScalaVersion = "2.11.8" // 2.12.1 is available if you don't mind if `skinny console` doesn't work ;(
+val skinnyVersion = "2.3.2-SNAPSHOT"
+val theScalaVersion = "2.12.1"
 val jettyVersion = "9.3.14.v20161028"
 
 lazy val baseSettings = servletSettings ++ Seq(
@@ -28,7 +28,7 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang"         %  "scala-compiler"           % scalaVersion.value,
     "org.scala-lang.modules" %% "scala-xml"                % "1.0.6",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-    "org.slf4j"              %  "slf4j-api"                % "1.7.21"
+    "org.slf4j"              %  "slf4j-api"                % "1.7.22"
   ),
   libraryDependencies ++= Seq(
     "org.skinny-framework"    %% "skinny-framework"     % skinnyVersion,
@@ -45,10 +45,12 @@ lazy val baseSettings = servletSettings ++ Seq(
   // ------------------------------
   // for ./skinnny console
   initialCommands := """
-import skinny._
-import _root_.controller._, model._
-import org.joda.time._
-import scalikejdbc._, config._
+import _root_.skinny._
+import _root_.controller._
+import _root_.model._
+import _root_.org.joda.time._
+import _root_.scalikejdbc._
+import _root_.scalikejdbc.config._
 DBSettings.initialize()
 """,
   resolvers ++= Seq(
