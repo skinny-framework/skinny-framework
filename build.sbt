@@ -4,14 +4,14 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.2"
+lazy val currentVersion = "2.3.3-SNAPSHOT"
 
-lazy val skinnyMicroVersion = "1.2.1"
+lazy val skinnyMicroVersion = "1.2.2"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "2.3.5"
-lazy val jettyVersion = "9.3.14.v20161028"
+lazy val mockitoVersion = "2.3.11"
+lazy val jettyVersion = "9.3.15.v20161220"
 lazy val logbackVersion = "1.1.8"
 lazy val slf4jApiVersion = "1.7.22"
 lazy val scalaTestVersion = "3.0.1"
@@ -66,7 +66,7 @@ lazy val common = (project in file("common")).settings(baseSettings).settings(
       "org.apache.lucene"    %  "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
     ) ++ (scalaVersion.value match {
       case v if v.startsWith("2.11.") || v.startsWith("2.12.") =>
-        Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" % Compile)
+        Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.5" % Compile)
       case _ => Nil
     })
   }
@@ -308,7 +308,7 @@ lazy val slf4jApiDependencies   = Seq(
   "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time"     %  "joda-time"        % "2.9.6" % Compile,
+  "joda-time"     %  "joda-time"        % "2.9.7" % Compile,
   "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
