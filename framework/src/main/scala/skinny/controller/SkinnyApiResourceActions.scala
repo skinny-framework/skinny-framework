@@ -60,10 +60,8 @@ trait SkinnyApiResourceActions[Id] { self: SkinnyControllerCommonBase =>
    * @param locale current locale
    * @return validator
    */
-  override def validation(params: Params, validations: NewValidation*)(
-    implicit
-    locale: Locale = currentLocale(context).orNull[Locale]
-  ): MapValidator = {
+  override def validation(params: Params, validations: NewValidation*)(implicit
+    locale: Locale = currentLocale(context).orNull[Locale]): MapValidator = {
     validationWithPrefix(params, messageResourceName, validations: _*)(context)
   }
 
