@@ -52,11 +52,9 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
    * @param locale current locale
    * @return validator
    */
-  override def validation(params: Params, validations: NewValidation*)(
-    implicit
-    locale: Locale = currentLocale.orNull[Locale]
-  ): MapValidator = {
-    validationWithPrefix(params, resourceName, validations: _*)
+  override def validation(params: Params, validations: NewValidation*)(implicit
+                                                                       locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    validationWithPrefix(params, messageResourceName, validations: _*)
   }
 
   // ----------------------------
