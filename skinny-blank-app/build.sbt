@@ -1,5 +1,5 @@
 import sbt._, Keys._
-import skinny.scalate.ScalatePlugin._, ScalateKeys._
+import org.fusesource.scalate.ScalatePlugin._, ScalateKeys._
 import skinny.servlet._, ServletPlugin._, ServletKeys._
 import org.sbtidea.SbtIdeaPlugin._
 

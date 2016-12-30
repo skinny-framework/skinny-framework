@@ -20,7 +20,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.1")
 
 // Scalate template files precompilation
-addSbtPlugin("org.skinny-framework" % "sbt-scalate-precompiler" % "1.8.0.0")
+addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")
 
 // --------
 // format Scala source code automatically
