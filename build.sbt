@@ -10,7 +10,7 @@ lazy val skinnyMicroVersion = "1.2.2"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "2.3.11"
+lazy val mockitoVersion = "2.5.0"
 lazy val jettyVersion = "9.3.15.v20161220"
 lazy val logbackVersion = "1.1.8"
 lazy val slf4jApiVersion = "1.7.22"
@@ -139,7 +139,7 @@ lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
     "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.5.Final" % Test
+    "org.hibernate" %  "hibernate-core" % "5.2.6.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 
@@ -225,7 +225,7 @@ lazy val oauth2Controller = (project in file("oauth2-controller")).settings(base
 lazy val twitterController = (project in file("twitter-controller")).settings(baseSettings).settings(
   name := "skinny-twitter-controller",
   libraryDependencies ++= Seq(
-    "org.twitter4j"        %  "twitter4j-core"    % "4.0.5"            % Compile,
+    "org.twitter4j"        %  "twitter4j-core"    % "4.0.6"            % Compile,
     "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
   ) ++ servletApiDependencies ++ testDependencies
 ).dependsOn(framework)
