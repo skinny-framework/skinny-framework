@@ -17,7 +17,7 @@ class Bootstrap extends SkinnyLifeCycle {
   }
   */
 
-  override def initSkinnyApp(ctx: ServletContext) {
+  override def initSkinnyApp(ctx: ServletContext): Unit = {
     // http://skinny-framework.org/documentation/worker_jobs.html
     //skinnyWorkerService.everyFixedSeconds(sampleWorker, 3)
 
