@@ -6,17 +6,17 @@ import scala.language.postfixOps
 
 lazy val currentVersion = "2.3.4"
 
-lazy val skinnyMicroVersion = "1.2.2"
+lazy val skinnyMicroVersion = "1.2.3"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
-lazy val kuromojiVersion = "6.3.0"
-lazy val mockitoVersion = "2.6.2"
-lazy val jettyVersion = "9.3.15.v20161220"
-lazy val logbackVersion = "1.1.8"
+lazy val kuromojiVersion = "6.4.1"
+lazy val mockitoVersion = "2.7.2"
+lazy val jettyVersion = "9.3.16.v20170120"
+lazy val logbackVersion = "1.1.9"
 lazy val slf4jApiVersion = "1.7.22"
 lazy val scalaTestVersion = "3.0.1"
 lazy val commonsIoVersion = "2.5"
-lazy val skinnyLogbackVersion = "1.0.10"
+lazy val skinnyLogbackVersion = "1.0.11"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
@@ -139,7 +139,7 @@ lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
     "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.5.Final" % Test
+    "org.hibernate" %  "hibernate-core" % "5.2.7.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 
@@ -225,7 +225,7 @@ lazy val oauth2Controller = (project in file("oauth2-controller")).settings(base
 lazy val twitterController = (project in file("twitter-controller")).settings(baseSettings).settings(
   name := "skinny-twitter-controller",
   libraryDependencies ++= Seq(
-    "org.twitter4j"        %  "twitter4j-core"    % "4.0.5"            % Compile,
+    "org.twitter4j"        %  "twitter4j-core"    % "4.0.6"            % Compile,
     "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
   ) ++ servletApiDependencies ++ testDependencies
 ).dependsOn(framework)
