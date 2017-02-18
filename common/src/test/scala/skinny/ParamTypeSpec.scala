@@ -134,6 +134,19 @@ class ParamTypeSpec extends FlatSpec with Matchers {
     ParamType.String.unapply(null) should equal(None)
   }
 
+  behavior of "ParamType.NullableString"
+
+  it should "convert raw value to expected type" in {
+    ParamType.NullableString.unapply("abc") should equal(Some("abc"))
+    ParamType.NullableString.unapply(123) should equal(Some("123"))
+    ParamType.NullableString.unapply(123L) should equal(Some("123"))
+    ParamType.NullableString.unapply(1.23D) should equal(Some("1.23"))
+    ParamType.NullableString.unapply(1.23F) should equal(Some("1.23"))
+    ParamType.NullableString.unapply("") should equal(Some(null))
+    ParamType.NullableString.unapply("  ") should equal(Some("  "))
+    ParamType.NullableString.unapply(null) should equal(None)
+  }
+
   behavior of "ParamType.Byte"
 
   it should "convert raw value to expected type" in {

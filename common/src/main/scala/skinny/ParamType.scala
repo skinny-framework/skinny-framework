@@ -82,6 +82,12 @@ object ParamType {
     case v: String => v
     case v => v.toString
   })
+  case object NullableString extends AbstractParamType({
+    case null | None => null
+    case v: String if v.isEmpty => null
+    case v: String => v
+    case v => v.toString
+  })
   case object Byte extends AbstractParamType({
     case v: String if v.trim.isEmpty => null
     case v: String => v.toByte
