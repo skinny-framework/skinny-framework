@@ -241,6 +241,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |  </ul>
           |#end
           |
+          |<div class="pull-right">
+          |  <a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
+          |</div>
+          |
           |<table class="table table-bordered">
           |<thead>
           |  <tr>
@@ -330,6 +334,10 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
           |    </li>
           |  </ul>
           |#end
+          |
+          |<div class="pull-right">
+          |  <a href="${s.url(Controllers.adminMembers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
+          |</div>
           |
           |<table class="table table-bordered">
           |<thead>

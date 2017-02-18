@@ -184,6 +184,9 @@ class ScaffoldScamlGeneratorSpec extends FunSpec with Matchers {
           |    %li
           |      %span #{Math.min(page, totalPages)} / #{totalPages}
           |
+          |%div(class="pull-right")
+          |  %a(href={s.url(Controllers.adminMembers.newUrl)} class="btn btn-primary") #{s.i18n.getOrKey("new")}
+          |
           |%table(class="table table-bordered")
           |  %thead
           |    %tr

@@ -258,6 +258,10 @@ class DevelopersController extends SkinnyResource with ApplicationController {
   </ul>
 #end
 
+<div class="pull-right">
+  <a href="${s.url(Controllers.developers.newUrl)}" class="btn btn-primary">${s.i18n.getOrKey("new")}</a>
+</div>
+
 <table class="table table-bordered">
 <thead>
   <tr>
