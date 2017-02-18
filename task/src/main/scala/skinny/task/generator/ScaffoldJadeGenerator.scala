@@ -185,6 +185,9 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |    li
         |      span #{Math.min(page, totalPages)} / #{totalPages}
         |
+        |div(class="pull-right")
+        |  a(href={s.url(${controllerName}.newUrl)} class="btn btn-primary") #{s.i18n.getOrKey("new")}
+        |
         |table(class="table table-bordered")
         |  thead
         |    tr
