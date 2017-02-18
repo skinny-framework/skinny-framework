@@ -110,11 +110,11 @@ class ProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
       }
       post(s"/programmers/${id}.json?csrf-token=aaaaaa") {
         status should equal(404)
-        header("Content-Type") should equal("application/json; charset=utf-8")
+        header("Content-Type") should fullyMatch regex ("application/json;\\s*charset=utf-8")
       }
       post(s"/programmers/${id}.xml?csrf-token=aaaaaa") {
         status should equal(404)
-        header("Content-Type") should equal("application/xml; charset=utf-8")
+        header("Content-Type") should fullyMatch regex ("application/xml;\\s*charset=utf-8")
       }
     }
   }
