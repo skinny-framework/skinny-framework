@@ -6,17 +6,17 @@ import scala.language.postfixOps
 
 lazy val currentVersion = "2.3.4"
 
-lazy val skinnyMicroVersion = "1.2.3"
+lazy val skinnyMicroVersion = "1.2.4"
 lazy val scalikeJDBCVersion = "2.5.0"
 lazy val h2Version = "1.4.193"
 lazy val kuromojiVersion = "6.4.1"
 lazy val mockitoVersion = "2.7.2"
 lazy val jettyVersion = "9.3.16.v20170120"
-lazy val logbackVersion = "1.1.9"
+lazy val logbackVersion = "1.1.10"
 lazy val slf4jApiVersion = "1.7.22"
 lazy val scalaTestVersion = "3.0.1"
 lazy val commonsIoVersion = "2.5"
-lazy val skinnyLogbackVersion = "1.0.11"
+lazy val skinnyLogbackVersion = "1.0.12"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
