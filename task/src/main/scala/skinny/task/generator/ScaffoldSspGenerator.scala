@@ -247,9 +247,9 @@ trait ScaffoldSspGenerator extends ScaffoldGenerator {
         |  </ul>
         |#end
         |
-        |<div class="pull-right">
+        |<p class="pull-right">
         |  <a href="$${s.url(${controllerName}.newUrl)}" class="btn btn-primary">$${s.i18n.getOrKey("new")}</a>
-        |</div>
+        |</p>
         |
         |<table class="table table-bordered">
         |<thead>
