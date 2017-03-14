@@ -783,4 +783,12 @@ trait AssociationsFeature[Entity]
     )
   }
 
+  def countQueryWithAssociations: SelectSQLBuilder[Entity] = {
+    selectQueryWithAdditionalAssociations(
+      simpleCountQuery,
+      belongsToAssociations,
+      hasOneAssociations,
+      hasManyAssociations
+    )
+  }
 }
