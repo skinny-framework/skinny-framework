@@ -238,9 +238,16 @@ class SkinnyORMSpec extends fixture.FunSpec with Matchers
         Member.countBy(sqls.eq(s.countryId, countryId))) should be > (0L)
     }
 
-    it("should have #countBy(SQLSyntax) with associations joins") { implicit session =>
+    it("should have #countBy(SQLSyntax) with associations hasMany(byDefault)") { implicit session =>
+      val n = Name.defaultAlias
+      val mn = Member.mentoreeAlias
+      val bobId = Member.joins(Member.name).findBy(sqls.eq(n.first, "Bob").and.eq(n.last, "Marley"))
+
+      Member.joins[Long](Member.mentorees).countBy(sqls.eq(mn.id, 1)) should be > (0L)
+    }
+
+    it("should have #countBy(SQLSyntax) with associations hasManyThrough") { implicit session =>
       val skillName = Skill.limit(1).offset(0).apply().map(_.name).head
-      println(skillName)
       val s = Skill.defaultAlias
       Member.joins[Long](Member.skillsSimpleRef).countBy(sqls.eq(s.name, skillName)) should be > (0L)
     }
