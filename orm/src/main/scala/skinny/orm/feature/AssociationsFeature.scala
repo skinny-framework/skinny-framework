@@ -416,13 +416,26 @@ trait AssociationsFeature[Entity]
    * @return select query builder
    */
   override def defaultSelectQuery: SelectSQLBuilder[Entity] = {
+    buildDefaultJoins(super.defaultSelectQuery)
+  }
+
+  /**
+   * Returns th count query builder for this mapper.
+   *
+   * @return select query builder
+   */
+  override def simpleCountQuery: SelectSQLBuilder[Entity] = {
+    buildDefaultJoins(super.simpleCountQuery)
+  }
+
+  private[this] def buildDefaultJoins(selectQuery: SelectSQLBuilder[Entity]): SelectSQLBuilder[Entity] = {
     // Notice: LinkedHashSet because elements in the order they were inserted
     val definitions = defaultJoinDefinitions.foldLeft(mutable.LinkedHashSet[JoinDefinition[_]]()) { (dfs, df) =>
       val currentName = df.rightAlias.tableAliasName
       val duplicated = dfs.exists(d => d.rightAlias.tableAliasName == currentName)
       if (duplicated) dfs else dfs + df
     }
-    definitions.foldLeft(super.defaultSelectQuery) { (query, join) =>
+    definitions.foldLeft(selectQuery) { (query, join) =>
       join.joinType match {
         case InnerJoin if join.enabledByDefault => query.innerJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
         case LeftOuterJoin if join.enabledByDefault => query.leftJoin(join.rightMapper.as(join.rightAlias)).on(join.on)
