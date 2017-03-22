@@ -411,7 +411,7 @@ trait AssociationsFeature[Entity]
   }
 
   /**
-   * Returns th default select query builder for this mapper.
+   * Returns the default select query builder for this mapper.
    *
    * @return select query builder
    */
@@ -420,7 +420,7 @@ trait AssociationsFeature[Entity]
   }
 
   /**
-   * Returns th count query builder for this mapper.
+   * Returns the count query builder for this mapper.
    *
    * @return select query builder
    */
