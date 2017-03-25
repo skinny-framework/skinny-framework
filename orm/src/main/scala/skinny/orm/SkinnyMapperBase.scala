@@ -33,6 +33,11 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   def singleSelectQuery: SelectSQLBuilder[Entity] = select.from(as(defaultAlias))
 
   /**
+   * Returns simple select count query.
+   */
+  def simpleCountQuery: SelectSQLBuilder[Entity] = select(sqls.count).from(as(defaultAlias))
+
+  /**
    * Returns select query builder.
    */
   def defaultSelectQuery: SelectSQLBuilder[Entity] = singleSelectQuery

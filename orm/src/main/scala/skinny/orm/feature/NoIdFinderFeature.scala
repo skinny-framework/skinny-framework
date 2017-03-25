@@ -37,7 +37,7 @@ trait NoIdFinderFeature[Entity]
    */
   def countBy(where: SQLSyntax)(implicit s: DBSession = autoSession): Long = {
     withSQL {
-      select(sqls.count).from(as(defaultAlias)).where(where).and(defaultScopeWithDefaultAlias)
+      countQueryWithAssociations.where(where).and(defaultScopeWithDefaultAlias)
     }.map(_.long(1)).single.apply().getOrElse(0L)
   }
 
