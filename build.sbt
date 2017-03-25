@@ -4,19 +4,19 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.5"
+lazy val currentVersion = "2.3.6-SNAPSHOT"
 
-lazy val skinnyMicroVersion = "1.2.4"
-lazy val scalikeJDBCVersion = "2.5.0"
-lazy val h2Version = "1.4.193"
-lazy val kuromojiVersion = "6.4.1"
-lazy val mockitoVersion = "2.7.2"
-lazy val jettyVersion = "9.3.16.v20170120"
-lazy val logbackVersion = "1.1.10"
-lazy val slf4jApiVersion = "1.7.22"
+lazy val skinnyMicroVersion = "1.2.5"
+lazy val scalikeJDBCVersion = "2.5.1"
+lazy val h2Version = "1.4.194"
+lazy val kuromojiVersion = "6.4.2"
+lazy val mockitoVersion = "2.7.19"
+lazy val jettyVersion = "9.3.17.v20170317"
+lazy val logbackVersion = "1.2.2"
+lazy val slf4jApiVersion = "1.7.25"
 lazy val scalaTestVersion = "3.0.1"
 lazy val commonsIoVersion = "2.5"
-lazy val skinnyLogbackVersion = "1.0.12"
+lazy val skinnyLogbackVersion = "1.0.13"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
@@ -139,7 +139,7 @@ lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
     "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.7.Final" % Test
+    "org.hibernate" %  "hibernate-core" % "5.2.9.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 
@@ -308,7 +308,7 @@ lazy val slf4jApiDependencies   = Seq(
   "org.slf4j"     % "slf4j-api"         % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time"     %  "joda-time"        % "2.9.7" % Compile,
+  "joda-time"     %  "joda-time"        % "2.9.9" % Compile,
   "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
