@@ -21,7 +21,7 @@ trait DBSettingsInitializer {
   def initialize(force: Boolean = false): Unit = {
     state.synchronized {
       if (force || !state.alreadyInitialized) {
-        if (!dbs.dbNames.isEmpty) {
+        if (dbs.dbNames.nonEmpty) {
           dbs.setupAll()
         } else {
           throw new DBSettingsException(s"""
