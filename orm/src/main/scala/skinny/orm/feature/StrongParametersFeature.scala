@@ -1,6 +1,7 @@
 package skinny.orm.feature
 
 import skinny.ParamType
+import scala.annotation.tailrec
 
 /**
  * Strong parameters support.
@@ -33,6 +34,7 @@ trait StrongParametersFeature {
    * @param maybeOption an Any that you suspect may be an Option
    * @return recursively flattened version of the passed in argument
    */
+  @tailrec
   private def recFlattenOption(maybeOption: Any): Any = maybeOption match {
     case Some(x) => recFlattenOption(x)
     case _ => maybeOption // is not something that needs flattening
