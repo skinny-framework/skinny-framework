@@ -15,10 +15,10 @@ trait PerRequestFilterBase extends Filter {
   protected def isDBSessionRequired(req: HttpServletRequest): Boolean = {
     val contextPath = req.getServletContext.getContextPath
     val path = req.getRequestURI
-    val shouldBeExcluded = except.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
+    val shouldBeExcluded = except.exists(regexp => path.matches(s"${contextPath}${regexp}"))
     if (!shouldBeExcluded) {
       val allPathShouldBeIncluded = only.isEmpty
-      val shouldBeIncluded = only.find(regexp => path.matches(s"${contextPath}${regexp}")).isDefined
+      val shouldBeIncluded = only.exists(regexp => path.matches(s"${contextPath}${regexp}"))
       allPathShouldBeIncluded || shouldBeIncluded
     } else {
       false
