@@ -11,7 +11,7 @@ import skinny.orm.feature.includes.IncludesQueryRepository
 import skinny.orm.feature.associations._
 import skinny.util.JavaReflectAPI
 
-import scala.collection.mutable
+import scala.collection.{ breakOut, mutable }
 import scala.util.Try
 
 object AssociationsFeature {
@@ -62,16 +62,16 @@ trait AssociationsFeature[Entity]
   val associations = new mutable.LinkedHashSet[Association[_]]
 
   private[skinny] def belongsToAssociations: Seq[BelongsToAssociation[Entity]] = {
-    associations.filter(_.isInstanceOf[BelongsToAssociation[Entity]])
-      .map(_.asInstanceOf[BelongsToAssociation[Entity]]).toSeq
+    associations.withFilter(_.isInstanceOf[BelongsToAssociation[Entity]])
+      .map(_.asInstanceOf[BelongsToAssociation[Entity]])(breakOut)
   }
   private[skinny] def hasOneAssociations: Seq[HasOneAssociation[Entity]] = {
-    associations.filter(_.isInstanceOf[HasOneAssociation[Entity]])
-      .map(_.asInstanceOf[HasOneAssociation[Entity]]).toSeq
+    associations.withFilter(_.isInstanceOf[HasOneAssociation[Entity]])
+      .map(_.asInstanceOf[HasOneAssociation[Entity]])(breakOut)
   }
   private[skinny] def hasManyAssociations: Seq[HasManyAssociation[Entity]] = {
-    associations.filter(_.isInstanceOf[HasManyAssociation[Entity]])
-      .map(_.asInstanceOf[HasManyAssociation[Entity]]).toSeq
+    associations.withFilter(_.isInstanceOf[HasManyAssociation[Entity]])
+      .map(_.asInstanceOf[HasManyAssociation[Entity]])(breakOut)
   }
 
   /**

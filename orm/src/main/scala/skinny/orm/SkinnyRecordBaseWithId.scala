@@ -76,7 +76,7 @@ trait SkinnyRecordBaseWithId[Id, Entity] {
   protected def attributesToPersist(): Seq[(SQLSyntax, Any)] = {
     JavaReflectAPI.getterNames(this)
       .filter { name => skinnyCRUDMapper.isValidFieldName(name) }
-      .filterNot { name => excludedFieldNamesWhenSaving.exists(_ == name) }
+      .filterNot { name => excludedFieldNamesWhenSaving.contains(name) }
       .map { name =>
         (skinnyCRUDMapper.column.field(name), JavaReflectAPI.getter(this, name))
       }
