@@ -42,7 +42,7 @@ case class Request(var url: String) {
   var readTimeoutMillis = HTTP.defaultReadTimeoutMillis
 
   var referer: Option[String] = None
-  var userAgent: Option[String] = Some("skinny-http-client default user agent - http://skinny-framework.org/")
+  var userAgent: Option[String] = Some("skinny-http-client default user agent - skinny-framework.org")
   var charset: Option[String] = Some("UTF-8")
 
   var headers: mutable.Map[String, String] = mutable.HashMap[String, String]()
