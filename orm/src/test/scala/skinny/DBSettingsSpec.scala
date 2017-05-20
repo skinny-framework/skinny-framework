@@ -14,7 +14,9 @@ class DBSettingsSpec extends FlatSpec with DBSettingsInitializer {
       initialize(true)
       destroy()
     } finally {
-      System.setProperty(SkinnyEnv.EnvKey, originalValue)
+      if (originalValue != null) {
+        System.setProperty(SkinnyEnv.EnvKey, originalValue)
+      }
     }
   }
 
