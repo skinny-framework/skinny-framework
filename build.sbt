@@ -4,19 +4,19 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.6"
+lazy val currentVersion = "2.3.7"
 
-lazy val skinnyMicroVersion = "1.2.5"
-lazy val scalikeJDBCVersion = "2.5.1"
-lazy val h2Version = "1.4.194"
+lazy val skinnyMicroVersion = "1.2.6"
+lazy val scalikeJDBCVersion = "2.5.2"
+lazy val h2Version = "1.4.195"
 lazy val kuromojiVersion = "6.4.2"
-lazy val mockitoVersion = "2.7.19"
-lazy val jettyVersion = "9.3.17.v20170317"
-lazy val logbackVersion = "1.2.2"
+lazy val mockitoVersion = "2.7.22"
+lazy val jettyVersion = "9.3.19.v20170502"
+lazy val logbackVersion = "1.2.3"
 lazy val slf4jApiVersion = "1.7.25"
-lazy val scalaTestVersion = "3.0.1"
+lazy val scalaTestVersion = "3.0.3"
 lazy val commonsIoVersion = "2.5"
-lazy val skinnyLogbackVersion = "1.0.13"
+lazy val skinnyLogbackVersion = "1.0.14"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
@@ -66,7 +66,7 @@ lazy val common = (project in file("common")).settings(baseSettings).settings(
       "org.apache.lucene"    %  "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
     ) ++ (scalaVersion.value match {
       case v if v.startsWith("2.11.") || v.startsWith("2.12.") =>
-        Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.5" % Compile)
+        Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6" % Compile)
       case _ => Nil
     })
   }
@@ -138,8 +138,8 @@ lazy val task = (project in file("task")).settings(baseSettings).settings(
 lazy val orm = (project in file("orm")).settings(baseSettings).settings(
   name := "skinny-orm",
   libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-    "org.flywaydb"  %  "flyway-core"    % "4.0.3"       % Compile,
-    "org.hibernate" %  "hibernate-core" % "5.2.9.Final" % Test
+    "org.flywaydb"  %  "flyway-core"    % "4.0.3"        % Compile,
+    "org.hibernate" %  "hibernate-core" % "5.2.10.Final" % Test
   ) ++ testDependencies
 ).dependsOn(common)
 

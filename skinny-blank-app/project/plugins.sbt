@@ -7,9 +7,7 @@ resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositor
 fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 
 // Much fatster dependency resolver - https://github.com/alexarchambault/coursier
-// If you don't mind the following issue (breaking sbt console), enabling this would be life-changing!
-// https://github.com/alexarchambault/coursier/issues/378
-// addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M15-1")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC3")
 
 // --------
 // scalac options for sbt
@@ -17,7 +15,7 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // --------
 // Servlet app packager/runner plugin
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.3")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.4")
 
 // Scalate template files precompilation
 addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")

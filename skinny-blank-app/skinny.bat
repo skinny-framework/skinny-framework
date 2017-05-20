@@ -221,7 +221,7 @@ IF "%command%"=="db:repair" (
 
 IF %command%==eclipse (
   IF NOT EXIST "project\_skinny_eclipse.sbt" (
-    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"4.0.0^"^) > "project\_skinny_eclipse.sbt"
+    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"5.1.0^"^) > "project\_skinny_eclipse.sbt"
   )
   sbt eclipse
   GOTO script_eof
@@ -250,7 +250,7 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.3^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.4^"^) > "project\_skinny_assembly.sbt"
     (
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
       ECHO _root_.sbt.Keys.test in assembly := {}
@@ -384,7 +384,7 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.15"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.16"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
@@ -392,9 +392,9 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO   unmanagedSourceDirectories in Compile ^<= baseDirectory^(_ / "scala"^).value, >> "_skinny_scalajs_settings.sbt"
   ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.1", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.2", >> "_skinny_scalajs_settings.sbt"
   ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.1", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "io.monix"     %%%%  "minitest"        %% "0.27" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO     "io.monix"     %%%%  "minitest"        %% "1.1.1" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO   ^), >> "_skinny_scalajs_settings.sbt"
   ECHO   crossTarget in Compile := baseDirectory^(_ / ".." / ".." / "assets" / "js"^).value >> "_skinny_scalajs_settings.sbt"
   ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"
