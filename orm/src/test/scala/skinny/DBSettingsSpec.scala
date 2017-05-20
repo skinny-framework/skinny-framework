@@ -2,7 +2,7 @@ package skinny
 
 import org.scalatest.FlatSpec
 
-class DBSettingsSpec extends FlatSpec with DBSettings with DBSettingsInitializer {
+class DBSettingsSpec extends FlatSpec with DBSettingsInitializer {
 
   behavior of "DBSettings"
 
