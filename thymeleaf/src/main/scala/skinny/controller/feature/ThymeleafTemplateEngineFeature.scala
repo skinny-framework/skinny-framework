@@ -9,48 +9,48 @@ import nz.net.ultraq.thymeleaf.LayoutDialect
 import skinny.micro.context.SkinnyContext
 
 /**
- * Thymeleaf template engine support.
- *
- * @see http://www.thymeleaf.org/
- */
+  * Thymeleaf template engine support.
+  *
+  * @see http://www.thymeleaf.org/
+  */
 trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
 
   /**
-   * Set as cacheable if true.
-   */
+    * Set as cacheable if true.
+    */
   lazy val thymeleafCacheable: Boolean = !isDevelopment()
 
   /**
-   * Default template mode.
-   */
+    * Default template mode.
+    */
   lazy val thymeleafResolverTemplateMode: String = "LEGACYHTML5"
 
   /**
-   * Resolver template prefix.
-   */
+    * Resolver template prefix.
+    */
   lazy val thymeleafResolverPrefix: String = {
     if (SkinnyEnv.isTest()) "WEB-INF/views/"
     else "/WEB-INF/views/"
   }
 
   /**
-   * Resolver template suffix.
-   */
+    * Resolver template suffix.
+    */
   lazy val thymeleafResolverSuffix: String = ".html"
 
   /**
-   * Template cache ttl milliseconds.
-   */
+    * Template cache ttl milliseconds.
+    */
   lazy val thymeleafResolverCacheTTLMs: Long = 3600000L
 
   /**
-   * Dialects for this Thymeleaf Template Engine.
-   */
+    * Dialects for this Thymeleaf Template Engine.
+    */
   lazy val thymeleafDialects: Set[_ <: IDialect] = Set(new LayoutDialect)
 
   /**
-   * Resolver.
-   */
+    * Resolver.
+    */
   lazy val thymeleafResolver: TemplateResolver = {
     val resolver: TemplateResolver = {
       if (SkinnyEnv.isTest()) new ClassLoaderTemplateResolver
@@ -66,8 +66,8 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   /**
-   * Template engine.
-   */
+    * Template engine.
+    */
   lazy val thymeleafTemplateEngine: TemplateEngine = {
     val engine = new TemplateEngine
     engine.setTemplateResolver(thymeleafResolver)
@@ -89,8 +89,8 @@ trait ThymeleafTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): String = {
     val context = new WebContext(ctx.request, ctx.response, ctx.servletContext)
     requestScope(ctx).foreach {

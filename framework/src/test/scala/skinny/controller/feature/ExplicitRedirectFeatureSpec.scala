@@ -8,7 +8,7 @@ class ExplicitRedirectFeatureSpec extends ScalatraFlatSpec {
   behavior of "ExplicitRedirectFeature"
 
   object App extends SkinnyController {
-    def r = redirect("/foo")
+    def r    = redirect("/foo")
     def r301 = redirect301("/foo")
     def r302 = redirect302("/foo")
     def r303 = redirect303("/foo")

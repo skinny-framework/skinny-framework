@@ -6,8 +6,13 @@ import scalikejdbc.scalatest.AutoRollback
 import skinny.logging.Logging
 import skinny.test.FactoryGirl
 
-class userAdminSpec extends fixture.FunSpec with Matchers
-    with Connection with CreateTables with AutoRollback with Logging {
+class userAdminSpec
+    extends fixture.FunSpec
+    with Matchers
+    with Connection
+    with CreateTables
+    with AutoRollback
+    with Logging {
 
   override def db(): DB = NamedDB('sysadmin).toDB()
 

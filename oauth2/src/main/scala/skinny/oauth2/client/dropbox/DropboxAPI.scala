@@ -6,8 +6,8 @@ import skinny.json.JSONStringOps
 import scala.util.control.NonFatal
 
 /**
- * Dropbox API client.
- */
+  * Dropbox API client.
+  */
 trait DropboxAPI extends LoggerProvider {
 
   def accountInfo(token: OAuth2Token): Option[DropboxUser] = {

@@ -35,36 +35,34 @@ create table article (
   runIfFailed(sql"select count(1) from article")
 }
 
-class Issue347Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Issue347Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(userId: Long, name: String, createdAt: DateTime, articles: Seq[Article] = Nil)
   case class Article(id: Long, title: String, userId: Option[Long], user: Option[User] = None)
 
   object User extends SkinnyCRUDMapper[User] {
-    override val connectionPoolName = 'issue347
+    override val connectionPoolName  = 'issue347
     override val primaryKeyFieldName = "userId"
-    override def defaultAlias = createAlias("u")
+    override def defaultAlias        = createAlias("u")
 
     lazy val articlesRef = hasMany[Article](
       many = Article -> Article.defaultAlias,
       on = (u, a) => sqls.eq(u.userId, a.userId),
       merge = (u, as) => u.copy(articles = as)
     ).includes[Article](
-      merge = {
-      (users, articles) =>
-        users.map { user => user.copy(articles = articles.filter(_.userId.exists(_ == user.userId))) }
-    }
+      merge = { (users, articles) =>
+        users.map { user =>
+          user.copy(articles = articles.filter(_.userId.exists(_ == user.userId)))
+        }
+      }
     )
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn, "articles")
   }
 
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = 'issue347
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'issue347
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
     lazy val userRef = belongsTo[User](
@@ -77,11 +75,11 @@ class Issue347Spec extends fixture.FunSpec with Matchers
 
   override def fixture(implicit session: DBSession): Unit = {
     val aliceId = User.createWithAttributes('name -> "Alice")
-    val bobId = User.createWithAttributes('name -> "Bob") // Scala
+    val bobId   = User.createWithAttributes('name -> "Bob") // Scala
     val chrisId = User.createWithAttributes('name -> "Chris") // Scala
-    val denId = User.createWithAttributes('name -> "Den")
-    val ericId = User.createWithAttributes('name -> "Eric") // Scala
-    val fredId = User.createWithAttributes('name -> "Fred")
+    val denId   = User.createWithAttributes('name -> "Den")
+    val ericId  = User.createWithAttributes('name -> "Eric") // Scala
+    val fredId  = User.createWithAttributes('name -> "Fred")
 
     val titleAndUser = Seq(
       ("Hello World", Some(aliceId)),

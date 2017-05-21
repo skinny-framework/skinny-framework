@@ -4,8 +4,7 @@ import skinny.controller.feature.TypetalkLoginFeature
 import skinny.oauth2.client.OAuth2User
 import skinny.oauth2.client.typetalk.TypetalkUser
 
-class TypetalkController extends ApplicationController
-    with TypetalkLoginFeature {
+class TypetalkController extends ApplicationController with TypetalkLoginFeature {
 
   override def redirectURI = "http://127.0.0.1:8080/example/typetalk/callback"
 
@@ -24,4 +23,3 @@ class TypetalkController extends ApplicationController
   }
 
 }
-

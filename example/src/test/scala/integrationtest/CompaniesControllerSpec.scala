@@ -28,7 +28,7 @@ class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
       val acts = fromJSONString[List[Company]](body)
       acts should not equal (None)
       acts.get should not be (empty)
-      atLeast(1, acts.get) should have('name(company.name))
+      atLeast(1, acts.get) should have('name (company.name))
     }
     get("/companies.xml") {
       logger.debug(body)
@@ -67,7 +67,11 @@ class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
       post(s"/companies", "csrf-token" -> "12345") {
         status should equal(400)
       }
-      post(s"/companies", "name" -> newName, "url" -> "http://www.example.com/", "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
+      post(s"/companies",
+           "name"       -> newName,
+           "url"        -> "http://www.example.com/",
+           "updatedAt"  -> "2013-01-02 12:34:56",
+           "csrf-token" -> "12345") {
         status should equal(302)
         val id = header("Location").split("/").last.toLong
         Company.findById(CompanyId(id)).isDefined should equal(true)
@@ -89,7 +93,10 @@ class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
     Company.findById(company.id).get.name should not equal (newName)
 
     withSession("csrf-token" -> "12345") {
-      put(s"/companies/${company.id}", "name" -> newName, "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
+      put(s"/companies/${company.id}",
+          "name"       -> newName,
+          "updatedAt"  -> "2013-01-02 12:34:56",
+          "csrf-token" -> "12345") {
         status should equal(302)
       }
       put(s"/companies/${company.id}", "csrf-token" -> "12345") {

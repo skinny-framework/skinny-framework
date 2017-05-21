@@ -4,11 +4,11 @@ import java.lang.reflect.Method
 import org.apache.velocity.util.introspection.VelMethod
 
 /**
- * Rewrite of access to method
- *
- * @param method original method
- * @param fun function to be executed instead of the original method
- */
+  * Rewrite of access to method
+  *
+  * @param method original method
+  * @param fun function to be executed instead of the original method
+  */
 class RewriteVelMethod(method: Method, fun: (AnyRef, Array[AnyRef]) => AnyRef) extends VelMethod {
 
   override def getMethodName: String = method.getName

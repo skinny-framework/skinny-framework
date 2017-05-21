@@ -1,6 +1,6 @@
 package unit
 
-import scalikejdbc.{ LoggingSQLAndTimeSettings, GlobalSettings }
+import scalikejdbc.{ GlobalSettings, LoggingSQLAndTimeSettings }
 
 trait DBSettings {
 

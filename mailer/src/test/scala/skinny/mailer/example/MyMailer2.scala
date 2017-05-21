@@ -3,11 +3,11 @@ package skinny.mailer.example
 import javax.mail.Session
 import java.util.Properties
 import skinny.SkinnyEnv
-import skinny.mailer.{ SkinnyMailerConfigApi, SkinnyMailer }
+import skinny.mailer.{ SkinnyMailer, SkinnyMailerConfigApi }
 
 object MyMailer2 extends SkinnyMailer {
 
-  implicit override def session = Session.getInstance(new Properties())
+  implicit override def session   = Session.getInstance(new Properties())
   implicit override def transport = session.getTransport("smtp")
 
   override def config = new SkinnyMailerConfigApi {
@@ -33,7 +33,7 @@ object MyMailer2 extends SkinnyMailer {
   }
 
   def deliverMultipleMessages(toAddress: String) = {
-    val t = transport
+    val t       = transport
     val message = mail(to = Seq(toAddress))
     for (i <- 0 until 3) message.deliver(t, true)
     t.close

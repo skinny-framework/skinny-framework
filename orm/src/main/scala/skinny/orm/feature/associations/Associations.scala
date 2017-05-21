@@ -6,30 +6,30 @@ import skinny.orm.feature._
 import scala.collection.mutable
 
 /**
- * Association.
- *
- * @tparam Entity entity
- */
+  * Association.
+  *
+  * @tparam Entity entity
+  */
 sealed trait Association[Entity] {
 
   /**
-   * ORM mapper instance.
-   */
+    * ORM mapper instance.
+    */
   def mapper: AssociationsFeature[Entity]
 
   /**
-   * Join definitions.
-   */
+    * Join definitions.
+    */
   def joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]]
 
   /**
-   * Enables extractor by default.
-   */
+    * Enables extractor by default.
+    */
   def setExtractorByDefault(): Unit
 
   /**
-   * Activates this association by default.
-   */
+    * Activates this association by default.
+    */
   def byDefault: Association[Entity] = {
     joinDefinitions.foreach { joinDef =>
       joinDef.byDefault(joinDef.enabledEvenIfAssociated)
@@ -43,13 +43,13 @@ sealed trait Association[Entity] {
 }
 
 /**
- * BelongsTo relation.
- *
- * @param mapper mapper
- * @param joinDefinitions join definitions
- * @param extractor extractor
- * @tparam Entity entity
- */
+  * BelongsTo relation.
+  *
+  * @param mapper mapper
+  * @param joinDefinitions join definitions
+  * @param extractor extractor
+  * @tparam Entity entity
+  */
 case class BelongsToAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],
@@ -64,13 +64,13 @@ case class BelongsToAssociation[Entity](
 }
 
 /**
- * HasOne association.
- *
- * @param mapper mapper
- * @param joinDefinitions join definitions
- * @param extractor extractor
- * @tparam Entity entity
- */
+  * HasOne association.
+  *
+  * @param mapper mapper
+  * @param joinDefinitions join definitions
+  * @param extractor extractor
+  * @tparam Entity entity
+  */
 case class HasOneAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],
@@ -85,13 +85,13 @@ case class HasOneAssociation[Entity](
 }
 
 /**
- * HasMany association.
- *
- * @param mapper mapper
- * @param joinDefinitions join definitions
- * @param extractor extractor
- * @tparam Entity entity
- */
+  * HasMany association.
+  *
+  * @param mapper mapper
+  * @param joinDefinitions join definitions
+  * @param extractor extractor
+  * @tparam Entity entity
+  */
 case class HasManyAssociation[Entity](
     mapper: AssociationsFeature[Entity],
     joinDefinitions: mutable.LinkedHashSet[JoinDefinition[_]],

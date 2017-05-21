@@ -26,16 +26,13 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from blog")
 }
 
-class Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
   override def db(): DB = NamedDB('test007).toDB()
 
   case class Blog(id: Long, name: String, articles: Seq[Article] = Seq.empty)
   object Blog extends SkinnyCRUDMapper[Blog] {
-    override val connectionPoolName = 'test007
-    override def defaultAlias = createAlias("b")
+    override val connectionPoolName                                  = 'test007
+    override def defaultAlias                                        = createAlias("b")
     override def extract(rs: WrappedResultSet, rn: ResultName[Blog]) = autoConstruct(rs, rn, "articles")
 
     hasMany[Article](
@@ -44,10 +41,15 @@ class Spec extends fixture.FunSpec with Matchers
       merge = (blog, articles) => blog.copy(articles = articles)
     ).byDefault
   }
-  case class Article(id: Long, blogId: Long, title: String, body: String, createdAt: DateTime, blog: Option[Blog] = None)
+  case class Article(id: Long,
+                     blogId: Long,
+                     title: String,
+                     body: String,
+                     createdAt: DateTime,
+                     blog: Option[Blog] = None)
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = 'test007
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'test007
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "blog")
 
     lazy val blogRef = belongsTo[Blog](Blog, (a, b) => a.copy(blog = b))

@@ -3,7 +3,7 @@ package model
 import scalikejdbc._
 import org.joda.time._
 import skinny.orm.SkinnyCRUDMapper
-import skinny.orm.feature.{ TimestampsFeature, SoftDeleteWithTimestampFeature }
+import skinny.orm.feature.{ SoftDeleteWithTimestampFeature, TimestampsFeature }
 
 case class Programmer(
     id: Long,
@@ -34,31 +34,38 @@ case class Programmer(
   }
 }
 
-object Programmer extends SkinnyCRUDMapper[Programmer]
+object Programmer
+    extends SkinnyCRUDMapper[Programmer]
     with TimestampsFeature[Programmer]
     with SoftDeleteWithTimestampFeature[Programmer] {
 
-  override lazy val defaultAlias = createAlias("p")
+  override lazy val defaultAlias   = createAlias("p")
   override lazy val nameConverters = Map("At$" -> "_timestamp")
 
-  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer = autoConstruct(rs, p, "company", "skills")
+  override def extract(rs: WrappedResultSet, p: ResultName[Programmer]): Programmer =
+    autoConstruct(rs, p, "company", "skills")
 
   private val c = Company.defaultAlias
 
-  belongsToWithJoinCondition[Company](Company, sqls.eq(defaultAlias.companyId, c.id).and.isNull(c.deletedAt), (p, c) => p.copy(company = c)).byDefault
+  belongsToWithJoinCondition[Company](Company,
+                                      sqls.eq(defaultAlias.companyId, c.id).and.isNull(c.deletedAt),
+                                      (p, c) => p.copy(company = c)).byDefault
 
   hasManyThrough[Skill](ProgrammerSkill, Skill, (p, skills) => p.copy(skills = skills)).byDefault
 
   private val (p, ps) = (Programmer.defaultAlias, ProgrammerSkill.defaultAlias)
 
-  def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] = extract {
-    withSQL {
-      defaultSelectQuery.where.notIn(
-        p.id,
-        select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)
-      ).and(defaultScopeForUpdateOperations)
-    }
-  }.list.apply()
+  def findNoSkillProgrammers()(implicit session: DBSession = autoSession): List[Programmer] =
+    extract {
+      withSQL {
+        defaultSelectQuery.where
+          .notIn(
+            p.id,
+            select(sqls.distinct(ps.programmerId)).from(ProgrammerSkill as ps)
+          )
+          .and(defaultScopeForUpdateOperations)
+      }
+    }.list.apply()
 
   def deleteByIdCascade(id: Long): Int = DB localTx { implicit s =>
     ProgrammerSkill.withColumns { c =>

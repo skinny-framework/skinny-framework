@@ -38,18 +38,20 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     def toJSONString5 = toJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")), false)
     def toJSONString6 = toPrettyJSONString(List(Sample(1, "Alice"), Sample(2, "Bob")), false)
 
-    val alice = Person(Some("Alice"), null)
-    val bob = Person(Some("Bob"), alice, Nil)
-    val chris = Person(Some("Chris"), alice, Seq(bob))
+    val alice  = Person(Some("Alice"), null)
+    val bob    = Person(Some("Bob"), alice, Nil)
+    val chris  = Person(Some("Chris"), alice, Seq(bob))
     val dennis = Person(Some("Dennis"), alice, Seq(bob, chris))
 
     def toJSONString7 = toJSONString(dennis)
 
     def fromJSON1: Try[Sample] = fromJSONString[Sample]("""{"id":1,"first_name":"Alice"}""")
-    def fromJSON2: Try[List[Sample]] = fromJSONString[List[Sample]]("""[{"id":1,"first_name":"Alice"},{"id":2,"first_name":"Bob"}]""")
+    def fromJSON2: Try[List[Sample]] =
+      fromJSONString[List[Sample]]("""[{"id":1,"first_name":"Alice"},{"id":2,"first_name":"Bob"}]""")
 
     def fromJSON3: Try[Sample] = fromJSONString[Sample]("""{"id":1,"firstName":"Alice"}""")
-    def fromJSON4: Try[List[Sample]] = fromJSONString[List[Sample]]("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
+    def fromJSON4: Try[List[Sample]] =
+      fromJSONString[List[Sample]]("""[{"id":1,"firstName":"Alice"},{"id":2,"firstName":"Bob"}]""")
 
     def fromJSON5: Try[Person] = fromJSONString[Person](
       """{"name":"Dennis","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]},{"name":"Chris","parent":{"name":"Alice","parent":null,"children":[]},"children":[{"name":"Bob","parent":{"name":"Alice","parent":null,"children":[]},"children":[]}]}]}"""
@@ -58,7 +60,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
 
   object Sample2Controller extends SkinnyController {
 
-    override def useUnderscoreKeysForJSON = false
+    override def useUnderscoreKeysForJSON       = false
     override def useJSONVulnerabilityProtection = true
 
     def toJSONString1 = toJSONString(Sample(1, "Alice"))
@@ -103,7 +105,7 @@ class JSONFeatureSpec extends ScalatraFlatSpec {
     // Test the async version
     import scala.concurrent.ExecutionContext.Implicits.global
     val listOfFutureBodies = (1 to 3).map(_ => Future { get("/async") { body } })
-    val fListOfBodies = Future.sequence(listOfFutureBodies)
+    val fListOfBodies      = Future.sequence(listOfFutureBodies)
     Await.result(fListOfBodies, 5.seconds).foreach(_ should equal("""{"id":1,"first_name":"Alice"}"""))
   }
 

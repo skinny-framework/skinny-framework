@@ -8,7 +8,7 @@ class SkinnyFilterActivationSpec extends ScalatraFlatSpec with skinny.Logging {
 
   object Controller extends SkinnyApiController with SkinnyFilterActivation with Routes {
     override def detectTooManyErrorFilterRegistrationAsAnErrorAtSkinnyMicroBase = true
-    def index = "ok"
+    def index                                                                   = "ok"
     get("/")(index).as('index)
   }
   addFilter(Controller, "/*")

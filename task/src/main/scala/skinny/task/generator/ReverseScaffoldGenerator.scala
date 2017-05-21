@@ -7,8 +7,8 @@ import java.util.Locale
 object ReverseScaffoldGenerator extends ReverseScaffoldGenerator
 
 /**
- * Skinny Reverse Generator Task.
- */
+  * Skinny Reverse Generator Task.
+  */
 trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
 
   protected def showUsage = {
@@ -71,12 +71,13 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
       } else {
         true
       }
-      val pkName: Option[String] = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
+      val pkName: Option[String] =
+        if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
       val pkType: Option[ParamType] = if (hasId) {
         columns.find(_.isPrimaryKey).map(_.typeCode).map { code =>
           convertJdbcSqlTypeToParamType(code) match {
             case ParamType.Int => ParamType.Long // auto boxing issue
-            case t => t
+            case t             => t
           }
         }
       } else None
@@ -125,77 +126,80 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
       })
 
       val table = tableName
-      val self = this
+      val self  = this
       val generator = templateType match {
-        case "ssp" => new ScaffoldSspGenerator {
-          override def withId = hasId
-          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
-          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
-          override def connectionPoolName = self.connectionPoolName
-          override def withTimestamps: Boolean = false
-          override def useAutoConstruct = self.useAutoConstruct
-          override def skipDBMigration = true
-          override def tableName = Some(table)
+        case "ssp" =>
+          new ScaffoldSspGenerator {
+            override def withId                  = hasId
+            override def primaryKeyName          = pkName.getOrElse(super.primaryKeyName)
+            override def primaryKeyType          = pkType.getOrElse(super.primaryKeyType)
+            override def connectionPoolName      = self.connectionPoolName
+            override def withTimestamps: Boolean = false
+            override def useAutoConstruct        = self.useAutoConstruct
+            override def skipDBMigration         = true
+            override def tableName               = Some(table)
 
-          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
-          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
+            override def descendingOrderForIndexPage       = self.descendingOrderForIndexPage
+            override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
-          override def sourceDir = self.sourceDir
-          override def testSourceDir = self.testSourceDir
-          override def resourceDir = self.resourceDir
-          override def testResourceDir = self.testResourceDir
-          override def webInfDir = self.webInfDir
-          override def controllerPackage = self.controllerPackage
-          override def controllerPackageDir = self.controllerPackageDir
-          override def modelPackage = self.modelPackage
-          override def modelPackageDir = self.modelPackageDir
-        }
-        case "scaml" => new ScaffoldScamlGenerator {
-          override def withId = hasId
-          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
-          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
-          override def connectionPoolName = self.connectionPoolName
-          override def withTimestamps: Boolean = false
-          override def useAutoConstruct = self.useAutoConstruct
-          override def skipDBMigration = true
-          override def tableName = Some(table)
+            override def sourceDir            = self.sourceDir
+            override def testSourceDir        = self.testSourceDir
+            override def resourceDir          = self.resourceDir
+            override def testResourceDir      = self.testResourceDir
+            override def webInfDir            = self.webInfDir
+            override def controllerPackage    = self.controllerPackage
+            override def controllerPackageDir = self.controllerPackageDir
+            override def modelPackage         = self.modelPackage
+            override def modelPackageDir      = self.modelPackageDir
+          }
+        case "scaml" =>
+          new ScaffoldScamlGenerator {
+            override def withId                  = hasId
+            override def primaryKeyName          = pkName.getOrElse(super.primaryKeyName)
+            override def primaryKeyType          = pkType.getOrElse(super.primaryKeyType)
+            override def connectionPoolName      = self.connectionPoolName
+            override def withTimestamps: Boolean = false
+            override def useAutoConstruct        = self.useAutoConstruct
+            override def skipDBMigration         = true
+            override def tableName               = Some(table)
 
-          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
-          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
+            override def descendingOrderForIndexPage       = self.descendingOrderForIndexPage
+            override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
-          override def sourceDir = self.sourceDir
-          override def testSourceDir = self.testSourceDir
-          override def resourceDir = self.resourceDir
-          override def testResourceDir = self.testResourceDir
-          override def webInfDir = self.webInfDir
-          override def controllerPackage = self.controllerPackage
-          override def controllerPackageDir = self.controllerPackageDir
-          override def modelPackage = self.modelPackage
-          override def modelPackageDir = self.modelPackageDir
-        }
-        case "jade" => new ScaffoldJadeGenerator {
-          override def withId = hasId
-          override def primaryKeyName = pkName.getOrElse(super.primaryKeyName)
-          override def primaryKeyType = pkType.getOrElse(super.primaryKeyType)
-          override def connectionPoolName = self.connectionPoolName
-          override def withTimestamps: Boolean = false
-          override def useAutoConstruct = self.useAutoConstruct
-          override def skipDBMigration = true
-          override def tableName = Some(table)
+            override def sourceDir            = self.sourceDir
+            override def testSourceDir        = self.testSourceDir
+            override def resourceDir          = self.resourceDir
+            override def testResourceDir      = self.testResourceDir
+            override def webInfDir            = self.webInfDir
+            override def controllerPackage    = self.controllerPackage
+            override def controllerPackageDir = self.controllerPackageDir
+            override def modelPackage         = self.modelPackage
+            override def modelPackageDir      = self.modelPackageDir
+          }
+        case "jade" =>
+          new ScaffoldJadeGenerator {
+            override def withId                  = hasId
+            override def primaryKeyName          = pkName.getOrElse(super.primaryKeyName)
+            override def primaryKeyType          = pkType.getOrElse(super.primaryKeyType)
+            override def connectionPoolName      = self.connectionPoolName
+            override def withTimestamps: Boolean = false
+            override def useAutoConstruct        = self.useAutoConstruct
+            override def skipDBMigration         = true
+            override def tableName               = Some(table)
 
-          override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
-          override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
+            override def descendingOrderForIndexPage       = self.descendingOrderForIndexPage
+            override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
-          override def sourceDir = self.sourceDir
-          override def testSourceDir = self.testSourceDir
-          override def resourceDir = self.resourceDir
-          override def testResourceDir = self.testResourceDir
-          override def webInfDir = self.webInfDir
-          override def controllerPackage = self.controllerPackage
-          override def controllerPackageDir = self.controllerPackageDir
-          override def modelPackage = self.modelPackage
-          override def modelPackageDir = self.modelPackageDir
-        }
+            override def sourceDir            = self.sourceDir
+            override def testSourceDir        = self.testSourceDir
+            override def resourceDir          = self.resourceDir
+            override def testResourceDir      = self.testResourceDir
+            override def webInfDir            = self.webInfDir
+            override def controllerPackage    = self.controllerPackage
+            override def controllerPackageDir = self.controllerPackageDir
+            override def modelPackage         = self.modelPackage
+            override def modelPackageDir      = self.modelPackageDir
+          }
         case _ => throw new IllegalArgumentException("Unknown template type: " + templateType)
       }
       generator.run(Seq(namespace, resources, resource) ++ fields)
@@ -206,4 +210,3 @@ trait ReverseScaffoldGenerator extends CodeGenerator with ReverseGenerator {
   }
 
 }
-

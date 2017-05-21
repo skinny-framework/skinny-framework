@@ -35,17 +35,14 @@ create table article (
   runIfFailed(sql"select count(1) from article")
 }
 
-class Issue263Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Issue263Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(id: Long, name: String, createdAt: DateTime, articles: Seq[Article] = Nil)
   case class Article(id: Long, title: String, userId: Option[Long], user: Option[User] = None)
 
   object User extends SkinnyCRUDMapper[User] {
     override val connectionPoolName = 'issue263
-    override def defaultAlias = createAlias("u")
+    override def defaultAlias       = createAlias("u")
 
     lazy val articlesRef = hasMany[Article](
       many = Article -> Article.defaultAlias,
@@ -56,8 +53,8 @@ class Issue263Spec extends fixture.FunSpec with Matchers
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn, "articles")
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = 'issue263
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'issue263
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
     lazy val userRef = belongsTo[User](
@@ -70,11 +67,11 @@ class Issue263Spec extends fixture.FunSpec with Matchers
 
   override def fixture(implicit session: DBSession): Unit = {
     val aliceId = User.createWithAttributes('name -> "Alice")
-    val bobId = User.createWithAttributes('name -> "Bob") // Scala
+    val bobId   = User.createWithAttributes('name -> "Bob") // Scala
     val chrisId = User.createWithAttributes('name -> "Chris") // Scala
-    val denId = User.createWithAttributes('name -> "Den")
-    val ericId = User.createWithAttributes('name -> "Eric") // Scala
-    val fredId = User.createWithAttributes('name -> "Fred")
+    val denId   = User.createWithAttributes('name -> "Den")
+    val ericId  = User.createWithAttributes('name -> "Eric") // Scala
+    val fredId  = User.createWithAttributes('name -> "Fred")
 
     val titleAndUser = Seq(
       ("Hello World", Some(aliceId)),
@@ -104,12 +101,14 @@ class Issue263Spec extends fixture.FunSpec with Matchers
     it("should return expected results") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
 
-      val users = User.joins(User.articlesRef).findAllByWithLimitOffset(
-        where = matchesScala,
-        limit = 2,
-        offset = 1,
-        orderings = Seq(u.name.desc, a.title)
-      )
+      val users = User
+        .joins(User.articlesRef)
+        .findAllByWithLimitOffset(
+          where = matchesScala,
+          limit = 2,
+          offset = 1,
+          orderings = Seq(u.name.desc, a.title)
+        )
 
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       // ascending order, shouldn't include "The Better Java?"
@@ -126,7 +125,8 @@ class Issue263Spec extends fixture.FunSpec with Matchers
     it("should return expected results") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
 
-      val users = User.joins(User.articlesRef)
+      val users = User
+        .joins(User.articlesRef)
         .where(matchesScala)
         .limit(2)
         .offset(1)

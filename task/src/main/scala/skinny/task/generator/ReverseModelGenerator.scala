@@ -7,10 +7,9 @@ import scalikejdbc.metadata.{ Column, Table }
 import skinny.nlp.Inflector
 
 /**
- * Reverse Model generator.
- */
-object ReverseModelGenerator extends ReverseModelGenerator {
-}
+  * Reverse Model generator.
+  */
+object ReverseModelGenerator extends ReverseModelGenerator {}
 
 trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
 
@@ -39,8 +38,8 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
 
   def run(args: List[String]) {
     val (tableName: String, nameWithPackage: Option[String], skinnyEnv: Option[String]) = args match {
-      case tableName :: Nil => (tableName, None, None)
-      case tableName :: nameWithPackage :: Nil => (tableName, Some(nameWithPackage), None)
+      case tableName :: Nil                           => (tableName, None, None)
+      case tableName :: nameWithPackage :: Nil        => (tableName, Some(nameWithPackage), None)
       case tableName :: nameWithPackage :: env :: Nil => (tableName, Some(nameWithPackage), Some(env))
       case _ =>
         showUsage
@@ -52,8 +51,10 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
     val columns: List[Column] = extractColumns(tableName)
 
     val hasId: Boolean = columns.filter(_.isPrimaryKey).size == 1
-    val pkName: Option[String] = if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
-    val pkType: Option[ParamType] = if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
+    val pkName: Option[String] =
+      if (hasId) columns.find(_.isPrimaryKey).map(_.name.toLowerCase(Locale.ENGLISH)).map(toCamelCase) else None
+    val pkType: Option[ParamType] =
+      if (hasId) columns.find(_.isPrimaryKey).map(_.typeCode).map(convertJdbcSqlTypeToParamType) else None
     val fields: Seq[String] = {
       val fields = if (hasId) {
         columns
@@ -96,30 +97,30 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
 
     val (self, _tableName) = (this, tableName)
     val generator = new ModelGenerator {
-      override def withId = hasId
-      override def primaryKeyName = pkName.getOrElse(self.primaryKeyName)
-      override def primaryKeyType = pkType.getOrElse(self.primaryKeyType)
+      override def withId                  = hasId
+      override def primaryKeyName          = pkName.getOrElse(self.primaryKeyName)
+      override def primaryKeyType          = pkType.getOrElse(self.primaryKeyType)
       override def withTimestamps: Boolean = false
-      override def useAutoConstruct = self.useAutoConstruct
-      override def connectionPoolName = self.connectionPoolName
-      override def tableName = Some(_tableName)
+      override def useAutoConstruct        = self.useAutoConstruct
+      override def connectionPoolName      = self.connectionPoolName
+      override def tableName               = Some(_tableName)
 
-      override def sourceDir = self.sourceDir
-      override def testSourceDir = self.testSourceDir
-      override def resourceDir = self.resourceDir
-      override def testResourceDir = self.testResourceDir
-      override def webInfDir = self.webInfDir
-      override def controllerPackage = self.controllerPackage
+      override def sourceDir            = self.sourceDir
+      override def testSourceDir        = self.testSourceDir
+      override def resourceDir          = self.resourceDir
+      override def testResourceDir      = self.testResourceDir
+      override def webInfDir            = self.webInfDir
+      override def controllerPackage    = self.controllerPackage
       override def controllerPackageDir = self.controllerPackageDir
-      override def modelPackage = self.modelPackage
-      override def modelPackageDir = self.modelPackageDir
+      override def modelPackage         = self.modelPackage
+      override def modelPackageDir      = self.modelPackageDir
     }
 
     val _nameWithPackage = nameWithPackage.getOrElse(
       Inflector.singularize(toClassName(tableName.toLowerCase))
     )
     val namespace = _nameWithPackage.split("\\.").init.mkString(".")
-    val name = _nameWithPackage.split("\\.").last
+    val name      = _nameWithPackage.split("\\.").last
     generator.run(Seq(namespace, name) ++ fields)
 
   }

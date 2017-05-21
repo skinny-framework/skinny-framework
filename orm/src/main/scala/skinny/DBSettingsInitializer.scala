@@ -3,10 +3,10 @@ package skinny
 import skinny.exception.DBSettingsException
 
 /**
- * Skinny ORM Database settings initializer.
- *
- * @see https://github.com/seratch/scalikejdbc
- */
+  * Skinny ORM Database settings initializer.
+  *
+  * @see https://github.com/seratch/scalikejdbc
+  */
 trait DBSettingsInitializer {
 
   private[this] case class State(var alreadyInitialized: Boolean = false)
@@ -16,8 +16,8 @@ trait DBSettingsInitializer {
   lazy val dbs = SkinnyDBsWithEnv(SkinnyEnv.getOrElse(SkinnyEnv.Development))
 
   /**
-   * Initializes DB settings.
-   */
+    * Initializes DB settings.
+    */
   def initialize(force: Boolean = false): Unit = {
     state.synchronized {
       if (force || !state.alreadyInitialized) {
@@ -58,8 +58,8 @@ trait DBSettingsInitializer {
   }
 
   /**
-   * Wipes out all DB settings.
-   */
+    * Wipes out all DB settings.
+    */
   def destroy(): Unit = dbs.closeAll()
 
 }

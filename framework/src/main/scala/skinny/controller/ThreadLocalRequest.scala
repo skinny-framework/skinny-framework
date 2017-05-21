@@ -4,8 +4,8 @@ import scala.util.DynamicVariable
 import javax.servlet.http.HttpServletRequest
 
 /**
- * Request holder as a thread-local variable.
- */
+  * Request holder as a thread-local variable.
+  */
 object ThreadLocalRequest {
 
   private[this] val _req = new DynamicVariable[HttpServletRequest](null)

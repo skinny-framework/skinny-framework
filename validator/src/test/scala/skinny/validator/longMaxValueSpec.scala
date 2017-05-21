@@ -7,7 +7,7 @@ class longMaxValueSpec extends FlatSpec with Matchers {
   behavior of "longMaxValue"
 
   it should "be available" in {
-    val max = 3L
+    val max      = 3L
     val validate = new longMaxValue(max)
     validate.name should equal("longMaxValue")
     validate.messageParams should equal(Seq("3"))

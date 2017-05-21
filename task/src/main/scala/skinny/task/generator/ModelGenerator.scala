@@ -8,8 +8,8 @@ import scalikejdbc.ConnectionPool
 import skinny.nlp.Inflector
 
 /**
- * Model generator.
- */
+  * Model generator.
+  */
 object ModelGenerator extends ModelGenerator {
   override def withTimestamps: Boolean = true
 }
@@ -46,8 +46,8 @@ trait ModelGenerator extends CodeGenerator {
         val nameAndTypeNamePairs: Seq[(String, String)] = attributes.flatMap { attribute =>
           attribute.toString.split(":") match {
             case Array(name, typeName, columnDef) => Some(name -> typeName)
-            case Array(name, typeName) => Some(name -> typeName)
-            case _ => None
+            case Array(name, typeName)            => Some(name -> typeName)
+            case _                                => None
           }
         }
         generate(namespace.split('.'), name, tableName, nameAndTypeNamePairs)
@@ -58,29 +58,32 @@ trait ModelGenerator extends CodeGenerator {
     }
   }
 
-  def code(namespaces: Seq[String], name: String, tableName: Option[String], nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val namespace = toNamespace(modelPackage, namespaces)
+  def code(namespaces: Seq[String],
+           name: String,
+           tableName: Option[String],
+           nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val namespace      = toNamespace(modelPackage, namespaces)
     val modelClassName = toClassName(name)
     val alias = {
       val a = modelClassName.filter(_.isUpper).map(_.toLower).mkString
       if (CodeGenerator.SQLReservedWords.contains(a)) a + "_" else a
     }
-    val timestampPrefix = if (withId) ",\n" else { if (nameAndTypeNamePairs.isEmpty) "" else ",\n" }
+    val timestampPrefix              = if (withId) ",\n" else { if (nameAndTypeNamePairs.isEmpty) "" else ",\n" }
     val caseClassFieldsPrimaryKeyRow = if (withId) s"""  ${primaryKeyName}: ${primaryKeyType}""" else ""
-    val extractorsPrimaryKeyRow = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""
-    val attributePrefix = if (withId) ",\n" else ""
-    val mapperClassName = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
-    val timestampsTraitIfExists = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
+    val extractorsPrimaryKeyRow      = if (withId) s"""    ${primaryKeyName} = rs.get(rn.${primaryKeyName})""" else ""
+    val attributePrefix              = if (withId) ",\n" else ""
+    val mapperClassName              = if (withId) "SkinnyCRUDMapper" else "SkinnyNoIdCRUDMapper"
+    val timestampsTraitIfExists      = if (withTimestamps) s"with TimestampsFeature[${modelClassName}] " else ""
 
     def isHasManyThrough(entityName: String, modelClassName: String): Boolean = {
       entityName.startsWith(Inflector.pluralize(modelClassName)) ||
-        entityName.endsWith(Inflector.pluralize(modelClassName)) ||
-        entityName.startsWith(Inflector.singularize(modelClassName)) ||
-        entityName.endsWith(Inflector.singularize(modelClassName))
+      entityName.endsWith(Inflector.pluralize(modelClassName)) ||
+      entityName.startsWith(Inflector.singularize(modelClassName)) ||
+      entityName.endsWith(Inflector.singularize(modelClassName))
     }
     def singularizeHasManyThroughTypeName(entityName: String, modelClassName: String): String = {
       if (entityName.startsWith(Inflector.pluralize(modelClassName))
-        || entityName.startsWith(Inflector.singularize(modelClassName))) {
+          || entityName.startsWith(Inflector.singularize(modelClassName))) {
         val second = Inflector.singularize(
           entityName
             .replaceFirst(Inflector.pluralize(modelClassName), "")
@@ -88,7 +91,7 @@ trait ModelGenerator extends CodeGenerator {
         )
         modelClassName + second
       } else if (entityName.endsWith(Inflector.pluralize(modelClassName))
-        || entityName.endsWith(Inflector.singularize(modelClassName))) {
+                 || entityName.endsWith(Inflector.singularize(modelClassName))) {
         val first = Inflector.singularize(
           entityName
             .replaceFirst(Inflector.pluralize(modelClassName), "")
@@ -101,7 +104,7 @@ trait ModelGenerator extends CodeGenerator {
     }
     def toManyThroughNameAndTypeName(entityName: String): (String, String) = {
       val _entityName = entityName.replaceFirst(modelClassName, "")
-      val _name = toFirstCharLower(Inflector.pluralize(_entityName))
+      val _name       = toFirstCharLower(Inflector.pluralize(_entityName))
       (_name, _entityName)
     }
     def filterHasManyThrough(nameAntTypeName: (String, String), modelClassName: String): (String, String) = {
@@ -141,28 +144,29 @@ trait ModelGenerator extends CodeGenerator {
       else ""
     }
 
-    val caseClassFields = s"""${caseClassFieldsPrimaryKeyRow}${
-      if (nameAndTypeNamePairs.isEmpty) ""
-      else {
-        nameAndTypeNamePairs
-          .map((v) => filterHasManyThrough(v, modelClassName))
-          .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
-          .map {
-            case (name, typeName) =>
-              s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
-          }
-          .mkString(attributePrefix, ",\n", "")
-      }
-    }${timestamps}
+    val caseClassFields = s"""${caseClassFieldsPrimaryKeyRow}${if (nameAndTypeNamePairs.isEmpty) ""
+                             else {
+                               nameAndTypeNamePairs
+                                 .map((v) => filterHasManyThrough(v, modelClassName))
+                                 .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
+                                 .map {
+                                   case (name, typeName) =>
+                                     s"  ${name}: ${toScalaTypeNameWithDefaultValueIfOptionOrSeq(typeName)}"
+                                 }
+                                 .mkString(attributePrefix, ",\n", "")
+                             }}${timestamps}
         |""".stripMargin
 
     val nameConverters = {
-      val parts = nameAndTypeNamePairs.map(_._1).flatMap { name =>
-        CodeGenerator.reservedWordConversionRules.find { case (k, _) => k == name }
-      }.map {
-        case (original, converted) =>
-          s""""^${converted}$$" -> "${original}""""
-      }
+      val parts = nameAndTypeNamePairs
+        .map(_._1)
+        .flatMap { name =>
+          CodeGenerator.reservedWordConversionRules.find { case (k, _) => k == name }
+        }
+        .map {
+          case (original, converted) =>
+            s""""^${converted}$$" -> "${original}""""
+        }
       if (parts.isEmpty) {
         ""
       } else {
@@ -172,18 +176,21 @@ trait ModelGenerator extends CodeGenerator {
     }
 
     val extractors =
-      s"""${extractorsPrimaryKeyRow}${
-        if (nameAndTypeNamePairs.isEmpty) ""
-        else {
-          nameAndTypeNamePairs.filterNot { case (_, typeName) => isAssociationTypeName(typeName) }.map {
-            case (name, typeName) => "    " + name + " = rs.get(rn." + name + ")"
-          }.mkString(attributePrefix, ",\n", "")
-        }
-      }${timestampsExtraction}
+      s"""${extractorsPrimaryKeyRow}${if (nameAndTypeNamePairs.isEmpty) ""
+         else {
+           nameAndTypeNamePairs
+             .filterNot { case (_, typeName) => isAssociationTypeName(typeName) }
+             .map {
+               case (name, typeName) => "    " + name + " = rs.get(rn." + name + ")"
+             }
+             .mkString(attributePrefix, ",\n", "")
+         }}${timestampsExtraction}
         |""".stripMargin
 
-    val primaryKeyTypeIfNotLong = if (primaryKeyType == ParamType.Long) "" else
-      s"""
+    val primaryKeyTypeIfNotLong =
+      if (primaryKeyType == ParamType.Long) ""
+      else
+        s"""
          |  override def idToRawValue(id: String): Any = id
          |  override def rawValueToId(value: Any): String = value.toString
          |  override def useExternalIdGenerator = true
@@ -207,32 +214,34 @@ trait ModelGenerator extends CodeGenerator {
       if (associationNameAndTypeNamePairs.isEmpty) {
         ""
       } else {
-        associationNameAndTypeNamePairs.map {
-          case (name, typeName) if typeName.startsWith("Option[") =>
-            val entityName = extractTypeIfOptionOrSeq(typeName)
-            val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
-            s"  lazy val ${name}Ref = belongsTo[${entityName}](${entityName}, (${alias}, ${entityAlias}) => ${alias}.copy(${name} = ${entityAlias}))"
-          case (name, typeName) if typeName.startsWith("Seq[") =>
-            val entityName = extractTypeIfOptionOrSeq(typeName)
-            if (isHasManyThrough(entityName, modelClassName)) {
-              val throughEntity = singularizeHasManyThroughTypeName(entityName, modelClassName)
-              val (_name, _entityName) = toManyThroughNameAndTypeName(throughEntity)
-              val entityAlias = toFirstCharUpper(_entityName).filter(_.isUpper).map(_.toLower).mkString
-              s"""  lazy val ${_name}Ref = hasManyThrough[${_entityName}](
+        associationNameAndTypeNamePairs
+          .map {
+            case (name, typeName) if typeName.startsWith("Option[") =>
+              val entityName  = extractTypeIfOptionOrSeq(typeName)
+              val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
+              s"  lazy val ${name}Ref = belongsTo[${entityName}](${entityName}, (${alias}, ${entityAlias}) => ${alias}.copy(${name} = ${entityAlias}))"
+            case (name, typeName) if typeName.startsWith("Seq[") =>
+              val entityName = extractTypeIfOptionOrSeq(typeName)
+              if (isHasManyThrough(entityName, modelClassName)) {
+                val throughEntity        = singularizeHasManyThroughTypeName(entityName, modelClassName)
+                val (_name, _entityName) = toManyThroughNameAndTypeName(throughEntity)
+                val entityAlias          = toFirstCharUpper(_entityName).filter(_.isUpper).map(_.toLower).mkString
+                s"""  lazy val ${_name}Ref = hasManyThrough[${_entityName}](
                |    through = ${throughEntity},
                |    many = ${_entityName},
                |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${_name} = ${entityAlias}s)
                |  )""".stripMargin
-            } else {
-              val entityAlias = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
-              val entityFkName = toFirstCharLower(modelClassName) + toFirstCharUpper(primaryKeyName)
-              s"""  lazy val ${name}Ref = hasMany[${entityName}](
+              } else {
+                val entityAlias  = toFirstCharUpper(name).filter(_.isUpper).map(_.toLower).mkString
+                val entityFkName = toFirstCharLower(modelClassName) + toFirstCharUpper(primaryKeyName)
+                s"""  lazy val ${name}Ref = hasMany[${entityName}](
                |    many = ${entityName} -> ${entityName}.defaultAlias,
                |    on = (${alias}, ${entityAlias}) => sqls.eq(${alias}.${primaryKeyName}, ${entityAlias}.${entityFkName}),
                |    merge = (${alias}, ${entityAlias}s) => ${alias}.copy(${name} = ${entityAlias}s)
                |  )""".stripMargin
-            }
-        }.mkString("\n", "\n\n", "\n")
+              }
+          }
+          .mkString("\n", "\n\n", "\n")
       }
     }
 
@@ -276,7 +285,9 @@ trait ModelGenerator extends CodeGenerator {
         |case class ${modelClassName}(
         |${caseClassFields})
         |
-        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long) s"[${modelClassName}]" else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
+        |object ${modelClassName} extends ${mapperClassName}${if (primaryKeyType == ParamType.Long)
+         s"[${modelClassName}]"
+       else s"WithId[${primaryKeyType}, ${modelClassName}]"} ${timestampsTraitIfExists}{
         |${tableName.map(t => "  override lazy val tableName = \"" + t + "\"").getOrElse("")}
         |  override lazy val defaultAlias = createAlias("${alias}")${customConnectionPoolName}${customPkName}${primaryKeyTypeIfNotLong}${nameConverters}
         |${associations}
@@ -285,8 +296,13 @@ trait ModelGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generate(namespaces: Seq[String], name: String, tableName: Option[String], nameAndTypeNamePairs: Seq[(String, String)]) {
-    val productionFile = new File(s"${sourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}.scala")
+  def generate(namespaces: Seq[String],
+               name: String,
+               tableName: Option[String],
+               nameAndTypeNamePairs: Seq[(String, String)]) {
+    val productionFile = new File(
+      s"${sourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}.scala"
+    )
     writeIfAbsent(productionFile, code(namespaces, name, tableName, nameAndTypeNamePairs))
   }
 
@@ -307,7 +323,9 @@ trait ModelGenerator extends CodeGenerator {
   }
 
   def generateSpec(namespaces: Seq[String], name: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}Spec.scala")
+    val specFile = new File(
+      s"${testSourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}Spec.scala"
+    )
     FileUtils.forceMkdir(specFile.getParentFile)
     writeIfAbsent(specFile, spec(namespaces, name))
   }

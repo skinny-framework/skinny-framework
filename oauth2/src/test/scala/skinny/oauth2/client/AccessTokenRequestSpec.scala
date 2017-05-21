@@ -15,9 +15,17 @@ class AccessTokenRequestSpec extends FlatSpec with Matchers {
     req.code("codeeeee") should equal(req)
     req.code(AuthenticationCode("xxxxzzz")) should equal(req)
     req.build().body should (
-      equal(Some("client_secret=secret&grant_type=authorization_code&redirect_uri=http%3A%2F%2Fwww.example.com%2F&state=xxxyyy&foo=bar&code=xxxxzzz&client_id=123"))
+      equal(
+        Some(
+          "client_secret=secret&grant_type=authorization_code&redirect_uri=http%3A%2F%2Fwww.example.com%2F&state=xxxyyy&foo=bar&code=xxxxzzz&client_id=123"
+        )
+      )
       or
-      equal(Some("code=xxxxzzz&grant_type=authorization_code&foo=bar&state=xxxyyy&client_secret=secret&redirect_uri=http%3A%2F%2Fwww.example.com%2F&client_id=123"))
+      equal(
+        Some(
+          "code=xxxxzzz&grant_type=authorization_code&foo=bar&state=xxxyyy&client_secret=secret&redirect_uri=http%3A%2F%2Fwww.example.com%2F&client_id=123"
+        )
+      )
     )
   }
 

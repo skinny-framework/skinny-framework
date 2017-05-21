@@ -1,16 +1,16 @@
 package skinny.assets
 
 import scala.sys.process._
-import java.io.{ IOException, ByteArrayInputStream }
+import java.io.{ ByteArrayInputStream, IOException }
 import skinny.util.LoanPattern._
 import skinny.exception.AssetsPrecompileFailureException
 import org.slf4j.LoggerFactory
 
 /**
- * Sass Compiler
- *
- * @see https://github.com/jlitola/play-sass
- */
+  * Sass Compiler
+  *
+  * @see https://github.com/jlitola/play-sass
+  */
 class SassCompiler {
 
   private[this] val log = LoggerFactory.getLogger(classOf[SassCompiler])
@@ -20,8 +20,8 @@ class SassCompiler {
   private[this] def sassCommand = if (isWindows) "sass.bat" else "sass"
 
   /**
-   * Ensures sass command exists.
-   */
+    * Ensures sass command exists.
+    */
   private[this] def ensureSassCommand() = {
     try {
       Seq(sassCommand, "-v").lines // > /dev/null
@@ -29,16 +29,16 @@ class SassCompiler {
       case e: IOException =>
         throw new AssetsPrecompileFailureException(
           "Failed to run sass command! sass should be prepared in advance. " +
-            "If you haven't install sass yet, just run `gem install sass` now."
+          "If you haven't install sass yet, just run `gem install sass` now."
         )
     }
   }
 
   /**
-   * Compiles scss code to css code.
-   * @param scssCode scss code
-   * @return css code
-   */
+    * Compiles scss code to css code.
+    * @param scssCode scss code
+    * @return css code
+    */
   def compile(path: String, scssCode: String): String = {
     ensureSassCommand()
     val (out, err) = (new StringBuilder, new StringBuilder)
@@ -60,12 +60,12 @@ class SassCompiler {
   }
 
   /**
-   * Compiles sass code to css code.
-   *
-   * @see http://sass-lang.com/documentation/file.INDENTED_SYNTAX.html
-   * @param sassCode sass code
-   * @return css code
-   */
+    * Compiles sass code to css code.
+    *
+    * @see http://sass-lang.com/documentation/file.INDENTED_SYNTAX.html
+    * @param sassCode sass code
+    * @return css code
+    */
   def compileIndented(path: String, sassCode: String): String = {
     ensureSassCommand()
     val (out, err) = (new StringBuilder, new StringBuilder)

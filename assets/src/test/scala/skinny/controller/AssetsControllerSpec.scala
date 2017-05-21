@@ -29,9 +29,9 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
       if (key == "splat") Seq(_path) else Seq.empty
     }
 
-    var _isDisabledInStaging: Boolean = true
-    override def isDisabledInStaging: Boolean = _isDisabledInStaging
-    var _isDisabledInProduction: Boolean = true
+    var _isDisabledInStaging: Boolean            = true
+    override def isDisabledInStaging: Boolean    = _isDisabledInStaging
+    var _isDisabledInProduction: Boolean         = true
     override def isDisabledInProduction: Boolean = _isDisabledInProduction
 
     override def pass() = throw new MockPassException
@@ -74,19 +74,21 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
   it should "work in each envs" in {
     val controller = newController
 
-    for (
-      env <- Seq("", "staging", "production");
-      disabledInStaging <- Seq(true, false);
+    for {
+      env                  <- Seq("", "staging", "production")
+      disabledInStaging    <- Seq(true, false)
       disabledInProduction <- Seq(true, false)
-    ) withClue(s"env: ${env}, " +
+    } withClue(
+      s"env: ${env}, " +
       s"disabled: { staging: ${disabledInStaging}," +
-      s" prod: ${disabledInProduction} }") {
+      s" prod: ${disabledInProduction} }"
+    ) {
 
       System.setProperty(SkinnyEnv.PropertyKey, env)
       controller._isDisabledInStaging = disabledInStaging
       controller._isDisabledInProduction = disabledInProduction
       if ((env == "staging" && disabledInStaging) ||
-        (env == "production" && disabledInProduction)) {
+          (env == "production" && disabledInProduction)) {
         intercept[MockPassException] {
           controller._path = "AssetsControllerSpec.js"
           controller.js()
@@ -107,19 +109,21 @@ class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
   it should "work sub directories" in {
     val controller = newController
 
-    for (
-      env <- Seq("", "staging", "production");
-      disabledInStaging <- Seq(true, false);
+    for {
+      env                  <- Seq("", "staging", "production")
+      disabledInStaging    <- Seq(true, false)
       disabledInProduction <- Seq(true, false)
-    ) withClue(s"env: ${env}, " +
+    } withClue(
+      s"env: ${env}, " +
       s"disabled: { staging: ${disabledInStaging}," +
-      s" prod: ${disabledInProduction} }") {
+      s" prod: ${disabledInProduction} }"
+    ) {
 
       System.setProperty(SkinnyEnv.PropertyKey, env)
       controller._isDisabledInStaging = disabledInStaging
       controller._isDisabledInProduction = disabledInProduction
       if ((env == "staging" && disabledInStaging) ||
-        (env == "production" && disabledInProduction)) {
+          (env == "production" && disabledInProduction)) {
         intercept[MockPassException] {
           controller._path = "vendor/awesome.js"
           controller.js()

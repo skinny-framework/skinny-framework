@@ -1,21 +1,21 @@
 package skinny.test
 
-import skinny.controller.{ SkinnySessionInjectorController, SessionInjectorController }
+import skinny.controller.{ SessionInjectorController, SkinnySessionInjectorController }
 import skinny.SkinnyEnv
 import skinny.micro.test.SkinnyMicroTests
 import skinny.logging.LoggerProvider
 
 /**
- * Skinny framework testing support
- */
+  * Skinny framework testing support
+  */
 trait SkinnyTestSupport extends LoggerProvider { self: SkinnyMicroTests =>
 
   // set skinny.env as "test"
   System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   /**
-   * Session injector controller
-   */
+    * Session injector controller
+    */
   object SessionInjector extends SessionInjectorController {
     put("/tmp/SkinnyTestSupport/session")(update)
   }
@@ -27,8 +27,8 @@ trait SkinnyTestSupport extends LoggerProvider { self: SkinnyMicroTests =>
   addFilter(SkinnySessionInjector, "/tmp/SkinnyTestSupport/skinnySession")
 
   /**
-   * Provides a code block with injected session.
-   */
+    * Provides a code block with injected session.
+    */
   def withSession[A](attributes: (String, AnyRef)*)(action: => A): A = session {
     val params = attributes.map {
       case (key, obj) =>
@@ -39,8 +39,8 @@ trait SkinnyTestSupport extends LoggerProvider { self: SkinnyMicroTests =>
   }
 
   /**
-   * Provides a code block with injected session.
-   */
+    * Provides a code block with injected session.
+    */
   def withSkinnySession[A](attributes: (String, AnyRef)*)(action: => A): A = session {
     val params = attributes.map {
       case (key, obj) =>
@@ -51,8 +51,8 @@ trait SkinnyTestSupport extends LoggerProvider { self: SkinnyMicroTests =>
   }
 
   /**
-   * Logs response body when response status is unexpected.
-   */
+    * Logs response body when response status is unexpected.
+    */
   def logBodyUnless(expectedStatus: Int) = {
     if (status != expectedStatus) {
       logger.warn(s"Unexpected status: ${status}, body: ${body}")

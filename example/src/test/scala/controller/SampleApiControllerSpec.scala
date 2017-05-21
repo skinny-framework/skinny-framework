@@ -6,8 +6,7 @@ import skinny.test.scalatest.ThreadLocalDBAutoRollback
 import unit.DBSettings
 import skinny.test.MockApiController
 
-class SampleApiControllerSpec extends FunSpec with Matchers with DBSettings
-    with ThreadLocalDBAutoRollback {
+class SampleApiControllerSpec extends FunSpec with Matchers with DBSettings with ThreadLocalDBAutoRollback {
 
   def createMockController = new SampleApiController with MockApiController
 
@@ -47,7 +46,7 @@ class SampleApiControllerSpec extends FunSpec with Matchers with DBSettings
 
     it("shows companies") {
       val controller = createMockController
-      val response = controller.companiesJson
+      val response   = controller.companiesJson
       controller.status should equal(200)
       response should not equal (null)
     }

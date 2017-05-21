@@ -4,45 +4,49 @@ import skinny.micro.SkinnyMicroBase
 import skinny.logging.LoggerProvider
 
 /**
- * Angular.js Cross Site Request Forgery (XSRF) Protection support.
- *
- * https://docs.angularjs.org/api/ng/service/$http#cross-site-request-forgery-xsrf-protection
- */
+  * Angular.js Cross Site Request Forgery (XSRF) Protection support.
+  *
+  * https://docs.angularjs.org/api/ng/service/$http#cross-site-request-forgery-xsrf-protection
+  */
 trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
 
-  self: SkinnyMicroBase with ActionDefinitionFeature with BeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
+  self: SkinnyMicroBase
+    with ActionDefinitionFeature
+    with BeforeAfterActionFeature
+    with RequestScopeFeature
+    with LoggerProvider =>
 
   /**
-   * Enabled if true.
-   */
+    * Enabled if true.
+    */
   private[this] var forgeryProtectionEnabled: Boolean = false
 
   /**
-   * Excluded actions.
-   */
+    * Excluded actions.
+    */
   private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
 
   /**
-   * Included actions.
-   */
+    * Included actions.
+    */
   private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
 
   /**
-   * Cookie name.
-   */
+    * Cookie name.
+    */
   override protected def xsrfCookieName: String = super.xsrfCookieName
 
   /**
-   * Header name.
-   */
+    * Header name.
+    */
   protected def xsrfHeaderName: String = AngularJSSpecification.xsrfHeaderName
 
   /**
-   * Declarative activation of XSRF protection. Of course, highly inspired by Ruby on Rails.
-   *
-   * @param only should be applied only for these action methods
-   * @param except should not be applied for these action methods
-   */
+    * Declarative activation of XSRF protection. Of course, highly inspired by Ruby on Rails.
+    *
+    * @param only should be applied only for these action methods
+    * @param except should not be applied for these action methods
+    */
   def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
@@ -50,8 +54,8 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
   }
 
   /**
-   * Overrides to skip execution when the current request matches excluded patterns.
-   */
+    * Overrides to skip execution when the current request matches excluded patterns.
+    */
   def handleAngularForgery() {
     if (forgeryProtectionEnabled) {
       logger.debug {
@@ -67,32 +71,34 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
         |""".stripMargin
       }
 
-      currentActionName.map { name =>
-        val currentPathShouldBeExcluded = forgeryProtectionExcludedActionNames.exists(_ == name)
-        if (!currentPathShouldBeExcluded) {
-          val allPathShouldBeIncluded = forgeryProtectionIncludedActionNames.isEmpty
-          val currentPathShouldBeIncluded = forgeryProtectionIncludedActionNames.exists(_ == name)
-          if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
-            handleForgeryIfDetected()
+      currentActionName
+        .map { name =>
+          val currentPathShouldBeExcluded = forgeryProtectionExcludedActionNames.exists(_ == name)
+          if (!currentPathShouldBeExcluded) {
+            val allPathShouldBeIncluded     = forgeryProtectionIncludedActionNames.isEmpty
+            val currentPathShouldBeIncluded = forgeryProtectionIncludedActionNames.exists(_ == name)
+            if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
+              handleForgeryIfDetected()
+            }
           }
         }
-      }.getOrElse {
-        handleForgeryIfDetected()
-      }
+        .getOrElse {
+          handleForgeryIfDetected()
+        }
     }
   }
 
   /**
-   * Handles when XSRF is detected.
-   */
+    * Handles when XSRF is detected.
+    */
   def handleForgeryIfDetected(): Unit = halt(403)
 
   def isForged: Boolean = {
-    implicit val ctx = context
-    val unsafeMethod = !request.requestMethod.isSafe
-    val headerValue = request.headers.get(xsrfHeaderName)
-    val cookieValue = request.cookies.get(xsrfCookieName)
-    val neither = (headerValue.isEmpty || cookieValue.isEmpty)
+    implicit val ctx   = context
+    val unsafeMethod   = !request.requestMethod.isSafe
+    val headerValue    = request.headers.get(xsrfHeaderName)
+    val cookieValue    = request.cookies.get(xsrfCookieName)
+    val neither        = (headerValue.isEmpty || cookieValue.isEmpty)
     val differentValue = !headerValue.exists(h => cookieValue.exists(c => c == h))
     unsafeMethod && (neither || differentValue)
   }

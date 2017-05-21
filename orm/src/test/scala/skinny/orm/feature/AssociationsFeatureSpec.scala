@@ -13,7 +13,8 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
 
   NamedDB('AssociationsFeatureSpec).autoCommit { implicit s =>
     sql"create table company(id bigserial, name varchar(100) not null)".execute.apply()
-    sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute.apply()
+    sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute
+      .apply()
   }
 
   it should "have #defaultIncludesMerge" in {
@@ -26,13 +27,13 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
   case class Company(id: Long, name: String)
 
   object Person extends SkinnyMapper[Person] {
-    override def connectionPoolName = 'AssociationsFeatureSpec
-    override def defaultAlias = createAlias("p")
+    override def connectionPoolName                                   = 'AssociationsFeatureSpec
+    override def defaultAlias                                         = createAlias("p")
     override def extract(rs: WrappedResultSet, n: ResultName[Person]) = autoConstruct(rs, n, "company")
   }
   object Company extends SkinnyMapper[Company] {
-    override def connectionPoolName = 'AssociationsFeatureSpec
-    override def defaultAlias = createAlias("c")
+    override def connectionPoolName                                    = 'AssociationsFeatureSpec
+    override def defaultAlias                                          = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = autoConstruct(rs, n)
   }
 
@@ -54,12 +55,12 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
   }
 
   it should "have #join" in {
-    Person.join(Company -> Company.defaultAlias, (p, c) => sqls"")
+    Person.join(Company          -> Company.defaultAlias, (p, c) => sqls"")
     Person.join[Company](Company -> Company.defaultAlias, Person -> Person.defaultAlias, (c, p) => sqls"")
   }
 
   it should "have #innerJoin" in {
-    Person.innerJoin(Company -> Company.defaultAlias, (p, c) => sqls"")
+    Person.innerJoin(Company          -> Company.defaultAlias, (p, c) => sqls"")
     Person.innerJoin[Company](Company -> Company.defaultAlias, Person -> Person.defaultAlias, (c, p) => sqls"")
   }
 

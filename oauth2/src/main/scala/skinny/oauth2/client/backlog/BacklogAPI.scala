@@ -23,4 +23,3 @@ case class BacklogAPI(spaceID: String) extends LoggerProvider {
   }
 
 }
-

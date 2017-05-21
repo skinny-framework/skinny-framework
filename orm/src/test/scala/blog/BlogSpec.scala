@@ -6,31 +6,28 @@ import scalikejdbc.scalatest.AutoRollback
 import org.scalatest._
 import skinny.Pagination
 
-class BlogSpec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB('blog).toDB()
 
   override def fixture(implicit session: DBSession) {
-    val postId = Post.createWithAttributes('title -> "Hello World!", 'body -> "This is the first entry...")
+    val postId     = Post.createWithAttributes('title -> "Hello World!", 'body -> "This is the first entry...")
     val scalaTagId = Tag.createWithAttributes('name -> "Scala")
-    val rubyTagId = Tag.createWithAttributes('name -> "Ruby")
-    val pt = PostTag.column
+    val rubyTagId  = Tag.createWithAttributes('name -> "Ruby")
+    val pt         = PostTag.column
     insert.into(PostTag).namedValues(pt.postId -> postId, pt.tagId -> scalaTagId).toSQL.update.apply()
     insert.into(PostTag).namedValues(pt.postId -> postId, pt.tagId -> rubyTagId).toSQL.update.apply()
   }
 
   describe("hasManyThrough without byDefault") {
     it("should work as expected") { implicit session =>
-      val id = Post.limit(1).apply().head.id
+      val id   = Post.limit(1).apply().head.id
       val post = Post.joins(Post.tagsRef).findById(id)
       post.get.tags.size should equal(2)
     }
 
     it("should work when joining twice") { implicit session =>
-      val id = Post.limit(1).apply().head.id
+      val id   = Post.limit(1).apply().head.id
       val post = Post.joins(Post.tagsRef, Post.tagsRef).findById(id)
       post.get.tags.size should equal(2)
     }
@@ -44,7 +41,6 @@ class BlogSpec extends fixture.FunSpec with Matchers
 
   describe("pagination with one-to-many relationships") {
     it("should work as expected") { implicit session =>
-
       // clear fixture data
       sql"truncate table posts".execute.apply()
       sql"truncate table tags".execute.apply()
@@ -131,19 +127,22 @@ class BlogSpec extends fixture.FunSpec with Matchers
 
       // #findAllByWithPagination in Finder
       {
-        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(1).per(3))
+        val posts =
+          Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(1).per(3))
         posts.size should equal(3)
         posts(0).tags.size should equal(3)
         posts(1).tags.size should equal(3)
         posts(2).tags.size should equal(3)
       }
       {
-        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(4).per(3))
+        val posts =
+          Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(4).per(3))
         posts.size should equal(1)
         posts(0).tags.size should equal(3)
       }
       {
-        val posts = Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(5).per(3))
+        val posts =
+          Post.joins(Post.tagsRef).findAllByWithPagination(sqls.eq(p.body, "foo bar baz"), Pagination.page(5).per(3))
         posts.size should equal(0)
       }
 

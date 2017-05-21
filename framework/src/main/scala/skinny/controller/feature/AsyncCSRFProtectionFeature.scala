@@ -13,38 +13,42 @@ object AsyncCSRFProtectionFeature {
 }
 
 /**
- * Provides Cross-Site Request Forgery (CSRF) protection.
- */
+  * Provides Cross-Site Request Forgery (CSRF) protection.
+  */
 trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
 
-  self: SkinnyMicroBase with ActionDefinitionFeature with AsyncBeforeAfterActionFeature with RequestScopeFeature with LoggerProvider =>
+  self: SkinnyMicroBase
+    with ActionDefinitionFeature
+    with AsyncBeforeAfterActionFeature
+    with RequestScopeFeature
+    with LoggerProvider =>
 
   /**
-   * Overrides Scalatra's default key name.
-   */
+    * Overrides Scalatra's default key name.
+    */
   override def csrfKey: String = CSRFProtectionFeature.DEFAULT_KEY
 
   /**
-   * Enabled if true.
-   */
+    * Enabled if true.
+    */
   private[this] var forgeryProtectionEnabled: Boolean = false
 
   /**
-   * Excluded actions.
-   */
+    * Excluded actions.
+    */
   private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
 
   /**
-   * Included actions.
-   */
+    * Included actions.
+    */
   private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
 
   /**
-   * Declarative activation of CSRF protection. Of course, highly inspired by Ruby on Rails.
-   *
-   * @param only should be applied only for these action methods
-   * @param except should not be applied for these action methods
-   */
+    * Declarative activation of CSRF protection. Of course, highly inspired by Ruby on Rails.
+    *
+    * @param only should be applied only for these action methods
+    * @param except should not be applied for these action methods
+    */
   def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
@@ -52,8 +56,8 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
   }
 
   /**
-   * Overrides to skip execution when the current request matches excluded patterns.
-   */
+    * Overrides to skip execution when the current request matches excluded patterns.
+    */
   override def handleForgery()(implicit ctx: SkinnyContext) {
     if (forgeryProtectionEnabled) {
       logger.debug {
@@ -69,24 +73,26 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
         |""".stripMargin
       }
 
-      currentActionName.map { name =>
-        val currentPathShouldBeExcluded = forgeryProtectionExcludedActionNames.exists(_ == name)
-        if (!currentPathShouldBeExcluded) {
-          val allPathShouldBeIncluded = forgeryProtectionIncludedActionNames.isEmpty
-          val currentPathShouldBeIncluded = forgeryProtectionIncludedActionNames.exists(_ == name)
-          if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
-            handleForgeryIfDetected()
+      currentActionName
+        .map { name =>
+          val currentPathShouldBeExcluded = forgeryProtectionExcludedActionNames.exists(_ == name)
+          if (!currentPathShouldBeExcluded) {
+            val allPathShouldBeIncluded     = forgeryProtectionIncludedActionNames.isEmpty
+            val currentPathShouldBeIncluded = forgeryProtectionIncludedActionNames.exists(_ == name)
+            if (allPathShouldBeIncluded || currentPathShouldBeIncluded) {
+              handleForgeryIfDetected()
+            }
           }
         }
-      }.getOrElse {
-        handleForgeryIfDetected()
-      }
+        .getOrElse {
+          handleForgeryIfDetected()
+        }
     }
   }
 
   /**
-   * Handles when CSRF is detected.
-   */
+    * Handles when CSRF is detected.
+    */
   def handleForgeryIfDetected(): Unit = halt(403)
 
   // Registers csrfKey & csrfToken to request scope.

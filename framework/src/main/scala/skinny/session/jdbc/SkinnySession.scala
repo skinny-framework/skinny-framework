@@ -7,8 +7,8 @@ import java.io._
 import skinny.logging.LoggerProvider
 
 /**
- * SkinnySession JDBC implmenetation.
- */
+  * SkinnySession JDBC implmenetation.
+  */
 case class SkinnySession(
     id: Long,
     createdAt: DateTime,
@@ -22,21 +22,24 @@ case class SkinnySession(
   var consistentMode: Boolean = true
 
   case class OpsAndValue(ops: LastOperation, value: Any)
-  private[this] val toBeStored = new scala.collection.concurrent.TrieMap[String, OpsAndValue]
+  private[this] val toBeStored    = new scala.collection.concurrent.TrieMap[String, OpsAndValue]
   private[this] val alreadyStored = new scala.collection.concurrent.TrieMap[String, OpsAndValue]
 
   def getAttribute(name: String): Object = {
-    val foundInToBeStored = toBeStored.find(_._1 == name).map { case (_, ov) => ov }
+    val foundInToBeStored    = toBeStored.find(_._1 == name).map { case (_, ov) => ov }
     val foundInAlreadyStored = alreadyStored.find(_._1 == name).map { case (_, ov) => ov }
-    val foundInAttributes = attributes.find(_.name == name).map(attr => attributeToObject(attr.name, attr.value))
-    val markedAsDeleted = foundInToBeStored.exists(_.ops == Remove) || foundInAlreadyStored.exists(_.ops == Remove)
+    val foundInAttributes    = attributes.find(_.name == name).map(attr => attributeToObject(attr.name, attr.value))
+    val markedAsDeleted      = foundInToBeStored.exists(_.ops == Remove) || foundInAlreadyStored.exists(_.ops == Remove)
 
     if (markedAsDeleted) null
-    else foundInToBeStored.filter(_.ops == Set).map(_.value)
-      .orElse(foundInAlreadyStored.filter(_.ops == Set).map(_.value))
-      .orElse(foundInAttributes)
-      .map(_.asInstanceOf[Object])
-      .orNull[Object]
+    else
+      foundInToBeStored
+        .filter(_.ops == Set)
+        .map(_.value)
+        .orElse(foundInAlreadyStored.filter(_.ops == Set).map(_.value))
+        .orElse(foundInAttributes)
+        .map(_.asInstanceOf[Object])
+        .orNull[Object]
   }
 
   def setAttribute(name: String, value: Any) = {
@@ -57,13 +60,13 @@ case class SkinnySession(
 
   def attributeNames: Seq[String] = {
     attributes.map(_.name) ++
-      alreadyStored.filter(_._2.ops == Set).map(_._1) ++
-      toBeStored.filter(_._2.ops == Set).map(_._1)
+    alreadyStored.filter(_._2.ops == Set).map(_._1) ++
+    toBeStored.filter(_._2.ops == Set).map(_._1)
   }
 
   def save(): Unit = {
     toBeStored.foreach {
-      case (name, OpsAndValue(Set, value)) => SkinnySession.setAttributeToDatabase(id, name, value)
+      case (name, OpsAndValue(Set, value))    => SkinnySession.setAttributeToDatabase(id, name, value)
       case (name, OpsAndValue(Remove, value)) => SkinnySession.removeAttributeFromDatabase(id, name)
     }
   }
@@ -96,15 +99,15 @@ case class SkinnySession(
 }
 
 /**
- * SkinnySession JDBC implmenetation.
- */
+  * SkinnySession JDBC implmenetation.
+  */
 object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider {
 
   sealed trait LastOperation
-  case object Set extends LastOperation
+  case object Set    extends LastOperation
   case object Remove extends LastOperation
 
-  override def tableName = "skinny_sessions"
+  override def tableName    = "skinny_sessions"
   override def defaultAlias = createAlias("ss")
   override def extract(rs: WrappedResultSet, n: ResultName[SkinnySession]) = new SkinnySession(
     id = rs.get(n.id),
@@ -131,62 +134,77 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
   }
 
   /**
-   * Returns expireAt value to be set for the ServletSession's maxInactiveInterval.
-   */
+    * Returns expireAt value to be set for the ServletSession's maxInactiveInterval.
+    */
   def getExpireAtFromMaxInactiveInterval(maxInactiveInterval: Int): DateTime = {
     if (maxInactiveInterval <= 0) DateTime.now.plusMonths(3) // 3 months alive is long enough
     else DateTime.now.plusSeconds(maxInactiveInterval)
   }
 
   /**
-   * Finds a SkinnySession which specified JSESSIONID is attached from database.
-   * If absent, create new record and attaches this JSESSIONID to the SkinnySession.
-   */
-  def findOrCreate(jsessionId: String, jsessionidToBeAttached: Option[String], expireAt: DateTime)(implicit s: DBSession = autoSession): SkinnySession = {
-    findActiveByJsessionId(jsessionId).map { session =>
-      jsessionidToBeAttached.foreach(jid => attachJsessionIdToSkinnySession(jid, session))
-      ServletSession.narrowDownAttachedServletSessions(session, 10)
-      postponeSkinnySessionTimeout(session, expireAt)
-      session
-    }.getOrElse {
-      joins(attributesRef).findById(createSkinnySessionAndReturnId(expireAt)).map { session =>
-        attachJsessionIdToSkinnySession(jsessionId, session)
+    * Finds a SkinnySession which specified JSESSIONID is attached from database.
+    * If absent, create new record and attaches this JSESSIONID to the SkinnySession.
+    */
+  def findOrCreate(jsessionId: String, jsessionidToBeAttached: Option[String], expireAt: DateTime)(
+      implicit s: DBSession = autoSession
+  ): SkinnySession = {
+    findActiveByJsessionId(jsessionId)
+      .map { session =>
+        jsessionidToBeAttached.foreach(jid => attachJsessionIdToSkinnySession(jid, session))
+        ServletSession.narrowDownAttachedServletSessions(session, 10)
+        postponeSkinnySessionTimeout(session, expireAt)
         session
-      }.get
-    }
+      }
+      .getOrElse {
+        joins(attributesRef)
+          .findById(createSkinnySessionAndReturnId(expireAt))
+          .map { session =>
+            attachJsessionIdToSkinnySession(jsessionId, session)
+            session
+          }
+          .get
+      }
   }
 
   /**
-   * Saves an attribute to the database.
-   */
+    * Saves an attribute to the database.
+    */
   def setAttributeToDatabase(id: Long, name: String, value: Any)(implicit s: DBSession = autoSession): Unit = {
     if (name != null) {
       val c = SkinnySessionAttribute.column
       val namedValues = Seq(
         c.skinnySessionId -> id,
-        c.name -> name,
-        c.value -> AsIsParameterBinder(toSerializable(value))
+        c.name            -> name,
+        c.value           -> AsIsParameterBinder(toSerializable(value))
       )
       // easy-upsert
       try {
         val updated = withSQL {
-          update(SkinnySessionAttribute).set(namedValues: _*)
+          update(SkinnySessionAttribute)
+            .set(namedValues: _*)
             .where
             // compilation succeeded in Scala 2.10.0 but higher version on Java8 doesn't accept.
             // "applyDynamic does not support passing a vararg parameter"
-            .eq(c.field("skinnySessionId"), id).and.eq(c.field("name"), name)
+            .eq(c.field("skinnySessionId"), id)
+            .and
+            .eq(c.field("name"), name)
         }.update.apply()
         if (updated == 0) {
           insert.into(SkinnySessionAttribute).namedValues(namedValues: _*).toSQL.update.apply()
         }
       } catch {
         case scala.util.control.NonFatal(e) =>
-          try update(SkinnySessionAttribute).set(namedValues: _*)
+          try update(SkinnySessionAttribute)
+            .set(namedValues: _*)
             .where
             // compilation succeeded in Scala 2.10.0 but higher version on Java8 doesn't accept.
             // "applyDynamic does not support passing a vararg parameter"
-            .eq(c.field("skinnySessionId"), id).and.eq(c.field("name"), name)
-            .toSQL.update.apply()
+            .eq(c.field("skinnySessionId"), id)
+            .and
+            .eq(c.field("name"), name)
+            .toSQL
+            .update
+            .apply()
           catch {
             case scala.util.control.NonFatal(_) =>
               logger.info(s"Failed to set attribute ($name -> $value) for id: ${id}")
@@ -196,21 +214,26 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
   }
 
   /**
-   * Removes an attribute from the database.
-   */
+    * Removes an attribute from the database.
+    */
   def removeAttributeFromDatabase(id: Long, name: String)(implicit s: DBSession = autoSession): Unit = {
     val c = SkinnySessionAttribute.column
-    delete.from(SkinnySessionAttribute).where.eq(c.skinnySessionId, id).and.eq(c.name, name)
-      .toSQL.update.apply()
+    delete.from(SkinnySessionAttribute).where.eq(c.skinnySessionId, id).and.eq(c.name, name).toSQL.update.apply()
   }
 
   /**
-   * Invalidates this SkinnySession and all the JSESSIONID are detached too.
-   */
+    * Invalidates this SkinnySession and all the JSESSIONID are detached too.
+    */
   def invalidate(jsessionId: String)(implicit s: DBSession = autoSession): Unit = {
     val sv = servletSessionsAlias
-    val idOpt = select(sv.skinnySessionId).from(ServletSession as sv)
-      .where.eq(sv.jsessionId, jsessionId).toSQL.map(_.long(1)).single.apply()
+    val idOpt = select(sv.skinnySessionId)
+      .from(ServletSession as sv)
+      .where
+      .eq(sv.jsessionId, jsessionId)
+      .toSQL
+      .map(_.long(1))
+      .single
+      .apply()
     idOpt.foreach { id =>
       ServletSession.deleteBySkinnySessionId(id)
       SkinnySessionAttribute.deleteBySkinnySessionId(id)
@@ -221,7 +244,7 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
   private[this] def createSkinnySessionAndReturnId(expireAt: DateTime): Long = {
     createWithNamedValues(
       column.createdAt -> DateTime.now,
-      column.expireAt -> expireAt
+      column.expireAt  -> expireAt
     )
   }
   private[this] def findActiveByJsessionId(jsessionId: String): Option[SkinnySession] = {
@@ -230,20 +253,26 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
     )
   }
   private[this] def attachJsessionIdToSkinnySession(jsessionId: String, session: SkinnySession): Unit = {
-    ServletSession.findByJsessionId(jsessionId).map { servletSession =>
-      servletSession.attachTo(session)
-    }.getOrElse {
-      try ServletSession.create(jsessionId, session)
-      catch { case scala.util.control.NonFatal(e) => logger.info(s"Failed to create a ServletSession because ${e.getMessage}") }
-    }
+    ServletSession
+      .findByJsessionId(jsessionId)
+      .map { servletSession =>
+        servletSession.attachTo(session)
+      }
+      .getOrElse {
+        try ServletSession.create(jsessionId, session)
+        catch {
+          case scala.util.control.NonFatal(e) =>
+            logger.info(s"Failed to create a ServletSession because ${e.getMessage}")
+        }
+      }
   }
   private[this] def postponeSkinnySessionTimeout(session: SkinnySession, expireAt: DateTime): Unit = {
     updateById(session.id).withNamedValues(column.expireAt -> expireAt)
   }
 
   private[this] def toSerializable(v: Any): Any = v match {
-    case null => null
-    case None => null
+    case null    => null
+    case None    => null
     case Some(v) => toSerializable(v)
     case v => {
       using(new ByteArrayOutputStream) { bytes =>

@@ -6,8 +6,8 @@ import scala.collection.JavaConverters._
 import skinny.logging.LoggerProvider
 
 /**
- * Operations about javax.mail APIs.
- */
+  * Operations about javax.mail APIs.
+  */
 object JavaMailOps extends LoggerProvider {
 
   def loggingTransport(session: Session): Transport = {
@@ -31,8 +31,8 @@ object JavaMailOps extends LoggerProvider {
   }
 
   /**
-   * Returns transport from session.
-   */
+    * Returns transport from session.
+    */
   def transport(session: Session, auth: Option[SmtpAuthentication], protocol: String): Transport = {
     if (protocol == "logging") {
       loggingTransport(session)

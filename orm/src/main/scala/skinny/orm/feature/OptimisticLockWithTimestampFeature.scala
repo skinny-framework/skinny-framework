@@ -6,56 +6,61 @@ import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 
 /**
- * Optimistic lock with timestamp.
- *
- * @tparam Entity entity
- */
-trait OptimisticLockWithTimestampFeature[Entity]
-  extends OptimisticLockWithTimestampFeatureWithId[Long, Entity]
+  * Optimistic lock with timestamp.
+  *
+  * @tparam Entity entity
+  */
+trait OptimisticLockWithTimestampFeature[Entity] extends OptimisticLockWithTimestampFeatureWithId[Long, Entity]
 
 trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
-   * Lock timestamp field name.
-   */
+    * Lock timestamp field name.
+    */
   def lockTimestampFieldName = "lockTimestamp"
 
   /**
-   * Returns where condition part which search by primary key and lock timestamp.
-   *
-   * @param id primary key
-   * @param timestamp lock timestamp
-   * @return query part
-   */
-  protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]): SQLSyntax = timestamp.map { t =>
-    sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockTimestampFieldName), t)
-  }.getOrElse {
-    sqls.eq(column.field(primaryKeyFieldName), id).and.isNull(column.field(lockTimestampFieldName))
-  }
+    * Returns where condition part which search by primary key and lock timestamp.
+    *
+    * @param id primary key
+    * @param timestamp lock timestamp
+    * @return query part
+    */
+  protected def byIdAndTimestamp(id: Long, timestamp: Option[DateTime]): SQLSyntax =
+    timestamp
+      .map { t =>
+        sqls.eq(column.field(primaryKeyFieldName), id).and.eq(column.field(lockTimestampFieldName), t)
+      }
+      .getOrElse {
+        sqls.eq(column.field(primaryKeyFieldName), id).and.isNull(column.field(lockTimestampFieldName))
+      }
 
   /**
-   * Returns update query builder which updates a single entity by primary key and lock timestamp.
-   *
-   * @param id primary key
-   * @param timestamp lock timestamp
-   * @return updated count
-   */
+    * Returns update query builder which updates a single entity by primary key and lock timestamp.
+    *
+    * @param id primary key
+    * @param timestamp lock timestamp
+    * @return updated count
+    */
   def updateByIdAndTimestamp(id: Long, timestamp: Option[DateTime]): UpdateOperationBuilder = {
     updateBy(byIdAndTimestamp(id, timestamp))
   }
 
   /**
-   * Returns update query builder which updates a single entity by primary key and lock timestamp.
-   *
-   * @param id primary key
-   * @param timestamp lock timestamp
-   * @return updated count
-   */
+    * Returns update query builder which updates a single entity by primary key and lock timestamp.
+    *
+    * @param id primary key
+    * @param timestamp lock timestamp
+    * @return updated count
+    */
   def updateByIdAndTimestamp(id: Long, timestamp: DateTime): UpdateOperationBuilder = {
     updateBy(byIdAndTimestamp(id, Option(timestamp)))
   }
 
-  private[this] def updateByHandler(session: DBSession, where: SQLSyntax, namedValues: Seq[(SQLSyntax, Any)], count: Int): Unit = {
+  private[this] def updateByHandler(session: DBSession,
+                                    where: SQLSyntax,
+                                    namedValues: Seq[(SQLSyntax, Any)],
+                                    count: Int): Unit = {
     if (count == 0) {
       throw new OptimisticLockException(
         s"Conflict ${lockTimestampFieldName} is detected (condition: '${where.value}', ${where.parameters.mkString(",")}})"
@@ -67,11 +72,11 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   override def updateBy(where: SQLSyntax): UpdateOperationBuilder = new UpdateOperationBuilderWithVersion(this, where)
 
   /**
-   * Update query builder/executor.
-   *
-   * @param mapper mapper
-   * @param where condition
-   */
+    * Update query builder/executor.
+    *
+    * @param mapper mapper
+    * @param where condition
+    */
   class UpdateOperationBuilderWithVersion(mapper: CRUDFeatureWithId[Id, Entity], where: SQLSyntax)
       extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
     // appends additional part of update query
@@ -80,25 +85,25 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   }
 
   /**
-   * Deletes a single entity by primary key and lock timestamp.
-   *
-   * @param id primary key
-   * @param timestamp lock timestamp
-   * @param s db session
-   * @return deleted count
-   */
+    * Deletes a single entity by primary key and lock timestamp.
+    *
+    * @param id primary key
+    * @param timestamp lock timestamp
+    * @param s db session
+    * @return deleted count
+    */
   def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession): Int = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
   /**
-   * Deletes a single entity by primary key and lock timestamp.
-   *
-   * @param id primary key
-   * @param timestamp lock timestamp
-   * @param s db session
-   * @return deleted count
-   */
+    * Deletes a single entity by primary key and lock timestamp.
+    *
+    * @param id primary key
+    * @param timestamp lock timestamp
+    * @param s db session
+    * @return deleted count
+    */
   def deleteByIdAndTimestamp(id: Long, timestamp: DateTime)(implicit s: DBSession = autoSession): Int = {
     deleteBy(byIdAndTimestamp(id, Option(timestamp)))
   }
@@ -115,12 +120,16 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
   }
 
   override def updateById(id: Id): UpdateOperationBuilder = {
-    logger.info("#updateById ignore optimistic lock. If you need to lock with version in this case, use #updateBy instead.")
+    logger.info(
+      "#updateById ignore optimistic lock. If you need to lock with version in this case, use #updateBy instead."
+    )
     super.updateBy(byId(id))
   }
 
   override def deleteById(id: Id)(implicit s: DBSession = autoSession): Int = {
-    logger.info("#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead.")
+    logger.info(
+      "#deleteById ignore optimistic lock. If you need to lock with version in this case, use #deleteBy instead."
+    )
     super.deleteBy(byId(id))
   }
 

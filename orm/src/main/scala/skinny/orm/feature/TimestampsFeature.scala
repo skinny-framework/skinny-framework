@@ -5,12 +5,11 @@ import skinny.PermittedStrongParameters
 import org.joda.time.DateTime
 
 /**
- * ActiveRecord timestamps feature.
- *
- * @tparam Entity entity
- */
-trait TimestampsFeature[Entity]
-  extends TimestampsFeatureWithId[Long, Entity]
+  * ActiveRecord timestamps feature.
+  *
+  * @tparam Entity entity
+  */
+trait TimestampsFeature[Entity] extends TimestampsFeatureWithId[Long, Entity]
 
 trait TimestampsFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] with TimestampsFeatureBase[Entity] {
 

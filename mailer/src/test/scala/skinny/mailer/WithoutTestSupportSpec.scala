@@ -24,11 +24,13 @@ class WithoutTestSupportSpec extends FlatSpec with Matchers with BeforeAndAfter 
   val toAddress = "to2@example.com"
 
   it should "send a email" in {
-    MyMailer2.mail(
-      to = Seq(toAddress),
-      subject = "test subject 日本語",
-      body = "body 日本語"
-    ).deliver()
+    MyMailer2
+      .mail(
+        to = Seq(toAddress),
+        subject = "test subject 日本語",
+        body = "body 日本語"
+      )
+      .deliver()
 
     inbox.size should be(1)
     inbox.get(0).subject should be(Some("test subject 日本語"))
@@ -63,7 +65,7 @@ class WithoutTestSupportSpec extends FlatSpec with Matchers with BeforeAndAfter 
 [info] dummy
 [info] dummy2
 [info] dummy3]" was not equal to "foo[]" (WithoutTestSupportSpec.scala:59)
-*/
+     */
     //inbox.get(0).body.get should be("foo")
     inbox.get(0).body.get should startWith("foo")
 

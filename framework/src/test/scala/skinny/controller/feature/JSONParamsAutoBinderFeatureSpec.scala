@@ -18,7 +18,7 @@ class JSONParamsAutoBinderFeatureSpec extends ScalatraFlatSpec {
   addFilter(Controller, "/*")
 
   it should "accepts json body as params" in {
-    val body = JSONStringOps.toJSONString(Map("name" -> "Alice"))
+    val body    = JSONStringOps.toJSONString(Map("name" -> "Alice"))
     val headers = Map("Content-Type" -> "application/json")
     post("/", body, headers) {
       status should equal(200)

@@ -4,16 +4,14 @@ import skinny.routing.Routes
 import skinny.routing.implicits.RoutesAsImplicits
 
 /**
- * Routes for Skinny resource.
- */
-trait SkinnyResourceRoutes[Id]
-    extends SkinnyApiResourceRoutes[Id]
-    with Routes { self: SkinnyResourceActions[Id] =>
+  * Routes for Skinny resource.
+  */
+trait SkinnyResourceRoutes[Id] extends SkinnyApiResourceRoutes[Id] with Routes { self: SkinnyResourceActions[Id] =>
 
   // --------------
   // show
 
-  val indexUrl = get(s"${resourcesBasePath}")(showResources()).as('index)
+  val indexUrl          = get(s"${resourcesBasePath}")(showResources()).as('index)
   val indexWithSlashUrl = get(s"${resourcesBasePath}/")(showResources()).as('index)
 
   val showUrl = get(s"${resourcesBasePath}/:${idParamName}") {
@@ -29,7 +27,7 @@ trait SkinnyResourceRoutes[Id]
   // Scalatra takes priority to route definition which is defined later.
   val newUrl = get(s"${resourcesBasePath}/new")(newResource).as('new)
 
-  val createUrl = post(s"${resourcesBasePath}")(createResource).as('create)
+  val createUrl          = post(s"${resourcesBasePath}")(createResource).as('create)
   val createWithSlashUrl = post(s"${resourcesBasePath}/")(createResource).as('create)
 
   // --------------
@@ -39,8 +37,8 @@ trait SkinnyResourceRoutes[Id]
     params.getAs[Id](idParamName).map(id => editResource(id)) getOrElse haltWithBody(404)
   }.as('edit)
 
-  val updatePostUrl = post(s"${resourcesBasePath}/:${idParamName}")(updateAction).as('update)
-  val updateUrl = put(s"${resourcesBasePath}/:${idParamName}")(updateAction).as('update)
+  val updatePostUrl  = post(s"${resourcesBasePath}/:${idParamName}")(updateAction).as('update)
+  val updateUrl      = put(s"${resourcesBasePath}/:${idParamName}")(updateAction).as('update)
   val updatePatchUrl = patch(s"${resourcesBasePath}/:${idParamName}")(updateAction).as('update)
 
   protected def updateAction = {

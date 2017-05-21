@@ -44,8 +44,8 @@ class RootController extends ApplicationController with TxPerRequestFilter with 
   }
 
   case class matches(regexp: String, regexpName: String) extends ValidationRule {
-    override def name: String = "matches"
-    override def messageParams = Seq(I18nKeyParam(regexpName))
+    override def name: String                 = "matches"
+    override def messageParams                = Seq(I18nKeyParam(regexpName))
     override def isValid(value: Any): Boolean = isEmpty(value) || value.toString.matches(regexp)
   }
 

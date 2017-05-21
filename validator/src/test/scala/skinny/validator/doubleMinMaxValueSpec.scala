@@ -7,8 +7,8 @@ class doubleMinMaxValueSpec extends FlatSpec with Matchers {
   behavior of "doubleMinMaxValue"
 
   it should "be available" in {
-    val min = 2D
-    val max = 5D
+    val min      = 2D
+    val max      = 5D
     val validate = new doubleMinMaxValue(min, max)
     validate.name should equal("doubleMinMaxValue")
     validate.messageParams should equal(Seq("2.0", "5.0"))

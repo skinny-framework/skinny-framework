@@ -21,15 +21,15 @@ import javax.servlet.http._
 
 class MockHttpSession extends HttpSession {
 
-  var nextId: Int = 1
-  var id: String = null
-  val creationTime: Long = System.currentTimeMillis
-  var maxInactiveInterval: Int = 0
-  var lastAccessedTime: Long = System.currentTimeMillis
-  val servletContext: ServletContext = null
+  var nextId: Int                     = 1
+  var id: String                      = null
+  val creationTime: Long              = System.currentTimeMillis
+  var maxInactiveInterval: Int        = 0
+  var lastAccessedTime: Long          = System.currentTimeMillis
+  val servletContext: ServletContext  = null
   val attributes: Map[String, AnyRef] = new LinkedHashMap[String, AnyRef]
-  var invalid: Boolean = false
-  var isNewSession: Boolean = true
+  var invalid: Boolean                = false
+  var isNewSession: Boolean           = true
 
   override def getCreationTime: Long = {
     this.creationTime

@@ -4,8 +4,8 @@ import java.io.File
 import scala.io.Source
 
 /**
- * Controller generator.
- */
+  * Controller generator.
+  */
 object ControllerGenerator extends ControllerGenerator
 
 trait ControllerGenerator extends CodeGenerator {
@@ -81,13 +81,17 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generate(namespaces: Seq[String], name: String) {
-    val file = new File(s"${sourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}Controller.scala")
+    val file = new File(
+      s"${sourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}Controller.scala"
+    )
     writeIfAbsent(file, code(namespaces, name))
   }
 
   override def appendToControllers(namespaces: Seq[String], name: String) {
     val controllerName = toControllerName(namespaces, name)
-    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(name)
+    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(
+      name
+    )
     val newMountCode =
       s"""def mount(ctx: ServletContext): Unit = {
         |    ${controllerName}.mount(ctx)""".stripMargin
@@ -107,7 +111,9 @@ trait ControllerGenerator extends CodeGenerator {
 
     val file = new File(s"${sourceDir}/${controllerPackageDir}/Controllers.scala")
     if (file.exists()) {
-      val code = Source.fromFile(file).mkString
+      val code = Source
+        .fromFile(file)
+        .mkString
         .replaceFirst("(def\\s+mount\\s*\\(ctx:\\s+ServletContext\\):\\s*Unit\\s*=\\s*\\{)", newMountCode)
         .replaceFirst("(}[\\s\\r\\n]+)$", newControllerDefCode)
       forceWrite(file, code)
@@ -132,9 +138,9 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def controllerSpec(namespaces: Seq[String], name: String): String = {
-    val namespace = toNamespace(controllerPackage, namespaces)
+    val namespace           = toNamespace(controllerPackage, namespaces)
     val controllerClassName = toClassName(name) + "Controller"
-    val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${name}"
+    val viewTemplatesPath   = s"${toResourcesBasePath(namespaces)}/${name}"
 
     s"""package ${namespace}
       |
@@ -165,7 +171,9 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generateControllerSpec(namespaces: Seq[String], name: String) {
-    val specFile = new File(s"${testSourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}ControllerSpec.scala")
+    val specFile = new File(
+      s"${testSourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}ControllerSpec.scala"
+    )
     writeIfAbsent(specFile, controllerSpec(namespaces, name))
   }
 
@@ -199,7 +207,9 @@ trait ControllerGenerator extends CodeGenerator {
   }
 
   def generateIntegrationSpec(namespaces: Seq[String], name: String) {
-    val specFile = new File(s"${testSourceDir}/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala")
+    val specFile = new File(
+      s"${testSourceDir}/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala"
+    )
     writeIfAbsent(specFile, integrationSpec(namespaces, name))
   }
 

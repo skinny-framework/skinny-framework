@@ -11,58 +11,58 @@ import scala.util.Try
 object TypesafeConfigReader {
 
   /**
-   * Loads a configuration file.
-   *
-   * @param file file
-   * @return config
-   */
+    * Loads a configuration file.
+    *
+    * @param file file
+    * @return config
+    */
   def load(file: File): Config = ConfigFactory.parseFile(file)
 
   /**
-   * Loads a configuration file.
-   *
-   * @param resource file resource
-   * @return config
-   */
+    * Loads a configuration file.
+    *
+    * @param resource file resource
+    * @return config
+    */
   def load(resource: String): Config = ConfigFactory.load(getClass.getClassLoader, resource)
 
   /**
-   * Loads config values without system properties.
-   *
-   * @param resource file resource
-   * @return config
-   */
+    * Loads config values without system properties.
+    *
+    * @param resource file resource
+    * @return config
+    */
   def loadWithoutSystemProperties(resource: String): Config = {
-    val loader: ClassLoader = getClass.getClassLoader
+    val loader: ClassLoader              = getClass.getClassLoader
     val parseOptions: ConfigParseOptions = ConfigParseOptions.defaults.setClassLoader(loader)
-    val config: Config = ConfigImpl.parseResourcesAnySyntax(resource, parseOptions).toConfig
+    val config: Config                   = ConfigImpl.parseResourcesAnySyntax(resource, parseOptions).toConfig
     config.resolve(ConfigResolveOptions.defaults)
   }
 
   /**
-   * Loads a configuration file as Map object.
-   *
-   * @param resource file resource
-   * @return Map object
-   */
+    * Loads a configuration file as Map object.
+    *
+    * @param resource file resource
+    * @return Map object
+    */
   def loadAsMap(resource: String): Map[String, String] = fromConfigToMap(load(resource))
 
   /**
-   * Loads config values without system properties.
-   *
-   * @param resource file resource
-   * @return Map object
-   */
+    * Loads config values without system properties.
+    *
+    * @param resource file resource
+    * @return Map object
+    */
   def loadAsMapWithoutSystemProperties(resource: String): Map[String, String] = {
     fromConfigToMap(loadWithoutSystemProperties(resource))
   }
 
   /**
-   * Loads a Map object from Typesafe-config object.
-   *
-   * @param config config
-   * @return Map object
-   */
+    * Loads a Map object from Typesafe-config object.
+    *
+    * @param config config
+    * @return Map object
+    */
   def fromConfigToMap(config: Config): Map[String, String] = {
     def extract(map: java.util.Map[String, Any]): Map[String, String] = {
       map.asScala.flatMap {
@@ -72,41 +72,47 @@ object TypesafeConfigReader {
       }
     }.map { case (k, v) => k -> v.toString }.toMap
 
-    config.root().keySet().asScala.flatMap { parentKey =>
-      config.root().unwrapped().get(parentKey) match {
-        case map: java.util.Map[_, _] =>
-          extract(config.root().unwrapped().asInstanceOf[java.util.Map[String, Any]])
-        case value =>
-          Map(parentKey -> value)
+    config
+      .root()
+      .keySet()
+      .asScala
+      .flatMap { parentKey =>
+        config.root().unwrapped().get(parentKey) match {
+          case map: java.util.Map[_, _] =>
+            extract(config.root().unwrapped().asInstanceOf[java.util.Map[String, Any]])
+          case value =>
+            Map(parentKey -> value)
+        }
       }
-    }.map { case (k, v) => k -> v.toString }.toMap
+      .map { case (k, v) => k -> v.toString }
+      .toMap
   }
 
   /**
-   * Returns a config object from env or default.
-   *
-   * @param env env string
-   * @return config
-   */
+    * Returns a config object from env or default.
+    *
+    * @param env env string
+    * @return config
+    */
   def config(env: String): Config = {
     val config = defaultConfig
     config.getConfig(env).withFallback(config)
   }
 
   /**
-   * Returns default config object.
-   *
-   * @return default config
-   */
+    * Returns default config object.
+    *
+    * @return default config
+    */
   def defaultConfig: Config = {
     Seq(
       findEnv("SKINNY_CONFIG_RESOURCE", "config.resource").map(r => ConfigFactory.load(r)),
       findEnv("SKINNY_CONFIG_FILE", "config.file").map(f => ConfigFactory.parseFile(new File(f))),
       findEnv("SKINNY_CONFIG_URL", "config.url").map(u => ConfigFactory.parseURL(new URL(u)))
     ).flatten.foldLeft(ConfigFactory.load()) {
-        case (config, each) =>
-          config.withFallback(each)
-      }
+      case (config, each) =>
+        config.withFallback(each)
+    }
   }
 
   private[this] def findEnv(env: String, prop: String): Option[String] = {

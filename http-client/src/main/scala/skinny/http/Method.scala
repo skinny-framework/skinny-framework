@@ -16,21 +16,21 @@
 package skinny.http
 
 /**
- * HTTP/1.1 Method
- */
+  * HTTP/1.1 Method
+  */
 case class Method(name: String)
 
 /**
- * Methods
- */
+  * Methods
+  */
 object Method {
 
-  val GET = Method("GET")
-  val HEAD = Method("HEAD")
-  val POST = Method("POST")
-  val PUT = Method("PUT")
-  val DELETE = Method("DELETE")
+  val GET     = Method("GET")
+  val HEAD    = Method("HEAD")
+  val POST    = Method("POST")
+  val PUT     = Method("PUT")
+  val DELETE  = Method("DELETE")
   val OPTIONS = Method("OPTIONS")
-  val TRACE = Method("TRACE")
+  val TRACE   = Method("TRACE")
 
 }

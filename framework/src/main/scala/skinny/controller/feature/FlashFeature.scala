@@ -6,11 +6,9 @@ import skinny.micro.base.BeforeAfterDsl
 import skinny.micro.contrib.FlashMapSupport
 
 /**
- * Easy-to-use Flash support.
- */
-trait FlashFeature extends FlashMapSupport with BeforeAfterDsl {
-
-  self: SkinnyMicroBase with RequestScopeFeature =>
+  * Easy-to-use Flash support.
+  */
+trait FlashFeature extends FlashMapSupport with BeforeAfterDsl { self: SkinnyMicroBase with RequestScopeFeature =>
 
   // just set Flash object to request scope
   before() {
@@ -20,4 +18,3 @@ trait FlashFeature extends FlashMapSupport with BeforeAfterDsl {
   }
 
 }
-

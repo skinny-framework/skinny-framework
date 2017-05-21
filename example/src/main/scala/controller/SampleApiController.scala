@@ -15,13 +15,13 @@ class SampleApiController extends SkinnyApiController {
   )
   val createStrongParams = Seq(
     "name" -> ParamType.String,
-    "url" -> ParamType.String
+    "url"  -> ParamType.String
   )
 
   def createCompany = {
     if (createForm.validate()) {
       val permittedParams = StrongParameters(params).permit(createStrongParams: _*)
-      val id = Company.createWithPermittedAttributes(permittedParams)
+      val id              = Company.createWithPermittedAttributes(permittedParams)
       status = 201
       response.setHeader("Location", s"/companies/${id.value}")
     } else {

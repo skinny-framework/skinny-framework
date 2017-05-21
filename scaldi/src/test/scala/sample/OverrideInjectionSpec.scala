@@ -29,7 +29,7 @@ class OverrideInjectionSpec extends SkinnyFlatSpec {
       inject[EchoService].echo(params.getAs[String]("echo").getOrElse(""))
     }
     def appName = inject[AppName].value
-    def env = inject[SkinnyEnv].getOrElse("xxx")
+    def env     = inject[SkinnyEnv].getOrElse("xxx")
   }
   object modules extends ModulesController with Routes {
     get("/foo/")(index).as('index)
@@ -38,7 +38,7 @@ class OverrideInjectionSpec extends SkinnyFlatSpec {
   }
   object module extends SkinnyController with ScaldiFeature with Routes {
     override def scaldiModules = Seq(new AppModule)
-    def index = inject[AppName].value
+    def index                  = inject[AppName].value
     get("/bar/name")(index).as('index)
   }
   addFilter(modules, "/*")
@@ -63,7 +63,7 @@ class OverrideInjectionSpec extends SkinnyFlatSpec {
       status should equal(200)
       body should equal("test")
     }
-    */
+     */
     get("/bar/name") {
       status should equal(200)
       body should equal("ScaldiExample")

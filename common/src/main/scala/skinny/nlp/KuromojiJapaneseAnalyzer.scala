@@ -10,7 +10,9 @@ import skinny.util.LoanPattern._
 import scala.collection.mutable.ListBuffer
 import scala.util.Try
 
-case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends SkinnyJapaneseAnalyzer with LoggerProvider {
+case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer)
+    extends SkinnyJapaneseAnalyzer
+    with LoggerProvider {
 
   private[this] val KATAKANA_CHARS_TO_BE_AS_IS = Seq('゠', '・', 'ー', 'ヽ', 'ヾ', 'ヿ')
 
@@ -32,11 +34,13 @@ case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends 
 
   private def isKatakanaToBeHiragana(c: Char): Boolean = {
     Character.UnicodeBlock.of(c) == Character.UnicodeBlock.KATAKANA &&
-      !KATAKANA_CHARS_TO_BE_AS_IS.contains(c)
+    !KATAKANA_CHARS_TO_BE_AS_IS.contains(c)
   }
 
   private def katakanaToHiragana(str: String): String = {
-    str.map { c => if (isKatakanaToBeHiragana(c)) (c + 'あ' - 'ア').toChar else c }.mkString
+    str.map { c =>
+      if (isKatakanaToBeHiragana(c)) (c + 'あ' - 'ア').toChar else c
+    }.mkString
   }
 
   private case class KuromojiToken(term: String, katakana: String, romaji: String)
@@ -44,7 +48,7 @@ case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends 
   private def toTokens(str: String): Seq[KuromojiToken] = {
     using(kuromojiAnalyzer.tokenStream("katakana-conversion", str)) { stream =>
       val charTermAttr = stream.addAttribute(classOf[CharTermAttribute])
-      val readingAttr = stream.addAttribute(classOf[ReadingAttribute])
+      val readingAttr  = stream.addAttribute(classOf[ReadingAttribute])
 
       val tokens = new ListBuffer[KuromojiToken]
       stream.reset()
@@ -52,15 +56,15 @@ case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer) extends 
         val original = charTermAttr.toString
         if (original != null) {
           val katakana = if (readingAttr.getReading != null) readingAttr.getReading else original
-          val romaji = ToStringUtil.getRomanization(katakana)
-          val token = KuromojiToken(original, katakana, romaji)
+          val romaji   = ToStringUtil.getRomanization(katakana)
+          val token    = KuromojiToken(original, katakana, romaji)
           tokens.append(token)
         }
       }
       logger.debug(s"Tokenized results: ${tokens}")
 
       var previous: KuromojiToken = null
-      val distinctTokens = new ListBuffer[KuromojiToken]
+      val distinctTokens          = new ListBuffer[KuromojiToken]
       tokens.foreach { current =>
         if (previous != null) {
           if (current.term.contains(previous.term)) {

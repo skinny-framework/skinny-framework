@@ -5,8 +5,8 @@ import skinny._
 import skinny.view.velocity._
 
 /**
- * Velocity template engine support.
- */
+  * Velocity template engine support.
+  */
 trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
 
   lazy val sbtProjectPath: Option[String] = None
@@ -21,8 +21,8 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   protected def templatePath(path: String)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): String = {
     s"${path}.${format.name}.${velocityExtension}".replaceAll("//", "/")
   }
@@ -32,8 +32,8 @@ trait VelocityTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): String = {
     velocity.render(templatePath(path)(ctx, format), requestScope(ctx).toMap, ctx.request, ctx.response)
   }

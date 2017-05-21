@@ -9,8 +9,8 @@ class SkinnyHttpRequestWrapperSpec extends FlatSpec with Matchers with MockitoSu
 
   it should "work" in {
     val underlying = mock[HttpServletRequest]
-    val session = null
-    val req = SkinnyHttpRequestWrapper(underlying, session)
+    val session    = null
+    val req        = SkinnyHttpRequestWrapper(underlying, session)
     req.getSession(true) should equal(session)
     req.getSession should equal(session)
     req.getAuthType should equal(underlying.getAuthType)

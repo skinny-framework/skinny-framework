@@ -13,9 +13,12 @@ class LTSVSpec extends FlatSpec with Matchers {
   }
 
   it should "work fine with CRLF" in {
-    val ltsvList: List[Map[String, String]] = LTSV.parseLines("name:Alice\tage:19\r\nname:Bobson\tage:\tnickname:Bob\nname:Chris\tage:25")
+    val ltsvList: List[Map[String, String]] =
+      LTSV.parseLines("name:Alice\tage:19\r\nname:Bobson\tage:\tnickname:Bob\nname:Chris\tage:25")
     ltsvList.size should equal(3)
-    LTSV.dump(ltsvList).mkString("\n") should equal("name:Alice\tage:19\nname:Bobson\tage:\tnickname:Bob\nname:Chris\tage:25")
+    LTSV.dump(ltsvList).mkString("\n") should equal(
+      "name:Alice\tage:19\nname:Bobson\tage:\tnickname:Bob\nname:Chris\tage:25"
+    )
   }
 
   it should "throw Exception if failed" in {

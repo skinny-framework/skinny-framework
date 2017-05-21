@@ -175,7 +175,9 @@ class ParamTypeSpec extends FlatSpec with Matchers {
   it should "convert raw value to expected type" in {
     import org.joda.time.{ DateTime => JDateTime }
     val expected = JDateTime.parse("2013-01-02T03:04:05").getMillis
-    ParamType.DateTime.unapply("2013-01-02T03:04:05").map(_.asInstanceOf[JDateTime].getMillis) should equal(Some(expected))
+    ParamType.DateTime.unapply("2013-01-02T03:04:05").map(_.asInstanceOf[JDateTime].getMillis) should equal(
+      Some(expected)
+    )
     intercept[IllegalArgumentException] { ParamType.DateTime.unapply("abc") }
     ParamType.DateTime.unapply("") should equal(Some(null))
     ParamType.DateTime.unapply("  ") should equal(Some(null))

@@ -3,13 +3,13 @@ package skinny.orm.feature
 import scalikejdbc._
 
 /**
- * Provides AutoSession for this mapper.
- */
+  * Provides AutoSession for this mapper.
+  */
 trait AutoSessionFeature { self: SQLSyntaxSupport[_] with ConnectionPoolFeature =>
 
   /**
-   * AutoSession definition.
-   */
+    * AutoSession definition.
+    */
   override def autoSession: DBSession = {
     connectionPoolName match {
       case ConnectionPool.DEFAULT_NAME =>

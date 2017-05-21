@@ -1,7 +1,7 @@
 package controller
 
 import org.scalatest._
-import skinny.test.{ MockController, FactoryGirl }
+import skinny.test.{ FactoryGirl, MockController }
 import model.Company
 import skinny.Format
 import unit.DBSettings
@@ -10,7 +10,7 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
 
   describe("CompaniesController") {
 
-    def newCompany = FactoryGirl(Company).create()
+    def newCompany           = FactoryGirl(Company).create()
     def createMockController = new CompaniesController with MockController
 
     describe("shows resources") {
@@ -24,7 +24,7 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
       }
 
       it("shows JSON response") {
-        val controller = createMockController
+        val controller      = createMockController
         implicit val format = Format.JSON
         controller.showResources()
 
@@ -35,7 +35,7 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
 
     describe("shows a resource") {
       it("shows HTML response") {
-        val company = newCompany
+        val company    = newCompany
         val controller = createMockController
         controller.showResource(company.id)
 
@@ -56,10 +56,10 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
     describe("creates a resource") {
       it("succeeds with valid parameters") {
         val controller = createMockController
-        val newName = s"Created at ${System.currentTimeMillis}"
+        val newName    = s"Created at ${System.currentTimeMillis}"
         controller.prepareParams(
-          "name" -> newName,
-          "url" -> "http://www.example.com/",
+          "name"      -> newName,
+          "url"       -> "http://www.example.com/",
           "updatedAt" -> "2013-01-02 12:34:56"
         )
         controller.createResource()
@@ -76,18 +76,18 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
     }
 
     it("shows edit form") {
-      val company = newCompany
+      val company    = newCompany
       val controller = createMockController
       controller.editResource(company.id)
       controller.status should equal(200)
     }
 
     it("updates a resource") {
-      val company = newCompany
+      val company    = newCompany
       val controller = createMockController
       controller.prepareParams(
-        "id" -> company.id.value.toString,
-        "name" -> s"Updated at ${System.currentTimeMillis}",
+        "id"        -> company.id.value.toString,
+        "name"      -> s"Updated at ${System.currentTimeMillis}",
         "updatedAt" -> "2013-01-02 12:34:56"
       )
       controller.updateResource(company.id)
@@ -95,7 +95,7 @@ class CompaniesControllerSpec extends FunSpec with Matchers with DBSettings {
     }
 
     it("destroys a resource") {
-      val company = newCompany
+      val company    = newCompany
       val controller = createMockController
       controller.destroyResource(company.id)
       controller.status should equal(200)

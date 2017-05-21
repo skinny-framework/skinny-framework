@@ -5,27 +5,27 @@ import javax.mail.internet.InternetAddress
 import skinny.mailer.feature._
 
 /**
- * SkinnyMailer base implementation.
- */
+  * SkinnyMailer base implementation.
+  */
 trait SkinnyMailerBase {
 
   self: ConfigFeature with JavaMailSessionFeature with SmtpConfigFeature with ExtraConfigFeature =>
 
   /**
-   * Creates SkinnyMessage object.
-   */
+    * Creates SkinnyMessage object.
+    */
   def mail(
-    from: String = config.defaultFrom.orNull[String],
-    to: Seq[String] = Nil,
-    subject: String = "",
-    body: String = ""
+      from: String = config.defaultFrom.orNull[String],
+      to: Seq[String] = Nil,
+      subject: String = "",
+      body: String = ""
   )(implicit s: Session = session): SkinnyMessage = {
 
     val auth: Option[SmtpAuthentication] = {
       if (smtpConfig.authEnabled) {
         (smtpConfig.user, smtpConfig.password) match {
           case (Some(u), Some(p)) => Some(SmtpAuthentication(u, p))
-          case _ => None
+          case _                  => None
         }
       } else None
     }

@@ -9,31 +9,46 @@ class ParamsSpec extends ScalatraFlatSpec {
 
   object ParasController extends SkinnyController with Routes {
     def date = {
-      Params(params).withDate(
-        ("year", "month", "day"), "date"
-      ).getAs[String]("date").orNull
+      Params(params)
+        .withDate(
+          ("year", "month", "day"),
+          "date"
+        )
+        .getAs[String]("date")
+        .orNull
     }
     def date2 = {
       Params(params).withDate("date").getAs[String]("date").orNull
     }
     def datetime = {
-      Params(params).withDateTime(
-        ("year", "month", "day", "hour", "minute", "second"), "datetime"
-      ).getAs[String]("datetime").orNull
+      Params(params)
+        .withDateTime(
+          ("year", "month", "day", "hour", "minute", "second"),
+          "datetime"
+        )
+        .getAs[String]("datetime")
+        .orNull
     }
     def datetime2 = {
-      Params(params).
-        withDateTime("datetime").getAs[String]("datetime").orNull
+      Params(params).withDateTime("datetime").getAs[String]("datetime").orNull
     }
     def datetime3 = {
-      Params(params).withDateTime(
-        ("date", "time"), "datetime"
-      ).getAs[String]("datetime").orNull
+      Params(params)
+        .withDateTime(
+          ("date", "time"),
+          "datetime"
+        )
+        .getAs[String]("datetime")
+        .orNull
     }
     def time = {
-      Params(params).withTime(
-        ("hour", "minute", "second"), "time"
-      ).getAs[String]("time").orNull
+      Params(params)
+        .withTime(
+          ("hour", "minute", "second"),
+          "time"
+        )
+        .getAs[String]("time")
+        .orNull
     }
     def time2 = {
       Params(params).withTime("time").getAs[String]("time").orNull
@@ -57,13 +72,24 @@ class ParamsSpec extends ScalatraFlatSpec {
     post("/date2", "date_year" -> "2011", "date_month" -> "6", "date_day" -> "22") {
       body should equal("2011-06-22")
     }
-    post("/datetime", "year" -> "2011", "month" -> "6", "day" -> "22", "hour" -> "12", "minute" -> "34", "second" -> "56") {
+    post("/datetime",
+         "year"   -> "2011",
+         "month"  -> "6",
+         "day"    -> "22",
+         "hour"   -> "12",
+         "minute" -> "34",
+         "second" -> "56") {
       body should equal("2011-06-22 12:34:56")
     }
-    post("/datetime2", "datetime_year" -> "2011", "datetime_month" -> "6", "datetime_day" -> "22",
-      "datetime_hour" -> "12", "datetime_minute" -> "34", "datetime_second" -> "56") {
-        body should equal("2011-06-22 12:34:56")
-      }
+    post("/datetime2",
+         "datetime_year"   -> "2011",
+         "datetime_month"  -> "6",
+         "datetime_day"    -> "22",
+         "datetime_hour"   -> "12",
+         "datetime_minute" -> "34",
+         "datetime_second" -> "56") {
+      body should equal("2011-06-22 12:34:56")
+    }
     post("/datetime3", "date" -> "2011-06-22", "time" -> "12:34:56") {
       body should equal("2011-06-22 12:34:56")
     }

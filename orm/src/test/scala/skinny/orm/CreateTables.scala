@@ -136,7 +136,6 @@ create table table2 (
   label varchar(128) not null
 )
 """
-
   )
 
   runIfFailed(sql"select * from members")

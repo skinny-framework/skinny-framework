@@ -10,7 +10,7 @@ trait ParameterBinderOps {
   final def extractValueFromParameterBinder(kv: (SQLSyntax, Any)): (SQLSyntax, Any) = {
     kv match {
       case (k, v: ParameterBinderWithValue) => extractValueFromParameterBinder(k, v.value)
-      case (k, v) => (k, v)
+      case (k, v)                           => (k, v)
     }
   }
 
@@ -18,7 +18,7 @@ trait ParameterBinderOps {
   final def extractValueFromParameterBinder(v: Any): Any = {
     v match {
       case v: ParameterBinderWithValue => extractValueFromParameterBinder(v.value)
-      case _ => v
+      case _                           => v
     }
   }
 

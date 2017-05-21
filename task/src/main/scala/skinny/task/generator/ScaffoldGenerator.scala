@@ -11,8 +11,8 @@ import skinny.ParamType
 import scala.io.Source
 
 /**
- * Skinny Generator Task.
- */
+  * Skinny Generator Task.
+  */
 trait ScaffoldGenerator extends CodeGenerator {
 
   protected def template: String = "ssp"
@@ -44,7 +44,9 @@ trait ScaffoldGenerator extends CodeGenerator {
   private def showUsage = {
     showSkinnyGenerator()
     println("""  Usage: sbt "task/run generate:scaffold members member name:String birthday:Option[LocalDate]" """)
-    println("""         sbt "task/run generate:scaffold admin.legacy members member name:String birthday:Option[LocalDate]" """)
+    println(
+      """         sbt "task/run generate:scaffold admin.legacy members member name:String birthday:Option[LocalDate]" """
+    )
     println("")
   }
 
@@ -78,20 +80,25 @@ trait ScaffoldGenerator extends CodeGenerator {
       return
     }
 
-    val completedArgs = if (args(2).contains(":")) Seq("") ++ args
-    else args
+    val completedArgs =
+      if (args(2).contains(":")) Seq("") ++ args
+      else args
 
     completedArgs match {
       case ns :: rs :: r :: attributes =>
         val (namespaces, resources, resource) = (ns.split('.'), toFirstCharLower(rs), toFirstCharLower(r))
-        val errorMessages = attributes.flatMap {
-          case attr if !attr.contains(":") => Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
-          case attr => attr.split(":") match {
-            case Array(_, paramType) if (!isSupportedParamType(paramType) && !isAssociationTypeName(paramType)) =>
-              Some(s"Invalid type (${paramType}) found. ")
-            case _ => None
+        val errorMessages = attributes
+          .flatMap {
+            case attr if !attr.contains(":") =>
+              Some(s"Invalid parameter (${attr}) found. Scaffold parameter must be delimited with colon(:)")
+            case attr =>
+              attr.split(":") match {
+                case Array(_, paramType) if (!isSupportedParamType(paramType) && !isAssociationTypeName(paramType)) =>
+                  Some(s"Invalid type (${paramType}) found. ")
+                case _ => None
+              }
           }
-        }.map(_.toString)
+          .map(_.toString)
 
         if (!errorMessages.isEmpty) {
           showErrors(errorMessages)
@@ -101,8 +108,8 @@ trait ScaffoldGenerator extends CodeGenerator {
           val generatorArgs: Seq[ScaffoldGeneratorArg] = attributes.flatMap { attribute =>
             attribute.toString.split(":") match {
               case Array(name, typeName, columnName) => Some(ScaffoldGeneratorArg(name, typeName, Some(columnName)))
-              case Array(name, typeName) => Some(ScaffoldGeneratorArg(name, typeName))
-              case _ => None
+              case Array(name, typeName)             => Some(ScaffoldGeneratorArg(name, typeName))
+              case _                                 => None
             }
           }
           val nameAndTypeNamePairs: Seq[(String, String)] = {
@@ -127,21 +134,24 @@ trait ScaffoldGenerator extends CodeGenerator {
           val self = this
           val modelGenerator = new ModelGenerator {
             override def connectionPoolName = self.connectionPoolName
-            override def primaryKeyName = self.primaryKeyName
-            override def primaryKeyType = self.primaryKeyType
-            override def withId = self.withId
-            override def withTimestamps = self.withTimestamps
-            override def useAutoConstruct = self.useAutoConstruct
+            override def primaryKeyName     = self.primaryKeyName
+            override def primaryKeyType     = self.primaryKeyType
+            override def withId             = self.withId
+            override def withTimestamps     = self.withTimestamps
+            override def useAutoConstruct   = self.useAutoConstruct
 
-            override def sourceDir = self.sourceDir
-            override def testSourceDir = self.testSourceDir
-            override def resourceDir = self.resourceDir
+            override def sourceDir       = self.sourceDir
+            override def testSourceDir   = self.testSourceDir
+            override def resourceDir     = self.resourceDir
             override def testResourceDir = self.testResourceDir
-            override def modelPackage = self.modelPackage
+            override def modelPackage    = self.modelPackage
             override def modelPackageDir = self.modelPackageDir
           }
           val nameAndTypeNamePairsForModel = generatorArgs.map(a => (a.name, a.typeName))
-          modelGenerator.generate(namespaces, resource, tableName.orElse(Some(toSnakeCase(resources))), nameAndTypeNamePairsForModel)
+          modelGenerator.generate(namespaces,
+                                  resource,
+                                  tableName.orElse(Some(toSnakeCase(resources))),
+                                  nameAndTypeNamePairsForModel)
           modelGenerator.generateSpec(namespaces, resource, nameAndTypeNamePairsForModel)
           val convertedNameAndTypeNamePairs = nameAndTypeNamePairs
             .map { case (name, typeName) => CodeGenerator.convertReservedWord(name) -> typeName }
@@ -200,36 +210,46 @@ trait ScaffoldGenerator extends CodeGenerator {
     )
   }
 
-  def controllerCode(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]): String = {
-    val namespace = toNamespace(controllerPackage, namespaces)
+  def controllerCode(namespaces: Seq[String],
+                     resources: String,
+                     resource: String,
+                     template: String,
+                     args: Seq[ScaffoldGeneratorArg]): String = {
+    val namespace             = toNamespace(controllerPackage, namespaces)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
-    val messagesResourceNameIfExists = if (resourceWithNamespace != resource) "\n  override def messageResourceName = \"" + resourceWithNamespace + "\"" else ""
+    val messagesResourceNameIfExists =
+      if (resourceWithNamespace != resource) "\n  override def messageResourceName = \"" + resourceWithNamespace + "\""
+      else ""
     val controllerClassName = toClassName(resources) + "Controller"
-    val modelClassName = toClassName(resource)
+    val modelClassName      = toClassName(resource)
 
-    val primaryKeyNameIfNotId = customPrimaryKeyName.map(name => "\n  override def idName = \"" + name + "\"").getOrElse("")
+    val primaryKeyNameIfNotId =
+      customPrimaryKeyName.map(name => "\n  override def idName = \"" + name + "\"").getOrElse("")
     val primaryKeyTypeIfNotLong = if (primaryKeyType != ParamType.Long) s"WithId[${primaryKeyType}]" else ""
-    val filteredArgs = args.filterNot(arg => isAssociationTypeName(arg.typeName))
+    val filteredArgs            = args.filterNot(arg => isAssociationTypeName(arg.typeName))
     val validations = filteredArgs
-      .filterNot { arg => extractTypeIfOptionOrSeq(arg.typeName) == "Boolean" } // boolean param doesn't need required validation.
+      .filterNot { arg =>
+        extractTypeIfOptionOrSeq(arg.typeName) == "Boolean"
+      } // boolean param doesn't need required validation.
       .flatMap { arg =>
         val required = if (isOptionClassName(arg.typeName)) Nil else Seq("required")
-        val varcharLength = if (arg.columnName.isDefined && (
-          arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR")
-        )) {
-          arg.columnName.get.replaceAll("[varcharVARCHAR\\(\\)]", "")
-        } else "512"
+        val varcharLength =
+          if (arg.columnName.isDefined && (
+                arg.columnName.get.startsWith("varchar") || arg.columnName.get.startsWith("VARCHAR")
+              )) {
+            arg.columnName.get.replaceAll("[varcharVARCHAR\\(\\)]", "")
+          } else "512"
         val validationRules = required ++ (extractTypeIfOptionOrSeq(arg.typeName) match {
-          case "Long" => Seq("numeric", "longValue")
-          case "Int" => Seq("numeric", "intValue")
-          case "Short" => Seq("numeric", "intValue")
-          case "Double" => Seq("doubleValue")
-          case "Float" => Seq("floatValue")
-          case "String" => Seq(s"maxLength(${varcharLength})")
-          case "DateTime" => Seq("dateTimeFormat")
+          case "Long"      => Seq("numeric", "longValue")
+          case "Int"       => Seq("numeric", "intValue")
+          case "Short"     => Seq("numeric", "intValue")
+          case "Double"    => Seq("doubleValue")
+          case "Float"     => Seq("floatValue")
+          case "String"    => Seq(s"maxLength(${varcharLength})")
+          case "DateTime"  => Seq("dateTimeFormat")
           case "LocalDate" => Seq("dateFormat")
           case "LocalTime" => Seq("timeFormat")
-          case _ => Nil
+          case _           => Nil
         })
         if (validationRules.isEmpty) None
         else Some("    paramKey(\"" + toSnakeCase(arg.name) + "\") is " + validationRules.mkString(" & "))
@@ -238,10 +258,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     val params = filteredArgs.flatMap {
       case arg =>
         extractTypeIfOptionOrSeq(arg.typeName) match {
-          case "DateTime" => Some(s""".withDateTime("${toSnakeCase(arg.name)}")""")
+          case "DateTime"  => Some(s""".withDateTime("${toSnakeCase(arg.name)}")""")
           case "LocalDate" => Some(s""".withDate("${toSnakeCase(arg.name)}")""")
           case "LocalTime" => Some(s""".withTime("${toSnakeCase(arg.name)}")""")
-          case _ => None
+          case _           => None
         }
     }.mkString
 
@@ -257,7 +277,8 @@ trait ScaffoldGenerator extends CodeGenerator {
       }
     }
 
-    val resourceNameLine = s"""override def resourceName = "${resource}"${messagesResourceNameIfExists}${primaryKeyNameIfNotId}"""
+    val resourceNameLine =
+      s"""override def resourceName = "${resource}"${messagesResourceNameIfExists}${primaryKeyNameIfNotId}"""
 
     s"""package ${namespace}
         |
@@ -283,7 +304,11 @@ trait ScaffoldGenerator extends CodeGenerator {
         |${validations}
         |  )
         |  override def createFormStrongParameters = Seq(
-        |${filteredArgs.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + extractTypeIfOptionOrSeq(a.typeName) }.mkString(",\n")}
+        |${filteredArgs
+         .map { a =>
+           "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + extractTypeIfOptionOrSeq(a.typeName)
+         }
+         .mkString(",\n")}
         |  )
         |
         |  override def updateParams = Params(params)${params}
@@ -291,54 +316,68 @@ trait ScaffoldGenerator extends CodeGenerator {
         |${validations}
         |  )
         |  override def updateFormStrongParameters = Seq(
-        |${filteredArgs.map { a => "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + extractTypeIfOptionOrSeq(a.typeName) }.mkString(",\n")}
+        |${filteredArgs
+         .map { a =>
+           "    \"" + toSnakeCase(a.name) + "\" -> ParamType." + extractTypeIfOptionOrSeq(a.typeName)
+         }
+         .mkString(",\n")}
         |  )
         |
         |${overrideMethods}}
         |""".stripMargin
   }
 
-  def generateResourceController(namespaces: Seq[String], resources: String, resource: String, template: String, args: Seq[ScaffoldGeneratorArg]) {
+  def generateResourceController(namespaces: Seq[String],
+                                 resources: String,
+                                 resource: String,
+                                 template: String,
+                                 args: Seq[ScaffoldGeneratorArg]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath(controllerPackageDir, namespaces)
-    val file = new File(s"${sourceDir}/${dir}/${controllerClassName}.scala")
+    val dir                 = toDirectoryPath(controllerPackageDir, namespaces)
+    val file                = new File(s"${sourceDir}/${dir}/${controllerClassName}.scala")
     writeIfAbsent(file, controllerCode(namespaces, resources, resource, template, args))
   }
 
   private def params(space: String, nameAndTypeNamePairs: Seq[(String, String)]) = {
-    nameAndTypeNamePairs.map { case (k, t) => toSnakeCase(k) -> extractTypeIfOptionOrSeq(t) }.map {
-      case (key, paramType) =>
-        space + "\"" + key + "\" -> " + {
-          paramType match {
-            case "Long" => "Long.MaxValue.toString()"
-            case "Int" => "Int.MaxValue.toString()"
-            case "Short" => "Short.MaxValue.toString()"
-            case "Double" => "Double.MaxValue.toString()"
-            case "Float" => "Float.MaxValue.toString()"
-            case "Byte" => "Byte.MaxValue.toString()"
-            case "Boolean" => "\"true\""
-            case "DateTime" => "skinny.util.DateTimeUtil.toString(new DateTime())"
-            case "LocalDate" => "skinny.util.DateTimeUtil.toString(new LocalDate())"
-            case "LocalTime" => "skinny.util.DateTimeUtil.toString(new LocalTime())"
-            case _ => "\"dummy\""
+    nameAndTypeNamePairs
+      .map { case (k, t) => toSnakeCase(k) -> extractTypeIfOptionOrSeq(t) }
+      .map {
+        case (key, paramType) =>
+          space + "\"" + key + "\" -> " + {
+            paramType match {
+              case "Long"      => "Long.MaxValue.toString()"
+              case "Int"       => "Int.MaxValue.toString()"
+              case "Short"     => "Short.MaxValue.toString()"
+              case "Double"    => "Double.MaxValue.toString()"
+              case "Float"     => "Float.MaxValue.toString()"
+              case "Byte"      => "Byte.MaxValue.toString()"
+              case "Boolean"   => "\"true\""
+              case "DateTime"  => "skinny.util.DateTimeUtil.toString(new DateTime())"
+              case "LocalDate" => "skinny.util.DateTimeUtil.toString(new LocalDate())"
+              case "LocalTime" => "skinny.util.DateTimeUtil.toString(new LocalTime())"
+              case _           => "\"dummy\""
+            }
           }
-        }
-    }.mkString(",\n")
+      }
+      .mkString(",\n")
   }
 
-  def controllerSpecCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val namespace = toNamespace(controllerPackage, namespaces)
+  def controllerSpecCode(namespaces: Seq[String],
+                         resources: String,
+                         resource: String,
+                         nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val namespace           = toNamespace(controllerPackage, namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
-    val modelClassName = toClassName(resource)
+    val modelClassName      = toClassName(resource)
     val factoryNamePart: String = {
       val name = toResourceNameWithNamespace(namespaces, resource)
       if (name != resource) ", '" + name else ""
     }
 
     val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${resources}"
-    val resourcesInLabel = toSplitName(resources)
-    val resourceInLabel = toSplitName(resource)
-    val newResourceName = s"new${toClassName(resource)}"
+    val resourcesInLabel  = toSplitName(resources)
+    val resourceInLabel   = toSplitName(resource)
+    val newResourceName   = s"new${toClassName(resource)}"
 
     s"""package ${namespace}
       |
@@ -448,27 +487,33 @@ trait ScaffoldGenerator extends CodeGenerator {
       |""".stripMargin
   }
 
-  def generateControllerSpec(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def generateControllerSpec(namespaces: Seq[String],
+                             resources: String,
+                             resource: String,
+                             nameAndTypeNamePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath(controllerPackageDir, namespaces)
-    val file = new File(s"${testSourceDir}/${dir}/${controllerClassName}Spec.scala")
+    val dir                 = toDirectoryPath(controllerPackageDir, namespaces)
+    val file                = new File(s"${testSourceDir}/${dir}/${controllerClassName}Spec.scala")
     writeIfAbsent(file, controllerSpecCode(namespaces, resources, resource, nameAndTypeNamePairs))
   }
 
-  def integrationSpecCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val namespace = toNamespace("integrationtest", namespaces)
+  def integrationSpecCode(namespaces: Seq[String],
+                          resources: String,
+                          resource: String,
+                          nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val namespace           = toNamespace("integrationtest", namespaces)
     val controllerClassName = toClassName(resources) + "Controller"
-    val controllerName = toControllerName(namespaces, resources)
-    val modelClassName = toClassName(resource)
+    val controllerName      = toControllerName(namespaces, resources)
+    val modelClassName      = toClassName(resource)
     val factoryNamePart: String = {
       val name = toResourceNameWithNamespace(namespaces, resource)
       if (name != resource) ", '" + name else ""
     }
 
     val resourcesInLabel = toSplitName(resources)
-    val resourceInLabel = toSplitName(resource)
-    val newResourceName = s"new${toClassName(resource)}"
-    val resourceBaseUrl = s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}"
+    val resourceInLabel  = toSplitName(resource)
+    val newResourceName  = s"new${toClassName(resource)}"
+    val resourceBaseUrl  = s"${toResourcesBasePath(namespaces)}/${toSnakeCase(resources)}"
 
     s"""package ${namespace}
         |
@@ -590,10 +635,13 @@ trait ScaffoldGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateIntegrationTestSpec(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def generateIntegrationTestSpec(namespaces: Seq[String],
+                                  resources: String,
+                                  resource: String,
+                                  nameAndTypeNamePairs: Seq[(String, String)]) {
     val controllerClassName = toClassName(resources) + "Controller"
-    val dir = toDirectoryPath("integrationtest", namespaces)
-    val file = new File(s"${testSourceDir}/${dir}/${controllerClassName}_IntegrationTestSpec.scala")
+    val dir                 = toDirectoryPath("integrationtest", namespaces)
+    val file                = new File(s"${testSourceDir}/${dir}/${controllerClassName}_IntegrationTestSpec.scala")
     writeIfAbsent(file, integrationSpecCode(namespaces, resources, resource, nameAndTypeNamePairs))
   }
 
@@ -610,19 +658,22 @@ trait ScaffoldGenerator extends CodeGenerator {
   def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]) {
     val file = new File(s"${testResourceDir}/factories.conf")
 
-    val params = nameAndTypeNamePairs.map { case (k, t) => k -> extractTypeIfOptionOrSeq(t) }.map {
-      case (k, "Long") => "  " + k + "=\"" + Long.MaxValue.toString() + "\""
-      case (k, "Int") => "  " + k + "=\"" + Int.MaxValue.toString() + "\""
-      case (k, "Short") => "  " + k + "=\"" + Short.MaxValue.toString() + "\""
-      case (k, "Double") => "  " + k + "=\"" + Double.MaxValue.toString() + "\""
-      case (k, "Float") => "  " + k + "=\"" + Float.MaxValue.toString() + "\""
-      case (k, "Byte") => "  " + k + "=\"" + Byte.MaxValue.toString() + "\""
-      case (k, "Boolean") => "  " + k + "=true"
-      case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
-      case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
-      case (k, "DateTime") => "  " + k + "=\"" + new DateTime().toString() + "\""
-      case (k, _) => "  " + k + "=\"Something New\""
-    }.mkString("\n")
+    val params = nameAndTypeNamePairs
+      .map { case (k, t) => k -> extractTypeIfOptionOrSeq(t) }
+      .map {
+        case (k, "Long")      => "  " + k + "=\"" + Long.MaxValue.toString() + "\""
+        case (k, "Int")       => "  " + k + "=\"" + Int.MaxValue.toString() + "\""
+        case (k, "Short")     => "  " + k + "=\"" + Short.MaxValue.toString() + "\""
+        case (k, "Double")    => "  " + k + "=\"" + Double.MaxValue.toString() + "\""
+        case (k, "Float")     => "  " + k + "=\"" + Float.MaxValue.toString() + "\""
+        case (k, "Byte")      => "  " + k + "=\"" + Byte.MaxValue.toString() + "\""
+        case (k, "Boolean")   => "  " + k + "=true"
+        case (k, "LocalDate") => "  " + k + "=\"" + new LocalDate().toString() + "\""
+        case (k, "LocalTime") => "  " + k + "=\"" + new LocalTime().toString() + "\""
+        case (k, "DateTime")  => "  " + k + "=\"" + new DateTime().toString() + "\""
+        case (k, _)           => "  " + k + "=\"Something New\""
+      }
+      .mkString("\n")
 
     val code =
       s"""${factoryName} {
@@ -640,9 +691,12 @@ trait ScaffoldGenerator extends CodeGenerator {
   // messages.conf
   // --------------------------
 
-  def messagesConfCode(messageResource: String, resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
+  def messagesConfCode(messageResource: String,
+                       resources: String,
+                       resource: String,
+                       nameAndTypeNamePairs: Seq[(String, String)]): String = {
     val _resources = toCapitalizedSplitName(resources)
-    val _resource = toCapitalizedSplitName(resource)
+    val _resource  = toCapitalizedSplitName(resource)
 
     s"""
         |${messageResource} {
@@ -657,13 +711,18 @@ trait ScaffoldGenerator extends CodeGenerator {
         |  new="New ${_resource}"
         |  delete.confirm="Are you sure?"
         |  ${primaryKeyName}="ID"
-        |${nameAndTypeNamePairs.map { case (k, _) => "  " + k + "=\"" + toCapitalizedSplitName(k) + "\"" }.mkString("\n")}
+        |${nameAndTypeNamePairs
+         .map { case (k, _) => "  " + k + "=\"" + toCapitalizedSplitName(k) + "\"" }
+         .mkString("\n")}
         |}
         |""".stripMargin
   }
 
-  def generateMessages(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val file = new File(s"${resourceDir}/messages.conf")
+  def generateMessages(namespaces: Seq[String],
+                       resources: String,
+                       resource: String,
+                       nameAndTypeNamePairs: Seq[(String, String)]) {
+    val file            = new File(s"${resourceDir}/messages.conf")
     val messageResource = toResourceNameWithNamespace(namespaces, resource)
 
     val currentCode = if (file.exists()) Source.fromFile(file).mkString else ""
@@ -676,12 +735,17 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Flyway migration SQL
   // --------------------------
 
-  def migrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], withId: Boolean = true): String = {
+  def migrationSQL(resources: String,
+                   resource: String,
+                   generatorArgs: Seq[ScaffoldGeneratorArg],
+                   withId: Boolean = true): String = {
     val name = tableName.getOrElse(toSnakeCase(resources))
-    val columns = generatorArgs.map { a =>
-      s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
+    val columns = generatorArgs
+      .map { a =>
+        s"  ${toSnakeCase(a.name)} ${a.columnName.getOrElse(toDBType(a.typeName))}" +
         (if (isOptionClassName(a.typeName)) "" else " not null")
-    }.mkString(",\n")
+      }
+      .mkString(",\n")
     val timestamps = if (withTimestamps) {
       s""",
       |  created_at timestamp not null,
@@ -704,7 +768,10 @@ trait ScaffoldGenerator extends CodeGenerator {
     }
   }
 
-  def generateMigrationSQL(resources: String, resource: String, generatorArgs: Seq[ScaffoldGeneratorArg], withId: Boolean) {
+  def generateMigrationSQL(resources: String,
+                           resource: String,
+                           generatorArgs: Seq[ScaffoldGeneratorArg],
+                           withId: Boolean) {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file: File = {
       val filepath = {
@@ -730,73 +797,113 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Views
   // --------------------------
 
-  def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String
-  def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String
-  def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String
-  def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String
-  def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String
+  def formHtmlCode(namespaces: Seq[String],
+                   resources: String,
+                   resource: String,
+                   nameAndTypeNamePairs: Seq[(String, String)]): String
+  def newHtmlCode(namespaces: Seq[String],
+                  resources: String,
+                  resource: String,
+                  nameAndTypeNamePairs: Seq[(String, String)]): String
+  def editHtmlCode(namespaces: Seq[String],
+                   resources: String,
+                   resource: String,
+                   nameAndTypeNamePairs: Seq[(String, String)]): String
+  def indexHtmlCode(namespaces: Seq[String],
+                    resources: String,
+                    resource: String,
+                    nameAndTypeNamePairs: Seq[(String, String)]): String
+  def showHtmlCode(namespaces: Seq[String],
+                   resources: String,
+                   resource: String,
+                   nameAndTypeNamePairs: Seq[(String, String)]): String
 
-  def generateFormView(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val dir = toDirectoryPath("views", namespaces)
+  def generateFormView(namespaces: Seq[String],
+                       resources: String,
+                       resource: String,
+                       nameAndTypeNamePairs: Seq[(String, String)]) {
+    val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/_form.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, formHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
+      FileUtils.write(file,
+                      formHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs),
+                      Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateNewView(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val dir = toDirectoryPath("views", namespaces)
+  def generateNewView(namespaces: Seq[String],
+                      resources: String,
+                      resource: String,
+                      nameAndTypeNamePairs: Seq[(String, String)]) {
+    val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/new.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, newHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
+      FileUtils.write(file,
+                      newHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs),
+                      Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateEditView(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val dir = toDirectoryPath("views", namespaces)
+  def generateEditView(namespaces: Seq[String],
+                       resources: String,
+                       resource: String,
+                       nameAndTypeNamePairs: Seq[(String, String)]) {
+    val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/edit.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, editHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
+      FileUtils.write(file,
+                      editHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs),
+                      Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateIndexView(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val dir = toDirectoryPath("views", namespaces)
+  def generateIndexView(namespaces: Seq[String],
+                        resources: String,
+                        resource: String,
+                        nameAndTypeNamePairs: Seq[(String, String)]) {
+    val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/index.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, indexHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
+      FileUtils.write(file,
+                      indexHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs),
+                      Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }
 
-  def generateShowView(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]) {
-    val dir = toDirectoryPath("views", namespaces)
+  def generateShowView(namespaces: Seq[String],
+                       resources: String,
+                       resource: String,
+                       nameAndTypeNamePairs: Seq[(String, String)]) {
+    val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
     val file = new File(s"${viewDir}/show.html.${template}")
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
     } else {
-      FileUtils.write(file, showHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs), Charset.defaultCharset())
+      FileUtils.write(file,
+                      showHtmlCode(namespaces, resources, resource, nameAndTypeNamePairs),
+                      Charset.defaultCharset())
       println("  \"" + file.getPath + "\" created.")
     }
   }

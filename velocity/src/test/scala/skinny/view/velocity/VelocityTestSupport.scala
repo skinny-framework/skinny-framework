@@ -26,7 +26,7 @@ trait VelocityTestSupport {
     params.foreach { case (k, v) => context.put(k, v) }
 
     val template = velocity.getTemplate(templateName)
-    val writer = new StringWriter
+    val writer   = new StringWriter
     template.merge(context, writer)
     writer.toString
   }

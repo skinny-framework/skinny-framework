@@ -4,7 +4,7 @@ import org.scalatest._
 
 class SkinnyTaskLauncherSpec extends FlatSpec with Matchers {
 
-  val launcher = new SkinnyTaskLauncher {}
+  val launcher       = new SkinnyTaskLauncher {}
   var result: String = "ng"
 
   it should "accept registered tasks" in {

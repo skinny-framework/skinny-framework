@@ -7,10 +7,10 @@ class MockControllerSpec extends FunSpec with Matchers {
   System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   class AppTest extends SkinnyController {
-    def useUrl = url("/foo")
+    def useUrl  = url("/foo")
     def useUrl2 = url(app.hoge, "a" -> "b")
 
-    def returnParams(key: String): String = params.getAs[String](key).getOrElse("")
+    def returnParams(key: String): String           = params.getAs[String](key).getOrElse("")
     def returnMultiParams(key: String): Seq[String] = multiParams.getAs[String](key).getOrElse(Seq[String]())
   }
   object app extends AppTest with Routes {
@@ -21,7 +21,7 @@ class MockControllerSpec extends FunSpec with Matchers {
   }
 
   class ApiTest extends SkinnyApiController with Routes {
-    def useUrl = url("/foo")
+    def useUrl  = url("/foo")
     def useUrl2 = url(api.hoge, "a" -> "b")
   }
   object api extends ApiTest with Routes {

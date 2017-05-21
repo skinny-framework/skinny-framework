@@ -9,15 +9,15 @@ class ParametersSpec extends FlatSpec with Matchers with ParametersGetAsImplicit
 
   it should "be available" in {
     val validations: Validations = Validations(Map(), Nil)
-    val instance = ParametersFromValidations(validations)
+    val instance                 = ParametersFromValidations(validations)
     instance should not be null
   }
 
   it should "return value with values" in {
     val map: Map[String, Any] = Map(
-      "name" -> "Alice",
-      "age" -> 19,
-      "active" -> true,
+      "name"          -> "Alice",
+      "age"           -> 19,
+      "active"        -> true,
       "average_point" -> 0.12D
     )
     val params = ParametersFromMap(map)

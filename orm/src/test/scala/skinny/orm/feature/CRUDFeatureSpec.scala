@@ -13,20 +13,21 @@ class CRUDFeatureSpec extends FlatSpec with Matchers {
 
   NamedDB('CRUDFeatureSpec).autoCommit { implicit s =>
     sql"create table company(id bigserial, name varchar(100) not null)".execute.apply()
-    sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute.apply()
+    sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute
+      .apply()
   }
 
   case class Person(id: Long, name: String, companyId: Option[Long], company: Option[Company] = None)
   case class Company(id: Long, name: String)
 
   object Person extends SkinnyCRUDMapper[Person] {
-    override def connectionPoolName = 'CRUDFeatureSpec
-    override def defaultAlias = createAlias("p")
+    override def connectionPoolName                                   = 'CRUDFeatureSpec
+    override def defaultAlias                                         = createAlias("p")
     override def extract(rs: WrappedResultSet, n: ResultName[Person]) = autoConstruct(rs, n, "company")
   }
   object Company extends SkinnyCRUDMapper[Company] {
-    override def connectionPoolName = 'CRUDFeatureSpec
-    override def defaultAlias = createAlias("c")
+    override def connectionPoolName                                    = 'CRUDFeatureSpec
+    override def defaultAlias                                          = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = autoConstruct(rs, n)
   }
 

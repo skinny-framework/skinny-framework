@@ -25,4 +25,3 @@ trait TypetalkAPI extends LoggerProvider {
 }
 
 object TypetalkAPI extends TypetalkAPI
-

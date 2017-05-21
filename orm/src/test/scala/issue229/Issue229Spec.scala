@@ -33,34 +33,34 @@ create table article (
   runIfFailed(sql"select count(1) from article")
 }
 
-class Issue229Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Issue229Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(id: Long, name: String)
   case class Article(id: Long, title: String, userId: Option[Long], user: Option[User] = None)
 
   object User extends SkinnyCRUDMapper[User] {
     override val connectionPoolName = 'issue229
-    override def defaultAlias = createAlias("u")
+    override def defaultAlias       = createAlias("u")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn)
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = 'issue229
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'issue229
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
     lazy val userRef = {
       belongsTo[User](
         right = User,
         merge = (a, u) => a.copy(user = u)
-      ).includes[User]((as, us) => as.map { a =>
-        us.find(u => a.user.exists(_.id == u.id))
-          .map(u => a.copy(user = Some(u)))
-          .getOrElse(a)
-      })
+      ).includes[User](
+        (as, us) =>
+          as.map { a =>
+            us.find(u => a.user.exists(_.id == u.id))
+              .map(u => a.copy(user = Some(u)))
+              .getOrElse(a)
+        }
+      )
     }
   }
 
@@ -68,15 +68,15 @@ class Issue229Spec extends fixture.FunSpec with Matchers
 
   override def fixture(implicit session: DBSession): Unit = {
     val aliceId = User.createWithAttributes('name -> "Alice")
-    val bobId = User.createWithAttributes('name -> "Bob")
+    val bobId   = User.createWithAttributes('name -> "Bob")
     Seq(
       ("Hello World", Some(aliceId)),
       ("Getting Started with Scala", Some(bobId)),
       ("Functional Programming", None),
       ("How to user sbt", Some(aliceId))
     ).foreach {
-        case (title, userId) => Article.createWithAttributes('title -> title, 'userId -> userId)
-      }
+      case (title, userId) => Article.createWithAttributes('title -> title, 'userId -> userId)
+    }
   }
 
   def id(implicit session: DBSession): Long = {

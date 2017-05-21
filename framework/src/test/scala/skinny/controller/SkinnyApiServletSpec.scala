@@ -13,16 +13,17 @@ class SkinnyApiServletSpec extends ScalatraFlatSpec {
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
   ConnectionPool.add('SkinnyApiServlet, "jdbc:h2:mem:SkinnyApiServlet", "", "")
   NamedDB('SkinnyApiServlet).localTx { implicit s =>
-    sql"create table company (id serial primary key, name varchar(64), url varchar(128));"
-      .execute.apply()
+    sql"create table company (id serial primary key, name varchar(64), url varchar(128));".execute.apply()
   }
 
   case class Company(id: Long, name: String, url: String)
   object Company extends SkinnyCRUDMapper[Company] {
     override def connectionPoolName = 'SkinnyApiServlet
-    override def defaultAlias = createAlias("c")
+    override def defaultAlias       = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = new Company(
-      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url)
+      id = rs.get(n.id),
+      name = rs.get(n.name),
+      url = rs.get(n.url)
     )
   }
 
@@ -30,7 +31,7 @@ class SkinnyApiServletSpec extends ScalatraFlatSpec {
     def create = {
       val count = Company.createWithAttributes(
         'name -> params.getAs[String]("name"),
-        'url -> params.getAs[String]("url")
+        'url  -> params.getAs[String]("url")
       )
       if (count == 1) status = 201 else status = 400
     }
@@ -38,7 +39,7 @@ class SkinnyApiServletSpec extends ScalatraFlatSpec {
   }
   val controller = new CompaniesController with Routes {
     val creationUrl = post("/companies")(create).as('list)
-    val listUrl = get("/companies.json")(list).as('list)
+    val listUrl     = get("/companies.json")(list).as('list)
   }
 
   addServlet(controller, "/*")

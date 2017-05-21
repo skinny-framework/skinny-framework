@@ -18,8 +18,8 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
 
   object DefaultController extends SkinnyController {
     // by default, SSP templates are tried before Jade, so it should render SSP templates
-    def a = render("foo/a")
-    def c = render("foo/c")
+    def a   = render("foo/a")
+    def c   = render("foo/c")
     def xyz = render("foo/xyz")
 
     get("/default/a")(a)
@@ -29,9 +29,9 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
 
   object SspOnlyController extends SkinnyController with Routes {
     override def scalateExtensions = List("ssp")
-    def a = render("foo/a")
-    def c = render("foo/c")
-    def xyz = render("foo/xyz")
+    def a                          = render("foo/a")
+    def c                          = render("foo/c")
+    def xyz                        = render("foo/xyz")
 
     get("/ssp/a")(a).as('a)
     get("/ssp/c")(c)
@@ -40,16 +40,16 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
 
   object JadeOnlyController extends SkinnyController {
     override def scalateExtensions = List("jade")
-    def b = render("foo/b")
-    def c = render("foo/c")
+    def b                          = render("foo/b")
+    def c                          = render("foo/c")
     get("/jade/b")(b)
     get("/jade/c")(c)
   }
 
   object AnythingButSspController extends SkinnyController {
     override def scalateExtensions = List("mustache", "scaml", "jade")
-    def b = render("foo/b")
-    def c = render("foo/c")
+    def b                          = render("foo/b")
+    def c                          = render("foo/c")
     get("/anything-but-ssp/b")(b)
     get("/anything-but-ssp/c")(c)
   }
@@ -87,7 +87,7 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     // Delete any auto-generated templates
     for {
       files <- Option(templateFiles)
-      f <- files.filter(_.getName.startsWith("xyz"))
+      f     <- files.filter(_.getName.startsWith("xyz"))
     } {
       f.delete()
     }

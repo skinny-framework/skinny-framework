@@ -3,12 +3,11 @@ package blog
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.{ Matchers, fixture }
+import org.scalatest.{ fixture, Matchers }
 import skinny.test.FactoryGirl
 import skinny.logging.Logging
 
-class BlogSpec extends fixture.FunSpec with Matchers
-    with Connection with CreateTables with AutoRollback with Logging {
+class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback with Logging {
 
   override def db(): DB = NamedDB('fg).toDB()
 

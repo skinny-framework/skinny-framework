@@ -1,7 +1,7 @@
 package controller
 
 import org.scalatest._
-import skinny.controller.{ SkinnyController, Params }
+import skinny.controller.{ Params, SkinnyController }
 import skinny.controller.feature.RequestScopeFeature._
 import skinny.test._
 import org.joda.time._
@@ -13,34 +13,40 @@ class SkinnyControllerSpec extends FunSpec with Matchers {
     describe("setAsParams") {
 
       case class TestModel(
-        text: String,
-        textOpt: Option[String],
-        number: Long,
-        numberOpt: Option[Long],
-        nullValue: Object,
-        nullValueOpt: Option[Object],
-        dateTime: DateTime,
-        dateTimeOpt: Option[DateTime],
-        localDate: LocalDate,
-        localDateOpt: Option[LocalDate],
-        localTime: LocalTime,
-        localTimeOpt: Option[LocalTime]
+          text: String,
+          textOpt: Option[String],
+          number: Long,
+          numberOpt: Option[Long],
+          nullValue: Object,
+          nullValueOpt: Option[Object],
+          dateTime: DateTime,
+          dateTimeOpt: Option[DateTime],
+          localDate: LocalDate,
+          localDateOpt: Option[LocalDate],
+          localTime: LocalTime,
+          localTimeOpt: Option[LocalTime]
       )
 
-      val datetime = DateTime.parse("2014-08-23T13:08:27")
-      val datetime2 = DateTime.parse("1990-11-03T04:44:00")
-      val localDate = LocalDate.parse("2004-02-29")
+      val datetime   = DateTime.parse("2014-08-23T13:08:27")
+      val datetime2  = DateTime.parse("1990-11-03T04:44:00")
+      val localDate  = LocalDate.parse("2004-02-29")
       val localDate2 = LocalDate.parse("1970-01-01")
-      val localTime = LocalTime.parse("14:59:01")
+      val localTime  = LocalTime.parse("14:59:01")
       val localTime2 = LocalTime.parse("04:00:59")
 
       val model = TestModel(
-        "Text Contents", Option("Option Text"),
-        987L, Option(-87654321L),
-        null, Some(null),
-        datetime, Option(datetime2),
-        localDate, Option(localDate2),
-        localTime, Option(localTime2)
+        "Text Contents",
+        Option("Option Text"),
+        987L,
+        Option(-87654321L),
+        null,
+        Some(null),
+        datetime,
+        Option(datetime2),
+        localDate,
+        Option(localDate2),
+        localTime,
+        Option(localTime2)
       )
 
       it("should set params for model") {

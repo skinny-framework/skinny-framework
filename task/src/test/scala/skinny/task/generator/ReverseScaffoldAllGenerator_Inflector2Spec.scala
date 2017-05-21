@@ -11,11 +11,11 @@ import skinny.{ DBSettings, SkinnyEnv }
 class ReverseScaffoldAllGenerator_Inflector2Spec extends FunSpec with Matchers {
 
   val generator = new ReverseScaffoldAllGenerator {
-    override def sourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala"
-    override def resourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/resources"
-    override def testSourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/test/scala"
+    override def sourceDir       = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala"
+    override def resourceDir     = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/resources"
+    override def testSourceDir   = "tmp/ReverseScaffoldAllGeneratorSpec/src/test/scala"
     override def testResourceDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/test/resources"
-    override def webInfDir = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/webapp/WEB-INF"
+    override def webInfDir       = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/webapp/WEB-INF"
   }
 
   describe("ReverseScaffoldAllGenerator") {

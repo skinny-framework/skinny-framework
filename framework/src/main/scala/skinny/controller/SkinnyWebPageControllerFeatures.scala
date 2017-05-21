@@ -3,8 +3,8 @@ package skinny.controller
 import skinny.controller.feature._
 
 /**
- * Additional web pages specific features for SkinnyControllers.
- */
+  * Additional web pages specific features for SkinnyControllers.
+  */
 trait SkinnyWebPageControllerFeatures
     extends SkinnyControllerCommonBase
     with FlashFeature

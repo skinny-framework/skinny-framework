@@ -18,9 +18,9 @@ case class DashboardOps(controller: DashboardController) {
 class DashboardController extends ApplicationController with AsyncOperations {
 
   val adminUserService = new AdminUserService
-  val accessService = new AccessLogService
-  val alertService = new AlertService
-  val ops = DashboardOps(this)
+  val accessService    = new AccessLogService
+  val alertService     = new AlertService
+  val ops              = DashboardOps(this)
 
   def index = warnElapsedTimeWithRequest(500) {
     if (currentUserId.isEmpty) session += "userId" -> 1
@@ -86,4 +86,3 @@ class DashboardController extends ApplicationController with AsyncOperations {
   }
 
 }
-

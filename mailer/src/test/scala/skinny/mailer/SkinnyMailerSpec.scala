@@ -55,6 +55,6 @@ class SkinnyMailerSpec extends FlatSpec with Matchers with SkinnyMailTestSupport
     mailer.sendOther
     inbox.receivedMessages.size should equal(0)
   }
-   */
+ */
 
 }

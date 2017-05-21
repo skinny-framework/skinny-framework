@@ -9,7 +9,7 @@ class FormParamsFeatureSpec extends ScalatraFlatSpec {
 
   class Controller extends SkinnyController {
     def single = formParams.getAs[String]("foo").getOrElse("<empty>")
-    def multi = formMultiParams.getAs[String]("foo").map(_.mkString(",")).getOrElse("<empty>")
+    def multi  = formMultiParams.getAs[String]("foo").map(_.mkString(",")).getOrElse("<empty>")
   }
   object ctrl extends Controller with Routes {
     get("/get")(single).as('get)

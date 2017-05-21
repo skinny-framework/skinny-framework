@@ -7,7 +7,7 @@ class longMinValueSpec extends FlatSpec with Matchers {
   behavior of "longMinValue"
 
   it should "be available" in {
-    val min = 2L
+    val min      = 2L
     val validate = new longMinValue(min)
     validate.name should equal("longMinValue")
     validate.messageParams should equal(Seq("2"))

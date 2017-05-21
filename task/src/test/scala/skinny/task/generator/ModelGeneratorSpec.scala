@@ -8,13 +8,18 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
 
   describe("Model") {
     it("should be created as expected with tableName") {
-      val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "bytes" -> "ByteArray",
-        "bytesOpt" -> "Option[ByteArray]",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(
+        Seq("admin"),
+        "member",
+        Some("members"),
+        Seq(
+          "name"        -> "String",
+          "isActivated" -> "Boolean",
+          "bytes"       -> "ByteArray",
+          "bytesOpt"    -> "Option[ByteArray]",
+          "birthday"    -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """package model.admin
           |
@@ -69,11 +74,14 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val generator = new ModelGenerator {
         override def withTimestamps = false
       }
-      val code = generator.code(Nil, "projectMember", None, Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(Nil,
+                                "projectMember",
+                                None,
+                                Seq(
+                                  "name"        -> "String",
+                                  "isActivated" -> "Boolean",
+                                  "birthday"    -> "Option[LocalDate]"
+                                ))
       val expected =
         """package model
           |
@@ -117,11 +125,14 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
     }
 
     it("should be created as expected without timestamps") {
-      val code = generator.code(Seq("admin"), "projectMember", None, Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(Seq("admin"),
+                                "projectMember",
+                                None,
+                                Seq(
+                                  "name"        -> "String",
+                                  "isActivated" -> "Boolean",
+                                  "birthday"    -> "Option[LocalDate]"
+                                ))
       val expected =
         """package model.admin
           |
@@ -214,11 +225,14 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val generator = new ModelGenerator {
         override def useAutoConstruct = true
       }
-      val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(Seq("admin"),
+                                "member",
+                                Some("members"),
+                                Seq(
+                                  "name"        -> "String",
+                                  "isActivated" -> "Boolean",
+                                  "birthday"    -> "Option[LocalDate]"
+                                ))
       val expected =
         """package model.admin
           |
@@ -251,13 +265,18 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
   describe("Model with associations") {
 
     it("should be created as expected") {
-      val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "company" -> "Option[Company]",
-        "friends" -> "Seq[Friend]",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(
+        Seq("admin"),
+        "member",
+        Some("members"),
+        Seq(
+          "name"        -> "String",
+          "isActivated" -> "Boolean",
+          "company"     -> "Option[Company]",
+          "friends"     -> "Seq[Friend]",
+          "birthday"    -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """package model.admin
           |
@@ -318,13 +337,18 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val generator = new ModelGenerator {
         override def useAutoConstruct = true
       }
-      val code = generator.code(Seq("admin"), "member", Some("members"), Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "company" -> "Option[Company]",
-        "friends" -> "Seq[Friend]",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(
+        Seq("admin"),
+        "member",
+        Some("members"),
+        Seq(
+          "name"        -> "String",
+          "isActivated" -> "Boolean",
+          "company"     -> "Option[Company]",
+          "friends"     -> "Seq[Friend]",
+          "birthday"    -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """package model.admin
           |
@@ -390,13 +414,18 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val generator = new ModelGenerator {
         override def withId = false
       }
-      val code = generator.code(Seq("admin"), "noIdMember", Some("no_id_members"), Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "bytes" -> "ByteArray",
-        "bytesOpt" -> "Option[ByteArray]",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(
+        Seq("admin"),
+        "noIdMember",
+        Some("no_id_members"),
+        Seq(
+          "name"        -> "String",
+          "isActivated" -> "Boolean",
+          "bytes"       -> "ByteArray",
+          "bytesOpt"    -> "Option[ByteArray]",
+          "birthday"    -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """package model.admin
          |
@@ -447,14 +476,17 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
 
     it("should be created as expected without tableName") {
       val generator = new ModelGenerator {
-        override def withId = false
+        override def withId         = false
         override def withTimestamps = false
       }
-      val code = generator.code(Nil, "noIdProjectMember", None, Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(Nil,
+                                "noIdProjectMember",
+                                None,
+                                Seq(
+                                  "name"        -> "String",
+                                  "isActivated" -> "Boolean",
+                                  "birthday"    -> "Option[LocalDate]"
+                                ))
       val expected =
         """package model
           |
@@ -499,11 +531,14 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
       val generator = new ModelGenerator {
         override def withId = false
       }
-      val code = generator.code(Seq("admin"), "noIdProjectMember", None, Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.code(Seq("admin"),
+                                "noIdProjectMember",
+                                None,
+                                Seq(
+                                  "name"        -> "String",
+                                  "isActivated" -> "Boolean",
+                                  "birthday"    -> "Option[LocalDate]"
+                                ))
       val expected =
         """package model.admin
           |

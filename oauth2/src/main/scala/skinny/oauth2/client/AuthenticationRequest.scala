@@ -4,10 +4,10 @@ import org.apache.oltu.oauth2.client.request._
 import org.apache.oltu.oauth2.common.OAuth
 
 /**
- * Authorization Request (build OAuth End User Authorization Request).
- *
- * https://cwiki.apache.org/confluence/display/OLTU/OAuth+2.0+Client+Quickstart
- */
+  * Authorization Request (build OAuth End User Authorization Request).
+  *
+  * https://cwiki.apache.org/confluence/display/OLTU/OAuth+2.0+Client+Quickstart
+  */
 case class AuthenticationRequest(provider: OAuth2Provider) {
 
   val underlying = new OAuthClientRequest.AuthenticationRequestBuilder(provider.authorizationEndpoint)
@@ -47,4 +47,3 @@ case class AuthenticationRequest(provider: OAuth2Provider) {
   def locationURI: String = underlying.buildQueryMessage().getLocationUri
 
 }
-

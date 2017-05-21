@@ -6,15 +6,15 @@ import java.io.IOException
 import skinny.view.freemarker._
 
 /**
- * FreeMarker template engine support.
- */
+  * FreeMarker template engine support.
+  */
 trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
 
   lazy val sbtProjectPath: Option[String] = None
 
   /**
-   * FreeMarker Scala wrapper.
-   */
+    * FreeMarker Scala wrapper.
+    */
   lazy val freeMarker: FreeMarker = {
     FreeMarker(FreeMarkerConfig.defaultWithServletContext(servletContext, sbtProjectPath))
   }
@@ -40,8 +40,8 @@ trait FreeMarkerTemplateEngineFeature extends TemplateEngineFeature {
   }
 
   override protected def renderWithTemplate(path: String)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): String = {
     freeMarker.render(templatePath(path), requestScope(ctx).toMap)
   }

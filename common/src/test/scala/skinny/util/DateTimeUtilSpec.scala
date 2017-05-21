@@ -39,11 +39,21 @@ class DateTimeUtilSpec extends FlatSpec with Matchers {
   it should "have #toISODateTimeFormat" in {
     val zone = DateTimeUtil.currentTimeZone
     DateTimeUtil.toISODateTimeFormat("", ParamType.DateTime) should equal("")
-    DateTimeUtil.toISODateTimeFormat("2013-01-02 03:04:05", ParamType.DateTime) should equal(s"2013-01-02T03:04:05${zone}")
-    DateTimeUtil.toISODateTimeFormat("2013-01-2a 03:04:05", ParamType.DateTime) should equal(s"2013-01-2aT03:04:05${zone}")
-    DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05", ParamType.DateTime) should equal(s"2013-01-02T03:04:05${zone}")
-    DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05+09:00", ParamType.DateTime) should equal("2013-01-02T03:04:05+09:00")
-    DateTimeUtil.toISODateTimeFormat("2014-03-09T16:42:33.816+09:00", ParamType.DateTime) should equal("2014-03-09T16:42:33.816+09:00")
+    DateTimeUtil.toISODateTimeFormat("2013-01-02 03:04:05", ParamType.DateTime) should equal(
+      s"2013-01-02T03:04:05${zone}"
+    )
+    DateTimeUtil.toISODateTimeFormat("2013-01-2a 03:04:05", ParamType.DateTime) should equal(
+      s"2013-01-2aT03:04:05${zone}"
+    )
+    DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05", ParamType.DateTime) should equal(
+      s"2013-01-02T03:04:05${zone}"
+    )
+    DateTimeUtil.toISODateTimeFormat("2013-01-02T03:04:05+09:00", ParamType.DateTime) should equal(
+      "2013-01-02T03:04:05+09:00"
+    )
+    DateTimeUtil.toISODateTimeFormat("2014-03-09T16:42:33.816+09:00", ParamType.DateTime) should equal(
+      "2014-03-09T16:42:33.816+09:00"
+    )
   }
 
   it should "have #toString" in {
@@ -59,13 +69,15 @@ class DateTimeUtilSpec extends FlatSpec with Matchers {
   }
 
   it should "have #toDateString" in {
-    DateTimeUtil.toDateString(Map("year" -> 2013, "month" -> 12, "day" -> 23)) should equal(Some("2013-12-23"))
+    DateTimeUtil.toDateString(Map("year"       -> 2013, "month" -> 12, "day" -> 23)) should equal(Some("2013-12-23"))
     DateTimeUtil.toUnsafeDateString(Map("year" -> 2013, "month" -> 12, "day" -> 23)) should equal(Some("2013-12-23"))
   }
 
   it should "have #toTimeString" in {
-    DateTimeUtil.toTimeString(Map("hour" -> 1, "minute" -> 2, "second" -> 3)) should equal(Some("1970-01-01 01:02:03"))
-    DateTimeUtil.toUnsafeTimeString(Map("hour" -> 1, "minute" -> 2, "second" -> 3)) should equal(Some("1970-01-01 01:02:03"))
+    DateTimeUtil.toTimeString(Map("hour"       -> 1, "minute" -> 2, "second" -> 3)) should equal(Some("1970-01-01 01:02:03"))
+    DateTimeUtil.toUnsafeTimeString(Map("hour" -> 1, "minute" -> 2, "second" -> 3)) should equal(
+      Some("1970-01-01 01:02:03")
+    )
   }
 
   it should "have #toDateTimeString" in {

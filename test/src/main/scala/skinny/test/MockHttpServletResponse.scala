@@ -22,37 +22,37 @@ import java.util._
 
 class MockHttpServletResponse extends HttpServletResponse {
 
-  var CHARSET_PREFIX = "charset="
-  var CONTENT_TYPE_HEADER = "Content-Type"
+  var CHARSET_PREFIX        = "charset="
+  var CONTENT_TYPE_HEADER   = "Content-Type"
   var CONTENT_LENGTH_HEADER = "Content-Length"
-  var LOCATION_HEADER = "Location"
+  var LOCATION_HEADER       = "Location"
 
   //---------------------------------------------------------------------
   // ServletResponse properties
   //---------------------------------------------------------------------
 
   var outputStreamAccessAllowed = true
-  var writerAccessAllowed = true
-  var characterEncoding = "ISO-8859-1"
-  var charset = false
-  var content = new ByteArrayOutputStream()
-  var writer: PrintWriter = _
-  var contentLength: Long = 0
-  var contentType: String = _
-  var bufferSize = 4096
-  var committed: Boolean = false
-  var locale: Locale = Locale.getDefault()
+  var writerAccessAllowed       = true
+  var characterEncoding         = "ISO-8859-1"
+  var charset                   = false
+  var content                   = new ByteArrayOutputStream()
+  var writer: PrintWriter       = _
+  var contentLength: Long       = 0
+  var contentType: String       = _
+  var bufferSize                = 4096
+  var committed: Boolean        = false
+  var locale: Locale            = Locale.getDefault()
 
   //---------------------------------------------------------------------
   // HttpServletResponse properties
   //---------------------------------------------------------------------
 
-  var cookies = new ArrayList[Cookie]()
-  var headers = new LinkedHashMap[String, HeaderValueHolder]
-  var status = 200
+  var cookies              = new ArrayList[Cookie]()
+  var headers              = new LinkedHashMap[String, HeaderValueHolder]
+  var status               = 200
   var errorMessage: String = _
   var forwardedUrl: String = _
-  var includedUrls = new ArrayList[String]
+  var includedUrls         = new ArrayList[String]
 
   override def getLocale: Locale = locale
 
@@ -73,9 +73,9 @@ class MockHttpServletResponse extends HttpServletResponse {
   }
 
   override def isCommitted: Boolean = committed
-  override def resetBuffer(): Unit = content.reset()
-  override def flushBuffer(): Unit = committed = true
-  override def getBufferSize: Int = bufferSize
+  override def resetBuffer(): Unit  = content.reset()
+  override def flushBuffer(): Unit  = committed = true
+  override def getBufferSize: Int   = bufferSize
 
   override def setBufferSize(size: Int): Unit = {
     this.bufferSize = bufferSize
@@ -92,10 +92,10 @@ class MockHttpServletResponse extends HttpServletResponse {
 
   override def getWriter: PrintWriter = writer
 
-  val stubOutputStream = new MockServletOutputStream
+  val stubOutputStream                              = new MockServletOutputStream
   override def getOutputStream: ServletOutputStream = stubOutputStream
 
-  override def getContentType: String = contentType
+  override def getContentType: String       = contentType
   override def getCharacterEncoding: String = characterEncoding
 
   override def getStatus: Int = status
@@ -122,13 +122,13 @@ class MockHttpServletResponse extends HttpServletResponse {
     Option(headers.get(name)).map(_.getStringValue).orNull[String]
   }
 
-  override def addHeader(name: String, value: String): Unit = _addHeader(name, value)
-  override def setHeader(name: String, value: String): Unit = _setHeader(name, value)
-  override def addIntHeader(name: String, value: Int): Unit = _addHeader(name, value)
-  override def setIntHeader(name: String, value: Int): Unit = _setHeader(name, value)
+  override def addHeader(name: String, value: String): Unit  = _addHeader(name, value)
+  override def setHeader(name: String, value: String): Unit  = _setHeader(name, value)
+  override def addIntHeader(name: String, value: Int): Unit  = _addHeader(name, value)
+  override def setIntHeader(name: String, value: Int): Unit  = _setHeader(name, value)
   override def addDateHeader(name: String, date: Long): Unit = _addHeader(name, date)
   override def setDateHeader(name: String, date: Long): Unit = _setHeader(name, date)
-  override def containsHeader(name: String): Boolean = headers.keySet.contains(name)
+  override def containsHeader(name: String): Boolean         = headers.keySet.contains(name)
 
   override def sendRedirect(location: String): Unit = {
     setHeader(LOCATION_HEADER, location)
@@ -148,9 +148,9 @@ class MockHttpServletResponse extends HttpServletResponse {
   }
 
   override def encodeRedirectUrl(url: String): String = encodeRedirectURL(url)
-  override def encodeUrl(url: String): String = encodeURL(url)
+  override def encodeUrl(url: String): String         = encodeURL(url)
   override def encodeRedirectURL(url: String): String = encodeURL(url)
-  override def encodeURL(url: String): String = url
+  override def encodeURL(url: String): String         = url
 
   override def addCookie(cookie: Cookie): Unit = cookies.add(cookie)
 

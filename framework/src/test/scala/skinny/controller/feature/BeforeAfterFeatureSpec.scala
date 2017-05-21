@@ -22,7 +22,7 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
   object Second extends SkinnyController with Routes {
     beforeAction(only = Seq('filtered)) { set("x", "bar") }
 
-    def index = getFromRequestScope("x").orNull[String]
+    def index                 = getFromRequestScope("x").orNull[String]
     def updatedByBeforeAction = getFromRequestScope("x").orNull[String]
 
     get("/second")(index).as('index)
@@ -32,7 +32,7 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
 
   object Third extends SkinnyController with Routes {
 
-    def bar = getFromRequestScope("x").orNull[String]
+    def bar  = getFromRequestScope("x").orNull[String]
     def buzz = getFromRequestScope("x").orNull[String]
 
     get("/third")(bar).as('bar)
@@ -82,4 +82,3 @@ class BeforeAfterFeatureSpec extends ScalatraFlatSpec {
     }
   }
 }
-

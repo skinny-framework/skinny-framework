@@ -45,7 +45,7 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
 
     it("converts Scala objects to JSON string value") {
       val value = Map(
-        "name" -> Seq("name is required", "name's length must be less than 32."),
+        "name"              -> Seq("name is required", "name's length must be less than 32."),
         "somethingLikeThat" -> Nil
       )
       val result = JSONStringOps.toJSONString(value, true)
@@ -62,16 +62,16 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
   describe("JSONStringOps#fromJSONString for objects") {
 
     it("converts JSON string value to Something object") {
-      val source = Something("abC", 123)
-      val json = JSONStringOps.toJSONStringAsIs(source)
+      val source                 = Something("abC", 123)
+      val json                   = JSONStringOps.toJSONStringAsIs(source)
       val result: Try[Something] = JSONStringOps.fromJSONString[Something](json, false)
       result.get.fooBarBaz should equal(source.fooBarBaz)
       result.get.hogeFooBar should equal(source.hogeFooBar)
     }
 
     it("converts snake_cased JSON string value to Something object") {
-      val source = Something("abC", 123)
-      val json = JSONStringOps.toJSONString(source, true)
+      val source                 = Something("abC", 123)
+      val json                   = JSONStringOps.toJSONString(source, true)
       val result: Try[Something] = JSONStringOps.fromJSONString[Something](json, false)
       result.get.fooBarBaz should equal(source.fooBarBaz)
       result.get.hogeFooBar should equal(source.hogeFooBar)
@@ -97,12 +97,13 @@ class JSONStringOpsSpec extends FunSpec with Matchers {
 
     it("converts JSON string value to Map object") {
       val source: Map[String, Any] = Map(
-        "name" -> "name's length must be less than 32.",
+        "name"                -> "name's length must be less than 32.",
         "something_like_that" -> ""
       )
 
       val result: Try[Map[String, Any]] = JSONStringOps.fromJSONString[Map[String, String]](
-        JSONStringOps.toJSONString(source), true
+        JSONStringOps.toJSONString(source),
+        true
       )
 
       result should equal(Success(source))

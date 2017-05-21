@@ -4,12 +4,12 @@ import scalikejdbc._
 import skinny.orm.feature._
 
 /**
- * SkinnyMapper which represents join table which is used for associations.
- *
- * This mapper don't have primary key search and so on because they cannot work as expected or no need to implement.
- *
- * @tparam Entity entity
- */
+  * SkinnyMapper which represents join table which is used for associations.
+  *
+  * This mapper don't have primary key search and so on because they cannot work as expected or no need to implement.
+  *
+  * @tparam Entity entity
+  */
 trait SkinnyJoinTable[Entity]
     extends SkinnyMapperBase[Entity]
     with AssociationsFeature[Entity]

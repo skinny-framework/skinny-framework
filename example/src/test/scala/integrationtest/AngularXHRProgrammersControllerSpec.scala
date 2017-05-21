@@ -30,7 +30,7 @@ class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.Skinn
       val acts = fromJSONString[List[Programmer]](body)
       acts should not equal (None)
       acts.get should not be (empty)
-      atLeast(1, acts.get) should have('name(programmer.name))
+      atLeast(1, acts.get) should have('name (programmer.name))
     }
   }
 
@@ -63,7 +63,9 @@ class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.Skinn
 
       // access with X-XSRF-TOKEN header
       val json = """{"name":"Alice","favoriteNumber":"777","plainTextPassword":"plain-text-password"}"""
-      post("/angular/programmers.json", json, Map("X-XSRF-TOKEN" -> token, "Content-Type" -> "application/json;charset=utf-8")) {
+      post("/angular/programmers.json",
+           json,
+           Map("X-XSRF-TOKEN" -> token, "Content-Type" -> "application/json;charset=utf-8")) {
         status should equal(201)
       }
 

@@ -9,8 +9,8 @@ import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
 
 /**
- * Assets controller.
- */
+  * Assets controller.
+  */
 class AssetsController extends SkinnyController {
 
   // see https://github.com/scalatra/scalatra/issues/349
@@ -20,33 +20,33 @@ class AssetsController extends SkinnyController {
   def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
 
   /**
-   * Returns assets root path.
-   */
+    * Returns assets root path.
+    */
   def assetsRootPath = "/assets"
 
   /**
-   * Returns assets/js root path.
-   */
+    * Returns assets/js root path.
+    */
   def jsRootPath = s"${assetsRootPath}/js"
 
   /**
-   * Returns assets/css root path.
-   */
+    * Returns assets/css root path.
+    */
   def cssRootPath = s"${assetsRootPath}/css"
 
   /**
-   * Predicates this controller in staging env.
-   */
+    * Predicates this controller in staging env.
+    */
   def isDisabledInStaging: Boolean = true
 
   /**
-   * Predicates this controller in production env.
-   */
+    * Predicates this controller in production env.
+    */
   def isDisabledInProduction: Boolean = true
 
   /**
-   * Predicates this controller is enabled in the current env.
-   */
+    * Predicates this controller is enabled in the current env.
+    */
   def isEnabled: Boolean = {
     if (SkinnyEnv.isProduction()) !isDisabledInProduction
     else if (SkinnyEnv.isStaging()) !isDisabledInStaging
@@ -54,19 +54,19 @@ class AssetsController extends SkinnyController {
   }
 
   /**
-   * Base path for assets files.
-   */
-  val basePath = "/WEB-INF/assets"
+    * Base path for assets files.
+    */
+  val basePath       = "/WEB-INF/assets"
   val publicBasePath = "/assets"
 
   /**
-   * Registered JS Compilers
-   */
+    * Registered JS Compilers
+    */
   private[this] val jsCompilers = new scala.collection.mutable.ListBuffer[AssetCompiler]
 
   /**
-   * Registered CSS Compilers
-   */
+    * Registered CSS Compilers
+    */
   private[this] val cssCompilers = new scala.collection.mutable.ListBuffer[AssetCompiler]
 
   // registered compilers by default
@@ -79,19 +79,19 @@ class AssetsController extends SkinnyController {
   registerCssCompiler(SassAssetCompiler)
 
   /**
-   * Registers JS compiler to this controller.
-   * @param compiler compiler
-   */
+    * Registers JS compiler to this controller.
+    * @param compiler compiler
+    */
   def registerJsCompiler(compiler: AssetCompiler) = jsCompilers.append(compiler)
 
   /**
-   * Registers CSS compiler to this controller.
-   * @param compiler compiler
-   */
+    * Registers CSS compiler to this controller.
+    * @param compiler compiler
+    */
   def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
 
   def maybeFullpath: Option[String] = multiParams("splat").headOption
-  def fullpath = maybeFullpath.get
+  def fullpath                      = maybeFullpath.get
 
   def path(extension: String): Option[String] = maybeFullpath.flatMap { fullPath =>
     val elements = fullPath.split("\\.")
@@ -103,8 +103,8 @@ class AssetsController extends SkinnyController {
   private[this] val skinnyJsNotFoundMessage = "skinny-framework.js should be found. This is a framework bug."
 
   /**
-   * Returns js or coffee assets.
-   */
+    * Returns js or coffee assets.
+    */
   def js(): Any = {
     path("js") match {
       case Some("skinny-framework") =>
@@ -129,7 +129,7 @@ class AssetsController extends SkinnyController {
             }
             jsFound match {
               case Some(js) => js
-              case _ => pass()
+              case _        => pass()
             }
           case _ => jsSourceMapsFile().getOrElse(pass())
         }
@@ -164,7 +164,7 @@ class AssetsController extends SkinnyController {
                   }
                   foundFile match {
                     case Some(file) => using(Source.fromFile(file))(_.mkString)
-                    case _ => pass()
+                    case _          => pass()
                   }
                 }
               }
@@ -175,7 +175,8 @@ class AssetsController extends SkinnyController {
 
   private def jsFromClassPath(path: String): Option[String] = {
     def findResource(path: String): Option[ClassPathResource] = {
-      ClassPathResourceLoader.getClassPathResource(s"${publicBasePath}/js/${path}.js")
+      ClassPathResourceLoader
+        .getClassPathResource(s"${publicBasePath}/js/${path}.js")
         .orElse(ClassPathResourceLoader.getClassPathResource(s"${basePath}/js/${path}.js"))
     }
     findResource(path).map { resource =>
@@ -189,7 +190,8 @@ class AssetsController extends SkinnyController {
   private def jsFromFile(path: String): Option[String] = {
     val foundFile: Option[File] = {
       Seq(s"${publicBasePath}/js/${path}.js", s"${basePath}/js/${path}.js")
-        .map(p => new File(servletContext.getRealPath(p))).find(_.exists())
+        .map(p => new File(servletContext.getRealPath(p)))
+        .find(_.exists())
     }
     foundFile match {
       case Some(foundJsFile) =>
@@ -200,7 +202,7 @@ class AssetsController extends SkinnyController {
     }
   }
   private def compiledJsFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, jsCompilers)
-  private def compiledJsFromFile(path: String): Option[String] = compiledCodeFromFile(path, jsCompilers)
+  private def compiledJsFromFile(path: String): Option[String]      = compiledCodeFromFile(path, jsCompilers)
 
   private def sourceMapsFromResourceOrFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
     def findResource(path: String, extension: String): Option[ClassPathResource] = {
@@ -230,7 +232,9 @@ class AssetsController extends SkinnyController {
       ).map(path => new File(servletContext.getRealPath(path))).find(_.exists())
     }
     compilers
-      .find { compiler => findResource(path, compiler.extension).orElse(findFile(path, compiler.extension)).isDefined }
+      .find { compiler =>
+        findResource(path, compiler.extension).orElse(findFile(path, compiler.extension)).isDefined
+      }
       .flatMap { compiler =>
         findResource(path, compiler.extension) match {
           case Some(resource) =>
@@ -252,8 +256,8 @@ class AssetsController extends SkinnyController {
   }
 
   /**
-   * Returns css or less assets.
-   */
+    * Returns css or less assets.
+    */
   def css(): Any = {
     if (isEnabled) {
       path("css") match {
@@ -265,7 +269,8 @@ class AssetsController extends SkinnyController {
             .map { css =>
               contentType = "text/css"
               css
-            }.getOrElse(pass())
+            }
+            .getOrElse(pass())
         case _ => cssSourceMapsFile().getOrElse(pass())
       }
     } else {
@@ -300,7 +305,7 @@ class AssetsController extends SkinnyController {
                       ).map(path => new File(servletContext.getRealPath(path))).find(_.exists())
                       foundFile match {
                         case Some(file) => Some(using(Source.fromFile(file))(map => map.mkString))
-                        case _ => None
+                        case _          => None
                       }
                     case _ => None
                   }
@@ -313,7 +318,8 @@ class AssetsController extends SkinnyController {
 
   def cssFromClassPath(path: String): Option[String] = {
     def findResource(path: String): Option[ClassPathResource] = {
-      ClassPathResourceLoader.getClassPathResource(s"${publicBasePath}/css/${path}.css")
+      ClassPathResourceLoader
+        .getClassPathResource(s"${publicBasePath}/css/${path}.css")
         .orElse(ClassPathResourceLoader.getClassPathResource(s"${basePath}/css/${path}.css"))
     }
     findResource(path).map { resource =>
@@ -328,7 +334,8 @@ class AssetsController extends SkinnyController {
   private def cssFromFile(path: String): Option[String] = {
     val foundFile: Option[File] = {
       Seq(s"${publicBasePath}/css/${path}.css", s"${basePath}/css/${path}.css")
-        .map(path => new File(servletContext.getRealPath(path))).find(_.exists())
+        .map(path => new File(servletContext.getRealPath(path)))
+        .find(_.exists())
     }
     foundFile match {
       case Some(cssFile) =>
@@ -340,7 +347,7 @@ class AssetsController extends SkinnyController {
     }
   }
   private def compiledCssFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, cssCompilers)
-  private def compiledCssFromFile(path: String): Option[String] = compiledCodeFromFile(path, cssCompilers)
+  private def compiledCssFromFile(path: String): Option[String]      = compiledCodeFromFile(path, cssCompilers)
 
   val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
   val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
@@ -357,60 +364,69 @@ class AssetsController extends SkinnyController {
 
   def isModified(resourceLastModified: Long): Boolean = {
     request.header("If-Modified-Since").map(_.replaceFirst("^\"", "").replaceFirst("\"$", "")).map { ifModifiedSince =>
-      modifiedHeaderFormats.flatMap { formatter =>
-        try Option(formatter.parseDateTime(ifModifiedSince))
-        catch { case scala.util.control.NonFatal(e) => None }
-      }.headOption.map(_.getMillis < resourceLastModified) getOrElse true
+      modifiedHeaderFormats
+        .flatMap { formatter =>
+          try Option(formatter.parseDateTime(ifModifiedSince))
+          catch { case scala.util.control.NonFatal(e) => None }
+        }
+        .headOption
+        .map(_.getMillis < resourceLastModified) getOrElse true
     } getOrElse true
   }
 
   private def compiledCodeFromClassPath(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
     // try to load from class path resources
-    compilers.flatMap { c =>
-      c.findClassPathResource(publicBasePath, path)
-        .orElse(c.findClassPathResource(basePath, path))
-        .map(r => (c, r))
-    }.headOption.map {
-      case (compiler, resource) => using(resource.stream) { stream =>
-        setLastModified(resource.lastModified)
-        if (isModified(resource.lastModified)) {
-          compiler.compile(path, using(Source.fromInputStream(resource.stream))(_.mkString))
-        } else halt(304)
+    compilers
+      .flatMap { c =>
+        c.findClassPathResource(publicBasePath, path)
+          .orElse(c.findClassPathResource(basePath, path))
+          .map(r => (c, r))
       }
-    }
+      .headOption
+      .map {
+        case (compiler, resource) =>
+          using(resource.stream) { stream =>
+            setLastModified(resource.lastModified)
+            if (isModified(resource.lastModified)) {
+              compiler.compile(path, using(Source.fromInputStream(resource.stream))(_.mkString))
+            } else halt(304)
+          }
+      }
   }
 
   private def compiledCodeFromFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
     // load content from real files
-    compilers.flatMap { c =>
-      val foundFile: Option[File] = Seq(
-        c.findRealFile(servletContext, publicBasePath, path),
-        c.findRealFile(servletContext, basePath, path)
-      ).flatten.find(_.exists())
+    compilers
+      .flatMap { c =>
+        val foundFile: Option[File] = Seq(
+          c.findRealFile(servletContext, publicBasePath, path),
+          c.findRealFile(servletContext, basePath, path)
+        ).flatten.find(_.exists())
 
-      foundFile match {
-        case Some(file) => Some((c, file))
-        case _ => None
+        foundFile match {
+          case Some(file) => Some((c, file))
+          case _          => None
+        }
       }
-    }.headOption.map {
-      case (compiler, file) =>
-        setLastModified(file.lastModified)
-        if (isModified(file.lastModified)) {
-          using(Source.fromFile(file))(code => compiler.compile(file.getPath, code.mkString))
-        } else halt(304)
-    }
+      .headOption
+      .map {
+        case (compiler, file) =>
+          setLastModified(file.lastModified)
+          if (isModified(file.lastModified)) {
+            using(Source.fromFile(file))(code => compiler.compile(file.getPath, code.mkString))
+          } else halt(304)
+      }
   }
 
 }
 
 /**
- * AssetsController with default configurations.
- */
+  * AssetsController with default configurations.
+  */
 object AssetsController extends AssetsController with Routes {
 
   // Unfortunately, *.* seems not to work.
-  val jsRootUrl = get(s"${jsRootPath}/*")(js).as('js)
+  val jsRootUrl  = get(s"${jsRootPath}/*")(js).as('js)
   val cssRootUrl = get(s"${cssRootPath}/*")(css).as('css)
 
 }
-

@@ -3,12 +3,12 @@ package skinny.controller.assets
 import skinny.assets.LessCompiler
 
 /**
- * LESS
- */
+  * LESS
+  */
 object LessAssetCompiler extends AssetCompiler {
   private[this] val compiler = LessCompiler
 
-  def dir(basePath: String) = s"${basePath}/less"
-  def extension = "less"
+  def dir(basePath: String)                 = s"${basePath}/less"
+  def extension                             = "less"
   def compile(path: String, source: String) = compiler.compile(path, source)
 }

@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory
 import scala.sys.process._
 
 /**
- * Less Compiler
- *
- * @see https://github.com/Filirom1/concoct
- */
+  * Less Compiler
+  *
+  * @see https://github.com/Filirom1/concoct
+  */
 class LessCompiler {
 
   private[this] val log = LoggerFactory.getLogger(classOf[LessCompiler])
@@ -52,14 +52,14 @@ class LessCompiler {
       "META-INF/skinny-assets/less/less.js",
       "META-INF/skinny-assets/less/engine.js"
     ).foreach { jsName =>
-        ClassPathResourceLoader.getClassPathResource(jsName).map { js =>
-          using(js.stream) { stream =>
-            using(new InputStreamReader(stream)) { input =>
-              context.evaluateReader(scope, input, jsName, 0, null)
-            }
+      ClassPathResourceLoader.getClassPathResource(jsName).map { js =>
+        using(js.stream) { stream =>
+          using(new InputStreamReader(stream)) { input =>
+            context.evaluateReader(scope, input, jsName, 0, null)
           }
         }
       }
+    }
 
     scope
   }
@@ -69,10 +69,10 @@ class LessCompiler {
   }
 
   /**
-   * Compiles less code to css code
-   * @param lessCode less code
-   * @return css code
-   */
+    * Compiles less code to css code
+    * @param lessCode less code
+    * @return css code
+    */
   def compile(path: String, lessCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g less)
@@ -110,4 +110,3 @@ class LessCompiler {
 }
 
 object LessCompiler extends LessCompiler
-

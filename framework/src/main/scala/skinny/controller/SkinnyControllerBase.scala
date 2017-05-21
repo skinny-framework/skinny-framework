@@ -7,6 +7,4 @@ trait SkinnyControllerBase
     extends SkinnyControllerCommonBase
     with ThreadLocalFeatures
     with BeforeAfterActionFeature
-    with ThreadLocalRequestFeature {
-
-}
+    with ThreadLocalRequestFeature {}

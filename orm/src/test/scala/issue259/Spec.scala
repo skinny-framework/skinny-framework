@@ -42,17 +42,14 @@ create table article (
   runIfFailed(sql"select count(1) from article")
 }
 
-class HasOneHasManySpec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(
-    id: Long,
-    name: String,
-    createdAt: DateTime,
-    articles: Seq[Article] = Nil,
-    nickname: Option[Nickname] = None
+      id: Long,
+      name: String,
+      createdAt: DateTime,
+      articles: Seq[Article] = Nil,
+      nickname: Option[Nickname] = None
   )
 
   case class Nickname(name: String, userId: Long, user: Option[User] = None)
@@ -60,7 +57,7 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
   object User extends SkinnyCRUDMapper[User] {
     override val connectionPoolName = 'issue259
-    override def defaultAlias = createAlias("u")
+    override def defaultAlias       = createAlias("u")
 
     lazy val articlesRef = hasMany[Article](
       many = Article -> Article.defaultAlias,
@@ -77,8 +74,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
     }
   }
   object Nickname extends SkinnyNoIdCRUDMapper[Nickname] {
-    override val connectionPoolName = 'issue259
-    override def defaultAlias = createAlias("n")
+    override val connectionPoolName                                      = 'issue259
+    override def defaultAlias                                            = createAlias("n")
     override def extract(rs: WrappedResultSet, rn: ResultName[Nickname]) = autoConstruct(rs, rn, "user")
 
     lazy val userRef = belongsTo[User](
@@ -87,8 +84,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
     )
   }
   object Article extends SkinnyNoIdCRUDMapper[Article] {
-    override val connectionPoolName = 'issue259
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'issue259
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
     lazy val userRef = belongsTo[User](
@@ -101,11 +98,11 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
   override def fixture(implicit session: DBSession): Unit = {
     val aliceId = User.createWithAttributes('name -> "Alice")
-    val bobId = User.createWithAttributes('name -> "Bob") // Scala
+    val bobId   = User.createWithAttributes('name -> "Bob") // Scala
     val chrisId = User.createWithAttributes('name -> "Chris") // Scala
-    val denId = User.createWithAttributes('name -> "Den")
-    val ericId = User.createWithAttributes('name -> "Eric") // Scala
-    val fredId = User.createWithAttributes('name -> "Fred")
+    val denId   = User.createWithAttributes('name -> "Den")
+    val ericId  = User.createWithAttributes('name -> "Eric") // Scala
+    val fredId  = User.createWithAttributes('name -> "Fred")
 
     Nickname.createWithAttributes('userId -> bobId, 'name -> "Bobby")
 
@@ -136,12 +133,14 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
     it("should return has-many associations") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
-      val users = User.joins(User.articlesRef).findAllByWithLimitOffset(
-        where = matchesScala,
-        limit = 2,
-        offset = 1,
-        orderings = Seq(u.name.desc, a.title)
-      )
+      val users = User
+        .joins(User.articlesRef)
+        .findAllByWithLimitOffset(
+          where = matchesScala,
+          limit = 2,
+          offset = 1,
+          orderings = Seq(u.name.desc, a.title)
+        )
 
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       users.forall(_.nickname.isEmpty) should be(true)
@@ -152,11 +151,13 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
     }
 
     it("should return has-one associations") { implicit session =>
-      val users = User.joins(User.nicknameRef).findAllByWithLimitOffset(
-        where = sqls.in(u.name, Seq("Bob", "Chris")),
-        limit = 2,
-        orderings = Seq(u.name.desc)
-      )
+      val users = User
+        .joins(User.nicknameRef)
+        .findAllByWithLimitOffset(
+          where = sqls.in(u.name, Seq("Bob", "Chris")),
+          limit = 2,
+          orderings = Seq(u.name.desc)
+        )
 
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       users.find(_.name == "Bob").exists(_.nickname.isDefined) should be(true)
@@ -165,12 +166,14 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
     it("should return has-one/has-many associations") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
-      val users = User.joins(User.articlesRef, User.nicknameRef).findAllByWithLimitOffset(
-        where = matchesScala,
-        limit = 2,
-        offset = 1,
-        orderings = Seq(u.name.desc, a.title)
-      )
+      val users = User
+        .joins(User.articlesRef, User.nicknameRef)
+        .findAllByWithLimitOffset(
+          where = matchesScala,
+          limit = 2,
+          offset = 1,
+          orderings = Seq(u.name.desc, a.title)
+        )
 
       users.map(_.name) should equal(Seq("Chris", "Bob"))
       users.find(_.name == "Bob").exists(_.nickname.isDefined) should be(true)
@@ -188,7 +191,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
     it("should return has-many associations") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
-      val users = User.joins(User.articlesRef)
+      val users = User
+        .joins(User.articlesRef)
         .where(matchesScala)
         .limit(2)
         .offset(1)
@@ -204,7 +208,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
     }
 
     it("should return has-one associations") { implicit session =>
-      val users = User.joins(User.nicknameRef)
+      val users = User
+        .joins(User.nicknameRef)
         .where(sqls.in(u.name, Seq("Bob", "Chris")))
         .limit(2)
         .orderBy(u.name.desc)
@@ -217,7 +222,8 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers
 
     it("should return has-one/has-many associations") { implicit session =>
       val matchesScala = sqls.like(a.title, LikeConditionEscapeUtil.contains("Scala"))
-      val users = User.joins(User.articlesRef, User.nicknameRef)
+      val users = User
+        .joins(User.articlesRef, User.nicknameRef)
         .where(matchesScala)
         .limit(2)
         .offset(1)

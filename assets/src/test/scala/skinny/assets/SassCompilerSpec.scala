@@ -10,8 +10,7 @@ class SassCompilerSpec extends FlatSpec with Matchers {
 
   behavior of "SassCompiler"
 
-  it should "skipp SassCompiler testing" in {
-  }
+  it should "skipp SassCompiler testing" in {}
 
   /*
     it should "compile scss code" in {
@@ -48,6 +47,6 @@ class SassCompilerSpec extends FlatSpec with Matchers {
           |  font-size: 0.3em; }""".stripMargin
       )
     }
-  */
+ */
 
 }

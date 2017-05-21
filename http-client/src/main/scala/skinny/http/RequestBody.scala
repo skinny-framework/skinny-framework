@@ -19,8 +19,8 @@ import java.io.ByteArrayOutputStream
 import skinny.util.LoanPattern.using
 
 /**
- * Request body.
- */
+  * Request body.
+  */
 case class RequestBody(request: Request) {
 
   private[this] val CRLF = "\r\n"
@@ -28,11 +28,13 @@ case class RequestBody(request: Request) {
   def asBytes: Array[Byte] = request.bodyBytes.getOrElse(Array())
 
   def asApplicationXWwwFormUrlencoded: Array[Byte] = {
-    val encoded = request.formParams.flatMap {
-      case (key, value) =>
-        if (value != null) Some(s"${HTTP.urlEncode(key)}=${HTTP.urlEncode(String.valueOf(value))}")
-        else None
-    }.mkString("&")
+    val encoded = request.formParams
+      .flatMap {
+        case (key, value) =>
+          if (value != null) Some(s"${HTTP.urlEncode(key)}=${HTTP.urlEncode(String.valueOf(value))}")
+          else None
+      }
+      .mkString("&")
 
     encoded.getBytes
   }
@@ -55,7 +57,9 @@ case class RequestBody(request: Request) {
           out.write(sb.toString.getBytes)
         }
         Option(data.asBytes).foreach { bytes =>
-          (0 until bytes.length).foreach { i => out.write(bytes(i)) }
+          (0 until bytes.length).foreach { i =>
+            out.write(bytes(i))
+          }
         }
         out.write(CRLF.getBytes)
 

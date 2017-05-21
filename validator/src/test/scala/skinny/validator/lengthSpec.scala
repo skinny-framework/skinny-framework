@@ -7,7 +7,7 @@ class lengthSpec extends FlatSpec with Matchers {
   behavior of "length"
 
   it should "be available" in {
-    val len = 3
+    val len      = 3
     val validate = new length(len)
     validate.name should equal("length")
 

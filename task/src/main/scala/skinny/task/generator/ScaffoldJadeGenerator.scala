@@ -3,13 +3,13 @@ package skinny.task.generator
 import skinny.controller.Params
 
 /**
- * Scaffold generator with jade template.
- */
+  * Scaffold generator with jade template.
+  */
 object ScaffoldJadeGenerator extends ScaffoldJadeGenerator
 
 /**
- * Scaffold generator with jade template.
- */
+  * Scaffold generator with jade template.
+  */
 trait ScaffoldJadeGenerator extends ScaffoldGenerator {
 
   protected override def template: String = "jade"
@@ -19,19 +19,26 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
        |-# 1. ${sourceDir}/templates/ScalatePackage.scala
        |-# 2. scalateTemplateConfig in project/Build.scala""".stripMargin
 
-  override def formHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val controllerName = "Controllers." + toControllerName(namespaces, resources)
+  override def formHtmlCode(namespaces: Seq[String],
+                            resources: String,
+                            resource: String,
+                            nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val controllerName        = "Controllers." + toControllerName(namespaces, resources)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     "-@val s: skinny.Skinny\n" +
-      "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
-      packageImportsWarning + "\n\n" +
-      nameAndTypeNamePairs.toList.map { case (k, t) => (k, extractTypeIfOptionOrSeq(t)) }.map {
+    "-@val keyAndErrorMessages: skinny.KeyAndErrorMessages\n\n" +
+    packageImportsWarning + "\n\n" +
+    nameAndTypeNamePairs.toList
+      .map { case (k, t) => (k, extractTypeIfOptionOrSeq(t)) }
+      .map {
         case (name, "Boolean") =>
           s"""div(class="form-group")
           |  label(class="control-label" for="${toSnakeCase(name)}") #{s.i18n.getOrKey("${resourceWithNamespace}.${name}")}
           |  div(class="controls row")
           |    div(class="col-xs-12")
-          |      input(type="checkbox" name="${toSnakeCase(name)}" class="form-control" value="true" checked={s.params.${toSnakeCase(name)}==Some(true)})
+          |      input(type="checkbox" name="${toSnakeCase(name)}" class="form-control" value="true" checked={s.params.${toSnakeCase(
+               name
+             )}==Some(true)})
           |""".stripMargin
         case (name, "DateTime") =>
           s"""div(class="form-group")
@@ -39,17 +46,29 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Year)}}   placeholder={s.i18n.getOrKey("year")}   maxlength=4)
+          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Year
+             )}}   placeholder={s.i18n.getOrKey("year")}   maxlength=4)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(name + Params.Month)}}  placeholder={s.i18n.getOrKey("month")}  maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Month
+             )}}  placeholder={s.i18n.getOrKey("month")}  maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(name + Params.Day)}}    placeholder={s.i18n.getOrKey("day")}    maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Day
+             )}}    placeholder={s.i18n.getOrKey("day")}    maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Hour)}}   placeholder={s.i18n.getOrKey("hour")}   maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Hour
+             )}}   placeholder={s.i18n.getOrKey("hour")}   maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Minute)}} placeholder={s.i18n.getOrKey("minute")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Minute
+             )}} placeholder={s.i18n.getOrKey("minute")} maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Second)}} placeholder={s.i18n.getOrKey("second")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Second
+             )}} placeholder={s.i18n.getOrKey("second")} maxlength=2)
           |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
@@ -62,11 +81,17 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Year)}}   placeholder={s.i18n.getOrKey("year")}   maxlength=4)
+          |        input(type="text" name="${toSnakeCase(name + Params.Year)}"   class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Year
+             )}}   placeholder={s.i18n.getOrKey("year")}   maxlength=4)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(name + Params.Month)}}  placeholder={s.i18n.getOrKey("month")}  maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Month)}"  class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Month
+             )}}  placeholder={s.i18n.getOrKey("month")}  maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(name + Params.Day)}}    placeholder={s.i18n.getOrKey("day")}    maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Day)}"    class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Day
+             )}}    placeholder={s.i18n.getOrKey("day")}    maxlength=2)
           |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
@@ -79,11 +104,17 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(name + Params.Hour)}}   placeholder={s.i18n.getOrKey("hour")}   maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Hour)}"   class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Hour
+             )}}   placeholder={s.i18n.getOrKey("hour")}   maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Minute)}} placeholder={s.i18n.getOrKey("minute")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Minute)}" class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Minute
+             )}} placeholder={s.i18n.getOrKey("minute")} maxlength=2)
           |      div(class="col-xs-2")
-          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(name + Params.Second)}} placeholder={s.i18n.getOrKey("second")} maxlength=2)
+          |        input(type="text" name="${toSnakeCase(name + Params.Second)}" class="form-control" value={s.params.${toSnakeCase(
+               name + Params.Second
+             )}} placeholder={s.i18n.getOrKey("second")} maxlength=2)
           |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
@@ -96,23 +127,29 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
           |  div(class="controls row")
           |    div(class={if(keyAndErrorMessages.hasErrors("${toSnakeCase(name)}")) "has-error" else ""})
           |      div(class="col-xs-12")
-          |        input(type="text" name="${toSnakeCase(name)}" class="form-control" value={s.params.${toSnakeCase(name)}})
+          |        input(type="text" name="${toSnakeCase(name)}" class="form-control" value={s.params.${toSnakeCase(
+               name
+             )}})
           |    - keyAndErrorMessages.get("${toSnakeCase(name)}").map { errors =>
           |      div(class="col-xs-12 has-error")
           |        - for (error <- errors)
           |          label(class="control-label") #{error}
           |    - }
           |""".stripMargin
-      }.mkString +
-      s"""div(class="form-actions")
+      }
+      .mkString +
+    s"""div(class="form-actions")
         |  =unescape(s.csrfHiddenInputTag)
         |  input(type="submit" class="btn btn-primary" value={s.i18n.getOrKey("submit")})
         |    a(class="btn btn-default" href={s.url(${controllerName}.indexUrl)}) #{s.i18n.getOrKey("cancel")}
         |""".stripMargin
   }
 
-  override def newHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val controllerName = "Controllers." + toControllerName(namespaces, resources)
+  override def newHtmlCode(namespaces: Seq[String],
+                           resources: String,
+                           resource: String,
+                           nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val controllerName        = "Controllers." + toControllerName(namespaces, resources)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     s"""-@val s: skinny.Skinny
         |
@@ -129,8 +166,11 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def editHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val controllerName = "Controllers." + toControllerName(namespaces, resources)
+  override def editHtmlCode(namespaces: Seq[String],
+                            resources: String,
+                            resource: String,
+                            nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val controllerName        = "Controllers." + toControllerName(namespaces, resources)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     s"""-@val s: skinny.Skinny
         |
@@ -147,9 +187,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def indexHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val controllerName = "Controllers." + toControllerName(namespaces, resources)
-    val modelClassName = toClassName(resource)
+  override def indexHtmlCode(namespaces: Seq[String],
+                             resources: String,
+                             resource: String,
+                             nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val controllerName        = "Controllers." + toControllerName(namespaces, resources)
+    val modelClassName        = toClassName(resource)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     val operations = {
       if (operationLinksInIndexPageRequired) {
@@ -191,12 +234,16 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |table(class="table table-bordered")
         |  thead
         |    tr
-        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "      th #{s.i18n.getOrKey(\"" + resourceWithNamespace + "." + k + "\")}" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList)
+         .map { case (k, _) => "      th #{s.i18n.getOrKey(\"" + resourceWithNamespace + "." + k + "\")}" }
+         .mkString("\n")}
         |      th
         |  tbody
         |  -for (item <- items)
         |    tr
-        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map { case (k, _) => "      td #{item." + k + "}" }.mkString("\n")}
+        |${((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList)
+         .map { case (k, _) => "      td #{item." + k + "}" }
+         .mkString("\n")}
         |      td
         |${operations}
         |  -if (items.isEmpty)
@@ -207,9 +254,12 @@ trait ScaffoldJadeGenerator extends ScaffoldGenerator {
         |""".stripMargin
   }
 
-  override def showHtmlCode(namespaces: Seq[String], resources: String, resource: String, nameAndTypeNamePairs: Seq[(String, String)]): String = {
-    val controllerName = "Controllers." + toControllerName(namespaces, resources)
-    val modelClassName = toClassName(resource)
+  override def showHtmlCode(namespaces: Seq[String],
+                            resources: String,
+                            resource: String,
+                            nameAndTypeNamePairs: Seq[(String, String)]): String = {
+    val controllerName        = "Controllers." + toControllerName(namespaces, resources)
+    val modelClassName        = toClassName(resource)
     val resourceWithNamespace = toResourceNameWithNamespace(namespaces, resource)
     val attributesPart = ((primaryKeyName -> "Long") :: nameAndTypeNamePairs.toList).map {
       case (name, _) =>

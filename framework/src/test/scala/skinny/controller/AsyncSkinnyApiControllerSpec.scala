@@ -14,16 +14,17 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
   ConnectionPool.add('AsyncSkinnyApiController, "jdbc:h2:mem:AsyncSkinnyApiController", "", "")
   NamedDB('AsyncSkinnyApiController).localTx { implicit s =>
-    sql"create table company (id serial primary key, name varchar(64), url varchar(128));"
-      .execute.apply()
+    sql"create table company (id serial primary key, name varchar(64), url varchar(128));".execute.apply()
   }
 
   case class Company(id: Long, name: String, url: String)
   object Company extends SkinnyCRUDMapper[Company] {
     override def connectionPoolName = 'AsyncSkinnyApiController
-    override def defaultAlias = createAlias("c")
+    override def defaultAlias       = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = new Company(
-      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url)
+      id = rs.get(n.id),
+      name = rs.get(n.name),
+      url = rs.get(n.url)
     )
   }
 
@@ -38,7 +39,7 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
     def create(implicit ctx: Context) = {
       val count = Company.createWithAttributes(
         'name -> params.getAs[String]("name"),
-        'url -> params.getAs[String]("url")
+        'url  -> params.getAs[String]("url")
       )
       if (count == 1) status = 201 else status = 400
     }
@@ -52,8 +53,8 @@ class AsyncSkinnyApiControllerSpec extends ScalatraFlatSpec {
     }
   }
   val controller = new CompaniesController with Routes {
-    val creationUrl = post("/companies")(implicit ctx => create).as('list)
-    val listUrl = get("/companies.json")(implicit ctx => list).as('list)
+    val creationUrl     = post("/companies")(implicit ctx => create).as('list)
+    val listUrl         = get("/companies.json")(implicit ctx => list).as('list)
     val beforeFilterUrl = get("/filter")(implicit ctx => filter).as('filter)
   }
   addFilter(controller, "/*")

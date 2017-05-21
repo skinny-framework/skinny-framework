@@ -6,8 +6,8 @@ import skinny.logging.LoggerProvider
 import skinny.mailer.JavaMailOps
 
 /**
- * Provides Java Mail Session and Transport instance.
- */
+  * Provides Java Mail Session and Transport instance.
+  */
 trait JavaMailSessionFeature extends LoggerProvider {
 
   self: ConfigFeature with SmtpConfigFeature with ExtraConfigFeature =>
@@ -35,20 +35,19 @@ trait JavaMailSessionFeature extends LoggerProvider {
   }
 
   /**
-   * Provides javax.mail.Session object with loaded basicConfiguration.
-   * This object doesn't have a connection to smtp server.
-   */
+    * Provides javax.mail.Session object with loaded basicConfiguration.
+    * This object doesn't have a connection to smtp server.
+    */
   def session: Session = {
     if (config.smtp.authEnabled) config.smtp.passwordAuthenticator match {
       case Some(authenticator) => Session.getInstance(loadPropertiesForSession, authenticator)
-      case _ => throw new IllegalStateException("passwordAuthenticator is absent.")
-    }
-    else Session.getInstance(loadPropertiesForSession)
+      case _                   => throw new IllegalStateException("passwordAuthenticator is absent.")
+    } else Session.getInstance(loadPropertiesForSession)
   }
 
   /**
-   * Provides javax.mail.Transport object with real connection to smtp server.
-   */
+    * Provides javax.mail.Transport object with real connection to smtp server.
+    */
   def transport: Transport = {
     if (config.transportProtocol == "logging") {
       JavaMailOps.loggingTransport(session)
@@ -57,7 +56,7 @@ trait JavaMailSessionFeature extends LoggerProvider {
       if (config.smtp.authEnabled) {
         (config.smtp.user, config.smtp.password) match {
           case (Some(u), Some(p)) => transport.connect(u, p)
-          case _ => throw new IllegalStateException("Authentication is required but user/password is absent.")
+          case _                  => throw new IllegalStateException("Authentication is required but user/password is absent.")
         }
       } else {
         transport.connect()

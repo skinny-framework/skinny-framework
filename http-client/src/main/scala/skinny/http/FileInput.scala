@@ -1,11 +1,11 @@
 package skinny.http
 
 /**
- * Body from a file.
- */
+  * Body from a file.
+  */
 case class FileInput(file: java.io.File, contentType: String)
 
 /**
- * No file input.
- */
+  * No file input.
+  */
 object NoFileInput extends FileInput(null, null)

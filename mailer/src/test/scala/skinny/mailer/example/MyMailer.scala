@@ -1,7 +1,7 @@
 package skinny.mailer.example
 
 import javax.mail.MessagingException
-import skinny.mailer.{ SkinnyMessage, SkinnyMailer }
+import skinny.mailer.{ SkinnyMailer, SkinnyMessage }
 
 class MyMailer extends SkinnyMailer {
 
@@ -18,11 +18,17 @@ class MyMailer extends SkinnyMailer {
         |〜〜をお知らせいたします。
         |
         |""".stripMargin
-      }.deliver()
+      }
+      .deliver()
   }
 
   def sendMessage2(toAddress: String) = {
-    from("from@example.com").envelopeFrom("e-from@example.com").to(toAddress).subject("subject2").body("body2").deliver()
+    from("from@example.com")
+      .envelopeFrom("e-from@example.com")
+      .to(toAddress)
+      .subject("subject2")
+      .body("body2")
+      .deliver()
   }
 
   def sendOther = from("from@example.com").to("other@example.com").deliver()

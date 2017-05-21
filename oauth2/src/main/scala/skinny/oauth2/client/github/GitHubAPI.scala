@@ -6,8 +6,8 @@ import skinny.json.JSONStringOps
 import scala.util.control.NonFatal
 
 /**
- * GitHub API client.
- */
+  * GitHub API client.
+  */
 trait GitHubAPI extends LoggerProvider {
 
   def user(token: OAuth2Token): Option[GitHubUser] = {

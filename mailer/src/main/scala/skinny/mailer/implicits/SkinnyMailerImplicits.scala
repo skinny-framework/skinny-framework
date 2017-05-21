@@ -7,14 +7,15 @@ import javax.mail.internet._
 import skinny.mailer._
 
 /**
- * Implicit conversions for SkinnyMailer.
- */
+  * Implicit conversions for SkinnyMailer.
+  */
 trait SkinnyMailerImplicits {
 
   implicit def convertMimeMessageToRichMimeMessage[T >: SkinnyMessage <: Message](m: T): RichMimeMessage = m match {
-    case m: MimeMessage => new RichMimeMessage {
-      override def underlying = m
-    }
+    case m: MimeMessage =>
+      new RichMimeMessage {
+        override def underlying = m
+      }
   }
 
   implicit def convertMimeBodyPartToRichMimeBodyPart[T >: MimeBodyPart <: BodyPart](b: T): RichMimeBodyPart = b match {

@@ -6,13 +6,12 @@ import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
- * Querying APIs feature.
- */
-trait QueryingFeature[Entity]
-    extends QueryingFeatureWithId[Long, Entity] {
+  * Querying APIs feature.
+  */
+trait QueryingFeature[Entity] extends QueryingFeatureWithId[Long, Entity] {
 
   override def rawValueToId(value: Any) = value.toString.toLong
-  override def idToRawValue(id: Long) = id
+  override def idToRawValue(id: Long)   = id
 }
 
 trait QueryingFeatureWithId[Id, Entity]
@@ -23,71 +22,76 @@ trait QueryingFeatureWithId[Id, Entity]
     with IncludesFeatureWithId[Id, Entity] {
 
   /**
-   * Appends where conditions.
-   *
-   * @param conditions
-   * @return query builder
-   */
+    * Appends where conditions.
+    *
+    * @param conditions
+    * @return query builder
+    */
   def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
     conditions = conditions.flatMap {
       case (key, value) =>
         implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
         value match {
-          case None => Some(sqls.isNull(defaultAlias.field(key.name)))
-          case Nil => Some(sqls" FALSE") // for scalikejdbc 2.0.0 - 2.0.6 compatibility
+          case None           => Some(sqls.isNull(defaultAlias.field(key.name)))
+          case Nil            => Some(sqls" FALSE") // for scalikejdbc 2.0.0 - 2.0.6 compatibility
           case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-          case value => Some(sqls.eq(defaultAlias.field(key.name), value))
+          case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
         }
     }
   )
 
   /**
-   * Appends a raw where condition.
-   *
-   * @param condition
-   * @return query builder
-   */
+    * Appends a raw where condition.
+    *
+    * @param condition
+    * @return query builder
+    */
   def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
-    mapper = this, conditions = Seq(condition)
+    mapper = this,
+    conditions = Seq(condition)
   )
 
   /**
-   * Appends pagination settings as limit/offset.
-   *
-   * @param pagination  pagination
-   * @return query builder
-   */
+    * Appends pagination settings as limit/offset.
+    *
+    * @param pagination  pagination
+    * @return query builder
+    */
   def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
     new EntitiesSelectOperationBuilder(
-      mapper = this, limit = Some(pagination.limit), offset = Some(pagination.offset)
+      mapper = this,
+      limit = Some(pagination.limit),
+      offset = Some(pagination.offset)
     )
   }
 
   /**
-   * Appends limit part.
-   *
-   * @param n value
-   * @return query builder
-   */
-  def limit(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
+    * Appends limit part.
+    *
+    * @param n value
+    * @return query builder
+    */
+  def limit(n: Int): EntitiesSelectOperationBuilder =
+    new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
 
   /**
-   * Appends offset part.
-   *
-   * @param n value
-   * @return query builder
-   */
-  def offset(n: Int): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
+    * Appends offset part.
+    *
+    * @param n value
+    * @return query builder
+    */
+  def offset(n: Int): EntitiesSelectOperationBuilder =
+    new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
 
   /**
-   * Select query builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   * @param limit limit
-   * @param offset offset
-   */
+    * Select query builder.
+    *
+    * @param mapper mapper
+    * @param conditions registered conditions
+    * @param limit limit
+    * @param offset offset
+    */
   abstract class SelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
@@ -98,33 +102,34 @@ trait QueryingFeatureWithId[Id, Entity]
   ) {
 
     /**
-     * Appends where conditions.
-     *
-     * @param additionalConditions conditions
-     * @return query builder
-     */
-    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
-      mapper = this.mapper,
-      conditions = conditions ++ additionalConditions.flatMap {
-      case (key, value) =>
-        implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
-        value match {
-          case Nil => None
-          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-          case value => Some(sqls.eq(defaultAlias.field(key.name), value))
-        }
-    },
-      orderings = orderings,
-      limit = limit,
-      offset = offset
-    )
+      * Appends where conditions.
+      *
+      * @param additionalConditions conditions
+      * @return query builder
+      */
+    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder =
+      new EntitiesSelectOperationBuilder(
+        mapper = this.mapper,
+        conditions = conditions ++ additionalConditions.flatMap {
+          case (key, value) =>
+            implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
+            value match {
+              case Nil            => None
+              case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
+              case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
+            }
+        },
+        orderings = orderings,
+        limit = limit,
+        offset = offset
+      )
 
     /**
-     * Appends a raw where condition.
-     *
-     * @param condition
-     * @return query builder
-     */
+      * Appends a raw where condition.
+      *
+      * @param condition
+      * @return query builder
+      */
     def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
       mapper = this.mapper,
       conditions = conditions ++ Seq(condition),
@@ -135,13 +140,13 @@ trait QueryingFeatureWithId[Id, Entity]
   }
 
   /**
-   * Entities finder builder.
-   *
-   * @param mapper mapper
-   * @param conditions registered conditions
-   * @param limit limit
-   * @param offset offset
-   */
+    * Entities finder builder.
+    *
+    * @param mapper mapper
+    * @param conditions registered conditions
+    * @param limit limit
+    * @param offset offset
+    */
   case class EntitiesSelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
@@ -151,58 +156,62 @@ trait QueryingFeatureWithId[Id, Entity]
   ) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
 
     /**
-     * Appends pagination settings as limit/offset.
-     *
-     * @param pagination  pagination
-     * @return query builder
-     */
+      * Appends pagination settings as limit/offset.
+      *
+      * @param pagination  pagination
+      * @return query builder
+      */
     def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
       this.copy(limit = Some(pagination.limit), offset = Some(pagination.offset))
     }
 
     /**
-     * Appends limit part.
-     *
-     * @param n value
-     * @return query builder
-     */
+      * Appends limit part.
+      *
+      * @param n value
+      * @return query builder
+      */
     def limit(n: Int): EntitiesSelectOperationBuilder = this.copy(limit = Some(n))
 
     /**
-     * Appends offset part.
-     *
-     * @param n value
-     * @return query builder
-     */
+      * Appends offset part.
+      *
+      * @param n value
+      * @return query builder
+      */
     def offset(n: Int): EntitiesSelectOperationBuilder = this.copy(offset = Some(n))
 
     /**
-     * Appends order by condition.
-     *
-     * @param orderings orderings
-     * @return query builder
-     */
+      * Appends order by condition.
+      *
+      * @param orderings orderings
+      * @return query builder
+      */
     def orderBy(orderings: SQLSyntax*): EntitiesSelectOperationBuilder = this.copy(orderings = orderings)
 
     /**
-     * Calculates rows.
-     */
+      * Calculates rows.
+      */
     def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
       withSQL {
         val q: SelectSQLBuilder[Entity] = select(sql).from(as(defaultAlias))
         conditions match {
           case Nil => q.where(defaultScopeWithDefaultAlias)
-          case _ => conditions.tail.foldLeft(q.where(conditions.head)) {
-            case (query, condition) => query.and.append(condition)
-          }.and(defaultScopeWithDefaultAlias)
+          case _ =>
+            conditions.tail
+              .foldLeft(q.where(conditions.head)) {
+                case (query, condition) => query.and.append(condition)
+              }
+              .and(defaultScopeWithDefaultAlias)
         }
       }.map(_.bigDecimal(1)).single.apply().map(_.toScalaBigDecimal).getOrElse(BigDecimal(0))
     }
 
     /**
-     * Count only.
-     */
-    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession = autoSession): Long = {
+      * Count only.
+      */
+    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession =
+                                                                                            autoSession): Long = {
       calculate {
         if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
         else sqls.count(defaultAlias.field(fieldName.name))
@@ -210,18 +219,20 @@ trait QueryingFeatureWithId[Id, Entity]
     }
 
     /**
-     * Counts distinct rows.
-     */
-    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = count(fieldName, true)
+      * Counts distinct rows.
+      */
+    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long =
+      count(fieldName, true)
 
     /**
-     * Calculates sum of a column.
-     */
-    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.sum(defaultAlias.field(fieldName.name)))
+      * Calculates sum of a column.
+      */
+    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.sum(defaultAlias.field(fieldName.name)))
 
     /**
-     * Calculates average of a column.
-     */
+      * Calculates average of a column.
+      */
     def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
       calculate(decimals match {
         case Some(dcml) =>
@@ -242,26 +253,29 @@ trait QueryingFeatureWithId[Id, Entity]
           sqls.avg(defaultAlias.field(fieldName.name))
       })
     }
-    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = average(fieldName, decimals)
+    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
+      average(fieldName, decimals)
 
     /**
-     * Calculates minimum value of a column.
-     */
-    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.min(defaultAlias.field(fieldName.name)))
+      * Calculates minimum value of a column.
+      */
+    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.min(defaultAlias.field(fieldName.name)))
     def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
     /**
-     * Calculates minimum value of a column.
-     */
-    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
+      * Calculates minimum value of a column.
+      */
+    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.max(defaultAlias.field(fieldName.name)))
     def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
     /**
-     * Actually applies SQL to the DB.
-     *
-     * @param session db session
-     * @return query results
-     */
+      * Actually applies SQL to the DB.
+      *
+      * @param session db session
+      * @return query results
+      */
     def apply()(implicit session: DBSession = autoSession): List[Entity] = {
       implicit val repository = IncludesQueryRepository[Entity]()
 
@@ -270,9 +284,12 @@ trait QueryingFeatureWithId[Id, Entity]
         def query(conditions: Seq[SQLSyntax]): SQLBuilder[Entity] = {
           conditions match {
             case Nil => selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
-            case _ => conditions.tail.foldLeft(selectQueryWithAssociations.where(conditions.head)) {
-              case (query, condition) => query.and.append(condition)
-            }.and(defaultScopeWithDefaultAlias)
+            case _ =>
+              conditions.tail
+                .foldLeft(selectQueryWithAssociations.where(conditions.head)) {
+                  case (query, condition) => query.and.append(condition)
+                }
+                .and(defaultScopeWithDefaultAlias)
           }
         }
         def appendOrderingIfExists(query: SQLBuilder[Entity]): SQLBuilder[Entity] = {
@@ -304,13 +321,19 @@ trait QueryingFeatureWithId[Id, Entity]
             }
             val query = (conditions match {
               case Nil => baseQuery.where(defaultScopeWithDefaultAlias)
-              case _ => conditions.tail.foldLeft(baseQuery.where(conditions.head)) {
-                case (query, condition) => query.and.append(condition)
-              }.and(defaultScopeWithDefaultAlias)
+              case _ =>
+                conditions.tail
+                  .foldLeft(baseQuery.where(conditions.head)) {
+                    case (query, condition) => query.and.append(condition)
+                  }
+                  .and(defaultScopeWithDefaultAlias)
             })
 
             if (orderings.isEmpty) query.append(pagination)
-            else query.orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*)).append(pagination)
+            else
+              query
+                .orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*))
+                .append(pagination)
 
           }.map(_.any(1)).list.apply()
 
@@ -331,14 +354,19 @@ trait QueryingFeatureWithId[Id, Entity]
   private[this] def removeAscDesc(s: SQLSyntax): SQLSyntax = {
     SQLSyntax.createUnsafely(
       s.value
-        .replaceFirst(" desc$", "").replaceFirst(" asc$", "")
-        .replaceFirst(" DESC$", "").replaceFirst(" ASC$", ""),
+        .replaceFirst(" desc$", "")
+        .replaceFirst(" asc$", "")
+        .replaceFirst(" DESC$", "")
+        .replaceFirst(" ASC$", ""),
       s.parameters
     )
   }
 
-  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
-    orderings.filter { o => allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value) }
+  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax],
+                                              allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
+    orderings.filter { o =>
+      allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value)
+    }
   }
 
 }

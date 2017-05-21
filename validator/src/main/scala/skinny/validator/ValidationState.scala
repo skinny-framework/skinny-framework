@@ -1,14 +1,14 @@
 package skinny.validator
 
 /**
- * Validation object which has param definition and validation results
- */
+  * Validation object which has param definition and validation results
+  */
 sealed trait ValidationState {
 
   val paramDef: ParamDefinition
   val errors: Seq[Error] = Nil
 
-  def isDone: Boolean = true
+  def isDone: Boolean    = true
   def isSuccess: Boolean = true
   def isFailure: Boolean = !isSuccess
 
@@ -23,11 +23,11 @@ sealed trait ValidationState {
 }
 
 /**
- * Newly created validation which hasn't be applied yet.
- *
- * @param paramDef param definition
- * @param validations validation rules
- */
+  * Newly created validation which hasn't be applied yet.
+  *
+  * @param paramDef param definition
+  * @param validations validation rules
+  */
 case class NewValidation(override val paramDef: ParamDefinition, validations: ValidationRule) extends ValidationState {
 
   def toEither: Either[ValidationFailure, ValidationSuccess] = throw new IllegalStateException
@@ -36,10 +36,10 @@ case class NewValidation(override val paramDef: ParamDefinition, validations: Va
 }
 
 /**
- * Success.
- *
- * @param paramDef param definition
- */
+  * Success.
+  *
+  * @param paramDef param definition
+  */
 case class ValidationSuccess(override val paramDef: ParamDefinition) extends ValidationState {
 
   def toEither: Either[ValidationFailure, ValidationSuccess] = Right(this)
@@ -48,16 +48,16 @@ case class ValidationSuccess(override val paramDef: ParamDefinition) extends Val
 }
 
 /**
- * Failure.
- *
- * @param paramDef param definition
- * @param errors errors
- */
-case class ValidationFailure(override val paramDef: ParamDefinition, override val errors: Seq[Error]) extends ValidationState {
+  * Failure.
+  *
+  * @param paramDef param definition
+  * @param errors errors
+  */
+case class ValidationFailure(override val paramDef: ParamDefinition, override val errors: Seq[Error])
+    extends ValidationState {
 
   def toEither: Either[ValidationFailure, ValidationSuccess] = Left(this)
 
-  override def isSuccess: Boolean = false
+  override def isSuccess: Boolean                         = false
   override def toFailureOption: Option[ValidationFailure] = Some(this)
 }
-

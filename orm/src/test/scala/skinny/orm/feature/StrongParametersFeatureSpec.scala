@@ -1,6 +1,6 @@
 package skinny.orm.feature
 
-import org.scalatest.{ Matchers, FunSpec }
+import org.scalatest.{ FunSpec, Matchers }
 import skinny.ParamType
 
 class StrongParametersFeatureSpec extends FunSpec with Matchers with StrongParametersFeature {

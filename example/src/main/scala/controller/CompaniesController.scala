@@ -11,9 +11,9 @@ class CompaniesController extends SkinnyResourceWithId[CompanyId] with Applicati
     def apply(s: String): Option[CompanyId] = Option(s).map(model.rawValueToId)
   }
 
-  override def model = Company
+  override def model         = Company
   override def resourcesName = "companies"
-  override def resourceName = "company"
+  override def resourceName  = "company"
 
   override def createParams = Params(params).withDateTime("updatedAt")
   override def createForm = validation(
@@ -23,8 +23,8 @@ class CompaniesController extends SkinnyResourceWithId[CompanyId] with Applicati
     paramKey("updatedAt") is required & dateTimeFormat
   )
   override def createFormStrongParameters = Seq(
-    "name" -> ParamType.String,
-    "url" -> ParamType.String,
+    "name"      -> ParamType.String,
+    "url"       -> ParamType.String,
     "updatedAt" -> ParamType.DateTime
   )
 
@@ -37,8 +37,8 @@ class CompaniesController extends SkinnyResourceWithId[CompanyId] with Applicati
     paramKey("updatedAt") is required & dateTimeFormat
   )
   override def updateFormStrongParameters = Seq(
-    "name" -> ParamType.String,
-    "url" -> ParamType.String,
+    "name"      -> ParamType.String,
+    "url"       -> ParamType.String,
     "updatedAt" -> ParamType.DateTime
   )
 

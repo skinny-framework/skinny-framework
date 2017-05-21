@@ -7,11 +7,11 @@ import model.SnakeCaseKeyExample
 object SnakeCaseKeyExamplesController extends SkinnyResource {
   protectFromForgery()
 
-  override def model = SnakeCaseKeyExample
+  override def model         = SnakeCaseKeyExample
   override def resourcesName = "snakeCaseKeyExamples"
-  override def resourceName = "snakeCaseKeyExample"
+  override def resourceName  = "snakeCaseKeyExample"
 
-  override def resourcesBasePath = "/snake_case_key_examples"
+  override def resourcesBasePath      = "/snake_case_key_examples"
   override def useSnakeCasedParamKeys = true
 
   override def createForm = validation(
@@ -22,7 +22,7 @@ object SnakeCaseKeyExamplesController extends SkinnyResource {
   override def createParams = Params(params)
 
   override def createFormStrongParameters = Seq(
-    "first_name" -> ParamType.String,
+    "first_name"    -> ParamType.String,
     "luckey_number" -> ParamType.Int
   )
 
@@ -34,7 +34,7 @@ object SnakeCaseKeyExamplesController extends SkinnyResource {
   override def updateParams = Params(params)
 
   override def updateFormStrongParameters = Seq(
-    "first_name" -> ParamType.String,
+    "first_name"    -> ParamType.String,
     "luckey_number" -> ParamType.Int
   )
 

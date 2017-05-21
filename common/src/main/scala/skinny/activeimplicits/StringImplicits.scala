@@ -3,26 +3,29 @@ package skinny.activeimplicits
 import java.util.Locale
 
 import org.joda.time._
-import skinny.nlp.{ SkinnyJapaneseAnalyzerFactory, SkinnyJapaneseAnalyzer }
+import skinny.nlp.{ SkinnyJapaneseAnalyzer, SkinnyJapaneseAnalyzerFactory }
 import skinny.util.{ DateTimeUtil, StringUtil }
 
 import scala.language.implicitConversions
 
 /**
- * ActiveSupport-ish implicit conversions to String value.
- */
+  * ActiveSupport-ish implicit conversions to String value.
+  */
 object StringImplicits extends StringImplicits
 
 trait StringImplicits {
 
   /**
-   * http://api.rubyonrails.org/classes/String.html
-   */
+    * http://api.rubyonrails.org/classes/String.html
+    */
   case class RichString(str: String) {
     private[this] def withString(op: (String) => String): String = Option(str).map(op).orNull[String]
-    private[this] def toBeginIndex(position: Int): Int = Option(str).map { s =>
-      if (position < 0) s.size - position.abs else position
-    }.getOrElse(position)
+    private[this] def toBeginIndex(position: Int): Int =
+      Option(str)
+        .map { s =>
+          if (position < 0) s.size - position.abs else position
+        }
+        .getOrElse(position)
 
     // acts_like_string?()
     // won't be supported because this is a Ruby specific feature
@@ -36,12 +39,14 @@ trait StringImplicits {
     }
 
     def at(range: Range): String = withString { s =>
-      range.headOption.map { head =>
-        val begin = toBeginIndex(head)
-        val end = if (head < 0) str.size - range.last.abs + 1 else range.last + 1
+      range.headOption
+        .map { head =>
+          val begin = toBeginIndex(head)
+          val end   = if (head < 0) str.size - range.last.abs + 1 else range.last + 1
 
-        if (end > s.size) "" else s.substring(begin, end)
-      }.getOrElse("")
+          if (end > s.size) "" else s.substring(begin, end)
+        }
+        .getOrElse("")
     }
 
     // blank?()
@@ -50,21 +55,28 @@ trait StringImplicits {
 
     // camelcase(first_letter = :upper)
 
-    def camelcase = camelize
+    def camelcase      = camelize
     def lowerCamelcase = lowerCamelize
 
-    def camelcaseAsRuby = camelizeAsRuby
+    def camelcaseAsRuby      = camelizeAsRuby
     def lowerCamelcaseAsRuby = lowerCamelizeAsRuby
 
-    def camelcaseAsScala = camelizeAsScala
+    def camelcaseAsScala      = camelizeAsScala
     def lowerCamelcaseAsScala = lowerCamelizeAsScala
 
     // camelize(first_letter = :upper)
 
-    def camelize = camelizeAsScala
+    def camelize      = camelizeAsScala
     def lowerCamelize = lowerCamelizeAsScala
 
-    def camelizeAsRuby: String = StringUtil.toCamelCase(str).split("/").map { s => s.head.toUpper + s.tail }.mkString("::")
+    def camelizeAsRuby: String =
+      StringUtil
+        .toCamelCase(str)
+        .split("/")
+        .map { s =>
+          s.head.toUpper + s.tail
+        }
+        .mkString("::")
     def lowerCamelizeAsRuby: String = {
       val s = camelizeAsRuby
       s.head.toLower + s.tail
@@ -109,7 +121,7 @@ trait StringImplicits {
 
     // first(limit = 1)
 
-    def first: String = withString(_.head.toString)
+    def first: String              = withString(_.head.toString)
     def first(length: Int): String = withString(_.take(length))
 
     // foreign_key(separate_class_name_and_id_with_underscore = true)
@@ -117,8 +129,8 @@ trait StringImplicits {
     // from(position)
     // to(position)
 
-    def from(position: Int): String = withString(_.drop(toBeginIndex(position)))
-    def to(position: Int): String = withString(_.take(toBeginIndex(position) + 1))
+    def from(position: Int): String        = withString(_.drop(toBeginIndex(position)))
+    def to(position: Int): String          = withString(_.take(toBeginIndex(position) + 1))
     def fromTo(from: Int, to: Int): String = withString(_.to(to).from(from))
 
     // html_safe()
@@ -143,10 +155,11 @@ trait StringImplicits {
     def parameterize: String = parameterize("-")
 
     def parameterize(sep: String): String = {
-      withString(_
-        .replaceAll("\\s+", sep)
-        .replaceAll("\\.", "")
-        .toLowerCase(Locale.ENGLISH))
+      withString(
+        _.replaceAll("\\s+", sep)
+          .replaceAll("\\.", "")
+          .toLowerCase(Locale.ENGLISH)
+      )
     }
 
     // pluralize(count = nil, locale = :en)
@@ -181,7 +194,9 @@ trait StringImplicits {
     def titleize: String = withString { s =>
       s.replaceAll("-", " ")
         .split("\\s+")
-        .map { s => s.head.toUpper + s.tail }
+        .map { s =>
+          s.head.toUpper + s.tail
+        }
         .mkString(" ")
     }
 
@@ -200,7 +215,7 @@ trait StringImplicits {
     // truncate(truncate_at, options = {})
 
     def truncate(at: Int, separator: String = "", omission: String = "..."): String = {
-      val o = Option(omission).getOrElse("")
+      val o   = Option(omission).getOrElse("")
       val sep = Option(separator).getOrElse("")
       withString { s =>
         val res = s.take(at - o.size)
@@ -212,7 +227,7 @@ trait StringImplicits {
     // truncate_words(words_count, options = {})
 
     def truncateWords(count: Int, separator: String = "\\s+", omission: String = "..."): String = {
-      val o = Option(omission).getOrElse("")
+      val o   = Option(omission).getOrElse("")
       val sep = Option(separator).getOrElse("")
       withString { s =>
         val regexpToRemove = s.split(sep).drop(count).foldLeft("") {
@@ -243,37 +258,47 @@ trait StringImplicits {
     // requires kuromoji analyzer - http://lucene.apache.org/
 
     def katakanaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
-      Option(str).map { s =>
-        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
-        analyzer.toKatakanaReadings(s)
-      }.getOrElse(Nil)
+      Option(str)
+        .map { s =>
+          SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+          analyzer.toKatakanaReadings(s)
+        }
+        .getOrElse(Nil)
     }
 
     def hiraganaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
-      Option(str).map { s =>
-        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
-        analyzer.toHiraganaReadings(s)
-      }.getOrElse(Nil)
+      Option(str)
+        .map { s =>
+          SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+          analyzer.toHiraganaReadings(s)
+        }
+        .getOrElse(Nil)
     }
 
     def romajiReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): Seq[String] = {
-      Option(str).map { s =>
-        SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
-        analyzer.toRomajiReadings(s)
-      }.getOrElse(Nil)
+      Option(str)
+        .map { s =>
+          SkinnyJapaneseAnalyzerFactory.ensureKuromojiExistence
+          analyzer.toRomajiReadings(s)
+        }
+        .getOrElse(Nil)
 
     }
 
-    def toKatakanaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = katakanaReadings
-    def toHiraganaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = hiraganaReadings
+    def toKatakanaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) =
+      katakanaReadings
+    def toHiraganaReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) =
+      hiraganaReadings
     def toRomajiReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = romajiReadings
 
-    def katakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
-      this.katakanaReadings.mkString
+    def katakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString {
+      s =>
+        this.katakanaReadings.mkString
     }
 
-    def hiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
-      this.hiraganaReadings.mkString
+    def hiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString {
+      s =>
+        this.hiraganaReadings.mkString
     }
 
     def romaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
@@ -282,7 +307,7 @@ trait StringImplicits {
 
     def toKatakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = katakana
     def toHiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = hiragana
-    def toRomaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = romaji
+    def toRomaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default)   = romaji
 
     // ----------------------------
 

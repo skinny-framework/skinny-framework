@@ -9,13 +9,12 @@ class SkinnyLifeCycleSpec extends FunSpec with Matchers {
   System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   val lifeCycle = new SkinnyLifeCycle {
-    override def initSkinnyApp(ctx: ServletContext): Unit = {
-    }
+    override def initSkinnyApp(ctx: ServletContext): Unit = {}
   }
 
   val lifeCycleWithoutWorkerAndDB = new SkinnyLifeCycle {
-    override def workerServiceEnabled = false
-    override def dbSettingsEnabled = false
+    override def workerServiceEnabled                     = false
+    override def dbSettingsEnabled                        = false
     override def initSkinnyApp(ctx: ServletContext): Unit = {}
   }
 

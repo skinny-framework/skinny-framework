@@ -6,8 +6,8 @@ import skinny.json.JSONStringOps
 import scala.util.control.NonFatal
 
 /**
- * Facebook Graph API client.
- */
+  * Facebook Graph API client.
+  */
 trait FacebookGraphAPI extends LoggerProvider {
 
   def me(token: OAuth2Token): Option[FacebookUser] = {

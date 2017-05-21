@@ -3,23 +3,23 @@ package skinny.util
 import java.lang.reflect.Modifier
 
 /**
- * Java reflection API utils.
- */
+  * Java reflection API utils.
+  */
 object JavaReflectAPI {
 
   /**
-   * Returns the simple name of the object's class even if invoked on the Scala REPL.
-   *
-   * @param obj target object
-   * @return simple class name
-   */
+    * Returns the simple name of the object's class even if invoked on the Scala REPL.
+    *
+    * @param obj target object
+    * @return simple class name
+    */
   def classSimpleName(obj: Any): String = {
     try obj.getClass.getSimpleName
     catch {
       case e: InternalError =>
         // working on the Scala REPL
-        val clazz = obj.getClass
-        val classOfClazz = clazz.getClass
+        val clazz               = obj.getClass
+        val classOfClazz        = clazz.getClass
         val getSimpleBinaryName = classOfClazz.getDeclaredMethods.find(_.getName == "getSimpleBinaryName").get
         getSimpleBinaryName.setAccessible(true)
         getSimpleBinaryName.invoke(clazz).toString
@@ -27,11 +27,11 @@ object JavaReflectAPI {
   }
 
   /**
-   * Returns all the getter names in the Scala way.
-   *
-   * @param obj target object
-   * @return getter names
-   */
+    * Returns all the getter names in the Scala way.
+    *
+    * @param obj target object
+    * @return getter names
+    */
   def getterNames(obj: Any): Seq[String] = {
     val privateFieldNames = obj.getClass.getDeclaredFields.toSeq
       .filter(f => Modifier.isPrivate(f.getModifiers) && !Modifier.isStatic(f.getModifiers))
@@ -43,14 +43,14 @@ object JavaReflectAPI {
   }
 
   /**
-   * Invokes getter method.
-   *
-   * @param obj target object
-   * @param name getter name
-   * @return actual value
-   */
+    * Invokes getter method.
+    *
+    * @param obj target object
+    * @param name getter name
+    * @return actual value
+    */
   def getter(obj: Any, name: String): Any = {
-    val clazz = obj.getClass
+    val clazz  = obj.getClass
     val method = clazz.getDeclaredMethod(name)
     method.setAccessible(true)
     method.invoke(obj)

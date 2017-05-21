@@ -3,55 +3,55 @@ package skinny.validator
 import scala.language.reflectiveCalls
 
 /**
- * Validation rule.
- */
+  * Validation rule.
+  */
 trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with ErrorLike {
 
   /**
-   * Validation itself.
-   *
-   * @param value any value
-   * @return valid if true
-   */
+    * Validation itself.
+    *
+    * @param value any value
+    * @return valid if true
+    */
   def isValid(value: Any): Boolean
 
   /**
-   * Applies this validation rule to parameter.
-   *
-   * @param paramDef param definition
-   * @return validation
-   */
+    * Applies this validation rule to parameter.
+    *
+    * @param paramDef param definition
+    * @return validation
+    */
   def apply(paramDef: KeyValueParamDefinition): ValidationState = {
     if (isValid(paramDef.value)) ValidationSuccess(paramDef)
     else ValidationFailure(paramDef, Seq(Error(this.name, this.messageParams)))
   }
 
   /**
-   * Adds new and condition.
-   *
-   * @param that new validation rule
-   * @return combined validation rule
-   */
+    * Adds new and condition.
+    *
+    * @param that new validation rule
+    * @return combined validation rule
+    */
   def and(that: ValidationRule): ValidationRule = &(that)
 
   /**
-   * Adds new and condition.
-   *
-   * @param that new validation rule
-   * @return combined validation rule
-   */
+    * Adds new and condition.
+    *
+    * @param that new validation rule
+    * @return combined validation rule
+    */
   def &(that: ValidationRule): ValidationRule = {
     val _this = this
     new Object with ValidationRule {
 
-      def name: String = "combined-results"
+      def name: String                 = "combined-results"
       def isValid(value: Any): Boolean = throw new IllegalStateException
 
       override def apply(paramDef: KeyValueParamDefinition): ValidationState = {
         _this.apply(paramDef) match {
           case _: ValidationSuccess => that.apply(paramDef)
           case f: ValidationFailure => f
-          case _ => throw new IllegalStateException
+          case _                    => throw new IllegalStateException
         }
       }
 
@@ -71,7 +71,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
       toDouble(v)
       true
     } catch {
-      case e: NullPointerException => false
+      case e: NullPointerException  => false
       case e: NumberFormatException => false
     }
   }
@@ -83,7 +83,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
       toFloat(v)
       true
     } catch {
-      case e: NullPointerException => false
+      case e: NullPointerException  => false
       case e: NumberFormatException => false
     }
   }
@@ -95,7 +95,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
       toInt(v)
       true
     } catch {
-      case e: NullPointerException => false
+      case e: NullPointerException  => false
       case e: NumberFormatException => false
     }
   }
@@ -107,7 +107,7 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
       toLong(v)
       true
     } catch {
-      case e: NullPointerException => false
+      case e: NullPointerException  => false
       case e: NumberFormatException => false
     }
   }
@@ -136,4 +136,3 @@ trait ValidationRule extends ((KeyValueParamDefinition) => ValidationState) with
   protected def nowMillis(): Long = System.currentTimeMillis
 
 }
-

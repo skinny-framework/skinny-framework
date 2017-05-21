@@ -19,7 +19,7 @@ class ConfigInjectionSpec extends SkinnyFlatSpec {
       inject[EchoService].echo(params.getAs[String]("echo").getOrElse(""))
     }
     def appName = inject[AppName].value
-    def env = inject[SkinnyEnv].getOrElse("xxx")
+    def env     = inject[SkinnyEnv].getOrElse("xxx")
   }
 
   object modules extends ModulesController with Routes {

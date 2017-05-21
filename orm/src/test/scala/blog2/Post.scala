@@ -5,18 +5,18 @@ import scalikejdbc._
 import org.joda.time._
 
 case class Post(
-  id: Long,
-  title: String,
-  body: String,
-  tags: Seq[Tag] = Nil,
-  createdAt: DateTime,
-  updatedAt: Option[DateTime] = None
+    id: Long,
+    title: String,
+    body: String,
+    tags: Seq[Tag] = Nil,
+    createdAt: DateTime,
+    updatedAt: Option[DateTime] = None
 )
 
 object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
   override val connectionPoolName = 'blog2
-  override val tableName = "posts"
-  override val defaultAlias = createAlias("p")
+  override val tableName          = "posts"
+  override val defaultAlias       = createAlias("p")
 
   val tagsRef = hasManyThrough[Tag](
     through = PostTag,

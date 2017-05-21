@@ -7,8 +7,8 @@ class longMinMaxValueSpec extends FlatSpec with Matchers {
   behavior of "longMinMaxValue"
 
   it should "be available" in {
-    val min = 2L
-    val max = 5L
+    val min      = 2L
+    val max      = 5L
     val validate = new longMinMaxValue(min, max)
     validate.name should equal("longMinMaxValue")
     validate.messageParams should equal(Seq("2", "5"))

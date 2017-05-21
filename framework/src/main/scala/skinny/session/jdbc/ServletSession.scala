@@ -13,9 +13,9 @@ case class ServletSession(jsessionId: String, skinnySessionId: Long, createdAt: 
 }
 
 object ServletSession extends SkinnyMapper[ServletSession] {
-  override def tableName = "servlet_sessions"
+  override def tableName           = "servlet_sessions"
   override def primaryKeyFieldName = "jsessionId"
-  override def defaultAlias = createAlias("sv")
+  override def defaultAlias        = createAlias("sv")
 
   override def extract(rs: WrappedResultSet, n: ResultName[ServletSession]) = new ServletSession(
     jsessionId = rs.get(n.jsessionId),
@@ -25,27 +25,34 @@ object ServletSession extends SkinnyMapper[ServletSession] {
 
   private[this] val sv = defaultAlias
 
-  def findByJsessionId(jsessionId: String)(implicit s: DBSession = autoSession): Option[ServletSession] = withSQL {
-    select.from(ServletSession as sv).where.eq(sv.jsessionId, jsessionId)
-  }.map(rs => extract(rs, sv.resultName)).single.apply()
+  def findByJsessionId(jsessionId: String)(implicit s: DBSession = autoSession): Option[ServletSession] =
+    withSQL {
+      select.from(ServletSession as sv).where.eq(sv.jsessionId, jsessionId)
+    }.map(rs => extract(rs, sv.resultName)).single.apply()
 
-  def create(jsessionId: String, session: SkinnySession)(implicit s: DBSession = autoSession): Unit = withSQL {
-    insert.into(this).namedValues(
-      column.jsessionId -> jsessionId,
-      column.skinnySessionId -> session.id,
-      column.createdAt -> DateTime.now
-    )
-  }.update.apply()
+  def create(jsessionId: String, session: SkinnySession)(implicit s: DBSession = autoSession): Unit =
+    withSQL {
+      insert
+        .into(this)
+        .namedValues(
+          column.jsessionId      -> jsessionId,
+          column.skinnySessionId -> session.id,
+          column.createdAt       -> DateTime.now
+        )
+    }.update.apply()
 
-  def attachToSkinnySession(jsessionId: String, session: SkinnySession)(implicit s: DBSession = autoSession): Unit = withSQL {
-    update(ServletSession).set(column.skinnySessionId -> session.id).where.eq(column.jsessionId, jsessionId)
-  }.update.apply()
+  def attachToSkinnySession(jsessionId: String, session: SkinnySession)(implicit s: DBSession = autoSession): Unit =
+    withSQL {
+      update(ServletSession).set(column.skinnySessionId -> session.id).where.eq(column.jsessionId, jsessionId)
+    }.update.apply()
 
-  def deleteBySkinnySessionId(skinnySessionId: Long)(implicit s: DBSession = autoSession): Unit = withSQL {
-    delete.from(ServletSession).where.eq(column.skinnySessionId, skinnySessionId)
-  }.update.apply()
+  def deleteBySkinnySessionId(skinnySessionId: Long)(implicit s: DBSession = autoSession): Unit =
+    withSQL {
+      delete.from(ServletSession).where.eq(column.skinnySessionId, skinnySessionId)
+    }.update.apply()
 
-  def narrowDownAttachedServletSessions(session: SkinnySession, aliveCount: Int)(implicit s: DBSession = autoSession): Unit = {
+  def narrowDownAttachedServletSessions(session: SkinnySession,
+                                        aliveCount: Int)(implicit s: DBSession = autoSession): Unit = {
     val jsessionIds = withSQL {
       select(sv.jsessionId).from(this as sv).where.eq(sv.skinnySessionId, session.id).orderBy(sv.createdAt).desc
     }.map(_.string(1)).list.apply().drop(aliveCount)

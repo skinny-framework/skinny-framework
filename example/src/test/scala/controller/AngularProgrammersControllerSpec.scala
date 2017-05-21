@@ -13,14 +13,16 @@ class AngularProgrammersControllerSpec extends FunSpec with Matchers with DBSett
 
     it("shows Angular familiar JSON response") {
       val controller = createMockController
-      val json = controller.showResources()(Format.JSON)
+      val json       = controller.showResources()(Format.JSON)
       controller.status should equal(200)
       json.toString should startWith(")]}',\n[")
     }
 
     it("accepts JSON request body") {
       val controller = createMockController
-      controller.prepareJSONBodyRequest("""{"name": "foo", "favoriteNumber": 123, "plainTextPassword": "12345abcde"}""")
+      controller.prepareJSONBodyRequest(
+        """{"name": "foo", "favoriteNumber": 123, "plainTextPassword": "12345abcde"}"""
+      )
       controller.createResource()
       controller.status should equal(201)
     }

@@ -5,19 +5,21 @@ import javax.servlet.ServletContext
 import java.io.File
 
 /**
- * Scss
- */
+  * Scss
+  */
 object ScssAssetCompiler extends AssetCompiler {
   private[this] val compiler = SassCompiler
 
-  def dir(basePath: String) = throw new UnsupportedOperationException
-  def extension = "scss"
+  def dir(basePath: String)                 = throw new UnsupportedOperationException
+  def extension                             = "scss"
   def compile(path: String, source: String) = compiler.compile(path, source)
 
   override def findClassPathResource(basePath: String, path: String): Option[ClassPathResource] = {
-    ClassPathResourceLoader.getClassPathResource(s"${basePath}/scss/${path}.${extension}").orElse(
-      ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.${extension}")
-    )
+    ClassPathResourceLoader
+      .getClassPathResource(s"${basePath}/scss/${path}.${extension}")
+      .orElse(
+        ClassPathResourceLoader.getClassPathResource(s"${basePath}/sass/${path}.${extension}")
+      )
   }
 
   override def findRealFile(servletContext: ServletContext, basePath: String, path: String): Option[File] = {

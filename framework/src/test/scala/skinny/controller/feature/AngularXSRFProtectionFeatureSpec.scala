@@ -10,7 +10,7 @@ class AngularXSRFProtectionFeatureSpec extends ScalatraFlatSpec {
 
   class Controller extends SkinnyApiController with AngularXSRFProtectionFeature {
     protectFromForgery()
-    def token = "welcome"
+    def token  = "welcome"
     def create = "ok"
   }
   val controller = new Controller with Routes {

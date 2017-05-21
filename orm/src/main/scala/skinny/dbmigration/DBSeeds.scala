@@ -4,59 +4,59 @@ import scalikejdbc._
 import org.slf4j.LoggerFactory
 
 /**
- * DBSeeds runner.
- */
+  * DBSeeds runner.
+  */
 class DBSeedsRunner extends DBSeeds
 
 /**
- * Seeds database tables or records instantly.
- *
- * This module is surely inspired by Rails rake db:seed.
- */
+  * Seeds database tables or records instantly.
+  *
+  * This module is surely inspired by Rails rake db:seed.
+  */
 trait DBSeeds {
 
   private[this] val logger = LoggerFactory.getLogger(classOf[DBSeeds])
 
   /**
-   * AutoSession for this.
-   */
+    * AutoSession for this.
+    */
   val dbSeedsAutoSession: DBSession = AutoSession
 
   /**
-   * Registered operations.
-   */
+    * Registered operations.
+    */
   private[this] val registeredSeedOperations = new collection.mutable.ListBuffer[() => Any]
 
   /**
-   * Adds new SQLs to execute when #run is called.
-   *
-   * @param seedSQLs seed SQLs
-   * @param session db session
-   * @return self
-   */
+    * Adds new SQLs to execute when #run is called.
+    *
+    * @param seedSQLs seed SQLs
+    * @param session db session
+    * @return self
+    */
   def addSeedSQL(seedSQLs: SQL[_, _]*)(implicit session: DBSession = dbSeedsAutoSession): DBSeeds = {
     registeredSeedOperations.appendAll(seedSQLs.map(s => () => s.execute.apply()))
     this
   }
 
   /**
-   * Adds seed operation to execute when #run is called.
-   *
-   * @param op operation
-   * @return self
-   */
+    * Adds seed operation to execute when #run is called.
+    *
+    * @param op operation
+    * @return self
+    */
   def addSeed(op: => Any): DBSeeds = {
     registeredSeedOperations.append(() => op)
     this
   }
 
   /**
-   * Runs if predicate function returns false.
-   *
-   * @param predicate predicate function
-   * @param session db session
-   * @return nothing
-   */
+    * Runs if predicate function returns false.
+    *
+    * @param predicate predicate function
+    * @param session db session
+    * @return nothing
+    */
   def runUnless(predicate: => Boolean)(implicit session: DBSession = dbSeedsAutoSession): Unit = {
     ConnectionPool.synchronized {
       if (!predicate) {
@@ -67,11 +67,11 @@ trait DBSeeds {
   }
 
   /**
-   * Runs if SQL execution failed.
-   * @param sql
-   * @param session
-   * @return nothing
-   */
+    * Runs if SQL execution failed.
+    * @param sql
+    * @param session
+    * @return nothing
+    */
   def runIfFailed(sql: SQL[_, _])(implicit session: DBSession = dbSeedsAutoSession): Unit = {
     ConnectionPool.synchronized {
       try sql.execute.apply()
@@ -84,11 +84,11 @@ trait DBSeeds {
   }
 
   /**
-   * Run all the seeds.
-   *
-   * @param session db session
-   * @return nothing
-   */
+    * Run all the seeds.
+    *
+    * @param session db session
+    * @return nothing
+    */
   def run()(implicit session: DBSession = dbSeedsAutoSession): Unit = {
     ConnectionPool.synchronized {
       registeredSeedOperations.foreach(_.apply())

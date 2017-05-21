@@ -7,8 +7,8 @@ import skinny.json.JSONStringOps
 import scala.util.control.NonFatal
 
 /**
- * Google Plus API.
- */
+  * Google Plus API.
+  */
 trait GooglePlusAPI extends LoggerProvider {
 
   def me(token: OAuth2Token): Option[GoogleUser] = {

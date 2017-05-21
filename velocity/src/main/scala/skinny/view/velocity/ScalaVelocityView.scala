@@ -10,10 +10,11 @@ import scala.collection.JavaConverters._
 import skinny.SkinnyEnv
 
 /**
- * VelocityView extension for Scala
- */
+  * VelocityView extension for Scala
+  */
 class ScalaVelocityView(
-    ctx: ServletContext, sbtProjectPath: Option[String]
+    ctx: ServletContext,
+    sbtProjectPath: Option[String]
 ) extends VelocityView(ctx) {
 
   override protected def configure(config: JeeConfig, velocity: VelocityEngine): Unit = {
@@ -31,7 +32,8 @@ class ScalaVelocityView(
         velocity.setProperty(propName, classOf[ScalaUberspect].getName)
         velocity.addProperty(propName, name)
 
-      case uberspectClassNames: java.util.Vector[_] if uberspectClassNames.asScala.contains(classOf[ScalaUberspect].getName) => // NOOP
+      case uberspectClassNames: java.util.Vector[_]
+          if uberspectClassNames.asScala.contains(classOf[ScalaUberspect].getName) => // NOOP
 
       case uberspectClassNames: java.util.Vector[_] =>
         // prepends ScalaUberspect to VelocityEngine
@@ -41,7 +43,7 @@ class ScalaVelocityView(
 
     // Add ResourceLoader for views
     val skinyWebappLoaderName = "skinny-webapp"
-    val viewLocation = "/WEB-INF/views/"
+    val viewLocation          = "/WEB-INF/views/"
     velocity.addProperty(RuntimeConstants.RESOURCE_LOADER, skinyWebappLoaderName)
     velocity.addProperty(s"${skinyWebappLoaderName}.resource.loader.class", classOf[WebappResourceLoader].getName)
     velocity.addProperty(s"${skinyWebappLoaderName}.resource.loader.path", viewLocation)
@@ -53,11 +55,12 @@ class ScalaVelocityView(
 
     if (SkinnyEnv.isTest()) {
       val skinnyTestFileLoaderName = "skinny-test-file"
-      val rootPath = new File("").getAbsolutePath
-      val projectPath = rootPath + "/" + sbtProjectPath.getOrElse("")
+      val rootPath                 = new File("").getAbsolutePath
+      val projectPath              = rootPath + "/" + sbtProjectPath.getOrElse("")
       velocity.addProperty(RuntimeConstants.RESOURCE_LOADER, skinnyTestFileLoaderName)
       velocity.addProperty(s"${skinnyTestFileLoaderName}.resource.loader.class", classOf[FileResourceLoader].getName)
-      velocity.addProperty(s"${skinnyTestFileLoaderName}.resource.loader.path", ctx.getRealPath(viewLocation).replaceFirst(rootPath, projectPath))
+      velocity.addProperty(s"${skinnyTestFileLoaderName}.resource.loader.path",
+                           ctx.getRealPath(viewLocation).replaceFirst(rootPath, projectPath))
     }
   }
 

@@ -9,10 +9,10 @@ class DropboxUserSpec extends FlatSpec with Matchers {
       uid = 123L,
       displayName = "foo",
       nameDetails = new NameDetails(
-      familiarName = "f",
-      givenName = "g",
-      surname = "s"
-    ),
+        familiarName = "f",
+        givenName = "g",
+        surname = "s"
+      ),
       referralLink = "link",
       country = "Japan",
       locale = "ja",
@@ -21,11 +21,11 @@ class DropboxUserSpec extends FlatSpec with Matchers {
       isPaired = false,
       team = None,
       quotaInfo = new QuotaInfo(
-      datastores = 1L,
-      shared = 1L,
-      quota = 1L,
-      normal = 1L
-    )
+        datastores = 1L,
+        shared = 1L,
+        quota = 1L,
+        normal = 1L
+      )
     )
     raw.toDropboxUser.id should equal("123")
   }

@@ -8,13 +8,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
 
   describe("/_form.html.ssp") {
     it("should be created as expected") {
-      val code = generator.formHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.formHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
 
       val expected =
         """<%@val s: skinny.Skinny %>
@@ -129,13 +134,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
 
   describe("/new.html.ssp") {
     it("should be created as expected") {
-      val code = generator.newHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.newHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """<%@val s: skinny.Skinny %>
           |
@@ -163,13 +173,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
 
   describe("/edit.html.ssp") {
     it("should be created as expected") {
-      val code = generator.editHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.editHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """<%@val s: skinny.Skinny %>
           |
@@ -197,13 +212,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
 
   describe("/index.html.ssp") {
     it("should be created as expected") {
-      val code = generator.indexHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.indexHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """<%@val s: skinny.Skinny %>
           |<%@val items: Seq[model.admin.Member] %>
@@ -291,13 +311,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
       val generator = new ScaffoldSspGenerator {
         override lazy val operationLinksInIndexPageRequired = false
       }
-      val code = generator.indexHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.indexHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """<%@val s: skinny.Skinny %>
           |<%@val items: Seq[model.admin.Member] %>
@@ -381,13 +406,18 @@ class ScaffoldSspGeneratorSpec extends FunSpec with Matchers {
 
   describe("/show.html.ssp") {
     it("should be created as expected") {
-      val code = generator.showHtmlCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteNumber" -> "Long",
-        "magicNumber" -> "Option[Int]",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.showHtmlCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"           -> "String",
+          "favoriteNumber" -> "Long",
+          "magicNumber"    -> "Option[Int]",
+          "isActivated"    -> "Boolean",
+          "birthday"       -> "Option[LocalDate]"
+        )
+      )
       val expected =
         """<%@val item: model.admin.Member %>
           |<%@val s: skinny.Skinny %>

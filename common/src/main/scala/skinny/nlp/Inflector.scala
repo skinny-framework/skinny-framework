@@ -25,8 +25,8 @@ import scala.collection.mutable.ListBuffer
 import scala.util.matching.Regex
 
 /**
- * Based on github.com/backchatio/scala-inflector
- */
+  * Based on github.com/backchatio/scala-inflector
+  */
 trait Inflector {
 
   import Inflector._
@@ -50,12 +50,12 @@ trait Inflector {
     }
   }
 
-  private[this] val plurals: ListBuffer[Rule] = new ListBuffer[Rule]()
-  private[this] val singulars: ListBuffer[Rule] = new ListBuffer[Rule]()
+  private[this] val plurals: ListBuffer[Rule]        = new ListBuffer[Rule]()
+  private[this] val singulars: ListBuffer[Rule]      = new ListBuffer[Rule]()
   private[this] val uncountables: ListBuffer[String] = new ListBuffer[String]()
 
-  private[this] lazy val fixedPlurals: Seq[Rule] = plurals.reverse
-  private[this] lazy val fixedSingulars: Seq[Rule] = singulars.reverse
+  private[this] lazy val fixedPlurals: Seq[Rule]        = plurals.reverse
+  private[this] lazy val fixedSingulars: Seq[Rule]      = singulars.reverse
   private[this] lazy val fixedUncountables: Seq[String] = uncountables.reverse
 
   def addPlural(pattern: String, replacement: String): Unit = {
@@ -68,7 +68,7 @@ trait Inflector {
 
   def addIrregular(singular: String, plural: String): Unit = {
     plurals += Rule(("(" + singular(0) + ")" + singular.substring(1) + "$") -> ("$1" + plural.substring(1)))
-    singulars += Rule(("(" + plural(0) + ")" + plural.substring(1) + "$") -> ("$1" + singular.substring(1)))
+    singulars += Rule(("(" + plural(0) + ")" + plural.substring(1) + "$")   -> ("$1" + singular.substring(1)))
   }
 
   def addUncountable(word: String): Unit = {
@@ -92,21 +92,23 @@ trait Inflector {
   def pascalize(word: String): String = {
     val lst = word.split("_").toList
     (lst.headOption.map(s ⇒ s.substring(0, 1).toUpperCase(ENGLISH) + s.substring(1)).get ::
-      lst.tail.map(s ⇒ s.substring(0, 1).toUpperCase + s.substring(1))).mkString("")
+    lst.tail.map(s ⇒ s.substring(0, 1).toUpperCase + s.substring(1))).mkString("")
   }
 
   def underscore(word: String): String = {
     val replacementPattern = "$1_$2"
-    spacesPattern.replaceAllIn(
-      secondPattern.replaceAllIn(
-        firstPattern.replaceAllIn(
-          word,
+    spacesPattern
+      .replaceAllIn(
+        secondPattern.replaceAllIn(
+          firstPattern.replaceAllIn(
+            word,
+            replacementPattern
+          ),
           replacementPattern
         ),
-        replacementPattern
-      ),
-      "_"
-    ).toLowerCase
+        "_"
+      )
+      .toLowerCase
   }
 
   def capitalize(word: String): String = {
@@ -151,7 +153,7 @@ trait Inflector {
       } else {
         collection.head(word) match {
           case Some(m) => m
-          case _ => applyRules(collection.tail, word)
+          case _       => applyRules(collection.tail, word)
         }
       }
     }
@@ -168,20 +170,20 @@ trait Inflector {
 object Inflector extends Inflector {
 
   private val spacesPattern = "[-\\s]".r
-  private val firstPattern = "([A-Z]+)([A-Z][a-z])".r
+  private val firstPattern  = "([A-Z]+)([A-Z][a-z])".r
   private val secondPattern = "([a-z\\d])([A-Z])".r
 
   class InflectorString(word: String) {
-    def titleize = Inflector.titleize(word)
-    def humanize = Inflector.humanize(word)
-    def camelize = Inflector.camelize(word)
-    def pascalize = Inflector.pascalize(word)
-    def underscore = Inflector.underscore(word)
-    def dasherize = Inflector.dasherize(word)
-    def uncapitalize = Inflector.uncapitalize(word)
-    def ordinalize = Inflector.ordinalize(word)
-    def pluralize = Inflector.pluralize(word)
-    def singularize = Inflector.singularize(word)
+    def titleize                        = Inflector.titleize(word)
+    def humanize                        = Inflector.humanize(word)
+    def camelize                        = Inflector.camelize(word)
+    def pascalize                       = Inflector.pascalize(word)
+    def underscore                      = Inflector.underscore(word)
+    def dasherize                       = Inflector.dasherize(word)
+    def uncapitalize                    = Inflector.uncapitalize(word)
+    def ordinalize                      = Inflector.ordinalize(word)
+    def pluralize                       = Inflector.pluralize(word)
+    def singularize                     = Inflector.singularize(word)
     def fill(values: (String, String)*) = Inflector.interpolate(word, Map(values: _*))
   }
 

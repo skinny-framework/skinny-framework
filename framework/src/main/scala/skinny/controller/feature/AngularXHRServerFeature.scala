@@ -3,8 +3,8 @@ package skinny.controller.feature
 import skinny.micro.SkinnyMicroBase
 
 /**
- * Server side implementation for Angular apps.
- */
+  * Server side implementation for Angular apps.
+  */
 trait AngularXHRServerFeature
     extends AngularJSONFeature
     with JSONParamsAutoBinderFeature

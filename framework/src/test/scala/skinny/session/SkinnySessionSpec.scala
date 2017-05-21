@@ -1,13 +1,12 @@
 package skinny.session
 
 import scalikejdbc._
-import org.scalatest.{ Matchers, FunSpec }
+import org.scalatest.{ FunSpec, Matchers }
 import skinny.session.jdbc.SkinnySession
 import org.joda.time.DateTime
 import skinny.orm.feature._
 
-class SkinnySessionSpec extends FunSpec with Matchers
-    with Connection with CreateTables {
+class SkinnySessionSpec extends FunSpec with Matchers with Connection with CreateTables {
 
   val finderWithServletSessions: CRUDFeatureWithId[Long, SkinnySession] = {
     SkinnySession.joins(SkinnySession.servletSessionsRef)
@@ -26,8 +25,8 @@ class SkinnySessionSpec extends FunSpec with Matchers
       // set expireAt to past timestamp
       DB localTx { implicit s =>
         val c = SkinnySession.column
-        withSQL(update(SkinnySession).set(c.expireAt -> DateTime.now.minusSeconds(10)).where.eq(c.id, session2.id))
-          .update.apply()
+        withSQL(update(SkinnySession).set(c.expireAt -> DateTime.now.minusSeconds(10)).where.eq(c.id, session2.id)).update
+          .apply()
       }
 
       val session3 = SkinnySession.findOrCreate("jsession2", Some("jsession3"), DateTime.now.plusSeconds(2))

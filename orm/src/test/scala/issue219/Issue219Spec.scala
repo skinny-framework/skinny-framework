@@ -41,10 +41,7 @@ create table tag (
   runIfFailed(sql"select count(1) from article")
 }
 
-class Issue219Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Issue219Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(id: Long, name: String)
   case class Article(id: Long, title: String, userId: Option[Long], user: Option[User] = None, tags: Seq[Tag] = Nil)
@@ -52,48 +49,57 @@ class Issue219Spec extends fixture.FunSpec with Matchers
 
   object User extends SkinnyCRUDMapper[User] {
     override val connectionPoolName = 'issue219
-    override def defaultAlias = createAlias("u")
+    override def defaultAlias       = createAlias("u")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn)
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = 'issue219
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'issue219
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user", "tags")
 
     lazy val userRef = {
       belongsTo[User](
         right = User,
         merge = (a, u) => a.copy(user = u)
-      ).includes[User]((as, us) => as.map { a =>
-        us.find(u => a.user.exists(_.id == u.id))
-          .map(u => a.copy(user = Some(u)))
-          .getOrElse(a)
-      })
+      ).includes[User](
+        (as, us) =>
+          as.map { a =>
+            us.find(u => a.user.exists(_.id == u.id))
+              .map(u => a.copy(user = Some(u)))
+              .getOrElse(a)
+        }
+      )
     }
 
     lazy val tagsRef = hasMany[Tag](
       many = Tag -> Tag.defaultAlias,
       on = (a, t) => sqls.eq(a.id, t.articleId),
       merge = (a, ts) => a.copy(tags = ts)
-    ).includes[Tag]((as, tags) => as.map { a =>
-      a.copy(tags = tags.filter(_.articleId.exists(_ == a.id)))
-    })
+    ).includes[Tag](
+      (as, tags) =>
+        as.map { a =>
+          a.copy(tags = tags.filter(_.articleId.exists(_ == a.id)))
+      }
+    )
   }
   object Tag extends SkinnyCRUDMapper[Tag] {
-    override val connectionPoolName = 'issue219
-    override def defaultAlias = createAlias("t")
+    override val connectionPoolName                                 = 'issue219
+    override def defaultAlias                                       = createAlias("t")
     override def extract(rs: WrappedResultSet, rn: ResultName[Tag]) = autoConstruct(rs, rn, "article")
 
     lazy val articleRef = {
       belongsTo[Article](
         right = Article,
         merge = (t, a) => t.copy(article = a)
-      ).includes[Article]((ts, as) => ts.map { t =>
-        as.find(a => t.article.exists(_.id == a.id))
-          .map(a => t.copy(article = Some(a)))
-          .getOrElse(t)
-      })
+      ).includes[Article](
+        (ts, as) =>
+          ts.map { t =>
+            as.find(a => t.article.exists(_.id == a.id))
+              .map(a => t.copy(article = Some(a)))
+              .getOrElse(t)
+        }
+      )
     }
   }
 
@@ -103,20 +109,20 @@ class Issue219Spec extends fixture.FunSpec with Matchers
 
   override def fixture(implicit session: DBSession): Unit = {
     val aliceId = User.createWithAttributes('name -> "Alice")
-    val bobId = User.createWithAttributes('name -> "Bob")
+    val bobId   = User.createWithAttributes('name -> "Bob")
     Seq(
       ("Hello World", Some(aliceId)),
       ("Getting Started with Scala", Some(bobId)),
       ("Functional Programming", None),
       ("How to user sbt", Some(aliceId))
     ).foreach {
-        case (title, userId) =>
-          Article.createWithAttributes('title -> title, 'userId -> userId)
-      }
+      case (title, userId) =>
+        Article.createWithAttributes('title -> title, 'userId -> userId)
+    }
     val articles = Article.limit(2).apply()
-    Tag.createWithAttributes('name -> "Technical", 'articleId -> articles(0).id)
+    Tag.createWithAttributes('name -> "Technical", 'articleId   -> articles(0).id)
     Tag.createWithAttributes('name -> "Programming", 'articleId -> articles(0).id)
-    Tag.createWithAttributes('name -> "Scala", 'articleId -> articles(1).id)
+    Tag.createWithAttributes('name -> "Scala", 'articleId       -> articles(1).id)
   }
 
   def id(implicit session: DBSession): Long = {

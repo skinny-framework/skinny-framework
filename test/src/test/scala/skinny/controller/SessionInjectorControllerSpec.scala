@@ -19,7 +19,6 @@ class SessionInjectorControllerSpec extends SkinnyFlatSpec with SkinnyTestSuppor
       }
     }
   }
-  */
+ */
 
 }
-

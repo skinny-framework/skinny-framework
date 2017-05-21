@@ -8,8 +8,8 @@ import skinny.logging.LoggerProvider
 import skinny.exception.ViewTemplateNotFoundException
 
 /**
- * TemplateEngine support for Skinny app.
- */
+  * TemplateEngine support for Skinny app.
+  */
 trait TemplateEngineFeature
     extends SkinnyControllerCommonBase
     with RequestScopeFeature
@@ -17,12 +17,12 @@ trait TemplateEngineFeature
     with LoggerProvider {
 
   /**
-   * Renders body with template.
-   *
-   * @param path path name
-   * @param format format (HTML,JSON,XML...)
-   * @return body
-   */
+    * Renders body with template.
+    *
+    * @param path path name
+    * @param format format (HTML,JSON,XML...)
+    * @return body
+    */
   def render(path: String)(implicit ctx: SkinnyContext, format: Format = Format.HTML): String = {
     setContentTypeIfAbsent()(format)
 
@@ -37,11 +37,11 @@ trait TemplateEngineFeature
       logger.debug(s"Template for ${path} not found (format: ${format}).")
       val entity = (for {
         resourcesName <- getFromRequestScope[String](RequestScopeFeature.ATTR_RESOURCES_NAME)(ctx)
-        resources <- getFromRequestScope[Any](resourcesName)(ctx)
+        resources     <- getFromRequestScope[Any](resourcesName)(ctx)
       } yield resources) getOrElse {
         for {
           resourceName <- getFromRequestScope[String](RequestScopeFeature.ATTR_RESOURCE_NAME)(ctx)
-          resource <- getFromRequestScope[Any](resourceName)(ctx)
+          resource     <- getFromRequestScope[Any](resourceName)(ctx)
         } yield resource
       }
       // renderWithFormat returns null when body is empty
@@ -50,49 +50,51 @@ trait TemplateEngineFeature
   }
 
   /**
-   * Returns possible template paths.
-   * Result is a list because the template engine may support multiple template languages.
-   *
-   * @param path path name
-   * @param format format (HTML,JSON,XML...)
-   * @return actual path
-   */
+    * Returns possible template paths.
+    * Result is a list because the template engine may support multiple template languages.
+    *
+    * @param path path name
+    * @param format format (HTML,JSON,XML...)
+    * @return actual path
+    */
   protected def templatePaths(path: String)(implicit format: Format = Format.HTML): List[String]
 
   /**
-   * Predicates the template exists.
-   *
-   * @param path path name
-   * @param format format (HTML,JSON,XML...)
-   * @return true/false
-   */
+    * Predicates the template exists.
+    *
+    * @param path path name
+    * @param format format (HTML,JSON,XML...)
+    * @return true/false
+    */
   protected def templateExists(path: String)(implicit format: Format = Format.HTML): Boolean
 
   /**
-   * Renders with template.
-   *
-   * @param path path name
-   * @param format format (HTML,JSON,XML...)
-   * @return body
-   */
+    * Renders with template.
+    *
+    * @param path path name
+    * @param format format (HTML,JSON,XML...)
+    * @return body
+    */
   protected def renderWithTemplate(path: String)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): String
 
   override protected def haltWithBody[A](httpStatus: Int)(
-    implicit
-    ctx: SkinnyContext, format: Format = Format.HTML
+      implicit ctx: SkinnyContext,
+      format: Format = Format.HTML
   ): A = {
     val body: String = format match {
       case Format.HTML => render(s"/error/${httpStatus}")(ctx, format)
-      case _ => renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))(format)
+      case _           => renderWithFormat(Map("status" -> httpStatus, "message" -> ResponseStatus(httpStatus).message))(format)
     }
-    Option(body).map { b =>
-      halt(status = httpStatus, body = b)
-    }.getOrElse {
-      halt(status = httpStatus)
-    }
+    Option(body)
+      .map { b =>
+        halt(status = httpStatus, body = b)
+      }
+      .getOrElse {
+        halt(status = httpStatus)
+      }
   }
 
 }

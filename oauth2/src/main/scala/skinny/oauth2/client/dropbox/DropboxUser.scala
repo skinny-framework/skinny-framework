@@ -32,19 +32,18 @@ private[skinny] case class RawDropboxUser(
 }
 
 /**
- * Authorized Dropbox user basic information.
- */
+  * Authorized Dropbox user basic information.
+  */
 case class DropboxUser(
-  override val id: String,
-  displayName: String,
-  nameDetails: NameDetails,
-  referralLink: String,
-  country: String,
-  locale: String,
-  email: String,
-  emailVerified: Boolean,
-  isPaired: Boolean,
-  team: Option[Team],
-  quotaInfo: QuotaInfo
-)
-    extends OAuth2User
+    override val id: String,
+    displayName: String,
+    nameDetails: NameDetails,
+    referralLink: String,
+    country: String,
+    locale: String,
+    email: String,
+    emailVerified: Boolean,
+    isPaired: Boolean,
+    team: Option[Team],
+    quotaInfo: QuotaInfo
+) extends OAuth2User

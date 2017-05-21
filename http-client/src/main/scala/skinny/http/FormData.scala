@@ -33,12 +33,12 @@ object FormData {
 }
 
 /**
- * Form data
- * @param name name
- * @param bytes body as a byte array
- * @param textInput body from a text value
- * @param fileInput body from a file
- */
+  * Form data
+  * @param name name
+  * @param bytes body as a byte array
+  * @param textInput body from a text value
+  * @param fileInput body from a file
+  */
 case class FormData(
     var name: String,
     var bytes: Option[Array[Byte]] = None,
@@ -81,7 +81,7 @@ case class FormData(
   def file(file: java.io.File): FormData = returningThis {
     fileInput = FileInput(file, fileInput.contentType)
   }
-  def filename: Option[String] = Option(fileInput.file).map(_.getName)
+  def filename: Option[String]    = Option(fileInput.file).map(_.getName)
   def contentType: Option[String] = Option(fileInput.contentType)
   def contentType(contentType: String): FormData = returningThis {
     fileInput = FileInput(fileInput.file, contentType)

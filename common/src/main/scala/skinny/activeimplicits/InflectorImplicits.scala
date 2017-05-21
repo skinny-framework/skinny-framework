@@ -23,8 +23,8 @@ import scala.language.implicitConversions
 import skinny.nlp.Inflector
 
 /**
- * Based on github.com/backchatio/scala-inflector
- */
+  * Based on github.com/backchatio/scala-inflector
+  */
 trait InflectorImplicits {
 
   implicit def string2InflectorString(word: String) = new Inflector.InflectorString(word)

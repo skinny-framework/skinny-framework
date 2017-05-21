@@ -1,7 +1,7 @@
 package skinny.nlp
 
-import java.io.{ InputStreamReader, ByteArrayInputStream }
-import org.apache.lucene.analysis.ja.{ JapaneseTokenizer, JapaneseAnalyzer }
+import java.io.{ ByteArrayInputStream, InputStreamReader }
+import org.apache.lucene.analysis.ja.{ JapaneseAnalyzer, JapaneseTokenizer }
 import org.apache.lucene.analysis.ja.dict.UserDictionary
 import org.apache.lucene.analysis.util.CharArraySet
 import scala.collection.JavaConverters._
@@ -48,12 +48,14 @@ object SkinnyJapaneseAnalyzerFactory {
 
   def create(userDictionary: UserDictionary = null): SkinnyJapaneseAnalyzer = {
     ensureKuromojiExistence
-    new KuromojiJapaneseAnalyzer(new JapaneseAnalyzer(
-      userDictionary,
-      JapaneseTokenizer.Mode.NORMAL,
-      new CharArraySet(0, true),
-      Set.empty[String].asJava
-    ))
+    new KuromojiJapaneseAnalyzer(
+      new JapaneseAnalyzer(
+        userDictionary,
+        JapaneseTokenizer.Mode.NORMAL,
+        new CharArraySet(0, true),
+        Set.empty[String].asJava
+      )
+    )
   }
 
 }

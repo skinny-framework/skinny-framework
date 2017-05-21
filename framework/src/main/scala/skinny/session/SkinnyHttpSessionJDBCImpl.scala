@@ -5,7 +5,8 @@ import skinny.logging.LoggerProvider
 import skinny.session.jdbc.SkinnySession
 
 case class SkinnyHttpSessionJDBCImpl(underlying: HttpSession, skinnySession: SkinnySession)
-    extends SkinnyHttpSession with LoggerProvider {
+    extends SkinnyHttpSession
+    with LoggerProvider {
 
   override def save() = skinnySession.save()
 

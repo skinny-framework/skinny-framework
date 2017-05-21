@@ -2,7 +2,7 @@ package integrationtest
 
 import model._
 import controller.SkillsController
-import skinny.test.{ SkinnyFlatSpec, FactoryGirl }
+import skinny.test.{ FactoryGirl, SkinnyFlatSpec }
 
 class SkillsControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 

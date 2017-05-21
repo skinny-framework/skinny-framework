@@ -11,9 +11,9 @@ import skinny.{ DBSettings, SkinnyEnv }
 class ReverseModelAllGeneratorSpec extends FunSpec with Matchers {
 
   val generator = new ReverseModelAllGenerator {
-    override def sourceDir = "tmp/ReverseModelAllGeneratorSpec/src/main/scala"
-    override def resourceDir = "tmp/ReverseModelAllGeneratorSpec/src/main/resources"
-    override def testSourceDir = "tmp/ReverseModelAllGeneratorSpec/src/test/scala"
+    override def sourceDir       = "tmp/ReverseModelAllGeneratorSpec/src/main/scala"
+    override def resourceDir     = "tmp/ReverseModelAllGeneratorSpec/src/main/resources"
+    override def testSourceDir   = "tmp/ReverseModelAllGeneratorSpec/src/test/scala"
     override def testResourceDir = "tmp/ReverseModelAllGeneratorSpec/src/test/resources"
   }
 

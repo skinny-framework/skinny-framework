@@ -5,8 +5,7 @@ import skinny.filter.SkinnySessionFilter
 import twitter4j.User
 import twitter4j.auth.AccessToken
 
-class TwitterController extends ApplicationController
-    with TwitterLoginFeature {
+class TwitterController extends ApplicationController with TwitterLoginFeature {
   //with SkinnySessionTwitterLoginFeature with SkinnySessionFilter {
 
   override protected def isLocalDebug = true

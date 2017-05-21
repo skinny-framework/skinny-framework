@@ -3,7 +3,7 @@ package skinny.bootstrap
 import javax.servlet.ServletContext
 
 import org.scalatest._
-import skinny.controller.{ SkinnyApiController, SkinnyServlet, SkinnyController }
+import skinny.controller.{ SkinnyApiController, SkinnyController, SkinnyServlet }
 import skinny.micro.WebApp
 import skinny.micro.routing.RouteRegistry
 

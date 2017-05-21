@@ -38,7 +38,8 @@ trait OAuth2LoginFeature[U <: OAuth2User] extends SkinnyControllerBase {
 
   protected def generateStateValue(): String = {
     import java.security.MessageDigest
-    val digestedBytes = MessageDigest.getInstance("MD5").digest((session.getId + "-" + System.currentTimeMillis).getBytes)
+    val digestedBytes =
+      MessageDigest.getInstance("MD5").digest((session.getId + "-" + System.currentTimeMillis).getBytes)
     digestedBytes.map("%02x".format(_)).mkString
   }
 
@@ -98,24 +99,26 @@ trait OAuth2LoginFeature[U <: OAuth2User] extends SkinnyControllerBase {
   // -----------------------------------------------------
 
   /**
-   * Redirects users to OAuth provider's authentication endpoint.
-   */
+    * Redirects users to OAuth provider's authentication endpoint.
+    */
   def loginRedirect: Any = redirect(createAuthenticationRequest().locationURI)
 
   /**
-   * Accepts callback response from OAuth provider.
-   */
+    * Accepts callback response from OAuth provider.
+    */
   def callback: Any = {
     if (isReturnedStateValid) {
-      returnedAuthenticationCode.map { code =>
-        logger.debug(s"OAuth2 authorization code: ${code}")
-        val token: OAuth2Token = retrieveNewAccessToken(code)
-        logger.debug(s"OAuth2 access token: ${toPrettyJSONStringAsIs(token.underlying)}")
-        saveAuthorizedUser(retrieveAuthorizedUser(token))
-        handleWhenLoginSucceeded()
-      }.getOrElse {
-        handleWhenCodeNotFound()
-      }
+      returnedAuthenticationCode
+        .map { code =>
+          logger.debug(s"OAuth2 authorization code: ${code}")
+          val token: OAuth2Token = retrieveNewAccessToken(code)
+          logger.debug(s"OAuth2 access token: ${toPrettyJSONStringAsIs(token.underlying)}")
+          saveAuthorizedUser(retrieveAuthorizedUser(token))
+          handleWhenLoginSucceeded()
+        }
+        .getOrElse {
+          handleWhenCodeNotFound()
+        }
     } else {
       handleWhenInvalidStateDetected()
     }

@@ -30,13 +30,14 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def getDispatcherType: DispatcherType = dispatcherType
 
   var asyncContext: AsyncContext = _
-  var asyncSupported: Boolean = true
-  var asyncStarted: Boolean = false
+  var asyncSupported: Boolean    = true
+  var asyncStarted: Boolean      = false
 
   override def getAsyncContext: AsyncContext = asyncContext
-  override def isAsyncSupported: Boolean = asyncSupported
-  override def isAsyncStarted: Boolean = asyncStarted
-  override def startAsync(servletRequest: ServletRequest, servletResponse: ServletResponse): AsyncContext = asyncContext
+  override def isAsyncSupported: Boolean     = asyncSupported
+  override def isAsyncStarted: Boolean       = asyncStarted
+  override def startAsync(servletRequest: ServletRequest, servletResponse: ServletResponse): AsyncContext =
+    asyncContext
   override def startAsync(): AsyncContext = asyncContext
 
   var servletContext: ServletContext = {
@@ -48,76 +49,76 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def getServletContext: ServletContext = servletContext
   override def getRealPath(path: String): String = servletContext.getRealPath(path)
 
-  var localPort: Int = 80
+  var localPort: Int    = 80
   var localAddr: String = "127.0.0.1"
   var localName: String = "localhost"
 
-  override def getLocalPort: Int = localPort
+  override def getLocalPort: Int    = localPort
   override def getLocalAddr: String = localAddr
   override def getLocalName: String = localName
 
-  var serverPort: Int = 80
+  var serverPort: Int    = 80
   var serverName: String = "localhost"
 
-  override def getServerPort: Int = serverPort
+  override def getServerPort: Int    = serverPort
   override def getServerName: String = serverName
 
   var remotePort: Int = 80
-  var remoteHost = "localhost"
-  var remoteAddr = "127.0.0.1"
+  var remoteHost      = "localhost"
+  var remoteAddr      = "127.0.0.1"
 
-  override def getRemotePort: Int = remotePort
+  override def getRemotePort: Int    = remotePort
   override def getRemoteHost: String = remoteHost
   override def getRemoteAddr: String = remoteAddr
 
   override def getRequestDispatcher(path: String): RequestDispatcher = mock(classOf[RequestDispatcher])
 
-  var secure: Boolean = false
+  var secure: Boolean            = false
   override def isSecure: Boolean = secure
 
-  var locales = new LinkedList[Locale]
+  var locales                                            = new LinkedList[Locale]
   override def getLocales: java.util.Enumeration[Locale] = Collections.enumeration(locales)
-  override def getLocale: Locale = if (locales.size() > 0) locales.get(0) else null
+  override def getLocale: Locale                         = if (locales.size() > 0) locales.get(0) else null
 
   var attributes = new LinkedHashMap[String, AnyRef]
 
   override def getAttributeNames: java.util.Enumeration[String] = Collections.enumeration(attributes.keySet)
-  override def getAttribute(name: String): AnyRef = attributes.get(name)
-  override def removeAttribute(name: String): Unit = attributes.remove(name)
-  override def setAttribute(name: String, value: AnyRef): Unit = attributes.put(name, value)
+  override def getAttribute(name: String): AnyRef               = attributes.get(name)
+  override def removeAttribute(name: String): Unit              = attributes.remove(name)
+  override def setAttribute(name: String, value: AnyRef): Unit  = attributes.put(name, value)
 
-  override def getReader: BufferedReader = mock(classOf[BufferedReader])
+  override def getReader: BufferedReader          = mock(classOf[BufferedReader])
   override def getInputStream: ServletInputStream = mock(classOf[ServletInputStream])
 
-  var scheme = "http"
+  var scheme   = "http"
   var protocol = "http"
 
-  override def getScheme: String = scheme
+  override def getScheme: String   = scheme
   override def getProtocol: String = protocol
 
   var parameters = new LinkedHashMap[String, Array[String]]
 
   override def getParameterMap: java.util.Map[String, Array[String]] = Collections.unmodifiableMap(parameters)
-  override def getParameterValues(name: String): Array[String] = Option(getParameterMap.get(name)).getOrElse(Array())
-  override def getParameterNames: java.util.Enumeration[String] = Collections.enumeration(getParameterMap.keySet)
+  override def getParameterValues(name: String): Array[String]       = Option(getParameterMap.get(name)).getOrElse(Array())
+  override def getParameterNames: java.util.Enumeration[String]      = Collections.enumeration(getParameterMap.keySet)
   override def getParameter(name: String): String = {
     val params = getParameterMap.get(name)
     if (params != null && params.size > 0) params(0) else null
   }
 
-  var content: Array[Byte] = null
-  var contentType: String = null
+  var content: Array[Byte]      = null
+  var contentType: String       = null
   var characterEncoding: String = null
 
   override def getContentType: String = contentType
-  override def getContentLength: Int = if (content != null) content.length else -1
+  override def getContentLength: Int  = if (content != null) content.length else -1
   override def setCharacterEncoding(env: String): Unit = {
     characterEncoding = env
     updateContentTypeHeader()
   }
 
   val CONTENT_TYPE_HEADER = "Content-Type"
-  val CHARSET_PREFIX = "charset="
+  val CHARSET_PREFIX      = "charset="
 
   def updateContentTypeHeader() {
     if (contentType != null) {
@@ -137,14 +138,21 @@ class MockHttpServletRequest extends HttpServletRequest {
       headers.put(name, h)
       h
     }
-    val header = HeaderValueHolder.getByName(headers, name).map { h =>
-      if (replace) replaceHeader(name) else h
-    }.getOrElse { replaceHeader(name) }
+    val header = HeaderValueHolder
+      .getByName(headers, name)
+      .map { h =>
+        if (replace) replaceHeader(name) else h
+      }
+      .getOrElse { replaceHeader(name) }
 
     if (value.isInstanceOf[Collection[_]]) {
-      value.asInstanceOf[Collection[AnyRef]].asScala.foreach { v => header.addValue(v) }
+      value.asInstanceOf[Collection[AnyRef]].asScala.foreach { v =>
+        header.addValue(v)
+      }
     } else if (value.getClass.isArray) {
-      value.asInstanceOf[Collection[AnyRef]].asScala.foreach { v => header.addValue(v) }
+      value.asInstanceOf[Collection[AnyRef]].asScala.foreach { v =>
+        header.addValue(v)
+      }
     } else {
       header.addValue(value)
     }
@@ -164,7 +172,7 @@ class MockHttpServletRequest extends HttpServletRequest {
     authType = null
   }
 
-  override def login(username: String, password: String): Unit = throw new UnsupportedOperationException
+  override def login(username: String, password: String): Unit      = throw new UnsupportedOperationException
   override def authenticate(response: HttpServletResponse): Boolean = throw new UnsupportedOperationException
 
   var requestedSessionIdFromURL: Boolean = false
@@ -182,16 +190,16 @@ class MockHttpServletRequest extends HttpServletRequest {
 
   val session = new MockHttpSession
 
-  override def getSession: HttpSession = session
+  override def getSession: HttpSession                  = session
   override def getSession(create: Boolean): HttpSession = session
 
-  var servletPath: String = _
+  var servletPath: String             = _
   override def getServletPath: String = servletPath
 
   override def getRequestURL: StringBuffer = {
     val url = new StringBuffer(this.scheme).append("://").append(this.serverName)
     if (this.serverPort > 0 &&
-      (("http".equalsIgnoreCase(scheme) && this.serverPort != 80) || ("https".equalsIgnoreCase(scheme) && this.serverPort != 443))) {
+        (("http".equalsIgnoreCase(scheme) && this.serverPort != 80) || ("https".equalsIgnoreCase(scheme) && this.serverPort != 443))) {
       url.append(':').append(this.serverPort)
     }
     if (getRequestURI.exists(c => !Character.isWhitespace(c))) {
@@ -240,25 +248,31 @@ class MockHttpServletRequest extends HttpServletRequest {
   override def getMethod: String = method
 
   override def getIntHeader(name: String): Int = {
-    HeaderValueHolder.getByName(headers, name).map { header =>
-      val i: Int = header.getValue() match {
-        case null => -1
-        case n: Number => n.intValue
-        case str: String => Integer.valueOf(str)
-        case v => throw new NumberFormatException("Value for header '" + name + "' is not a Number: " + v)
+    HeaderValueHolder
+      .getByName(headers, name)
+      .map { header =>
+        val i: Int = header.getValue() match {
+          case null        => -1
+          case n: Number   => n.intValue
+          case str: String => Integer.valueOf(str)
+          case v           => throw new NumberFormatException("Value for header '" + name + "' is not a Number: " + v)
+        }
+        i
       }
-      i
-    }.getOrElse(-1)
+      .getOrElse(-1)
   }
 
   override def getHeaderNames: java.util.Enumeration[String] = Collections.enumeration(headers.keySet)
 
   override def getHeaders(name: String): java.util.Enumeration[String] = {
-    HeaderValueHolder.getByName(headers, name).map { header =>
-      Collections.enumeration(header.getStringValues)
-    }.getOrElse {
-      Collections.enumeration(new LinkedList[String])
-    }
+    HeaderValueHolder
+      .getByName(headers, name)
+      .map { header =>
+        Collections.enumeration(header.getStringValues)
+      }
+      .getOrElse {
+        Collections.enumeration(new LinkedList[String])
+      }
   }
 
   override def getHeader(name: String): String = {
@@ -266,14 +280,18 @@ class MockHttpServletRequest extends HttpServletRequest {
   }
 
   override def getDateHeader(name: String): Long = {
-    HeaderValueHolder.getByName(this.headers, name).map { header =>
-      header.getValue match {
-        case null => -1L
-        case d: Date => d.getTime
-        case n: Number => n.longValue
-        case v => throw new IllegalArgumentException("Value for header '" + name + "' is neither a Date nor a Number: " + v)
+    HeaderValueHolder
+      .getByName(this.headers, name)
+      .map { header =>
+        header.getValue match {
+          case null      => -1L
+          case d: Date   => d.getTime
+          case n: Number => n.longValue
+          case v =>
+            throw new IllegalArgumentException("Value for header '" + name + "' is neither a Date nor a Number: " + v)
+        }
       }
-    }.getOrElse(-1L)
+      .getOrElse(-1L)
   }
 
   var cookies = Array[Cookie]()

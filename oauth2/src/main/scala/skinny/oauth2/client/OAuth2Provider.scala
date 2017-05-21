@@ -3,13 +3,13 @@ package skinny.oauth2.client
 import org.apache.oltu.oauth2.common.OAuthProviderType
 
 /**
- * OAuth 2.0 Provider.
- */
+  * OAuth 2.0 Provider.
+  */
 case class OAuth2Provider(
-  providerName: String,
-  authorizationEndpoint: String,
-  accessTokenEndpoint: String,
-  isJsonResponse: Boolean = true
+    providerName: String,
+    authorizationEndpoint: String,
+    accessTokenEndpoint: String,
+    isJsonResponse: Boolean = true
 )
 
 object OAuth2Provider {
@@ -36,17 +36,17 @@ object OAuth2Provider {
   // Supported OAuth2 Providers
 
   // Apache Oltu built-in providers
-  val Facebook = OAuth2Provider(OAuthProviderType.FACEBOOK)
+  val Facebook   = OAuth2Provider(OAuthProviderType.FACEBOOK)
   val Foursquare = OAuth2Provider(OAuthProviderType.FOURSQUARE)
-  val Google = OAuth2Provider(OAuthProviderType.GOOGLE)
-  val GitHub = OAuth2Provider(OAuthProviderType.GITHUB)
-  val Instagram = OAuth2Provider(OAuthProviderType.INSTAGRAM)
-  val LinkedIn = OAuth2Provider(OAuthProviderType.LINKEDIN)
-  val Microsoft = OAuth2Provider(OAuthProviderType.MICROSOFT)
-  val PayPal = OAuth2Provider(OAuthProviderType.PAYPAL)
-  val Reddit = OAuth2Provider(OAuthProviderType.REDDIT)
+  val Google     = OAuth2Provider(OAuthProviderType.GOOGLE)
+  val GitHub     = OAuth2Provider(OAuthProviderType.GITHUB)
+  val Instagram  = OAuth2Provider(OAuthProviderType.INSTAGRAM)
+  val LinkedIn   = OAuth2Provider(OAuthProviderType.LINKEDIN)
+  val Microsoft  = OAuth2Provider(OAuthProviderType.MICROSOFT)
+  val PayPal     = OAuth2Provider(OAuthProviderType.PAYPAL)
+  val Reddit     = OAuth2Provider(OAuthProviderType.REDDIT)
   val Salesforce = OAuth2Provider(OAuthProviderType.SALESFORCE)
-  val Yammer = OAuth2Provider(OAuthProviderType.YAMMER)
+  val Yammer     = OAuth2Provider(OAuthProviderType.YAMMER)
 
   // Basecamp
   // https://github.com/basecamp/api/blob/master/sections/authentication.md
@@ -111,6 +111,6 @@ object OAuth2Provider {
     "the authorization endpoint",
     "the access token endpoint"
   )
-   */
+ */
 
 }

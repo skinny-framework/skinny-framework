@@ -1,6 +1,6 @@
 package skinny.http
 
 /**
- * Query param.
- */
+  * Query param.
+  */
 case class QueryParam(name: String, value: Any)

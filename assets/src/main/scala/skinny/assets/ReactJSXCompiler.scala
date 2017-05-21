@@ -13,10 +13,10 @@ import org.mozilla.javascript.Context
 import org.mozilla.javascript.JavaScriptException
 
 /**
- * React JSX template compiler.
- *
- * @see https://github.com/facebook/react-rails
- */
+  * React JSX template compiler.
+  *
+  * @see https://github.com/facebook/react-rails
+  */
 class ReactJSXCompiler {
 
   private[this] val log = LoggerFactory.getLogger(classOf[ReactJSXCompiler])
@@ -59,11 +59,11 @@ class ReactJSXCompiler {
   }
 
   /**
-   * Compiles React JSX Transformer source code to JavaScript source code.
-   *
-   * @param jsxCode jsx code
-   * @return js code
-   */
+    * Compiles React JSX Transformer source code to JavaScript source code.
+    *
+    * @param jsxCode jsx code
+    * @return js code
+    */
   def compile(path: String, jsxCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g react-tools)
@@ -88,7 +88,7 @@ class ReactJSXCompiler {
       }
     } else {
       // Compiler on the Rhino JS engine
-      val context = Context.enter
+      val context      = Context.enter
       val compileScope = context.newObject(globalScope)
       compileScope.setParentScope(globalScope)
       compileScope.put("source", compileScope, jsxCode)
@@ -105,4 +105,3 @@ class ReactJSXCompiler {
   }
 
 }
-

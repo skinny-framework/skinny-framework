@@ -6,10 +6,9 @@ import scalikejdbc.metadata.Table
 import skinny.nlp.Inflector
 
 /**
- * Reverse Model All generator.
- */
-object ReverseModelAllGenerator extends ReverseModelAllGenerator {
-}
+  * Reverse Model All generator.
+  */
+object ReverseModelAllGenerator extends ReverseModelAllGenerator {}
 
 trait ReverseModelAllGenerator extends CodeGenerator {
 
@@ -29,29 +28,32 @@ trait ReverseModelAllGenerator extends CodeGenerator {
 
     initializeDB(skinnyEnv)
 
-    val tables: Seq[Table] = NamedDB(connectionPoolName).getTableNames("%")
+    val tables: Seq[Table] = NamedDB(connectionPoolName)
+      .getTableNames("%")
       .filter(_.toLowerCase != "schema_version")
-      .flatMap { tableName => NamedDB(connectionPoolName).getTable(tableName) }
-    val self = this
+      .flatMap { tableName =>
+        NamedDB(connectionPoolName).getTable(tableName)
+      }
+    val self             = this
     val skipInitializeDB = (env: Option[String]) => {}
 
     val generator = new ReverseModelGenerator {
-      override def cachedTables = tables
-      override def useAutoConstruct = true
+      override def cachedTables                     = tables
+      override def useAutoConstruct                 = true
       override def createAssociationsForForeignKeys = true
-      override def connectionPoolName = self.connectionPoolName
+      override def connectionPoolName               = self.connectionPoolName
 
-      override def sourceDir = self.sourceDir
-      override def testSourceDir = self.testSourceDir
-      override def resourceDir = self.resourceDir
-      override def testResourceDir = self.testResourceDir
-      override def modelPackage = self.modelPackage
-      override def modelPackageDir = self.modelPackageDir
+      override def sourceDir                               = self.sourceDir
+      override def testSourceDir                           = self.testSourceDir
+      override def resourceDir                             = self.resourceDir
+      override def testResourceDir                         = self.testResourceDir
+      override def modelPackage                            = self.modelPackage
+      override def modelPackageDir                         = self.modelPackageDir
       override def initializeDB(skinnyEnv: Option[String]) = skipInitializeDB(skinnyEnv)
     }
     tables.map { table =>
-      val tableName = table.name.toLowerCase
-      val className = Inflector.singularize(toCamelCase(tableName))
+      val tableName          = table.name.toLowerCase
+      val className          = Inflector.singularize(toCamelCase(tableName))
       val args: List[String] = Seq(Some(tableName), Some(className), skinnyEnv).flatten.toList
       generator.run(args)
     }

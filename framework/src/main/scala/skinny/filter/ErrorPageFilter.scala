@@ -1,8 +1,8 @@
 package skinny.filter
 
 /**
- * Shows error page when unexpected exceptions are thrown from controllers.
- */
+  * Shows error page when unexpected exceptions are thrown from controllers.
+  */
 trait ErrorPageFilter extends SkinnyRenderingFilter {
 
   addRenderingErrorFilter {

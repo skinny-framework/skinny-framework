@@ -19,59 +19,59 @@ object CodeGenerator {
   def convertReservedWord(name: String): String = {
     CodeGenerator.reservedWordConversionRules.find { case (k, _) => k == name } match {
       case Some((_, newName)) => newName
-      case _ => name
+      case _                  => name
     }
   }
 
   val reservedWordConversionRules = Map(
-    "abstract" -> "theAbstract",
-    "case" -> "theCase",
-    "catch" -> "theCatch",
-    "class" -> "theClass",
-    "def" -> "theDef",
-    "do" -> "theDo",
-    "else" -> "theElse",
-    "extends" -> "theExtends",
-    "false" -> "theFalse",
-    "final" -> "theFinal",
-    "finally" -> "theFinally",
-    "for" -> "theFor",
-    "forSome" -> "theForSome",
-    "if" -> "theIf",
-    "implicit" -> "theImplicit",
-    "import" -> "theImport",
-    "lazy" -> "theLazy",
-    "match" -> "theMatch",
-    "new" -> "theNew",
-    "null" -> "theNull",
-    "object" -> "theObject",
-    "override" -> "theOverride",
-    "package" -> "thePackage",
-    "private" -> "isPrivate",
-    "protected" -> "isProtected",
-    "return" -> "theReturn",
-    "sealed" -> "isSealed",
-    "super" -> "isSuper",
-    "this" -> "theThis",
-    "throw" -> "theThrow",
-    "trait" -> "theTrait",
-    "try" -> "theTry",
-    "true" -> "theTrue",
-    "type" -> "theType",
-    "val" -> "theVal",
-    "var" -> "theVar",
-    "while" -> "theWhile",
-    "with" -> "theWith",
-    "yield" -> "theYield",
-    "clone" -> "theClone",
-    "equals" -> "theEquals",
-    "hashCode" -> "theHashCode",
-    "toString" -> "theToString",
-    "finalize" -> "finalizeRequired",
-    "getClass" -> "theGetClass",
-    "notify" -> "notifyRequired",
-    "notifyAll" -> "notifyAllRequired",
-    "wait" -> "waitRequired",
+    "abstract"     -> "theAbstract",
+    "case"         -> "theCase",
+    "catch"        -> "theCatch",
+    "class"        -> "theClass",
+    "def"          -> "theDef",
+    "do"           -> "theDo",
+    "else"         -> "theElse",
+    "extends"      -> "theExtends",
+    "false"        -> "theFalse",
+    "final"        -> "theFinal",
+    "finally"      -> "theFinally",
+    "for"          -> "theFor",
+    "forSome"      -> "theForSome",
+    "if"           -> "theIf",
+    "implicit"     -> "theImplicit",
+    "import"       -> "theImport",
+    "lazy"         -> "theLazy",
+    "match"        -> "theMatch",
+    "new"          -> "theNew",
+    "null"         -> "theNull",
+    "object"       -> "theObject",
+    "override"     -> "theOverride",
+    "package"      -> "thePackage",
+    "private"      -> "isPrivate",
+    "protected"    -> "isProtected",
+    "return"       -> "theReturn",
+    "sealed"       -> "isSealed",
+    "super"        -> "isSuper",
+    "this"         -> "theThis",
+    "throw"        -> "theThrow",
+    "trait"        -> "theTrait",
+    "try"          -> "theTry",
+    "true"         -> "theTrue",
+    "type"         -> "theType",
+    "val"          -> "theVal",
+    "var"          -> "theVar",
+    "while"        -> "theWhile",
+    "with"         -> "theWith",
+    "yield"        -> "theYield",
+    "clone"        -> "theClone",
+    "equals"       -> "theEquals",
+    "hashCode"     -> "theHashCode",
+    "toString"     -> "theToString",
+    "finalize"     -> "finalizeRequired",
+    "getClass"     -> "theGetClass",
+    "notify"       -> "notifyRequired",
+    "notifyAll"    -> "notifyAllRequired",
+    "wait"         -> "waitRequired",
     "asInstanceOf" -> "theAsInstanceOf",
     "isInstanceOf" -> "instanceOf",
     "synchronized" -> "isSynchronized"
@@ -192,8 +192,8 @@ object CodeGenerator {
 }
 
 /**
- * Code generator.
- */
+  * Code generator.
+  */
 trait CodeGenerator {
 
   // ------------------------
@@ -279,7 +279,9 @@ trait CodeGenerator {
 
   def appendToControllers(namespaces: Seq[String], name: String): Unit = {
     val controllerName = toControllerName(namespaces, name)
-    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(name)
+    val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(
+      name
+    )
     val newMountCode =
       s"""def mount(ctx: ServletContext): Unit = {
         |    ${controllerName}.mount(ctx)""".stripMargin
@@ -330,24 +332,36 @@ trait CodeGenerator {
   def toClassName(name: String) = name.head.toUpper + toCamelCase(name.tail)
 
   def toNamespace(basePackage: String, namespaces: Seq[String]): String = {
-    (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) => a + "." + b }
+    (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) =>
+      a + "." + b
+    }
   }
 
   def toDirectoryPath(baseDir: String, namespaces: Seq[String]): String = {
     val dirs: Seq[String] = (Seq(baseDir) ++ namespaces).filter(!_.isEmpty)
-    if (dirs.isEmpty) "" else dirs.reduceLeft { (a, b) => a + "/" + b }
+    if (dirs.isEmpty) ""
+    else
+      dirs.reduceLeft { (a, b) =>
+        a + "/" + b
+      }
   }
 
   def toControllerName(namespaces: Seq[String], resources: String): String = {
     if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
-    else namespaces.head + namespaces.tail.map { n => n.head.toUpper + n.tail }.mkString + toClassName(resources)
+    else
+      namespaces.head + namespaces.tail.map { n =>
+        n.head.toUpper + n.tail
+      }.mkString + toClassName(resources)
   }
 
   def toControllerClassName(name: String) = toClassName(name) + "Controller"
 
   def toResourcesBasePath(namespaces: Seq[String]): String = {
     if (namespaces.filter(!_.isEmpty).isEmpty) ""
-    else "/" + namespaces.filter(!_.isEmpty).reduceLeft { (a, b) => a + "/" + b }
+    else
+      "/" + namespaces.filter(!_.isEmpty).reduceLeft { (a, b) =>
+        a + "/" + b
+      }
   }
 
   def isOptionClassName(t: String): Boolean = t.trim().startsWith("Option")
@@ -370,21 +384,26 @@ trait CodeGenerator {
   def toFirstCharLower(s: String): String = s.head.toLower + s.tail
 
   def toCapitalizedSplitName(v: String): String = {
-    toSnakeCase(v).split("_").toSeq
+    toSnakeCase(v)
+      .split("_")
+      .toSeq
       .map(word => word.head.toUpper + word.tail)
       .mkString(" ")
   }
 
   def extractColumns(tableName: String): List[Column] = {
-    NamedDB(connectionPoolName).getTable(tableName)
-      .map { table => table.columns }
+    NamedDB(connectionPoolName)
+      .getTable(tableName)
+      .map { table =>
+        table.columns
+      }
       .getOrElse { throw new IllegalStateException(s"Failed to retrieve meta data about columns for ${tableName}") }
   }
 
   def toScalaTypeName(paramTypeName: String): String = paramTypeName match {
-    case "ByteArray" => "Array[Byte]"
+    case "ByteArray"         => "Array[Byte]"
     case "Option[ByteArray]" => "Option[Array[Byte]]"
-    case _ => paramTypeName
+    case _                   => paramTypeName
   }
 
   def toScalaTypeNameWithDefaultValueIfOptionOrSeq(paramTypeName: String): String = {
@@ -431,48 +450,48 @@ trait CodeGenerator {
 
   def toDBType(t: String): String = {
     extractTypeIfOptionOrSeq(t) match {
-      case "String" => "varchar(512)"
-      case "Long" => "bigint"
-      case "Int" => "int"
-      case "Short" => "int"
-      case "Byte" => "tinyint"
-      case "ByteArray" => "binary"
+      case "String"     => "varchar(512)"
+      case "Long"       => "bigint"
+      case "Int"        => "int"
+      case "Short"      => "int"
+      case "Byte"       => "tinyint"
+      case "ByteArray"  => "binary"
       case "BigDecimal" => "numeric"
-      case "DateTime" => "timestamp"
-      case "LocalDate" => "date"
-      case "LocalTime" => "time"
-      case "Boolean" => "boolean"
-      case "Double" => "double"
-      case "Float" => "float"
-      case _ => "other"
+      case "DateTime"   => "timestamp"
+      case "LocalDate"  => "date"
+      case "LocalTime"  => "time"
+      case "Boolean"    => "boolean"
+      case "Double"     => "double"
+      case "Float"      => "float"
+      case _            => "other"
     }
   }
 
   def convertJdbcSqlTypeToParamType(dataType: Int): ParamType = dataType match {
     case CHAR | VARCHAR | LONGVARCHAR | LONGNVARCHAR | NCHAR | NVARCHAR | CLOB | NCLOB => String
-    case BOOLEAN | BIT => Boolean
-    case TINYINT => Byte
-    case SMALLINT => Short
-    case INTEGER => Int
-    case BIGINT => Long
-    case FLOAT | REAL => Float
-    case DOUBLE => Double
-    case NUMERIC | DECIMAL => BigDecimal
-    case DATE => LocalDate
-    case TIME => LocalTime
-    case TIMESTAMP => DateTime
-    case BINARY | VARBINARY | LONGVARBINARY | BLOB => ByteArray
-    case _ => String
+    case BOOLEAN | BIT                                                                 => Boolean
+    case TINYINT                                                                       => Byte
+    case SMALLINT                                                                      => Short
+    case INTEGER                                                                       => Int
+    case BIGINT                                                                        => Long
+    case FLOAT | REAL                                                                  => Float
+    case DOUBLE                                                                        => Double
+    case NUMERIC | DECIMAL                                                             => BigDecimal
+    case DATE                                                                          => LocalDate
+    case TIME                                                                          => LocalTime
+    case TIMESTAMP                                                                     => DateTime
+    case BINARY | VARBINARY | LONGVARBINARY | BLOB                                     => ByteArray
+    case _                                                                             => String
   }
 
   def toScaffoldFieldDef(column: Column): String = {
-    val paramType = toParamType(column)
+    val paramType               = toParamType(column)
     val paramTypeString: String = if (column.isRequired) paramType.toString else s"Option[$paramType]"
     val columnTypeString: String = {
       paramType match {
-        case String => s":varchar(${column.size})"
+        case String     => s":varchar(${column.size})"
         case BigDecimal => s":number(${column.size})"
-        case _ => ""
+        case _          => ""
       }
     }
     toCamelCase(column.name.toLowerCase(Locale.ENGLISH)) + ":" + paramTypeString + columnTypeString

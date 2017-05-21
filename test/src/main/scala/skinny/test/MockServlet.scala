@@ -4,11 +4,11 @@ import skinny.controller.SkinnyServlet
 import skinny.micro.context.SkinnyContext
 
 /**
- * Mock of SkinnyServlet.
- */
+  * Mock of SkinnyServlet.
+  */
 trait MockServlet extends SkinnyServlet with MockControllerBase with MockWebPageControllerFeatures {
 
-  // Work around for the following error 
+  // Work around for the following error
   //  java.lang.NullPointerException
   //  at java.util.regex.Matcher.getTextLength(Matcher.java:1234)
   //  at java.util.regex.Matcher.reset(Matcher.java:308)

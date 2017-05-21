@@ -3,13 +3,12 @@ package skinny.time
 import org.joda.time._
 import org.scalatest._
 
-class DateTimeInterpolationStringSpec extends FlatSpec with Matchers
-    with skinny.time.Implicits {
+class DateTimeInterpolationStringSpec extends FlatSpec with Matchers with skinny.time.Implicits {
 
   behavior of "DateTimeInterpolationString"
 
   it should "have special keywords" in {
-    val today = LocalDate.now
+    val today         = LocalDate.now
     val todayDateTime = today.toDateTime(new LocalTime(0, 0, 0))
 
     joda"now" should not equal (null)

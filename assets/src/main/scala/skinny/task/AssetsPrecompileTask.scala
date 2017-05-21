@@ -10,19 +10,19 @@ import skinny.assets._
 import skinny.exception._
 
 /**
- * assets:precompile task runner.
- */
+  * assets:precompile task runner.
+  */
 object AssetsPrecompileTask {
 
   private[this] val coffeeScriptCompiler = CoffeeScriptCompiler()
-  private[this] val lessCompiler = LessCompiler
-  private[this] val sassCompiler = SassCompiler
+  private[this] val lessCompiler         = LessCompiler
+  private[this] val sassCompiler         = SassCompiler
 
   /**
-   * skinny.task.AssetsPrecompileTask.main(Array("basedir"))
-   */
+    * skinny.task.AssetsPrecompileTask.main(Array("basedir"))
+    */
   def main(args: Array[String]) {
-    val baseDir = args.headOption.getOrElse(".") + "/src/main/webapp/WEB-INF/assets"
+    val baseDir   = args.headOption.getOrElse(".") + "/src/main/webapp/WEB-INF/assets"
     val outputDir = args.headOption.getOrElse(".") + "/src/main/webapp/assets"
 
     FileUtils.forceMkdir(new File(baseDir))
@@ -40,12 +40,14 @@ object AssetsPrecompileTask {
 
     // CoffeeScript
     FileUtils.listFiles(new File(baseDir + "/coffee"), Array("coffee"), true).asScala.foreach { file =>
-      val code = FileUtils.readFileToString(file, Charset.defaultCharset())
+      val code         = FileUtils.readFileToString(file, Charset.defaultCharset())
       val compiledCode = coffeeScriptCompiler.compile(file.getAbsolutePath, code)
-      val output = new File(outputDir + "/js/" + file.getName.replaceFirst("\\.coffee$", ".js"))
+      val output       = new File(outputDir + "/js/" + file.getName.replaceFirst("\\.coffee$", ".js"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
-        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+        throw new AssetsPrecompileFailureException(
+          "[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists."
+        )
       } else {
         FileUtils.write(output, compiledCode, Charset.defaultCharset())
       }
@@ -53,12 +55,14 @@ object AssetsPrecompileTask {
 
     // LESS
     FileUtils.listFiles(new File(baseDir + "/less"), Array("less"), true).asScala.foreach { file =>
-      val code = FileUtils.readFileToString(file, Charset.defaultCharset())
+      val code         = FileUtils.readFileToString(file, Charset.defaultCharset())
       val compiledCode = lessCompiler.compile(file.getAbsolutePath, code)
-      val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.less$", ".css"))
+      val output       = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.less$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
-        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+        throw new AssetsPrecompileFailureException(
+          "[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists."
+        )
       } else {
         FileUtils.write(output, compiledCode, Charset.defaultCharset())
       }
@@ -68,12 +72,14 @@ object AssetsPrecompileTask {
     val inScssDir = FileUtils.listFiles(new File(baseDir + "/scss"), Array("scss"), true).asScala
     val inSassDir = FileUtils.listFiles(new File(baseDir + "/sass"), Array("scss"), true).asScala
     (inScssDir ++ inSassDir).foreach { file =>
-      val code = FileUtils.readFileToString(file, Charset.defaultCharset())
+      val code         = FileUtils.readFileToString(file, Charset.defaultCharset())
       val compiledCode = sassCompiler.compile(file.getAbsolutePath, code)
-      val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.scss$", ".css"))
+      val output       = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.scss$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
-        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+        throw new AssetsPrecompileFailureException(
+          "[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists."
+        )
       } else {
         FileUtils.write(output, compiledCode, Charset.defaultCharset())
       }
@@ -81,12 +87,14 @@ object AssetsPrecompileTask {
 
     // Sass: old-style sass
     FileUtils.listFiles(new File(baseDir + "/sass"), Array("sass"), true).asScala.foreach { file =>
-      val code = FileUtils.readFileToString(file, Charset.defaultCharset())
+      val code         = FileUtils.readFileToString(file, Charset.defaultCharset())
       val compiledCode = sassCompiler.compileIndented(file.getAbsolutePath, code)
-      val output = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.sass$", ".css"))
+      val output       = new File(outputDir + "/css/" + file.getName.replaceFirst("\\.sass$", ".css"))
       FileUtils.forceMkdir(output.getParentFile)
       if (output.exists()) {
-        throw new AssetsPrecompileFailureException("[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists.")
+        throw new AssetsPrecompileFailureException(
+          "[ERROR] assets:precompile task failed! Reason: \"" + output.getPath + "\" already exists."
+        )
       } else {
         FileUtils.write(output, compiledCode, Charset.defaultCharset())
       }

@@ -4,8 +4,8 @@ import skinny.filter.SkinnySessionFilter
 import twitter4j.auth.{ AccessToken, RequestToken }
 
 /**
- * SkinnySession wired TwitterLoginFeature.
- */
+  * SkinnySession wired TwitterLoginFeature.
+  */
 trait SkinnySessionTwitterLoginFeature extends TwitterLoginFeature { self: SkinnySessionFilter =>
 
   // ----------------------------------------
@@ -18,7 +18,7 @@ trait SkinnySessionTwitterLoginFeature extends TwitterLoginFeature { self: Skinn
 
   override protected def currentRequestToken(): Option[RequestToken] = {
     for {
-      token <- skinnySession.getAttribute(sessionRequestTokenName).map(_.toString)
+      token       <- skinnySession.getAttribute(sessionRequestTokenName).map(_.toString)
       tokenSecret <- skinnySession.getAttribute(sessionRequestTokenSecretName).map(_.toString)
     } yield {
       new RequestToken(token, tokenSecret)
@@ -40,7 +40,7 @@ trait SkinnySessionTwitterLoginFeature extends TwitterLoginFeature { self: Skinn
 
   override protected def currentAccessToken(): Option[AccessToken] = {
     for {
-      token <- skinnySession.getAttribute(sessionAccessTokenName).map(_.toString)
+      token       <- skinnySession.getAttribute(sessionAccessTokenName).map(_.toString)
       tokenSecret <- skinnySession.getAttribute(sessionAccessTokenSecretName).map(_.toString)
     } yield {
       new AccessToken(token, tokenSecret)

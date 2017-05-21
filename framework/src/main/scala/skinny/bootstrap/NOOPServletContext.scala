@@ -9,8 +9,8 @@ import javax.servlet.descriptor.JspConfigDescriptor
 import scala.collection.JavaConverters._
 
 /**
- * NOOP ServletContext mainly used for loading routes without a Servlet container.
- */
+  * NOOP ServletContext mainly used for loading routes without a Servlet container.
+  */
 class NOOPServletContext extends ServletContext {
 
   val dummyServletRegistrationDynamic = new ServletRegistration.Dynamic {
@@ -31,7 +31,8 @@ class NOOPServletContext extends ServletContext {
 
     override def addMapping(urlPatterns: String*): java.util.Set[String] = Set[String]().asJava
 
-    override def setInitParameters(initParameters: java.util.Map[String, String]): java.util.Set[String] = Set[String]().asJava
+    override def setInitParameters(initParameters: java.util.Map[String, String]): java.util.Set[String] =
+      Set[String]().asJava
 
     override def getName: String = null
 
@@ -49,15 +50,20 @@ class NOOPServletContext extends ServletContext {
 
     override def getUrlPatternMappings: java.util.Collection[String] = Seq[String]().asJava
 
-    override def addMappingForServletNames(dispatcherTypes: java.util.EnumSet[DispatcherType], isMatchAfter: Boolean, servletNames: String*): Unit = {}
+    override def addMappingForServletNames(dispatcherTypes: java.util.EnumSet[DispatcherType],
+                                           isMatchAfter: Boolean,
+                                           servletNames: String*): Unit = {}
 
     override def getServletNameMappings: java.util.Collection[String] = Seq[String]().asJava
 
-    override def addMappingForUrlPatterns(dispatcherTypes: java.util.EnumSet[DispatcherType], isMatchAfter: Boolean, urlPatterns: String*): Unit = {}
+    override def addMappingForUrlPatterns(dispatcherTypes: java.util.EnumSet[DispatcherType],
+                                          isMatchAfter: Boolean,
+                                          urlPatterns: String*): Unit = {}
 
     override def setAsyncSupported(isAsyncSupported: Boolean): Unit = {}
 
-    override def setInitParameters(initParameters: java.util.Map[String, String]): java.util.Set[String] = Set[String]().asJava
+    override def setInitParameters(initParameters: java.util.Map[String, String]): java.util.Set[String] =
+      Set[String]().asJava
 
     override def getName: String = null
 
@@ -83,7 +89,8 @@ class NOOPServletContext extends ServletContext {
 
   override def getEffectiveSessionTrackingModes: java.util.Set[SessionTrackingMode] = Set[SessionTrackingMode]().asJava
 
-  override def getFilterRegistrations: java.util.Map[String, _ <: FilterRegistration] = Map[String, FilterRegistration]().asJava
+  override def getFilterRegistrations: java.util.Map[String, _ <: FilterRegistration] =
+    Map[String, FilterRegistration]().asJava
 
   override def log(msg: String): Unit = {}
 
@@ -105,7 +112,8 @@ class NOOPServletContext extends ServletContext {
 
   override def setInitParameter(name: String, value: String): Boolean = true
 
-  override def getServletRegistrations: java.util.Map[String, _ <: ServletRegistration] = Map[String, ServletRegistration]().asJava
+  override def getServletRegistrations: java.util.Map[String, _ <: ServletRegistration] =
+    Map[String, ServletRegistration]().asJava
 
   override def getDefaultSessionTrackingModes: java.util.Set[SessionTrackingMode] = Set[SessionTrackingMode]().asJava
 

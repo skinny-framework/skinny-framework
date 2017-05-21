@@ -55,7 +55,8 @@ class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
         server.setHandler(getHandler)
         start(server)
 
-        val response = HTTP.get(Request("http://localhost:8278/").queryParam("foo" -> "bar").queryParam("bar" -> "baz"))
+        val response =
+          HTTP.get(Request("http://localhost:8278/").queryParam("foo" -> "bar").queryParam("bar" -> "baz"))
         response.status should equal(200)
         response.asString.length should be > (0)
         response.asString should equal("foo:bar,bar:baz")
@@ -103,7 +104,8 @@ class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
         server.setHandler(getHandler)
         start(server)
 
-        val response = Await.result(HTTP.asyncGet(Request("http://localhost:8278/").queryParams("foo" -> "bar")), 5.seconds)
+        val response =
+          Await.result(HTTP.asyncGet(Request("http://localhost:8278/").queryParams("foo" -> "bar")), 5.seconds)
         response.status should equal(200)
         response.asString.length should be > (0)
         response.asString should equal("foo:bar")
@@ -176,7 +178,8 @@ class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
         val file = new File("http-client/src/test/resources/sample.txt")
         file.exists should equal(true)
 
-        val response = HTTP.postMultipart("http://localhost:8888/", FormData("toResponse", FileInput(file, "text/plain")))
+        val response =
+          HTTP.postMultipart("http://localhost:8888/", FormData("toResponse", FileInput(file, "text/plain")))
         response.status should equal(200)
         response.asString should equal(
           """foo
@@ -212,7 +215,9 @@ class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
       withServer(new _root_.server.PostFormdataServer(8888)) { server =>
         start(server)
 
-        val response = Await.result(HTTP.asyncPostMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar"))), 5.seconds)
+        val response =
+          Await.result(HTTP.asyncPostMultipart("http://localhost:8888/", FormData("toResponse", TextInput("bar"))),
+                       5.seconds)
         response.status should equal(200)
         response.asString should equal("bar")
       }

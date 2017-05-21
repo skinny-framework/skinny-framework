@@ -26,4 +26,3 @@ class SkinnyWorkerServiceSpec extends FunSpec with Matchers with Logging {
   }
 
 }
-

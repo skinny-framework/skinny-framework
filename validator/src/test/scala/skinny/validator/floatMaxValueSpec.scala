@@ -7,7 +7,7 @@ class floatMaxValueSpec extends FlatSpec with Matchers {
   behavior of "floatMaxValue"
 
   it should "be available" in {
-    val max = 3F
+    val max      = 3F
     val validate = new floatMaxValue(max)
     validate.name should equal("floatMaxValue")
 

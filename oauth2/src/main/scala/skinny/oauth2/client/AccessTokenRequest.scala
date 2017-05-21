@@ -4,10 +4,10 @@ import org.apache.oltu.oauth2.client.request.OAuthClientRequest
 import org.apache.oltu.oauth2.common.OAuth
 
 /**
- * Access Token Request (exchange OAuth code for an access token).
- *
- * https://cwiki.apache.org/confluence/display/OLTU/OAuth+2.0+Client+Quickstart
- */
+  * Access Token Request (exchange OAuth code for an access token).
+  *
+  * https://cwiki.apache.org/confluence/display/OLTU/OAuth+2.0+Client+Quickstart
+  */
 case class AccessTokenRequest(provider: OAuth2Provider) {
 
   val underlying = new OAuthClientRequest.TokenRequestBuilder(provider.accessTokenEndpoint)

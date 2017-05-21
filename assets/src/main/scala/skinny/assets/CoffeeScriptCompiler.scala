@@ -11,10 +11,10 @@ import org.slf4j.LoggerFactory
 import skinny.exception.AssetsPrecompileFailureException
 
 /**
- * CoffeeScript compiler.
- *
- * @see https://github.com/Filirom1/concoct
- */
+  * CoffeeScript compiler.
+  *
+  * @see https://github.com/Filirom1/concoct
+  */
 case class CoffeeScriptCompiler(bare: Boolean = false) {
 
   private[this] val log = LoggerFactory.getLogger(classOf[CoffeeScriptCompiler])
@@ -43,7 +43,8 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
   // lineStream doesn't exist in Scala 2.10
   private[this] def nativeCompilerDescription = Seq(coffeeCommand, "-v").lines.mkString
 
-  private[this] def nativeCompilerCommand = Seq(coffeeCommand, "--compile", "--stdio") ++ (if (bare) Seq("--bare") else Nil)
+  private[this] def nativeCompilerCommand =
+    Seq(coffeeCommand, "--compile", "--stdio") ++ (if (bare) Seq("--bare") else Nil)
 
   def sourceMapsEnabled: Boolean = SkinnyEnv.isDevelopment() || SkinnyEnv.isTest()
 
@@ -60,11 +61,11 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
   }
 
   /**
-   * Compiles CoffeeScript source code to JavaScript source code.
-   *
-   * @param coffeeScriptCode coffee code
-   * @return js code
-   */
+    * Compiles CoffeeScript source code to JavaScript source code.
+    *
+    * @param coffeeScriptCode coffee code
+    * @return js code
+    */
   def compile(fullpath: String, coffeeScriptCode: String): String = {
     if (nativeCompilerExists) {
       // Native compiler (npm install -g coffee-script)
@@ -84,7 +85,9 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
           if (sourceMapsEnabled) {
             fullpath.split("WEB-INF/assets/coffee/") match {
               case Array(dir, path) =>
-                sys.process.Process(Seq(coffeeCommand, "--map", path), new java.io.File(dir + "WEB-INF/assets/coffee")).!
+                sys.process
+                  .Process(Seq(coffeeCommand, "--map", path), new java.io.File(dir + "WEB-INF/assets/coffee"))
+                  .!
                 out.toString + s"\n\n//# sourceMappingURL=${fullpath.split("/").last.replaceFirst(".coffee", ".map")}"
               case _ =>
                 out.toString
@@ -100,7 +103,7 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
       }
     } else {
       // Compiler on the Rhino JS engine
-      val context = Context.enter
+      val context      = Context.enter
       val compileScope = context.newObject(globalScope)
       compileScope.setParentScope(globalScope)
       compileScope.put("coffeeScriptSource", compileScope, coffeeScriptCode)
@@ -117,4 +120,3 @@ case class CoffeeScriptCompiler(bare: Boolean = false) {
   }
 
 }
-

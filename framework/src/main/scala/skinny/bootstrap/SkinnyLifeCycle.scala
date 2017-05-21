@@ -6,35 +6,35 @@ import skinny.micro.routing.RouteRegistry
 import skinny.worker._
 
 /**
- * LifeCycle for Skinny app.
- */
+  * LifeCycle for Skinny app.
+  */
 trait SkinnyLifeCycle extends LifeCycle {
 
   /**
-   * Enables Skinny-ORM configuration if true.
-   */
+    * Enables Skinny-ORM configuration if true.
+    */
   def dbSettingsEnabled: Boolean = true
 
   /**
-   * Enables SkinnyWorkerService if true.
-   */
+    * Enables SkinnyWorkerService if true.
+    */
   def workerServiceEnabled: Boolean = true
 
   /**
-   * SkinnyWorkerService
-   */
+    * SkinnyWorkerService
+    */
   lazy val skinnyWorkerService = {
     if (workerServiceEnabled) new SkinnyWorkerService()
     else throw new IllegalStateException("SkinnyWorkerService is disabled now. Turn on #workerServiceEnabled!")
   }
 
   /**
-   * Initializes Skinny framework application.
-   *
-   * This abstract method should be implemented to configure routes.
-   *
-   * @param ctx servlet context
-   */
+    * Initializes Skinny framework application.
+    *
+    * This abstract method should be implemented to configure routes.
+    *
+    * @param ctx servlet context
+    */
   def initSkinnyApp(ctx: ServletContext): Unit
 
   override def init(ctx: ServletContext): Unit = {

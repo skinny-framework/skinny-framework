@@ -4,8 +4,7 @@ import skinny.controller.feature.DropboxLoginFeature
 import skinny.oauth2.client.OAuth2User
 import skinny.oauth2.client.dropbox.DropboxUser
 
-class DropboxController extends ApplicationController
-    with DropboxLoginFeature {
+class DropboxController extends ApplicationController with DropboxLoginFeature {
 
   override def redirectURI = "http://localhost:8080/example/dropbox/callback"
 
@@ -24,4 +23,3 @@ class DropboxController extends ApplicationController
   }
 
 }
-

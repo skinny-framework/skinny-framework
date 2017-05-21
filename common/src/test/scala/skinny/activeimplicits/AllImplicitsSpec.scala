@@ -5,8 +5,8 @@ import org.scalatest._
 class AllImplicitsSpec extends FlatSpec with Matchers {
 
   object Sample extends AllImplicits {
-    def duration = 100.seconds
-    def weeks = 4.weeks
+    def duration               = 100.seconds
+    def weeks                  = 4.weeks
     def removeFoo(str: String) = str.remove("foo")
     def pluralize(str: String) = str.pluralize
   }

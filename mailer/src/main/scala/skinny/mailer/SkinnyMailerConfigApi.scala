@@ -3,8 +3,8 @@ package skinny.mailer
 import com.typesafe.config.Config
 
 /**
- * Configuration for SkinnyMailer.
- */
+  * Configuration for SkinnyMailer.
+  */
 trait SkinnyMailerConfigApi extends SkinnyMailerConfigBase {
 
   def toCaseClass: SkinnyMailerConfig = SkinnyMailerConfig(
@@ -18,46 +18,46 @@ trait SkinnyMailerConfigApi extends SkinnyMailerConfigBase {
   )
 
   /**
-   * Debug mode if true.
-   */
+    * Debug mode if true.
+    */
   def debug: Boolean = loadedConfig.flatMap(c => opt(c.getBoolean("debug"))).getOrElse(false)
 
   /**
-   * MIME version.
-   */
+    * MIME version.
+    */
   def mimeVersion: String = loadedConfig.flatMap(c => opt(c.getString("mimeVersion"))).getOrElse("1.0")
 
   /**
-   * Charset.
-   */
+    * Charset.
+    */
   def charset: String = loadedConfig.flatMap(c => opt(c.getString("charset"))).getOrElse("UTF-8")
 
   /**
-   * Content-Type header (default: text/plain)
-   */
+    * Content-Type header (default: text/plain)
+    */
   def contentType: String = loadedConfig.flatMap(c => opt(c.getString("contentType"))).getOrElse("text/plain")
 
   /**
-   * From header default value.
-   */
+    * From header default value.
+    */
   def defaultFrom: Option[String] = loadedConfig.flatMap(c => opt(c.getString("from")))
 
   /**
-   * Transport protocol.
-   */
-  def transportProtocol: String = loadedConfig.flatMap(c => opt(c.getString("transport.protocol"))).getOrElse("logging")
+    * Transport protocol.
+    */
+  def transportProtocol: String =
+    loadedConfig.flatMap(c => opt(c.getString("transport.protocol"))).getOrElse("logging")
 
   // refs self
   private val self: SkinnyMailerConfigApi = this
 
   /**
-   * SMTP configuration.
-   */
+    * SMTP configuration.
+    */
   val smtp: SkinnyMailerSmtpConfigApi = new SkinnyMailerSmtpConfigApi {
-    override def name: String = self.name
-    override def skinnyEnv: String = self.skinnyEnv
+    override def name: String                      = self.name
+    override def skinnyEnv: String                 = self.skinnyEnv
     override lazy val loadedConfig: Option[Config] = self.loadedConfig
   }
 
 }
-

@@ -17,21 +17,26 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from summary")
 }
 
-class Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
   override def db(): DB = NamedDB('test006).toDB()
 
-  var (_beforeCreate, _beforeUpdateBy, _beforeDeleteBy, _beforeCreateDeprecated, _beforeDeleteByDeprecated,
-    _afterCreate, _afterDeleteBy, _afterUpdateBy, _afterCreateDeprecated, _afterDeleteByDeprecated) = {
+  var (_beforeCreate,
+       _beforeUpdateBy,
+       _beforeDeleteBy,
+       _beforeCreateDeprecated,
+       _beforeDeleteByDeprecated,
+       _afterCreate,
+       _afterDeleteBy,
+       _afterUpdateBy,
+       _afterCreateDeprecated,
+       _afterDeleteByDeprecated) = {
     (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
   }
 
   case class Summary(id: Long, name: String)
   object Summary extends SkinnyCRUDMapper[Summary] {
     override val connectionPoolName = 'test006
-    override def defaultAlias = createAlias("s")
+    override def defaultAlias       = createAlias("s")
 
     beforeCreate((session: DBSession, namedValues: Seq[(SQLSyntax, Any)]) => {
       _beforeCreate += 1
@@ -80,7 +85,8 @@ class Spec extends fixture.FunSpec with Matchers
       _beforeCreateDeprecated += 1
     }
     @deprecated("will be removed someday", "1.3.12")
-    override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)], generatedId: Option[Long])(implicit s: DBSession): Unit = {
+    override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)],
+                                       generatedId: Option[Long])(implicit s: DBSession): Unit = {
       _afterCreateDeprecated += 1
     }
 
@@ -99,7 +105,6 @@ class Spec extends fixture.FunSpec with Matchers
 
   describe("before/after") {
     it("should work") { implicit session =>
-
       _beforeCreate should equal(0)
       _afterCreate should equal(0)
       _beforeCreateDeprecated should equal(0)

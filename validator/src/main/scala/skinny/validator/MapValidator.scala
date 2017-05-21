@@ -1,11 +1,11 @@
 package skinny.validator
 
 /**
- * Validator which accepts Map value as inputs.
- *
- * @param paramMap param as a Map value
- * @param validations registered validations
- */
+  * Validator which accepts Map value as inputs.
+  *
+  * @param paramMap param as a Map value
+  * @param validations registered validations
+  */
 case class MapValidator(
     paramMap: Map[String, Any] = Map(),
     override val validations: Validations = Validations(Map(), Nil)
@@ -14,11 +14,11 @@ case class MapValidator(
   override lazy val params: Parameters = ParametersFromMap(paramMap)
 
   /**
-   * Applies new validations to inputs.
-   *
-   * @param validations validations
-   * @return validator
-   */
+    * Applies new validations to inputs.
+    *
+    * @param validations validations
+    * @return validator
+    */
   def apply(validations: NewValidation*): MapValidator = {
     val mutableMap = collection.mutable.Map(paramMap.toSeq: _*)
     val newValidations = validations.toSeq ++ validations.map {
@@ -42,4 +42,3 @@ case class MapValidator(
   }
 
 }
-

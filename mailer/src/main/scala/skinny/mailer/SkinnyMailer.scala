@@ -10,20 +10,20 @@ object SkinnyMailer {
   }
 
   def apply(smConfig: SkinnyMailerConfig, extra: SkinnyMailerExtraConfig): SkinnyMailer = new SkinnyMailer {
-    override def config = smConfig
+    override def config      = smConfig
     override def extraConfig = extra
   }
 
 }
 
 /**
- * SkinnyMailer
- */
+  * SkinnyMailer
+  */
 trait SkinnyMailer
-  extends SkinnyMailerBase
-  with ConfigFeature
-  with SmtpConfigFeature
-  with ExtraConfigFeature
-  with JavaMailSessionFeature
-  with MessageBuilderFeature
-  with SkinnyMailerImplicits
+    extends SkinnyMailerBase
+    with ConfigFeature
+    with SmtpConfigFeature
+    with ExtraConfigFeature
+    with JavaMailSessionFeature
+    with MessageBuilderFeature
+    with SkinnyMailerImplicits

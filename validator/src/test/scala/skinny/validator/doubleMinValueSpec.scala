@@ -7,7 +7,7 @@ class doubleMinValueSpec extends FlatSpec with Matchers {
   behavior of "doubleMinValue"
 
   it should "be available" in {
-    val min = 2D
+    val min      = 2D
     val validate = new doubleMinValue(min)
     validate.name should equal("doubleMinValue")
     validate.messageParams should equal(Seq("2.0"))

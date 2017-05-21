@@ -6,8 +6,8 @@ import twitter4j.auth._
 import twitter4j.conf._
 
 /**
- * Twitter OAuth 1.0a Login Feature.
- */
+  * Twitter OAuth 1.0a Login Feature.
+  */
 trait TwitterLoginFeature extends SkinnyControllerBase {
 
   protected def isLocalDebug: Boolean = false
@@ -49,7 +49,7 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
 
   protected def currentRequestToken(): Option[RequestToken] = {
     for {
-      token <- Option(session.getAttribute(sessionRequestTokenName)).map(_.toString)
+      token       <- Option(session.getAttribute(sessionRequestTokenName)).map(_.toString)
       tokenSecret <- Option(session.getAttribute(sessionRequestTokenSecretName)).map(_.toString)
     } yield {
       new RequestToken(token, tokenSecret)
@@ -71,7 +71,7 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
 
   protected def currentAccessToken(): Option[AccessToken] = {
     for {
-      token <- Option(session.getAttribute(sessionAccessTokenName)).map(_.toString)
+      token       <- Option(session.getAttribute(sessionAccessTokenName)).map(_.toString)
       tokenSecret <- Option(session.getAttribute(sessionAccessTokenSecretName)).map(_.toString)
     } yield {
       new AccessToken(token, tokenSecret)
@@ -115,10 +115,10 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
   // Actions
 
   /**
-   * Redirects users to OAuth provider's authentication endpoint.
-   */
+    * Redirects users to OAuth provider's authentication endpoint.
+    */
   def loginRedirect: Any = {
-    val twitter: Twitter = twitterFactory.getInstance
+    val twitter: Twitter           = twitterFactory.getInstance
     val requestToken: RequestToken = twitter.getOAuthRequestToken
     logger.debug(s"request token when redirecting: ${requestToken}")
     saveRequestToken(requestToken)
@@ -126,8 +126,8 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
   }
 
   /**
-   * Accepts callback response from OAuth provider.
-   */
+    * Accepts callback response from OAuth provider.
+    */
   def callback: Any = {
     logger.debug(s"request token in session: ${currentRequestToken}")
     logger.debug(s"oauth_token: ${params.get("oauth_token")}, oauth_verifier: ${params.get("oauth_verifier")}")
@@ -135,8 +135,8 @@ trait TwitterLoginFeature extends SkinnyControllerBase {
     try {
       (for {
         requestToken <- currentRequestToken
-        token <- params.getAs[String]("oauth_token") if token == requestToken.getToken
-        verifier <- params.getAs[String]("oauth_verifier")
+        token        <- params.getAs[String]("oauth_token") if token == requestToken.getToken
+        verifier     <- params.getAs[String]("oauth_verifier")
       } yield {
 
         val twitter: Twitter = twitterFactory.getInstance

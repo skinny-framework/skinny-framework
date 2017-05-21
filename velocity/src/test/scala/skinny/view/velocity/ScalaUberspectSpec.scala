@@ -24,9 +24,10 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
     uberspect.init()
     uberspect
       .getIterator(Map(
-        "key1" -> "value1",
-        "key2" -> "value2"
-      ), dummyInfo) should be(a[java.util.Iterator[_]])
+                     "key1" -> "value1",
+                     "key2" -> "value2"
+                   ),
+                   dummyInfo) should be(a[java.util.Iterator[_]])
   }
 
   it should "mutable.ArrayBuffer to JavaIterator" in {
@@ -39,9 +40,10 @@ class ScalaUberspectSpec extends FlatSpec with Matchers {
     val uberspect = new ScalaUberspect
     uberspect.init()
     uberspect.getIterator(mutable.Map(
-      "key1" -> "value1",
-      "key2" -> "value2"
-    ), dummyInfo) should be(a[java.util.Iterator[_]])
+                            "key1" -> "value1",
+                            "key2" -> "value2"
+                          ),
+                          dummyInfo) should be(a[java.util.Iterator[_]])
   }
 
   it should "Iterator to JavaIterator" in {

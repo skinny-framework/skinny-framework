@@ -23,4 +23,3 @@ trait NoIdTimestampsFeature[Entity] extends NoIdCUDFeature[Entity] with Timestam
   }
 
 }
-

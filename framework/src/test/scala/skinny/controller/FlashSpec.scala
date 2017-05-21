@@ -11,7 +11,7 @@ class FlashSpec extends ScalatraFlatSpec {
     val scalatraFlash = new FlashMap()
     scalatraFlash += ("name" -> "skinny")
     scalatraFlash += ("lang" -> Option("scala"))
-    scalatraFlash += ("nil" -> Option(None))
+    scalatraFlash += ("nil"  -> Option(None))
     val flash = new Flash(scalatraFlash)
 
     flash.get("name") should be(Some("skinny"))

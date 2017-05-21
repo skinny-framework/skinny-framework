@@ -13,23 +13,21 @@ import FlashMapSupport._
 import java.util.Locale
 
 /**
- * Enables replacing Servlet session with Skinny's session shared among several Servlet apps.
- *
- * Mounting skinny.session.SkinnySessionInitializer on the top of Bootstrap.scala is required.
- *
- * {{{
- *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
- * }}}
- */
-private[skinny] trait SkinnySessionFilterBase extends SkinnyFilter {
-
-  self: FlashFeature with LocaleFeature =>
+  * Enables replacing Servlet session with Skinny's session shared among several Servlet apps.
+  *
+  * Mounting skinny.session.SkinnySessionInitializer on the top of Bootstrap.scala is required.
+  *
+  * {{{
+  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
+  * }}}
+  */
+private[skinny] trait SkinnySessionFilterBase extends SkinnyFilter { self: FlashFeature with LocaleFeature =>
 
   import SkinnySessionFilterBase._
 
   /**
-   * Replace this when you use other backend.
-   */
+    * Replace this when you use other backend.
+    */
   protected def initializeSkinnySession(implicit ctx: SkinnyContext): SkinnyHttpSession = {
     // SkinnyHttpSession's factory method doesn't support several backend implementation.
     // Of course, pull requests are always welcome.
@@ -68,7 +66,8 @@ private[skinny] trait SkinnySessionFilterBase extends SkinnyFilter {
     try {
       skinnySession(ctx).setAttribute(SessionKey, f)
     } catch {
-      case scala.util.control.NonFatal(e) => logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
+      case scala.util.control.NonFatal(e) =>
+        logger.debug(s"Failed to set flashMap to skinny session because ${e.getMessage}")
     }
   }
 
@@ -93,4 +92,3 @@ object SkinnySessionFilterBase {
   val ATTR_SKINNY_SESSION_IN_REQUEST_SCOPE = classOf[SkinnySessionFilter].getCanonicalName + "_SkinnySessionWrapper"
 
 }
-

@@ -6,45 +6,51 @@ import skinny.orm.feature.includes.IncludesQueryRepository
 import scalikejdbc._
 
 /**
- * Provides #joins APIs.
- *
- * NOTE: CRUDFeature has copy implementation from this trait.
- */
+  * Provides #joins APIs.
+  *
+  * NOTE: CRUDFeature has copy implementation from this trait.
+  */
 trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFeature[Entity] { self: IdFeature[_] =>
 
   /**
-   * Appends join definition on runtime.
-   *
-   * @param associations associations
-   * @return self
-   */
-  def joins[Id](associations: Association[_]*): JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] = {
-    val _self = this
+    * Appends join definition on runtime.
+    *
+    * @param associations associations
+    * @return self
+    */
+  def joins[Id](
+      associations: Association[_]*
+  ): JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[
+    Id,
+    Entity
+  ] = {
+    val _self         = this
     val _associations = associations
 
-    new JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[Id, Entity] {
+    new JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity]
+    with QueryingFeatureWithId[Id, Entity] {
       override protected val underlying = _self
-      override def defaultAlias = _self.defaultAlias
+      override def defaultAlias         = _self.defaultAlias
 
-      override def tableName = _self.tableName
+      override def tableName   = _self.tableName
       override def columnNames = _self.columnNames
 
-      override def primaryKeyField = _self.primaryKeyField
+      override def primaryKeyField     = _self.primaryKeyField
       override def primaryKeyFieldName = _self.primaryKeyFieldName
 
       override def rawValueToId(value: Any) = _self.rawValueToId(value).asInstanceOf[Id]
-      override def idToRawValue(id: Id) = id
+      override def idToRawValue(id: Id)     = id
 
       override val associations = _self.associations ++ _associations
 
-      override val defaultJoinDefinitions = _self.defaultJoinDefinitions
+      override val defaultJoinDefinitions     = _self.defaultJoinDefinitions
       override val defaultBelongsToExtractors = _self.defaultBelongsToExtractors
-      override val defaultHasOneExtractors = _self.defaultHasOneExtractors
+      override val defaultHasOneExtractors    = _self.defaultHasOneExtractors
       override val defaultOneToManyExtractors = _self.defaultOneToManyExtractors
 
-      override def autoSession = underlying.autoSession
+      override def autoSession        = underlying.autoSession
       override def connectionPoolName = underlying.connectionPoolName
-      override def connectionPool = underlying.connectionPool
+      override def connectionPool     = underlying.connectionPool
 
       override def defaultScope(alias: Alias[Entity]) = _self.defaultScope(alias)
       //override def singleSelectQuery = _self.singleSelectQuery
@@ -54,8 +60,7 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
   }
 
   override def extract(sql: SQL[Entity, NoExtractor])(
-    implicit
-    includesRepository: IncludesQueryRepository[Entity]
+      implicit includesRepository: IncludesQueryRepository[Entity]
   ): SQL[Entity, HasExtractor] = {
     extractWithAssociations(
       sql,

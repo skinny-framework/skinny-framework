@@ -6,23 +6,23 @@ import skinny.logging.LoggerProvider
 import skinny.util.TypesafeConfigReader
 
 /**
- * Basic trait for SkinnyMailer configuration.
- */
+  * Basic trait for SkinnyMailer configuration.
+  */
 trait SkinnyMailerConfigBase extends LoggerProvider {
 
   /**
-   * Name for this configuration which will be use in the namespace "{env}.mailer.{name}".
-   */
+    * Name for this configuration which will be use in the namespace "{env}.mailer.{name}".
+    */
   def name: String = "default"
 
   /**
-   * Skinny environment value.
-   */
+    * Skinny environment value.
+    */
   def skinnyEnv: String = SkinnyEnv.get().getOrElse(SkinnyEnv.Development)
 
   /**
-   * Loaded Typesafe Config object.
-   */
+    * Loaded Typesafe Config object.
+    */
   lazy val loadedConfig: Option[Config] = {
     try Option(TypesafeConfigReader.config(skinnyEnv).getConfig(s"mailer.${name}"))
     catch {

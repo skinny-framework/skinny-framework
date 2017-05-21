@@ -68,7 +68,10 @@ class SnakeCaseKeyExamplesControllerSpec extends SkinnyFlatSpec with SkinnyTestS
     }
 
     withSession("csrf-token" -> "12345") {
-      put(s"/snake_case_key_examples/${snakeCaseKeyExample.id}", "first_name" -> "dummy", "luckey_number" -> "123", "csrf-token" -> "12345") {
+      put(s"/snake_case_key_examples/${snakeCaseKeyExample.id}",
+          "first_name"    -> "dummy",
+          "luckey_number" -> "123",
+          "csrf-token"    -> "12345") {
         status should equal(302)
       }
     }

@@ -16,18 +16,18 @@
 package skinny.http
 
 import scala.collection.mutable
-import java.net.{ URL, HttpURLConnection }
+import java.net.{ HttpURLConnection, URL }
 
 /**
- * HTTP/1.1 Request.
- */
+  * HTTP/1.1 Request.
+  */
 object Request {
   val X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded"
 }
 
 /**
- * HTTP/1.1 Request.
- */
+  * HTTP/1.1 Request.
+  */
 case class Request(var url: String) {
 
   private[this] def returningThis(f: => Any): Request = {
@@ -36,40 +36,40 @@ case class Request(var url: String) {
   }
 
   var enableThrowingIOException: Boolean = false
-  var followRedirects: Boolean = HttpURLConnection.getFollowRedirects
+  var followRedirects: Boolean           = HttpURLConnection.getFollowRedirects
 
   var connectTimeoutMillis = HTTP.defaultConnectTimeoutMillis
-  var readTimeoutMillis = HTTP.defaultReadTimeoutMillis
+  var readTimeoutMillis    = HTTP.defaultReadTimeoutMillis
 
-  var referer: Option[String] = None
+  var referer: Option[String]   = None
   var userAgent: Option[String] = Some("skinny-http-client default user agent - http://skinny-framework.org/")
-  var charset: Option[String] = Some("UTF-8")
+  var charset: Option[String]   = Some("UTF-8")
 
-  var headers: mutable.Map[String, String] = mutable.HashMap[String, String]()
+  var headers: mutable.Map[String, String]        = mutable.HashMap[String, String]()
   var queryParams: mutable.ListBuffer[QueryParam] = mutable.ListBuffer[QueryParam]()
 
   def requestBody: RequestBody = RequestBody(this)
 
-  var bodyBytes: Option[Array[Byte]] = None
-  var contentType: Option[String] = None
-  var formParams: mutable.Map[String, Any] = mutable.HashMap[String, Any]()
+  var bodyBytes: Option[Array[Byte]]                  = None
+  var contentType: Option[String]                     = None
+  var formParams: mutable.Map[String, Any]            = mutable.HashMap[String, Any]()
   var multipartFormData: mutable.ListBuffer[FormData] = mutable.ListBuffer[FormData]()
 
   def enableThrowingIOException(enableThrowingIOException: Boolean): Request = returningThis {
     this.enableThrowingIOException = enableThrowingIOException
   }
-  def url(url: String): Request = returningThis { this.url = url }
+  def url(url: String): Request                          = returningThis { this.url = url }
   def followRedirects(followRedirects: Boolean): Request = returningThis { this.followRedirects = followRedirects }
 
   def connectTimeoutMillis(millis: Int): Request = returningThis { this.connectTimeoutMillis = millis }
-  def readTimeoutMillis(millis: Int): Request = returningThis { this.readTimeoutMillis = millis }
+  def readTimeoutMillis(millis: Int): Request    = returningThis { this.readTimeoutMillis = millis }
 
   def referer(referer: String): Request = returningThis { this.referer = Option(referer) }
-  def userAgent(ua: String): Request = returningThis { this.userAgent = Option(ua) }
+  def userAgent(ua: String): Request    = returningThis { this.userAgent = Option(ua) }
   def charset(charset: String): Request = returningThis { this.charset = Option(charset) }
 
-  def headerNames: Set[String] = headers.keySet.toSet
-  def header(name: String): Option[String] = headers.get(name)
+  def headerNames: Set[String]                     = headers.keySet.toSet
+  def header(name: String): Option[String]         = headers.get(name)
   def header(name: String, value: String): Request = returningThis { headers += name -> value }
 
   def queryParams(params: (String, Any)*): Request = returningThis { params.foreach(p => queryParam(p)) }
@@ -97,8 +97,8 @@ case class Request(var url: String) {
     if (!queryParams.isEmpty) {
       for (queryParam <- queryParams) {
         if (queryParam.value != null) {
-          val name: String = queryParam.name
-          val value: String = String.valueOf(queryParam.value)
+          val name: String     = queryParam.name
+          val value: String    = String.valueOf(queryParam.value)
           val newParam: String = HTTP.urlEncode(name) + "=" + HTTP.urlEncode(value)
           url += (if (url.contains("?")) "&" else "?") + newParam
         }

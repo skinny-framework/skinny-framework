@@ -7,7 +7,7 @@ class floatMinValueSpec extends FlatSpec with Matchers {
   behavior of "floatMinValue"
 
   it should "be available" in {
-    val min = 2F
+    val min      = 2F
     val validate = new floatMinValue(min)
     validate.name should equal("floatMinValue")
     validate.messageParams should equal(Seq("2.0"))

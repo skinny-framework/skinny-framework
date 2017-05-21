@@ -3,10 +3,10 @@ package skinny.controller.feature
 import skinny.micro.SkinnyMicroBase
 
 /**
- * X-Frame-Options header support
- *
- * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
- */
+  * X-Frame-Options header support
+  *
+  * - https://www.owasp.org/index.php/List_of_useful_HTTP_headers
+  */
 trait XFrameOptionsHeaderFeature { self: SkinnyMicroBase with BeforeAfterActionFeature =>
 
   // NOTE: There are three possible values for the X-Frame-Options headers.

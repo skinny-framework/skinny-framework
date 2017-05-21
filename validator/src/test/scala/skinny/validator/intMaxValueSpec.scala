@@ -7,7 +7,7 @@ class intMaxValueSpec extends FlatSpec with Matchers {
   behavior of "intMaxValue"
 
   it should "be available" in {
-    val max = 3
+    val max      = 3
     val validate = new intMaxValue(max)
     validate.name should equal("intMaxValue")
 

@@ -6,10 +6,9 @@ import skinny.orm.SkinnyMapperBase
 import skinny.orm.feature.includes.IncludesQueryRepository
 
 /**
- * Provides #find something APIs.
- */
-trait FinderFeature[Entity]
-  extends FinderFeatureWithId[Long, Entity]
+  * Provides #find something APIs.
+  */
+trait FinderFeature[Entity] extends FinderFeatureWithId[Long, Entity]
 
 trait FinderFeatureWithId[Id, Entity]
     extends SkinnyMapperBase[Entity]
@@ -22,13 +21,13 @@ trait FinderFeatureWithId[Id, Entity]
     with IncludesFeatureWithId[Id, Entity] {
 
   /**
-   * Default ordering condition.
-   */
+    * Default ordering condition.
+    */
   override def defaultOrdering: SQLSyntax = primaryKeyField
 
   /**
-   * Finds a single entity by primary key.
-   */
+    * Finds a single entity by primary key.
+    */
   def findById(id: Id)(implicit s: DBSession = autoSession): Option[Entity] = {
     implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -38,18 +37,19 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   /**
-   * Finds all entities by several primary keys.
-   */
+    * Finds all entities by several primary keys.
+    */
   def findAllByIds(ids: Id*)(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
-      selectQueryWithAssociations
-        .where.in(primaryKeyField, ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
+      selectQueryWithAssociations.where.in(primaryKeyField, ids.map(idToRawValue)).and(defaultScopeWithDefaultAlias)
     }).list.apply())
   }
 
-  override def findAll(orderings: Seq[SQLSyntax] = defaultOrderings)(implicit s: DBSession = autoSession): List[Entity] = {
+  override def findAll(
+      orderings: Seq[SQLSyntax] = defaultOrderings
+  )(implicit s: DBSession = autoSession): List[Entity] = {
     implicit val repository = IncludesQueryRepository[Entity]()
     appendIncludedAttributes(extract(withSQL {
       val sql = selectQueryWithAssociations.where(defaultScopeWithDefaultAlias)
@@ -58,8 +58,7 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllWithPagination(pagination: Pagination, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit
-    s: DBSession = autoSession
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
     if (hasManyAssociations.size > 0) {
       findAllWithLimitOffsetForOneToManyRelations(pagination.limit, pagination.offset, orderings)
@@ -69,8 +68,7 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllWithLimitOffset(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit
-    s: DBSession = autoSession
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
 
     if (hasManyAssociations.size > 0) {
@@ -84,9 +82,10 @@ trait FinderFeatureWithId[Id, Entity]
     }
   }
 
-  def findAllWithLimitOffsetForOneToManyRelations(limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit
-    s: DBSession = autoSession
+  def findAllWithLimitOffsetForOneToManyRelations(limit: Int = 100,
+                                                  offset: Int = 0,
+                                                  orderings: Seq[SQLSyntax] = defaultOrderings)(
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
 
     // find ids for pagination
@@ -95,7 +94,8 @@ trait FinderFeatureWithId[Id, Entity]
       else {
         singleSelectQuery
           .orderBy(orderings.headOption.getOrElse(defaultOrdering))
-          .limit(limit).offset(offset)
+          .limit(limit)
+          .offset(offset)
       }
     }.map(_.any(defaultAlias.resultName.field(primaryKeyFieldName))).list.apply()
 
@@ -105,10 +105,12 @@ trait FinderFeatureWithId[Id, Entity]
       implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
-        val sql = selectQueryWithAssociations.where(sqls.toAndConditionOpt(
-          defaultScopeWithDefaultAlias,
-          Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
-        ))
+        val sql = selectQueryWithAssociations.where(
+          sqls.toAndConditionOpt(
+            defaultScopeWithDefaultAlias,
+            Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
+          )
+        )
         if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))
       }).list.apply())
     }
@@ -123,8 +125,7 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   override def findAllBy(where: SQLSyntax, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit
-    s: DBSession = autoSession
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
 
     implicit val repository = IncludesQueryRepository[Entity]()
@@ -135,9 +136,11 @@ trait FinderFeatureWithId[Id, Entity]
     }).list.apply())
   }
 
-  override def findAllByWithLimitOffset(where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings)(
-    implicit
-    s: DBSession = autoSession
+  override def findAllByWithLimitOffset(where: SQLSyntax,
+                                        limit: Int = 100,
+                                        offset: Int = 0,
+                                        orderings: Seq[SQLSyntax] = defaultOrderings)(
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
 
     if (hasManyAssociations.size > 0) {
@@ -154,10 +157,12 @@ trait FinderFeatureWithId[Id, Entity]
   }
 
   def findAllByWithLimitOffsetForOneToManyRelations(
-    where: SQLSyntax, limit: Int = 100, offset: Int = 0, orderings: Seq[SQLSyntax] = defaultOrderings
+      where: SQLSyntax,
+      limit: Int = 100,
+      offset: Int = 0,
+      orderings: Seq[SQLSyntax] = defaultOrderings
   )(
-    implicit
-    s: DBSession = autoSession
+      implicit s: DBSession = autoSession
   ): List[Entity] = {
 
     // find ids for pagination
@@ -181,7 +186,11 @@ trait FinderFeatureWithId[Id, Entity]
       val query = baseQuery.where(sqls.toAndConditionOpt(Some(where), defaultScopeWithDefaultAlias))
 
       if (orderings.isEmpty) query.limit(limit).offset(offset)
-      else query.orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*)).limit(limit).offset(offset)
+      else
+        query
+          .orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*))
+          .limit(limit)
+          .offset(offset)
 
     }.map(_.any(1)).list.apply()
 
@@ -192,11 +201,13 @@ trait FinderFeatureWithId[Id, Entity]
       implicit val repository = IncludesQueryRepository[Entity]()
       appendIncludedAttributes(extract(withSQL {
         val sql = selectQueryWithAssociations
-          .where(sqls.toAndConditionOpt(
-            Option(where),
-            defaultScopeWithDefaultAlias,
-            Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
-          ))
+          .where(
+            sqls.toAndConditionOpt(
+              Option(where),
+              defaultScopeWithDefaultAlias,
+              Some(sqls.in(defaultAlias.field(primaryKeyFieldName), ids))
+            )
+          )
         if (orderings.isEmpty) sql else sql.orderBy(sqls.csv(orderings: _*))
       }).list.apply())
     }
@@ -205,14 +216,19 @@ trait FinderFeatureWithId[Id, Entity]
   private[this] def removeAscDesc(s: SQLSyntax): SQLSyntax = {
     SQLSyntax.createUnsafely(
       s.value
-        .replaceFirst(" desc$", "").replaceFirst(" asc$", "")
-        .replaceFirst(" DESC$", "").replaceFirst(" ASC$", ""),
+        .replaceFirst(" desc$", "")
+        .replaceFirst(" asc$", "")
+        .replaceFirst(" DESC$", "")
+        .replaceFirst(" ASC$", ""),
       s.parameters
     )
   }
 
-  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax], allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
-    orderings.filter { o => allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value) }
+  private[this] def orderingsForDistinctQuery(orderings: Seq[SQLSyntax],
+                                              allowedForDistinctQuery: Seq[SQLSyntax]): Seq[SQLSyntax] = {
+    orderings.filter { o =>
+      allowedForDistinctQuery.exists(_.value == removeAscDesc(o).value)
+    }
   }
 
 }

@@ -1,11 +1,11 @@
 package skinny.mailer.feature
 
-import skinny.mailer.{ SkinnyMessage, SkinnyMailerBase }
+import skinny.mailer.{ SkinnyMailerBase, SkinnyMessage }
 import javax.mail.{ Session, Transport }
 
 /**
- * Provides SkinnyMessage builder.
- */
+  * Provides SkinnyMessage builder.
+  */
 trait MessageBuilderFeature extends SkinnyMailerBase {
 
   self: ConfigFeature with SmtpConfigFeature with ExtraConfigFeature with JavaMailSessionFeature =>
@@ -14,7 +14,8 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
 
   def to(to: String*)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(to = to))
 
-  def subject(subject: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(subject = subject))
+  def subject(subject: String)(implicit s: Session = session): SkinnyMessageBuilder =
+    SkinnyMessageBuilder(mail(subject = subject))
 
   def body(body: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder(mail(body = body))
 
@@ -26,23 +27,25 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
     SkinnyMessageBuilder(msg)
   }
 
-  def bcc(bcc: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder({
-    val m = mail()
-    m.bcc = bcc
-    m
-  })
+  def bcc(bcc: String)(implicit s: Session = session): SkinnyMessageBuilder =
+    SkinnyMessageBuilder({
+      val m = mail()
+      m.bcc = bcc
+      m
+    })
 
-  def cc(cc: String)(implicit s: Session = session): SkinnyMessageBuilder = SkinnyMessageBuilder({
-    val m = mail()
-    m.cc = cc
-    m
-  })
+  def cc(cc: String)(implicit s: Session = session): SkinnyMessageBuilder =
+    SkinnyMessageBuilder({
+      val m = mail()
+      m.cc = cc
+      m
+    })
 
   /**
-   * SkinnyMessage builder.
-   *
-   * @param message underlying message (mutable)
-   */
+    * SkinnyMessage builder.
+    *
+    * @param message underlying message (mutable)
+    */
   case class SkinnyMessageBuilder(message: SkinnyMessage) {
 
     def from(from: String): SkinnyMessageBuilder = {
@@ -51,13 +54,13 @@ trait MessageBuilderFeature extends SkinnyMailerBase {
     }
 
     /**
-     * NOTICE: When using this API, the session is not thread-safe. Don't share a session among threads.
-     */
+      * NOTICE: When using this API, the session is not thread-safe. Don't share a session among threads.
+      */
     def envelopeFrom(from: String): SkinnyMessageBuilder = {
       val sessionProperties = message.currentSession.getProperties
       message.transportProtocol match {
         case "smtps" => sessionProperties.setProperty("mail.smtps.from", from)
-        case _ => sessionProperties.setProperty("mail.smtp.from", from)
+        case _       => sessionProperties.setProperty("mail.smtp.from", from)
       }
       this
     }

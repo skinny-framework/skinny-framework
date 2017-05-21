@@ -12,16 +12,16 @@ import freemarker.template.utility.StringUtil
 import skinny.SkinnyEnv
 
 /**
- * FreeMarker configuration factory.
- */
+  * FreeMarker configuration factory.
+  */
 object FreeMarkerConfig {
 
   /**
-   * Returns default configuration from ServletContext.
-   *
-   * @param ctx servlet context
-   * @return configuration
-   */
+    * Returns default configuration from ServletContext.
+    *
+    * @param ctx servlet context
+    * @return configuration
+    */
   def defaultWithServletContext(ctx: ServletContext, sbtProjectPath: Option[String] = None): Configuration = {
     val config = new Configuration {
       private[this] var _loaders: Seq[TemplateLoader] = Nil
@@ -43,7 +43,10 @@ object FreeMarkerConfig {
     config
   }
 
-  class SbtMultiProjectsSupportedWebappTemplateLoader(servletContext: ServletContext, sbtProjectPath: Option[String] = None, basePath: String) extends WebappTemplateLoader(servletContext, basePath) {
+  class SbtMultiProjectsSupportedWebappTemplateLoader(servletContext: ServletContext,
+                                                      sbtProjectPath: Option[String] = None,
+                                                      basePath: String)
+      extends WebappTemplateLoader(servletContext, basePath) {
 
     override def findTemplateSource(name: String): AnyRef = {
       Option {
@@ -52,16 +55,19 @@ object FreeMarkerConfig {
       }.getOrElse {
         // only for testing with sbt multiple projects
         if (SkinnyEnv.isTest()) {
-          val rootPath = new File("").getAbsolutePath
+          val rootPath    = new File("").getAbsolutePath
           val projectPath = rootPath + "/" + sbtProjectPath.getOrElse("")
           try {
-            Option(servletContext.getRealPath(basePath + name)).map { path =>
-              path.replaceFirst(rootPath, projectPath)
-            }.map { path =>
-              val f = new File(path)
-              if (f.isFile && f.canRead) f
-              else null
-            }.orNull[File]
+            Option(servletContext.getRealPath(basePath + name))
+              .map { path =>
+                path.replaceFirst(rootPath, projectPath)
+              }
+              .map { path =>
+                val f = new File(path)
+                if (f.isFile && f.canRead) f
+                else null
+              }
+              .orNull[File]
           } catch {
             case e: SecurityException => null
           }

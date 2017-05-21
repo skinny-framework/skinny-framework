@@ -3,10 +3,10 @@ package skinny.mailer
 import javax.mail.internet.{ MimeBodyPart, MimeMultipart }
 
 /**
- * Attachments for the message.
- *
- * @param message message
- */
+  * Attachments for the message.
+  *
+  * @param message message
+  */
 case class Attachments(message: RichMimeMessage) extends IndexedSeq[RichMimeBodyPart] {
 
   def ++=(filename: String, o: AnyRef, mimeType: String): Unit = {

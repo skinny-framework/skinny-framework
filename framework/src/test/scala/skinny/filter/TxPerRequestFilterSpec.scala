@@ -12,7 +12,7 @@ class TxPerRequestFilterSpec extends ScalatraFlatSpec {
 
   object Controller extends SkinnyApiController with TxPerRequestFilter with Routes {
     override def connectionPoolForTxPerRequestFilter = ConnectionPool.get('TxPerRequestFilterSpec)
-    def index = "ok"
+    def index                                        = "ok"
     get("/")(index).as('index)
   }
   addFilter(Controller, "/*")

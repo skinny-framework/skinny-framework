@@ -3,26 +3,29 @@ package skinny.mailer
 import scala.collection.JavaConverters._
 
 /**
- * Header lines of MIME message.
- */
+  * Header lines of MIME message.
+  */
 case class HeaderLines(message: RichMimeMessage) {
 
   /**
-   * Add a raw RFC 822 header-line.
-   */
+    * Add a raw RFC 822 header-line.
+    */
   def ++=(lines: String) = message.underlying.addHeaderLine(lines)
 
   /**
-   * Add a raw RFC 822 header-line.
-   */
+    * Add a raw RFC 822 header-line.
+    */
   def ++=(lines: Iterable[String]) = lines.foreach(message.underlying.addHeaderLine)
 
   /**
-   * Returns as a Seq value.
-   */
+    * Returns as a Seq value.
+    */
   def toSeq: Seq[String] = {
-    Option(message.underlying.getAllHeaderLines).map(_.asScala).getOrElse(Nil)
-      .map(_.asInstanceOf[String]).toSeq
+    Option(message.underlying.getAllHeaderLines)
+      .map(_.asScala)
+      .getOrElse(Nil)
+      .map(_.asInstanceOf[String])
+      .toSeq
   }
 
 }

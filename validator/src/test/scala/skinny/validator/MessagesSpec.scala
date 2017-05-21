@@ -20,7 +20,8 @@ class MessagesSpec extends FlatSpec with Matchers {
         inputs.keys.flatMap { key =>
           errors.get(key).map(error => msgs.get(error.name, key :: error.messageParams.toList).get)
         }
-      }.apply()
+      }
+      .apply()
 
     messages.size should equal(1)
   }
@@ -39,7 +40,8 @@ class MessagesSpec extends FlatSpec with Matchers {
         inputs.keys.flatMap { key =>
           errors.get(key).map(error => msgs.get(error.name, key :: error.messageParams.toList).get)
         }
-      }.apply()
+      }
+      .apply()
 
     messages.size should equal(1)
   }

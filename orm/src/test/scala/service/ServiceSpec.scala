@@ -5,17 +5,14 @@ import scalikejdbc.scalatest.AutoRollback
 
 import org.scalatest._
 
-class ServiceSpec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class ServiceSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB('service).toDB()
 
   override def fixture(implicit session: DBSession) {
     val serviceNo = Service.createWithAttributes('name -> "Cool Web Service")
-    Application.createWithAttributes('name -> "Smartphone site", 'serviceNo -> serviceNo)
-    Application.createWithAttributes('name -> "PC site", 'serviceNo -> serviceNo)
+    Application.createWithAttributes('name -> "Smartphone site", 'serviceNo   -> serviceNo)
+    Application.createWithAttributes('name -> "PC site", 'serviceNo           -> serviceNo)
     Application.createWithAttributes('name -> "Featurephone site", 'serviceNo -> serviceNo)
   }
 

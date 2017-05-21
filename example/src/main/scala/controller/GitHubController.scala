@@ -1,11 +1,12 @@
 package controller
 
-import skinny.controller.feature.{ SkinnySessionOAuth2LoginFeature, GitHubLoginFeature }
+import skinny.controller.feature.{ GitHubLoginFeature, SkinnySessionOAuth2LoginFeature }
 import skinny.filter.SkinnySessionFilter
 import skinny.oauth2.client.OAuth2User
 import skinny.oauth2.client.github.GitHubUser
 
-class GitHubController extends ApplicationController
+class GitHubController
+    extends ApplicationController
     with GitHubLoginFeature
     with SkinnySessionFilter
     with SkinnySessionOAuth2LoginFeature[GitHubUser] {

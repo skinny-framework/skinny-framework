@@ -7,7 +7,7 @@ class UsageSpec extends FunSpec with Matchers {
 
     def simpleValidator1(userId: Int, name: String): Validator = Validator(
       param("user_id" -> userId) is notNull & numeric & intValue,
-      param("name" -> name) is required & minLength(3)
+      param("name"    -> name) is required & minLength(3)
     )
 
     it("should provide #validate for if/else statements") {
@@ -38,7 +38,7 @@ class UsageSpec extends FunSpec with Matchers {
 
     def simpleValidator2(userId: Int, name: String): Validator = Validator(
       param("user_id" -> userId) is notNull & numeric & intValue,
-      param("name" -> name) is required & maxLength(3)
+      param("name"    -> name) is required & maxLength(3)
     )
 
     it("should provide #fold") {
@@ -67,7 +67,7 @@ class UsageSpec extends FunSpec with Matchers {
     )
 
     it("should provide #validate for if/else statements") {
-      val params = Map("user_id" -> 123, "name" -> "seratch")
+      val params    = Map("user_id" -> 123, "name" -> "seratch")
       val validator = mapValidator1(params)
       if (validator.validate()) {
         // -----------------------
@@ -88,7 +88,7 @@ class UsageSpec extends FunSpec with Matchers {
     )
 
     it("should provide #fold") {
-      val params = Map("user_id" -> 123, "name" -> "x")
+      val params    = Map("user_id" -> 123, "name" -> "x")
       val validator = mapValidator2(params)
       validator.fold[Any](
         (params, errors) => {
@@ -112,7 +112,9 @@ class UsageSpec extends FunSpec with Matchers {
       val messages: Messages = Messages.loadFromConfig()
       messages.get("required", Seq("name")) should equal(Some("name is required"))
       messages.get("required", "name") should equal(Some("name is required")) // String is also a Seq
-      messages.get("minLength", Seq("password", 6)) should equal(Some("password length must be greater than or equal to 6"))
+      messages.get("minLength", Seq("password", 6)) should equal(
+        Some("password length must be greater than or equal to 6")
+      )
     }
   }
 

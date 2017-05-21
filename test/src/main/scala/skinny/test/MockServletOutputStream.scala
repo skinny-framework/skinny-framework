@@ -1,7 +1,7 @@
 package skinny.test
 
 import java.io.ByteArrayOutputStream
-import javax.servlet.{ WriteListener, ServletOutputStream }
+import javax.servlet.{ ServletOutputStream, WriteListener }
 
 class MockServletOutputStream extends ServletOutputStream {
 

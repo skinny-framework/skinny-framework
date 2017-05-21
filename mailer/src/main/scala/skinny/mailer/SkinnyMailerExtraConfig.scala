@@ -1,8 +1,8 @@
 package skinny.mailer
 
 /**
- * Key value config.
- */
+  * Key value config.
+  */
 object SkinnyMailerExtraConfig {
 
   def apply(keyValues: (String, Any)*): SkinnyMailerExtraConfig = new SkinnyMailerExtraConfig(keyValues.toMap)
@@ -10,6 +10,6 @@ object SkinnyMailerExtraConfig {
 }
 
 /**
- * Key value config.
- */
+  * Key value config.
+  */
 case class SkinnyMailerExtraConfig(properties: Map[String, Any])

@@ -4,8 +4,8 @@ import skinny.micro._
 import skinny.micro.base.QueryParamsAccessor
 
 /**
- * Provides queryParams/queryMultiParams.
- */
+  * Provides queryParams/queryMultiParams.
+  */
 trait QueryParamsFeature extends QueryParamsAccessor { self: SkinnyMicroBase =>
 
 }

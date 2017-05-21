@@ -17,15 +17,20 @@ class OAuthClientSpec extends FunSpec with Matchers {
       val url = new URL(request.locationURI)
       (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://github.com/login/oauth/authorize")
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "state"        -> "session_id_hash_value",
+          "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "client_id"    -> "xxx"
+        )
+      )
     }
 
     /*
@@ -41,7 +46,7 @@ class OAuthClientSpec extends FunSpec with Matchers {
       }
       println(response.accessToken)
     }
-    */
+   */
   }
 
   describe("Facebook OAuth") {
@@ -54,15 +59,20 @@ class OAuthClientSpec extends FunSpec with Matchers {
       val url = new URL(request.locationURI)
       (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://graph.facebook.com/oauth/authorize")
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "state"        -> "session_id_hash_value",
+          "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "client_id"    -> "xxx"
+        )
+      )
     }
   }
 
@@ -79,17 +89,22 @@ class OAuthClientSpec extends FunSpec with Matchers {
       val url = new URL(request.locationURI)
       (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://accounts.google.com/o/oauth2/auth")
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "state" -> "session_id_hash_value",
-        "scope" -> "openid+email",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Foauth2callback",
-        "client_id" -> "xxx.apps.googleusercontent.com",
-        "response_type" -> "code"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "state"         -> "session_id_hash_value",
+          "scope"         -> "openid+email",
+          "redirect_uri"  -> "http%3A%2F%2Flocalhost%3A8080%2Foauth2callback",
+          "client_id"     -> "xxx.apps.googleusercontent.com",
+          "response_type" -> "code"
+        )
+      )
     }
   }
 
@@ -105,16 +120,21 @@ class OAuthClientSpec extends FunSpec with Matchers {
       val url = new URL(request.locationURI)
       (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://api.instagram.com/oauth/authorize")
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "response_type" -> "code",
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "response_type" -> "code",
+          "state"         -> "session_id_hash_value",
+          "redirect_uri"  -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "client_id"     -> "xxx"
+        )
+      )
     }
   }
 
@@ -128,18 +148,25 @@ class OAuthClientSpec extends FunSpec with Matchers {
         .redirectURI("http://localhost:8080/callback")
 
       val url = new URL(request.locationURI)
-      (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://launchpad.37signals.com/authorization/new")
+      (url.getProtocol + "://" + url.getHost + url.getPath) should equal(
+        "https://launchpad.37signals.com/authorization/new"
+      )
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "type" -> "web_server",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "state"        -> "session_id_hash_value",
+          "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "type"         -> "web_server",
+          "client_id"    -> "xxx"
+        )
+      )
     }
   }
 
@@ -155,16 +182,21 @@ class OAuthClientSpec extends FunSpec with Matchers {
       val url = new URL(request.locationURI)
       (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://www.dropbox.com/1/oauth2/authorize")
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "response_type" -> "code",
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "response_type" -> "code",
+          "state"         -> "session_id_hash_value",
+          "redirect_uri"  -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "client_id"     -> "xxx"
+        )
+      )
     }
   }
 
@@ -179,19 +211,26 @@ class OAuthClientSpec extends FunSpec with Matchers {
         .redirectURI("http://localhost:8080/callback")
 
       val url = new URL(request.locationURI)
-      (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://auth.login.yahoo.co.jp/yconnect/v1/authorization")
+      (url.getProtocol + "://" + url.getHost + url.getPath) should equal(
+        "https://auth.login.yahoo.co.jp/yconnect/v1/authorization"
+      )
 
-      val params: Map[String, String] = url.getQuery.split("&").map { e: String =>
-        val kv: Array[String] = e.split("=")
-        (kv(0), kv(1))
-      }.toMap
-      params should equal(Map(
-        "scope" -> "openid",
-        "response_type" -> "code",
-        "state" -> "session_id_hash_value",
-        "redirect_uri" -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
-        "client_id" -> "xxx"
-      ))
+      val params: Map[String, String] = url.getQuery
+        .split("&")
+        .map { e: String =>
+          val kv: Array[String] = e.split("=")
+          (kv(0), kv(1))
+        }
+        .toMap
+      params should equal(
+        Map(
+          "scope"         -> "openid",
+          "response_type" -> "code",
+          "state"         -> "session_id_hash_value",
+          "redirect_uri"  -> "http%3A%2F%2Flocalhost%3A8080%2Fcallback",
+          "client_id"     -> "xxx"
+        )
+      )
     }
   }
 

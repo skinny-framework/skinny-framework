@@ -8,10 +8,9 @@ import scalikejdbc.metadata.Table
 import skinny.nlp.Inflector
 
 /**
- * Reverse Model All generator.
- */
-object ReverseScaffoldAllGenerator extends ReverseScaffoldAllGenerator {
-}
+  * Reverse Model All generator.
+  */
+object ReverseScaffoldAllGenerator extends ReverseScaffoldAllGenerator {}
 
 trait ReverseScaffoldAllGenerator extends CodeGenerator {
 
@@ -41,28 +40,31 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
 
     initializeDB(skinnyEnv)
 
-    val tables: Seq[Table] = NamedDB(connectionPoolName).getTableNames("%")
+    val tables: Seq[Table] = NamedDB(connectionPoolName)
+      .getTableNames("%")
       .filter(_.toLowerCase != "schema_version")
-      .flatMap { tableName => NamedDB(connectionPoolName).getTable(tableName) }
+      .flatMap { tableName =>
+        NamedDB(connectionPoolName).getTable(tableName)
+      }
 
     val self = this
     val generator = new ReverseScaffoldGenerator {
-      override def cachedTables = tables
-      override def useAutoConstruct = true
-      override def createAssociationsForForeignKeys = true
-      override def connectionPoolName = self.connectionPoolName
-      override def descendingOrderForIndexPage = self.descendingOrderForIndexPage
+      override def cachedTables                      = tables
+      override def useAutoConstruct                  = true
+      override def createAssociationsForForeignKeys  = true
+      override def connectionPoolName                = self.connectionPoolName
+      override def descendingOrderForIndexPage       = self.descendingOrderForIndexPage
       override def operationLinksInIndexPageRequired = self.operationLinksInIndexPageRequired
 
-      override def sourceDir = self.sourceDir
-      override def testSourceDir = self.testSourceDir
-      override def resourceDir = self.resourceDir
-      override def testResourceDir = self.testResourceDir
-      override def webInfDir = self.webInfDir
-      override def controllerPackage = self.controllerPackage
+      override def sourceDir            = self.sourceDir
+      override def testSourceDir        = self.testSourceDir
+      override def resourceDir          = self.resourceDir
+      override def testResourceDir      = self.testResourceDir
+      override def webInfDir            = self.webInfDir
+      override def controllerPackage    = self.controllerPackage
       override def controllerPackageDir = self.controllerPackageDir
-      override def modelPackage = self.modelPackage
-      override def modelPackageDir = self.modelPackageDir
+      override def modelPackage         = self.modelPackage
+      override def modelPackageDir      = self.modelPackageDir
     }
 
     val whiteList = targetTableNames.map(_.toLowerCase(Locale.ENGLISH))
@@ -80,7 +82,8 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
       .map { table =>
         val tableName = table.name.toLowerCase
         val className = toNormalizedEntityName(tableName, tables)
-        val args: List[String] = List(Some(tableName), namespace, Some(Inflector.pluralize(className)), Some(className)).flatten
+        val args: List[String] =
+          List(Some(tableName), namespace, Some(Inflector.pluralize(className)), Some(className)).flatten
         generator.run(templateType, args, SkinnyEnv.get())
       }
   }
@@ -89,7 +92,8 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
     val _tableName = tableName.toLowerCase(Locale.ENGLISH)
     if (isJoinTable(_tableName, tables)) {
       // normalize join table entity name
-      val joinedTableNames = tables.map(_.name.toLowerCase(Locale.ENGLISH))
+      val joinedTableNames = tables
+        .map(_.name.toLowerCase(Locale.ENGLISH))
         .filter(t => _tableName != t && (_tableName.startsWith(t) || _tableName.endsWith(t)))
 
       val normalizedName = joinedTableNames.foldLeft(_tableName.toLowerCase(Locale.ENGLISH)) {
@@ -103,9 +107,11 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
 
   private def isJoinTable(tableName: String, tables: Seq[Table]): Boolean = {
     val _tableName = tableName.toLowerCase(Locale.ENGLISH)
-    tables.exists(t =>
-      _tableName.startsWith(t.name.toLowerCase(Locale.ENGLISH)) ||
-        _tableName.endsWith(t.name.toLowerCase(Locale.ENGLISH)))
+    tables.exists(
+      t =>
+        _tableName.startsWith(t.name.toLowerCase(Locale.ENGLISH)) ||
+        _tableName.endsWith(t.name.toLowerCase(Locale.ENGLISH))
+    )
   }
 
 }

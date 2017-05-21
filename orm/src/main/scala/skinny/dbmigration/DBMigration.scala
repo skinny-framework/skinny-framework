@@ -2,7 +2,7 @@ package skinny.dbmigration
 
 import org.flywaydb.core.Flyway
 import skinny.util.TypesafeConfigReader
-import skinny.{ SkinnyEnv, DBSettings }
+import skinny.{ DBSettings, SkinnyEnv }
 import scalikejdbc.ConnectionPool
 import scala.collection.JavaConverters._
 import skinny.exception.DBSettingsException
@@ -10,8 +10,8 @@ import skinny.exception.DBSettingsException
 object DBMigration extends DBMigration
 
 /**
- * DB migration tool.
- */
+  * DB migration tool.
+  */
 trait DBMigration {
 
   def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name): Int = {
@@ -21,16 +21,19 @@ trait DBMigration {
       DBSettings.initialize()
 
       try {
-        val pool = ConnectionPool.get(Symbol(poolName))
+        val pool   = ConnectionPool.get(Symbol(poolName))
         val flyway = new Flyway
         flyway.setDataSource(pool.dataSource)
 
         val migrationConfigPath = s"db.${poolName}.migration"
-        val rootConfig = TypesafeConfigReader.config(env)
+        val rootConfig          = TypesafeConfigReader.config(env)
         if (rootConfig.hasPath(migrationConfigPath)) {
           rootConfig.getConfig(migrationConfigPath).entrySet.asScala.foreach(println)
-          val locations = rootConfig.getConfig(migrationConfigPath)
-            .getStringList("locations").asScala.map(l => "db.migration." + l.replaceAll("/", "."))
+          val locations = rootConfig
+            .getConfig(migrationConfigPath)
+            .getStringList("locations")
+            .asScala
+            .map(l => "db.migration." + l.replaceAll("/", "."))
           if (locations.nonEmpty) {
             flyway.setLocations(locations: _*)
           }
@@ -41,7 +44,9 @@ trait DBMigration {
           throw new DBSettingsException(s"ConnectionPool named $poolName is not found.")
       }
     } finally {
-      skinnyEnv.foreach { env => System.setProperty(SkinnyEnv.PropertyKey, env) }
+      skinnyEnv.foreach { env =>
+        System.setProperty(SkinnyEnv.PropertyKey, env)
+      }
       DBSettings.initialize()
     }
   }
@@ -52,7 +57,7 @@ trait DBMigration {
       System.setProperty(SkinnyEnv.PropertyKey, env)
       DBSettings.initialize()
       try {
-        val pool = ConnectionPool.get(Symbol(poolName))
+        val pool   = ConnectionPool.get(Symbol(poolName))
         val flyway = new Flyway
         flyway.setDataSource(pool.dataSource)
         flyway.repair()
@@ -61,7 +66,9 @@ trait DBMigration {
           throw new DBSettingsException(s"ConnectionPool named $poolName is not found.")
       }
     } finally {
-      skinnyEnv.foreach { env => System.setProperty(SkinnyEnv.PropertyKey, env) }
+      skinnyEnv.foreach { env =>
+        System.setProperty(SkinnyEnv.PropertyKey, env)
+      }
       DBSettings.initialize()
     }
   }

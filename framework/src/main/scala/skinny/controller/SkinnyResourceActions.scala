@@ -1,14 +1,14 @@
 package skinny.controller
 
 import skinny._
-import skinny.validator.{ NewValidation, MapValidator }
+import skinny.validator.{ MapValidator, NewValidation }
 import skinny.exception.StrongParametersException
 import java.util.Locale
-import skinny.controller.feature.{ SkinnyControllerCommonBase, RequestScopeFeature }
+import skinny.controller.feature.{ RequestScopeFeature, SkinnyControllerCommonBase }
 
 /**
- * Actions for Skinny resource.
- */
+  * Actions for Skinny resource.
+  */
 trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
 
   self: SkinnyControllerBase with SkinnyWebPageControllerFeatures =>
@@ -16,43 +16,45 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
   // set resourceName/resourcesName to the request scope
   beforeAction() {
     set(RequestScopeFeature.ATTR_RESOURCES_NAME -> itemsName)
-    set(RequestScopeFeature.ATTR_RESOURCE_NAME -> itemName)
+    set(RequestScopeFeature.ATTR_RESOURCE_NAME  -> itemName)
   }
 
   /**
-   * Resource name in the plural. This name will be used for path and directory name to locale template files.
-   */
+    * Resource name in the plural. This name will be used for path and directory name to locale template files.
+    */
   protected def resourcesName: String
 
   /**
-   * Resource name in the singular. This name will be used for path and validator's prefix.
-   */
+    * Resource name in the singular. This name will be used for path and validator's prefix.
+    */
   protected def resourceName: String
 
   /**
-   * Items variable name in view templates.
-   */
+    * Items variable name in view templates.
+    */
   protected def itemsName: String = "items"
 
   /**
-   * Item variable name in view templates.
-   */
+    * Item variable name in view templates.
+    */
   protected def itemName: String = "item"
 
   /**
-   * Directory path which contains view templates under src/main/webapp/WEB-INF/views.
-   */
+    * Directory path which contains view templates under src/main/webapp/WEB-INF/views.
+    */
   protected def viewsDirectoryPath: String = s"/${resourcesName}"
 
   /**
-   * Creates validator with prefix(resourceName).
-   *
-   * @param params params
-   * @param validations validations
-   * @param locale current locale
-   * @return validator
-   */
-  override def validation(params: Params, validations: NewValidation*)(implicit locale: Locale = currentLocale.orNull[Locale]): MapValidator = {
+    * Creates validator with prefix(resourceName).
+    *
+    * @param params params
+    * @param validations validations
+    * @param locale current locale
+    * @return validator
+    */
+  override def validation(params: Params, validations: NewValidation*)(
+      implicit locale: Locale = currentLocale.orNull[Locale]
+  ): MapValidator = {
     validationWithPrefix(params, messageResourceName, validations: _*)
   }
 
@@ -63,23 +65,23 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
   protected def totalPagesAttributeName: String = "totalPages"
 
   /**
-   * Shows a list of resource.
-   *
-   * GET /{resources}/
-   * GET /{resources}/?page=1&size=10
-   * GET /{resources}
-   * GET /{resources}.xml
-   * GET /{resources}.json
-   *
-   * @param format format
-   * @return list of resource
-   */
+    * Shows a list of resource.
+    *
+    * GET /{resources}/
+    * GET /{resources}/?page=1&size=10
+    * GET /{resources}
+    * GET /{resources}.xml
+    * GET /{resources}.json
+    *
+    * @param format format
+    * @return list of resource
+    */
   override def showResources()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     if (enablePagination) {
-      val pageSize: Int = params.getAs[Int](pageSizeParamName).getOrElse(this.pageSize)
-      val pageNo: Int = params.getAs[Int](pageNoParamName).getOrElse(1)
+      val pageSize: Int    = params.getAs[Int](pageSizeParamName).getOrElse(this.pageSize)
+      val pageNo: Int      = params.getAs[Int](pageNoParamName).getOrElse(1)
       val totalCount: Long = countResources()
-      val totalPages: Int = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
+      val totalPages: Int  = (totalCount / pageSize).toInt + (if (totalCount % pageSize == 0) 0 else 1)
 
       set(itemsName, findResources(pageSize, pageNo))
       set(totalPagesAttributeName -> totalPages)
@@ -90,48 +92,50 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
   }
 
   /**
-   * Show single resource.
-   *
-   * GET /{resources}/{id}
-   * GET /{resources}/{id}.xml
-   * GET /{resources}/{id}.json
-   *
-   * @param id id
-   * @param format format
-   * @return single resource
-   */
+    * Show single resource.
+    *
+    * GET /{resources}/{id}
+    * GET /{resources}/{id}.xml
+    * GET /{resources}/{id}.json
+    *
+    * @param id id
+    * @param format format
+    * @return single resource
+    */
   override def showResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     set(itemName, findResource(id).getOrElse(haltWithBody(404)))
     render(s"${viewsDirectoryPath}/show")
   }
 
   /**
-   * Shows input form for creation.
-   *
-   * GET /{resources}/new
-   *
-   * @param format format
-   * @return input form
-   */
+    * Shows input form for creation.
+    *
+    * GET /{resources}/new
+    *
+    * @param format format
+    * @return input form
+    */
   def newResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     render(s"${viewsDirectoryPath}/new")
   }
 
   /**
-   * Set notice flash message for successful completion of creation.
-   */
+    * Set notice flash message for successful completion of creation.
+    */
   protected def setCreateCompletionFlash(): Unit = {
-    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.created").getOrElse(s"The ${resourceName} was created."))
+    flash += ("notice" -> createI18n()
+      .get(s"${resourceName}.flash.created")
+      .getOrElse(s"The ${resourceName} was created."))
   }
 
   /**
-   * Creates new resource.
-   *
-   * POST /{resources}
-   *
-   * @param format format
-   * @return created response if success
-   */
+    * Creates new resource.
+    *
+    * POST /{resources}
+    *
+    * @param format format
+    * @return created response if success
+    */
   override def createResource()(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(createForm)
     if (createForm.validate()) {
@@ -150,26 +154,27 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
         case _ =>
           status = 201
           val ext = if (format == Format.HTML) "" else "." + format.name
-          response.setHeader("Location", s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}${ext}")
+          response.setHeader("Location",
+                             s"${contextPath}/${normalizedResourcesBasePath}/${model.idToRawValue(id)}${ext}")
       }
     } else {
       status = 400
       format match {
         case Format.HTML => render(s"${viewsDirectoryPath}/new")
-        case _ => renderWithFormat(keyAndErrorMessages)
+        case _           => renderWithFormat(keyAndErrorMessages)
       }
     }
   }
 
   /**
-   * Shows input form for modification.
-   *
-   * GET /{resources}/{id}/edit
-   *
-   * @param id id
-   * @param format format
-   * @return input form
-   */
+    * Shows input form for modification.
+    *
+    * GET /{resources}/{id}/edit
+    *
+    * @param id id
+    * @param format format
+    * @return input form
+    */
   def editResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     findResource(id).map { m =>
       status = 200
@@ -183,21 +188,23 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
   }
 
   /**
-   * Set notice flash message for successful completion of modification.
-   */
+    * Set notice flash message for successful completion of modification.
+    */
   protected def setUpdateCompletionFlash() = {
-    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.updated").getOrElse(s"The ${resourceName} was updated."))
+    flash += ("notice" -> createI18n()
+      .get(s"${resourceName}.flash.updated")
+      .getOrElse(s"The ${resourceName} was updated."))
   }
 
   /**
-   * Updates the specified single resource.
-   *
-   * PUT /{resources}/{id}
-   *
-   * @param id id
-   * @param format format
-   * @return result
-   */
+    * Updates the specified single resource.
+    *
+    * PUT /{resources}/{id}
+    *
+    * @param id id
+    * @param format format
+    * @return result
+    */
   override def updateResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     debugLoggingParameters(updateForm, Some(id))
 
@@ -222,28 +229,30 @@ trait SkinnyResourceActions[Id] extends SkinnyApiResourceActions[Id] {
         status = 400
         format match {
           case Format.HTML => render(s"${viewsDirectoryPath}/edit")
-          case _ => renderWithFormat(keyAndErrorMessages)
+          case _           => renderWithFormat(keyAndErrorMessages)
         }
       }
     } getOrElse haltWithBody(404)
   }
 
   /**
-   * Set notice flash message for successful completion of deletion.
-   */
+    * Set notice flash message for successful completion of deletion.
+    */
   protected def setDestroyCompletionFlash() = {
-    flash += ("notice" -> createI18n().get(s"${resourceName}.flash.deleted").getOrElse(s"The ${resourceName} was deleted."))
+    flash += ("notice" -> createI18n()
+      .get(s"${resourceName}.flash.deleted")
+      .getOrElse(s"The ${resourceName} was deleted."))
   }
 
   /**
-   * Destroys the specified resource.
-   *
-   * DELETE /{resources}/{id}
-   *
-   * @param id id
-   * @param format format
-   * @return result
-   */
+    * Destroys the specified resource.
+    *
+    * DELETE /{resources}/{id}
+    *
+    * @param id id
+    * @param format format
+    * @return result
+    */
   override def destroyResource(id: Id)(implicit format: Format = Format.HTML): Any = withFormat(format) {
     findResource(id).map { m =>
       doDestroy(id)

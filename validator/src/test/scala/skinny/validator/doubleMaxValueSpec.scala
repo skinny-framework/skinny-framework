@@ -7,7 +7,7 @@ class doubleMaxValueSpec extends FlatSpec with Matchers {
   behavior of "doubleMaxValue"
 
   it should "be available" in {
-    val max = 3D
+    val max      = 3D
     val validate = new doubleMaxValue(max)
     validate.name should equal("doubleMaxValue")
 

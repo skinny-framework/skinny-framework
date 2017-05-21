@@ -4,9 +4,10 @@ import scalikejdbc.config._
 import skinny.util.{ TypesafeConfigReader => sConfigReader }
 
 /**
- * DB setup executor with default settings
- */
-case class SkinnyDBsWithEnv(envValue: String) extends DBs
+  * DB setup executor with default settings
+  */
+case class SkinnyDBsWithEnv(envValue: String)
+    extends DBs
     with TypesafeConfigReader
     with TypesafeConfig
     with NoEnvPrefix {

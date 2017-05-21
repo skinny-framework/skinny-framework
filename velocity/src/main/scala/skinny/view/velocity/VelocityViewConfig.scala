@@ -4,8 +4,8 @@ import javax.servlet.ServletContext
 import org.apache.velocity.tools.view.VelocityView
 
 /**
- * VelocityView configuration factory.
- */
+  * VelocityView configuration factory.
+  */
 object VelocityViewConfig {
 
   def viewWithServletContext(ctx: ServletContext, sbtProjectPath: Option[String] = None): VelocityView = {

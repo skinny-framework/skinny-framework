@@ -6,5 +6,4 @@ import skinny.micro.AsyncFeatures
 trait AsyncSkinnyControllerBase
     extends SkinnyControllerCommonBase
     with AsyncFeatures
-    with AsyncBeforeAfterActionFeature {
-}
+    with AsyncBeforeAfterActionFeature {}

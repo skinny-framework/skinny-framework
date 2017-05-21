@@ -4,13 +4,13 @@ import skinny.oauth2.client._
 import skinny.oauth2.client.backlog._
 
 /**
- * Typetalk OAuth2 Login Controller.
- *
- * {{{
- * export SKINNY_OAUTH2_CLIENT_ID_BACKLOG_JP=xxx
- * export SKINNY_OAUTH2_CLIENT_SECRET_BACKLOG_JP=yyy
- * }}}
- */
+  * Typetalk OAuth2 Login Controller.
+  *
+  * {{{
+  * export SKINNY_OAUTH2_CLIENT_ID_BACKLOG_JP=xxx
+  * export SKINNY_OAUTH2_CLIENT_SECRET_BACKLOG_JP=yyy
+  * }}}
+  */
 trait BacklogJPLoginFeature extends OAuth2LoginFeature[BacklogUser] {
 
   override protected def provider = {
@@ -30,4 +30,3 @@ trait BacklogJPLoginFeature extends OAuth2LoginFeature[BacklogUser] {
   }
 
 }
-

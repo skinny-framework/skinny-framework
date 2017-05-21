@@ -25,24 +25,21 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from blog")
 }
 
-class Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB('test008).toDB()
 
   case class Blog(name: String)
   object Blog extends SkinnyNoIdCRUDMapper[Blog] {
-    override val connectionPoolName = 'test008
-    override def defaultAlias = createAlias("b")
+    override val connectionPoolName                                  = 'test008
+    override def defaultAlias                                        = createAlias("b")
     override def extract(rs: WrappedResultSet, rn: ResultName[Blog]) = autoConstruct(rs, rn)
   }
 
   case class Article(blogName: String, title: String, body: String, createdAt: DateTime, blog: Option[Blog] = None)
   object Article extends SkinnyNoIdCRUDMapper[Article] {
-    override val connectionPoolName = 'test008
-    override def defaultAlias = createAlias("a")
+    override val connectionPoolName                                     = 'test008
+    override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "blog")
 
     lazy val blogRef = belongsToWithAliasAndFkAndJoinCondition[Blog](
@@ -59,13 +56,19 @@ class Spec extends fixture.FunSpec with Matchers
       Blog.createWithAttributes('name -> "Apply in NY")
       Blog.createWithAttributes('name -> "Apply in Paris")
       (1 to 5).foreach { day =>
-        Article.createWithAttributes('title -> s"Learning Scala: Day $day", 'body -> "日本へようこそ。東京は楽しいよ。", 'blogName -> "Apply in Tokyo")
+        Article.createWithAttributes('title    -> s"Learning Scala: Day $day",
+                                     'body     -> "日本へようこそ。東京は楽しいよ。",
+                                     'blogName -> "Apply in Tokyo")
       }
       (1 to 6).foreach { day =>
-        Article.createWithAttributes('title -> s"Learning Scala: Day $day", 'body -> "Welcome to New York!", 'blogName -> "Apply in NY")
+        Article.createWithAttributes('title    -> s"Learning Scala: Day $day",
+                                     'body     -> "Welcome to New York!",
+                                     'blogName -> "Apply in NY")
       }
       (1 to 7).foreach { day =>
-        Article.createWithAttributes('title -> s"Learning Scala: Day $day", 'body -> "Bonjour et bienvenue à Paris!", 'blogName -> "Apply in Paris")
+        Article.createWithAttributes('title    -> s"Learning Scala: Day $day",
+                                     'body     -> "Bonjour et bienvenue à Paris!",
+                                     'blogName -> "Apply in Paris")
       }
       Article.joins(Article.blogRef).where('blogName -> "Apply in Tokyo").apply().size should equal(5)
       Article.joins(Article.blogRef).where('blogName -> "Apply in NY").apply().size should equal(6)

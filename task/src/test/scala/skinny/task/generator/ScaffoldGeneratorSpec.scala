@@ -8,22 +8,28 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("Controller (SkinnyResource)") {
     it("should be created as expected") {
-      val code = generator.controllerCode(Seq("admin"), "members", "member", "ssp", Seq(
-        ScaffoldGeneratorArg("name", "String", None),
-        ScaffoldGeneratorArg("favoriteIntNumber", "Int", None),
-        ScaffoldGeneratorArg("favoriteLongNumber", "Long", None),
-        ScaffoldGeneratorArg("favoriteShortNumber", "Short", None),
-        ScaffoldGeneratorArg("favoriteDoubleNumber", "Double", None),
-        ScaffoldGeneratorArg("favoriteFloatNumber", "Float", None),
-        ScaffoldGeneratorArg("magicNumber", "Option[Int]", None),
-        ScaffoldGeneratorArg("isActivated", "Boolean", None),
-        ScaffoldGeneratorArg("bytes", "Option[ByteArray]", None),
-        ScaffoldGeneratorArg("birthday", "Option[LocalDate]", None),
-        ScaffoldGeneratorArg("boss", "Option[Member]", None),
-        ScaffoldGeneratorArg("friends", "Seq[Member]", None),
-        ScaffoldGeneratorArg("timeToWakeUp", "Option[LocalTime]", None),
-        ScaffoldGeneratorArg("createdAt", "DateTime", None)
-      ))
+      val code = generator.controllerCode(
+        Seq("admin"),
+        "members",
+        "member",
+        "ssp",
+        Seq(
+          ScaffoldGeneratorArg("name", "String", None),
+          ScaffoldGeneratorArg("favoriteIntNumber", "Int", None),
+          ScaffoldGeneratorArg("favoriteLongNumber", "Long", None),
+          ScaffoldGeneratorArg("favoriteShortNumber", "Short", None),
+          ScaffoldGeneratorArg("favoriteDoubleNumber", "Double", None),
+          ScaffoldGeneratorArg("favoriteFloatNumber", "Float", None),
+          ScaffoldGeneratorArg("magicNumber", "Option[Int]", None),
+          ScaffoldGeneratorArg("isActivated", "Boolean", None),
+          ScaffoldGeneratorArg("bytes", "Option[ByteArray]", None),
+          ScaffoldGeneratorArg("birthday", "Option[LocalDate]", None),
+          ScaffoldGeneratorArg("boss", "Option[Member]", None),
+          ScaffoldGeneratorArg("friends", "Seq[Member]", None),
+          ScaffoldGeneratorArg("timeToWakeUp", "Option[LocalTime]", None),
+          ScaffoldGeneratorArg("createdAt", "DateTime", None)
+        )
+      )
 
       val expected =
         """package controller.admin
@@ -110,16 +116,21 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("Spec for Controller (SkinnyResource)") {
     it("should be created as expected with namespaces") {
-      val code = generator.controllerSpecCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteIntNumber" -> "Int",
-        "favoriteLongNumber" -> "Long",
-        "favoriteShortNumber" -> "Short",
-        "favoriteDoubleNumber" -> "Double",
-        "favoriteFloatNumber" -> "Float",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.controllerSpecCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"                 -> "String",
+          "favoriteIntNumber"    -> "Int",
+          "favoriteLongNumber"   -> "Long",
+          "favoriteShortNumber"  -> "Short",
+          "favoriteDoubleNumber" -> "Double",
+          "favoriteFloatNumber"  -> "Float",
+          "isActivated"          -> "Boolean",
+          "birthday"             -> "Option[LocalDate]"
+        )
+      )
       // TODO
       println(code)
     }
@@ -127,9 +138,12 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("Integration Test Spec for Controller (SkinnyResource)") {
     it("should be created as expected without namespaces") {
-      val code = generator.integrationSpecCode(Nil, "members", "member", Seq(
-        "name" -> "String"
-      ))
+      val code = generator.integrationSpecCode(Nil,
+                                               "members",
+                                               "member",
+                                               Seq(
+                                                 "name" -> "String"
+                                               ))
 
       val expected =
         """package integrationtest
@@ -254,16 +268,21 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
     }
 
     it("should be created as expected") {
-      val code = generator.integrationSpecCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "favoriteIntNumber" -> "Int",
-        "favoriteLongNumber" -> "Long",
-        "favoriteShortNumber" -> "Short",
-        "favoriteDoubleNumber" -> "Double",
-        "favoriteFloatNumber" -> "Float",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.integrationSpecCode(
+        Seq("admin"),
+        "members",
+        "member",
+        Seq(
+          "name"                 -> "String",
+          "favoriteIntNumber"    -> "Int",
+          "favoriteLongNumber"   -> "Long",
+          "favoriteShortNumber"  -> "Short",
+          "favoriteDoubleNumber" -> "Double",
+          "favoriteFloatNumber"  -> "Float",
+          "isActivated"          -> "Boolean",
+          "birthday"             -> "Option[LocalDate]"
+        )
+      )
 
       val expected =
         """package integrationtest.admin
@@ -416,12 +435,15 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
     }
 
     it("should be created for groupMembers") {
-      val code = generator.integrationSpecCode(Seq("admin"), "groupMembers", "groupMember", Seq(
-        "name" -> "String",
-        "favoriteIntNumber" -> "Int",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.integrationSpecCode(Seq("admin"),
+                                               "groupMembers",
+                                               "groupMember",
+                                               Seq(
+                                                 "name"              -> "String",
+                                                 "favoriteIntNumber" -> "Int",
+                                                 "isActivated"       -> "Boolean",
+                                                 "birthday"          -> "Option[LocalDate]"
+                                               ))
 
       val expected =
         """package integrationtest.admin
@@ -558,11 +580,14 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
     }
 
     it("should be created with ByteArray") {
-      val code = generator.integrationSpecCode(Seq("admin"), "members", "member", Seq(
-        "name" -> "String",
-        "bytes" -> "ByteArray",
-        "bytesOpt" -> "Option[ByteArray]"
-      ))
+      val code = generator.integrationSpecCode(Seq("admin"),
+                                               "members",
+                                               "member",
+                                               Seq(
+                                                 "name"     -> "String",
+                                                 "bytes"    -> "ByteArray",
+                                                 "bytesOpt" -> "Option[ByteArray]"
+                                               ))
 
       val expected =
         """package integrationtest.admin
@@ -697,11 +722,14 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("messages.conf") {
     it("should be created as expected") {
-      val code = generator.messagesConfCode("groupMember", "groupMembers", "groupMember", Seq(
-        "name" -> "String",
-        "isActivated" -> "Boolean",
-        "birthday" -> "Option[LocalDate]"
-      ))
+      val code = generator.messagesConfCode("groupMember",
+                                            "groupMembers",
+                                            "groupMember",
+                                            Seq(
+                                              "name"        -> "String",
+                                              "isActivated" -> "Boolean",
+                                              "birthday"    -> "Option[LocalDate]"
+                                            ))
 
       val expected =
         """
@@ -728,12 +756,16 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
 
   describe("db/migration/xxx.sql") {
     it("should be created as expected") {
-      val code = generator.migrationSQL("members", "member", Seq(
-        ScaffoldGeneratorArg("name", "String"),
-        ScaffoldGeneratorArg("nickname", "Option[String]", Some("varchar(64)")),
-        ScaffoldGeneratorArg("isActivated", "Boolean"),
-        ScaffoldGeneratorArg("birthday", "Option[LocalDate]")
-      ))
+      val code = generator.migrationSQL(
+        "members",
+        "member",
+        Seq(
+          ScaffoldGeneratorArg("name", "String"),
+          ScaffoldGeneratorArg("nickname", "Option[String]", Some("varchar(64)")),
+          ScaffoldGeneratorArg("isActivated", "Boolean"),
+          ScaffoldGeneratorArg("birthday", "Option[LocalDate]")
+        )
+      )
 
       val expected =
         """-- For H2 Database
@@ -763,4 +795,3 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
   }
 
 }
-

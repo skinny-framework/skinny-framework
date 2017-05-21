@@ -24,11 +24,11 @@ class ManualIdControllerSpec extends ScalatraFlatSpec {
   object Company extends SkinnyCRUDMapper[Company] {
     override def connectionPoolName = 'ManualIdController
 
-    override def defaultAlias = createAlias("c")
+    override def defaultAlias               = createAlias("c")
     override def useAutoIncrementPrimaryKey = false
 
     override def rawValueToId(value: Any) = value.toString.toLong
-    override def idToRawValue(id: Long) = id
+    override def idToRawValue(id: Long)   = id
 
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = new Company(
       id = rs.get(n.id),
@@ -39,13 +39,13 @@ class ManualIdControllerSpec extends ScalatraFlatSpec {
 
   class CompaniesController extends SkinnyResource {
     override protected def resourcesName = "companies"
-    override protected def resourceName = "company"
-    override protected def model = Company
+    override protected def resourceName  = "company"
+    override protected def model         = Company
 
     override protected def createFormStrongParameters = Seq(
-      "id" -> ParamType.Long,
+      "id"   -> ParamType.Long,
       "name" -> ParamType.String,
-      "url" -> ParamType.String
+      "url"  -> ParamType.String
     )
     override protected def createForm = validation(
       createParams,
@@ -61,8 +61,7 @@ class ManualIdControllerSpec extends ScalatraFlatSpec {
       paramKey("url") is required & maxLength(128)
     )
   }
-  val controller = new CompaniesController with Routes {
-  }
+  val controller = new CompaniesController with Routes {}
 
   addFilter(controller, "/*")
 

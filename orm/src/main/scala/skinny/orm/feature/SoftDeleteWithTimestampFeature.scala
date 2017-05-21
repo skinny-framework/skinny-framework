@@ -5,22 +5,21 @@ import org.joda.time.DateTime
 import skinny.orm.Alias
 
 /**
- * Soft delete with timestamp value.
- *
- * @tparam Entity entity
- */
-trait SoftDeleteWithTimestampFeature[Entity]
-  extends SoftDeleteWithTimestampFeatureWithId[Long, Entity]
+  * Soft delete with timestamp value.
+  *
+  * @tparam Entity entity
+  */
+trait SoftDeleteWithTimestampFeature[Entity] extends SoftDeleteWithTimestampFeatureWithId[Long, Entity]
 
 trait SoftDeleteWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWithId[Id, Entity] {
 
   /**
-   * deleted_at timestamp field name.
-   */
+    * deleted_at timestamp field name.
+    */
   def deletedAtFieldName: String = "deletedAt"
 
   override def defaultScopeForUpdateOperations: Option[SQLSyntax] = {
-    val c = defaultAlias.support.column
+    val c     = defaultAlias.support.column
     val scope = sqls.isNull(c.field(deletedAtFieldName))
     super.defaultScopeForUpdateOperations.map(_.and.append(scope)) orElse Some(scope)
   }

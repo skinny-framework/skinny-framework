@@ -1,25 +1,25 @@
 package skinny.validator
 
 /**
- * Results projection.
- */
+  * Results projection.
+  */
 object ResultsProjection {
 
-  val defaultOnSuccess: (Parameters) => Nothing = {
-    (params: Parameters) => throw new IllegalStateException("onSuccess handler is not specified.")
+  val defaultOnSuccess: (Parameters) => Nothing = { (params: Parameters) =>
+    throw new IllegalStateException("onSuccess handler is not specified.")
   }
 
-  val defaultOnFailures: (Parameters, Errors) => Nothing = {
-    (params: Parameters, errors: Errors) => throw new IllegalStateException("onFailures handler is not specified.")
+  val defaultOnFailures: (Parameters, Errors) => Nothing = { (params: Parameters, errors: Errors) =>
+    throw new IllegalStateException("onFailures handler is not specified.")
   }
 
 }
 
 /**
- * Results projection.
- *
- * @tparam A result type
- */
+  * Results projection.
+  *
+  * @tparam A result type
+  */
 sealed trait ResultsProjection[+A] {
 
   val results: Validations
@@ -44,13 +44,13 @@ sealed trait ResultsProjection[+A] {
 }
 
 /**
- * Successes projection.
- *
- * @param results results
- * @param onSuccess success event handler
- * @param onFailures failure event handler
- * @tparam A result type
- */
+  * Successes projection.
+  *
+  * @param results results
+  * @param onSuccess success event handler
+  * @param onFailures failure event handler
+  * @tparam A result type
+  */
 case class SuccessesProjection[+A](
     override val results: Validations,
     override val onSuccess: (Parameters) => A,
@@ -64,13 +64,13 @@ case class SuccessesProjection[+A](
 }
 
 /**
- * Failures projection.
- *
- * @param results results
- * @param onSuccess success event handler
- * @param onFailures failure event handler
- * @tparam A result type
- */
+  * Failures projection.
+  *
+  * @param results results
+  * @param onSuccess success event handler
+  * @param onFailures failure event handler
+  * @tparam A result type
+  */
 case class FailuresProjection[+A](
     override val results: Validations,
     override val onSuccess: (Parameters) => A,
@@ -82,4 +82,3 @@ case class FailuresProjection[+A](
   }
 
 }
-

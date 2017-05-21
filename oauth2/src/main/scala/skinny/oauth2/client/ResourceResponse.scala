@@ -9,7 +9,7 @@ case class ResourceResponse(underlying: OAuthResourceResponse) {
   def contentType: String = underlying.getContentType
 
   def responseCode: Int = underlying.getResponseCode
-  def statusCode: Int = responseCode
+  def statusCode: Int   = responseCode
 
   def param(param: String): Option[String] = Option(underlying.getParam(param))
 

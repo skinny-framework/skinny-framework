@@ -14,25 +14,29 @@ class SkinnyApiResourceServletSpec extends ScalatraFlatSpec {
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
   ConnectionPool.add('SkinnyApiResourceServlet, "jdbc:h2:mem:SkinnyApiResourceServlet", "", "")
   NamedDB('SkinnyApiResourceServlet).localTx { implicit s =>
-    sql"create table api (id serial primary key, name varchar(64) not null, url varchar(128) not null);"
-      .execute.apply()
+    sql"create table api (id serial primary key, name varchar(64) not null, url varchar(128) not null);".execute
+      .apply()
   }
 
   case class Api(
-    id: Long, name: String, url: String
+      id: Long,
+      name: String,
+      url: String
   )
   object Api extends SkinnyCRUDMapper[Api] {
     override def connectionPoolName = 'SkinnyApiResourceServlet
-    override def defaultAlias = createAlias("api")
+    override def defaultAlias       = createAlias("api")
     override def extract(rs: WrappedResultSet, n: ResultName[Api]) = new Api(
-      id = rs.get(n.id), name = rs.get(n.name), url = rs.get(n.url)
+      id = rs.get(n.id),
+      name = rs.get(n.name),
+      url = rs.get(n.url)
     )
   }
 
   object ApisController extends SkinnyApiResourceServlet {
-    override def resourceName = "api"
-    override def resourcesName = "apis"
-    override def model = Api
+    override def resourceName      = "api"
+    override def resourcesName     = "apis"
+    override def model             = Api
     override def resourcesBasePath = "/bar/apis"
 
     override def createForm = validation(

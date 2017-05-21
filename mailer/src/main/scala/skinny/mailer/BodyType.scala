@@ -1,22 +1,22 @@
 package skinny.mailer
 
 /**
- * Represents body type (text or html)
- */
+  * Represents body type (text or html)
+  */
 sealed trait BodyType {
   def extension: String
 }
 
 /**
- * plain text
- */
+  * plain text
+  */
 case object Text extends BodyType {
   override val extension = "text"
 }
 
 /**
- * HTML
- */
+  * HTML
+  */
 case object Html extends BodyType {
   override val extension = "html"
 }

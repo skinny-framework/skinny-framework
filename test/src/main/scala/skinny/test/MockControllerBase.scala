@@ -5,7 +5,7 @@ import javax.servlet.ServletContext
 import org.json4s._
 import org.mockito.Mockito._
 import skinny.SkinnyEnv
-import skinny.micro.{ UnstableAccessValidation, SkinnyMicroParams }
+import skinny.micro.{ SkinnyMicroParams, UnstableAccessValidation }
 import skinny.micro.context.SkinnyContext
 import skinny.json.JSONStringOps
 import scala.collection.concurrent.TrieMap
@@ -14,8 +14,8 @@ import skinny.controller.feature.{ JSONParamsAutoBinderFeature, RequestScopeFeat
 import javax.servlet.http.HttpServletResponse
 
 /**
- * Mock Controller Base.
- */
+  * Mock Controller Base.
+  */
 trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderFeature {
 
   case class RenderCall(path: String)
@@ -49,10 +49,10 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   override def halt[T: Manifest](
-    status: Integer = null,
-    body: T = (),
-    headers: Map[String, String] = Map.empty,
-    reason: String = null
+      status: Integer = null,
+      body: T = (),
+      headers: Map[String, String] = Map.empty,
+      reason: String = null
   ): Nothing = {
 
     throw new MockHaltException(
@@ -68,8 +68,7 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   }
 
   def getOutputStreamContents(charset: String): String = {
-    response
-      .getOutputStream
+    response.getOutputStream
       .asInstanceOf[MockServletOutputStream]
       .toString(charset)
   }

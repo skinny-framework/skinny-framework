@@ -3,8 +3,8 @@ package skinny.task
 trait SkinnyTaskLauncher {
 
   /**
-   * Registered tasks.
-   */
+    * Registered tasks.
+    */
   private[this] val tasks = new scala.collection.mutable.HashMap[String, (List[String]) => Unit]
 
   def register(name: String, runner: (List[String]) => Unit) = tasks.update(name, runner)

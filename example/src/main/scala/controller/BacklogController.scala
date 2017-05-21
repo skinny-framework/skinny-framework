@@ -4,10 +4,9 @@ import skinny.controller.feature.BacklogLoginFeature
 import skinny.oauth2.client.OAuth2User
 import skinny.oauth2.client.backlog.BacklogUser
 
-class BacklogController extends ApplicationController
-    with BacklogLoginFeature {
+class BacklogController extends ApplicationController with BacklogLoginFeature {
 
-  override def spaceID = "seratch"
+  override def spaceID     = "seratch"
   override def redirectURI = "http://localhost:8080/example/backlog/callback"
 
   override protected def saveAuthorizedUser(user: BacklogUser): Unit = {
@@ -25,4 +24,3 @@ class BacklogController extends ApplicationController
   }
 
 }
-

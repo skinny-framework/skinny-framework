@@ -3,15 +3,12 @@ package test001
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.{ Matchers, fixture }
+import org.scalatest.{ fixture, Matchers }
 
 /**
- * This spec demonstrates that using hasManyThrough.byDefault each other is impossible.
- */
-class Spec extends fixture.FunSpec with Matchers
-    with Connection
-    with CreateTables
-    with AutoRollback {
+  * This spec demonstrates that using hasManyThrough.byDefault each other is impossible.
+  */
+class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB('test001).toDB()
 

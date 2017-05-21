@@ -13,7 +13,8 @@ trait ReverseGenerator extends CodeGenerator {
     // belongsTo associations
     val foreignKeys: Seq[ForeignKey] = {
       val table: Option[Table] = {
-        cachedTables.find((t) => t.name.toLowerCase == tableName.toLowerCase)
+        cachedTables
+          .find((t) => t.name.toLowerCase == tableName.toLowerCase)
           .orElse(NamedDB(connectionPoolName).getTable(tableName))
       }
       table.map(_.foreignKeys.toSeq).getOrElse(Nil)
@@ -27,12 +28,12 @@ trait ReverseGenerator extends CodeGenerator {
     val hasManyAssociations: Seq[String] = {
       if (cachedTables.isEmpty) Nil
       else {
-        val singularized = Inflector.singularize(toClassName(tableName))
+        val singularized   = Inflector.singularize(toClassName(tableName))
         val expectedFkName = s"${toFirstCharLower(singularized)}${pkName.map(toFirstCharUpper).getOrElse("Id")}"
         val hasManyTables: Seq[Table] = cachedTables.filter { table =>
           table.foreignKeys.exists { (fk) =>
             fk.foreignTableName.toLowerCase == tableName.toLowerCase &&
-              toCamelCase(fk.name.toLowerCase) == expectedFkName
+            toCamelCase(fk.name.toLowerCase) == expectedFkName
           }
         }
         hasManyTables.map { table =>

@@ -9,14 +9,14 @@ import skinny.micro.contrib.{ AsyncCSRFTokenSupport, CSRFTokenSupport }
 import skinny.controller.feature._
 
 /**
- * Enables replacing Servlet session with Skinny's session shared among several Servlet apps.
- *
- * Mounting skinny.session.SkinnySessionInitializer on the top of Bootstrap.scala is required.
- *
- * {{{
- *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
- * }}}
- */
+  * Enables replacing Servlet session with Skinny's session shared among several Servlet apps.
+  *
+  * Mounting skinny.session.SkinnySessionInitializer on the top of Bootstrap.scala is required.
+  *
+  * {{{
+  *   ctx.mount(classOf[SkinnySessionInitializer], "/\*")
+  * }}}
+  */
 trait AsyncSkinnySessionFilter extends SkinnySessionFilterBase with AsyncBeforeAfterActionFeature {
 
   self: FlashFeature with AsyncCSRFTokenSupport with LocaleFeature =>
@@ -36,8 +36,8 @@ trait AsyncSkinnySessionFilter extends SkinnySessionFilterBase with AsyncBeforeA
       prepareCsrfToken()
     }
     !request.requestMethod.isSafe &&
-      skinnySession.getAttribute(csrfKey) != params.get(csrfKey) &&
-      !CSRFTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
+    skinnySession.getAttribute(csrfKey) != params.get(csrfKey) &&
+    !CSRFTokenSupport.HeaderNames.map(request.headers.get).contains(skinnySession.getAttribute(csrfKey))
   }
 
   override protected def prepareCsrfToken()(implicit ctx: SkinnyContext) = {

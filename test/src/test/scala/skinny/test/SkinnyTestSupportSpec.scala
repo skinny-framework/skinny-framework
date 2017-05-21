@@ -6,12 +6,9 @@ import skinny.filter.SkinnySessionFilter
 
 case class Foo(str: String, value: Int) extends java.io.Serializable
 
-class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
-    with Serializable {
+class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport with Serializable {
 
-  object SessionInjectorTest extends SkinnyController with Routes
-      with DBSettings
-      with SkinnySessionFilter {
+  object SessionInjectorTest extends SkinnyController with Routes with DBSettings with SkinnySessionFilter {
 
     def show = session("inject")
     get("/session-injector-result")(show)
@@ -22,7 +19,7 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
     def useUrl = url("/foo")
     get("/useUrl")(useUrl)
 
-    val hoge = get("hoge")("aaaa").as('hoge)
+    val hoge    = get("hoge")("aaaa").as('hoge)
     def useUrl2 = url(hoge)
     get("/useUrl2")(useUrl2)
   }
@@ -32,7 +29,7 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
     def useUrl = url("/foo")
     get("/api/useUrl")(useUrl)
 
-    val hoge = get("hoge")("aaaa").as('hoge)
+    val hoge    = get("hoge")("aaaa").as('hoge)
     def useUrl2 = url(hoge)
     get("/api/useUrl2")(useUrl2)
   }
@@ -40,14 +37,14 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
 
   it should "serialize string" in {
     val obj = "foo"
-    val s = SessionInjector.serialize(obj)
+    val s   = SessionInjector.serialize(obj)
     val act = SessionInjector.deserialize(s)
     act should equal(obj)
   }
 
   it should "serialize object" in {
     val obj = Foo("foo", 100)
-    val s = SessionInjector.serialize(obj)
+    val s   = SessionInjector.serialize(obj)
     val act = SessionInjector.deserialize(s)
     act should equal(obj)
   }
@@ -85,7 +82,7 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
       }
     }
   }
-  */
+   */
 
   it should "work with #url" in {
     get("/useUrl") {
@@ -106,4 +103,3 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport
   }
 
 }
-

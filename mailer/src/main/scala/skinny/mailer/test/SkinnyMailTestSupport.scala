@@ -10,15 +10,15 @@ trait SkinnyMailTestSupport extends SkinnyMailerImplicits {
   System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   /**
-   * Creates a new Mailbox for specified email.
-   */
+    * Creates a new Mailbox for specified email.
+    */
   def mailbox(address: String): RichMailBox = new RichMailBox {
     override def underlying: Mailbox = Mailbox.get(address)
   }
 
   /**
-   * Clears received messages from this mailbox.
-   */
+    * Clears received messages from this mailbox.
+    */
   def clearMailbox(address: String) = mailbox(address).clearReceivedMessages
 
 }

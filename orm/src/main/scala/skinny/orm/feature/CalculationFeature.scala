@@ -4,13 +4,13 @@ import scalikejdbc._
 import skinny.orm.SkinnyMapperBase
 
 /**
- * Calculation feature.
- */
+  * Calculation feature.
+  */
 trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
 
   /**
-   * Calculates rows.
-   */
+    * Calculates rows.
+    */
   def calculate(sql: SQLSyntax)(implicit s: DBSession = autoSession): BigDecimal = {
     withSQL {
       select(sql).from(as(defaultAlias)).where(defaultScopeWithDefaultAlias)
@@ -18,11 +18,10 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
   }
 
   /**
-   * Count only.
-   */
+    * Count only.
+    */
   def count(fieldName: Symbol = Symbol(""), distinct: Boolean = false)(
-    implicit
-    s: DBSession = autoSession
+      implicit s: DBSession = autoSession
   ): Long = {
     if (fieldName == Symbol("")) {
       withSQL {
@@ -37,18 +36,20 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
   }
 
   /**
-   * Counts distinct rows.
-   */
-  def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long = count(fieldName, true)
+    * Counts distinct rows.
+    */
+  def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long =
+    count(fieldName, true)
 
   /**
-   * Calculates sum of a column.
-   */
-  def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.sum(defaultAlias.field(fieldName.name)))
+    * Calculates sum of a column.
+    */
+  def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.sum(defaultAlias.field(fieldName.name)))
 
   /**
-   * Calculates average of a column.
-   */
+    * Calculates average of a column.
+    */
   def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
     calculate(decimals match {
       case Some(dcml) =>
@@ -70,19 +71,22 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
     })
   }
 
-  def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = average(fieldName, decimals)
+  def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
+    average(fieldName, decimals)
 
   /**
-   * Calculates minimum value of a column.
-   */
-  def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.min(defaultAlias.field(fieldName.name)))
+    * Calculates minimum value of a column.
+    */
+  def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.min(defaultAlias.field(fieldName.name)))
 
   def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
   /**
-   * Calculates minimum value of a column.
-   */
-  def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = calculate(sqls.max(defaultAlias.field(fieldName.name)))
+    * Calculates minimum value of a column.
+    */
+  def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.max(defaultAlias.field(fieldName.name)))
 
   def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 

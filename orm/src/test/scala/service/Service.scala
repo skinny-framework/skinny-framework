@@ -6,19 +6,19 @@ import scalikejdbc._
 import skinny.orm.feature.TimestampsFeature
 
 case class Service(
-  no: Long,
-  name: String,
-  createdAt: DateTime,
-  updatedAt: DateTime,
-  applications: Seq[Application] = Nil,
-  settings: Seq[ServiceSetting] = Nil
+    no: Long,
+    name: String,
+    createdAt: DateTime,
+    updatedAt: DateTime,
+    applications: Seq[Application] = Nil,
+    settings: Seq[ServiceSetting] = Nil
 )
 
 object Service extends SkinnyCRUDMapper[Service] with TimestampsFeature[Service] {
 
-  override val connectionPoolName = 'service
-  override val tableName = "services"
-  override def defaultAlias = createAlias("s")
+  override val connectionPoolName  = 'service
+  override val tableName           = "services"
+  override def defaultAlias        = createAlias("s")
   override def primaryKeyFieldName = "no"
 
   override def extract(rs: WrappedResultSet, n: ResultName[Service]) =

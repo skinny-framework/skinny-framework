@@ -3,15 +3,15 @@ package skinny.util
 import scala.language.reflectiveCalls
 
 /**
- * Loan pattern.
- */
+  * Loan pattern.
+  */
 object LoanPattern {
 
   type Closable = { def close() }
 
   /**
-   * Closes the resource finally.
-   */
+    * Closes the resource finally.
+    */
   def using[R <: Closable, A](resource: R)(f: R => A): A = {
     try {
       f(resource)
