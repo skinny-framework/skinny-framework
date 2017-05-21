@@ -2,7 +2,7 @@
 // sbt plugins for this Skinny app project
 // --------------------------------------------
 resolvers += Classpaths.sbtPluginReleases
-resolvers += "sonatype releases"  at "https://oss.sonatype.org/content/repositories/releases"
+resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
 // https://github.com/sbt/sbt/issues/2217
 fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 

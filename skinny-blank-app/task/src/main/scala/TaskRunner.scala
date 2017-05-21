@@ -20,7 +20,6 @@ object TaskRunner extends skinny.task.TaskLauncher {
       println("[usage] ./skinny task:run addMember Alice")
       sys.exit(1)
   }})
-  */
+ */
 
 }
-
