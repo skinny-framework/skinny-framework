@@ -22,7 +22,7 @@ addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")
 
 // --------
 // format Scala source code automatically
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "0.6.6")
 
 // --------
 // IntelliJ IDEA setting files generator

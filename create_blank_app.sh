@@ -1,10 +1,11 @@
 #!/bin/bash
 
 script_dir=`dirname $0`
-rm -rf release/*
+rm -rf ${script_dir}/release/*
 mkdir -p ${script_dir}/release
 rm -rf skinny-blank-app/target
 rm -rf skinny-blank-app/project/project
+rm -rf skinny-blank-app/src/main/webapp/WEB-INF/assets/target
 cp -pr skinny-blank-app ${script_dir}/release/.
 if [[ "$1" != "test" ]]; then
   # somehow, sbt ignores absent libs in local ivy home when they're already exists in global ivy home.

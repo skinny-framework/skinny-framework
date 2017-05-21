@@ -52,7 +52,7 @@ lazy val baseSettings = Seq(
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options"),
   javacOptions in doc := Seq("-source", "1.8"),
   pomExtra := _pomExtra
-) ++ scalariformSettings
+)
 
 // -----------------------------
 // skinny libraries

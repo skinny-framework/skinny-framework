@@ -1,6 +1,5 @@
 import scala.language.postfixOps
 
-scalariformSettings
 env in Compile := Some(file("example") / "jetty-env.xml" asFile)
 initialCommands := """
 import _root_.controller._, model._

@@ -74,7 +74,7 @@ DBSettings.initialize()
                             "build",
                             "standalone-build",
                             "node_modules")
-) ++ scalariformSettings // If you don't prefer auto code formatter, remove this line and sbt-scalariform
+)
 
 lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
   scalateTemplateConfig in Compile := {
