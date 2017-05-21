@@ -23,15 +23,9 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
   var (_beforeCreate,
        _beforeUpdateBy,
        _beforeDeleteBy,
-       _beforeCreateDeprecated,
-       _beforeDeleteByDeprecated,
        _afterCreate,
        _afterDeleteBy,
-       _afterUpdateBy,
-       _afterCreateDeprecated,
-       _afterDeleteByDeprecated) = {
-    (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-  }
+       _afterUpdateBy) = (0, 0, 0, 0, 0, 0)
 
   case class Summary(id: Long, name: String)
   object Summary extends SkinnyCRUDMapper[Summary] {
@@ -80,26 +74,6 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
       _afterDeleteBy += 1
     })
 
-    @deprecated("will be removed someday", "1.3.12")
-    override protected def beforeCreate(namedValues: Seq[(SQLSyntax, Any)])(implicit s: DBSession): Unit = {
-      _beforeCreateDeprecated += 1
-    }
-    @deprecated("will be removed someday", "1.3.12")
-    override protected def afterCreate(namedValues: Seq[(SQLSyntax, Any)],
-                                       generatedId: Option[Long])(implicit s: DBSession): Unit = {
-      _afterCreateDeprecated += 1
-    }
-
-    @deprecated("will be removed someday", "1.3.12")
-    override protected def beforeDeleteBy(where: SQLSyntax)(implicit s: DBSession): Unit = {
-      _beforeDeleteByDeprecated += 1
-    }
-    @deprecated("will be removed someday", "1.3.12")
-    override protected def afterDeleteBy(where: SQLSyntax, deletedCount: Int)(implicit s: DBSession): Int = {
-      _afterDeleteByDeprecated += 1
-      1
-    }
-
     override def extract(rs: WrappedResultSet, rn: ResultName[Summary]) = autoConstruct(rs, rn)
   }
 
@@ -107,14 +81,10 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
     it("should work") { implicit session =>
       _beforeCreate should equal(0)
       _afterCreate should equal(0)
-      _beforeCreateDeprecated should equal(0)
-      _afterCreateDeprecated should equal(0)
       _beforeUpdateBy should equal(0)
       _afterUpdateBy should equal(0)
       _beforeDeleteBy should equal(0)
       _afterDeleteBy should equal(0)
-      _beforeDeleteByDeprecated should equal(0)
-      _afterDeleteByDeprecated should equal(0)
 
       val id = Summary.createWithAttributes('name -> "Sample")
       Summary.updateById(id).withAttributes('name -> "Sample2")
@@ -122,14 +92,10 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
       _beforeCreate should equal(2)
       _afterCreate should equal(2)
-      _beforeCreateDeprecated should equal(1)
-      _afterCreateDeprecated should equal(1)
       _beforeUpdateBy should equal(2)
       _afterUpdateBy should equal(2)
       _beforeDeleteBy should equal(2)
       _afterDeleteBy should equal(2)
-      _beforeDeleteByDeprecated should equal(1)
-      _afterDeleteByDeprecated should equal(1)
     }
   }
 }
