@@ -4,14 +4,14 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.0-SNAPSHOT"
+lazy val currentVersion       = "2.4.0-SNAPSHOT"
 
-lazy val skinnyMicroVersion   = "1.3.0-RC1"
-lazy val scalikeJDBCVersion   = "3.0.0"
-lazy val h2Version            = "1.4.195"
-lazy val kuromojiVersion      = "6.4.2"
-lazy val mockitoVersion       = "2.7.22"
-lazy val jettyVersion         = "9.4.5.v20170502"
+lazy val skinnyMicroVersion   = "1.2.7"
+lazy val scalikeJDBCVersion   = "3.0.1"
+lazy val h2Version            = "1.4.196"
+lazy val kuromojiVersion      = "6.6.0"
+lazy val mockitoVersion       = "2.8.47"
+lazy val jettyVersion         = "9.3.20.v20170531"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val scalaTestVersion     = "3.0.3"
@@ -49,6 +49,7 @@ lazy val baseSettings = Seq(
   // TODO: Fix warning - javaOptions will be ignored, fork is set to false
   // javaOptions in Test ++= Seq("-Dskinny.env=test"),
   updateOptions := updateOptions.value.withCachedResolution(true),
+  suppressSbtShellNotification := true,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options"),
   javacOptions in doc := Seq("-source", "1.8"),
   pomExtra := _pomExtra
@@ -82,7 +83,7 @@ lazy val httpClient = (project in file("http-client"))
     name := "skinny-http-client",
     libraryDependencies ++= Seq(
       "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
-      "commons-fileupload"   % "commons-fileupload"   % "1.3.2"            % Test,
+      "commons-fileupload"   % "commons-fileupload"   % "1.3.3"            % Test,
       "commons-io"           % "commons-io"           % commonsIoVersion   % Test,
       "commons-httpclient"   % "commons-httpclient"   % "3.1"              % Test,
       "javax.servlet"        % "javax.servlet-api"    % "3.1.0"            % Test,
@@ -159,7 +160,7 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"  % "flyway-core"    % "4.0.3"        % Compile,
+      "org.flywaydb"  % "flyway-core"    % "4.2.0"        % Compile,
       "org.hibernate" % "hibernate-core" % "5.2.10.Final" % Test
     ) ++ testDependencies
   )
@@ -369,7 +370,7 @@ lazy val slf4jApiDependencies = Seq(
 )
 lazy val jodaDependencies = Seq(
   "joda-time" % "joda-time"    % "2.9.9" % Compile,
-  "org.joda"  % "joda-convert" % "1.8.1" % Compile
+  "org.joda"  % "joda-convert" % "1.8.2" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
