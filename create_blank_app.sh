@@ -3,6 +3,7 @@
 script_dir=`dirname $0`
 rm -rf ${script_dir}/release/*
 mkdir -p ${script_dir}/release
+rm -rf skinny-blank-app/db
 rm -rf skinny-blank-app/target
 rm -rf skinny-blank-app/project/project
 rm -rf skinny-blank-app/src/main/webapp/WEB-INF/assets/target
