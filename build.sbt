@@ -8,10 +8,10 @@ lazy val currentVersion = "2.3.7"
 
 lazy val skinnyMicroVersion = "1.2.6"
 lazy val scalikeJDBCVersion = "2.5.2"
-lazy val h2Version = "1.4.195"
-lazy val kuromojiVersion = "6.4.2"
-lazy val mockitoVersion = "2.7.22"
-lazy val jettyVersion = "9.3.19.v20170502"
+lazy val h2Version = "1.4.196"
+lazy val kuromojiVersion = "6.6.0"
+lazy val mockitoVersion = "2.8.47"
+lazy val jettyVersion = "9.3.20.v20170531"
 lazy val logbackVersion = "1.2.3"
 lazy val slf4jApiVersion = "1.7.25"
 lazy val scalaTestVersion = "3.0.3"
@@ -309,7 +309,7 @@ lazy val slf4jApiDependencies   = Seq(
 )
 lazy val jodaDependencies = Seq(
   "joda-time"     %  "joda-time"        % "2.9.9" % Compile,
-  "org.joda"      %  "joda-convert"     % "1.8.1" % Compile
+  "org.joda"      %  "joda-convert"     % "1.8.2" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              %  "mail"            % "1.4.7"          % Compile,
