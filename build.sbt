@@ -4,9 +4,9 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.8"
+lazy val currentVersion = "2.3.9-SNAPSHOT"
 
-lazy val skinnyMicroVersion = "1.2.6"
+lazy val skinnyMicroVersion = "1.2.7"
 lazy val scalikeJDBCVersion = "2.5.2"
 lazy val h2Version = "1.4.196"
 lazy val kuromojiVersion = "6.6.0"
@@ -47,6 +47,7 @@ lazy val baseSettings = Seq(
   // TODO: Fix warning - javaOptions will be ignored, fork is set to false
   // javaOptions in Test ++= Seq("-Dskinny.env=test"),
   updateOptions := updateOptions.value.withCachedResolution(true),
+  suppressSbtShellNotification := true,
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options"),
   javacOptions in doc := Seq("-source", "1.8"),
   pomExtra := _pomExtra
