@@ -62,6 +62,7 @@ DBSettings.initialize()
   // the name-hashing algorithm for the incremental compiler.
   incOptions := incOptions.value.withNameHashing(true),
   updateOptions := updateOptions.value.withCachedResolution(true),
+  suppressSbtShellNotification := true,
   logBuffered in Test := false,
   javaOptions in Test ++= Seq("-Dskinny.env=test"),
   fork in Test := true,
