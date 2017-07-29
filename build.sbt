@@ -7,7 +7,7 @@ import scala.language.postfixOps
 lazy val currentVersion       = "2.4.0-RC2"
 
 lazy val skinnyMicroVersion   = "1.2.7"
-lazy val scalikeJDBCVersion   = "3.0.1"
+lazy val scalikeJDBCVersion   = "3.0.2"
 lazy val h2Version            = "1.4.196"
 lazy val kuromojiVersion      = "6.6.0"
 lazy val mockitoVersion       = "2.8.47"
