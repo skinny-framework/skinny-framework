@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.3.9-SNAPSHOT"
+lazy val currentVersion = "2.3.9"
 
 lazy val skinnyMicroVersion = "1.2.7"
 lazy val scalikeJDBCVersion = "2.5.2"
@@ -28,7 +28,7 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.2",
+  scalaVersion := "2.12.3",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,
