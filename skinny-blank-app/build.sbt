@@ -13,7 +13,7 @@ val appOrganization = "org.skinny-framework"
 val appName         = "skinny-blank-app"
 val appVersion      = "0.1.0-SNAPSHOT"
 
-val skinnyVersion   = "2.5.0-SNAPSHOT"
+val skinnyVersion   = "2.5.0"
 val theScalaVersion = "2.12.3"
 val jettyVersion    = "9.3.20.v20170531"
 
