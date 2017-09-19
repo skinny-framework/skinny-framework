@@ -3,7 +3,7 @@ package skinny.nlp
 import java.io.{ ByteArrayInputStream, InputStreamReader }
 import org.apache.lucene.analysis.ja.{ JapaneseAnalyzer, JapaneseTokenizer }
 import org.apache.lucene.analysis.ja.dict.UserDictionary
-import org.apache.lucene.analysis.util.CharArraySet
+import org.apache.lucene.analysis.CharArraySet
 import scala.collection.JavaConverters._
 import skinny.util.LoanPattern._
 

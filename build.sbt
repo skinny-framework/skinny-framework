@@ -4,17 +4,17 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion       = "2.4.0"
+lazy val currentVersion       = "2.5.0-SNAPSHOT"
 
 lazy val skinnyMicroVersion   = "1.2.7"
-lazy val scalikeJDBCVersion   = "3.0.2"
+lazy val scalikeJDBCVersion   = "3.1.0"
 lazy val h2Version            = "1.4.196"
-lazy val kuromojiVersion      = "6.6.0"
-lazy val mockitoVersion       = "2.8.47"
+lazy val kuromojiVersion      = "7.0.0"
+lazy val mockitoVersion       = "2.10.0"
 lazy val jettyVersion         = "9.3.20.v20170531"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
-lazy val scalaTestVersion     = "3.0.3"
+lazy val scalaTestVersion     = "3.0.4"
 lazy val commonsIoVersion     = "2.5"
 lazy val skinnyLogbackVersion = "1.0.14"
 
@@ -370,7 +370,7 @@ lazy val slf4jApiDependencies = Seq(
 )
 lazy val jodaDependencies = Seq(
   "joda-time" % "joda-time"    % "2.9.9" % Compile,
-  "org.joda"  % "joda-convert" % "1.8.2" % Compile
+  "org.joda"  % "joda-convert" % "1.9"   % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
