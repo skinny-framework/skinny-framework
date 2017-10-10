@@ -153,6 +153,7 @@ trait NoIdQueryingFeature[Entity]
     override def extract(rs: WrappedResultSet, n: ResultName[Entity]): Entity = mapper.extract(rs, n)
     override def singleSelectQuery                                            = mapper.singleSelectQuery
     override def defaultScopeWithDefaultAlias                                 = mapper.defaultScopeWithDefaultAlias
+    override def defaultOrderings: Seq[SQLSyntax]                             = mapper.defaultOrderings
 
     /**
       * Calculates rows.

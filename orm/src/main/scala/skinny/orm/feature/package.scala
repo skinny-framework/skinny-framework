@@ -1,5 +1,3 @@
 package skinny.orm
 
-package object feature {
-
-}
+package object feature {}

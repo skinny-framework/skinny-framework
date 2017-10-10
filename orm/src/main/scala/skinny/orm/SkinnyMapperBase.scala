@@ -12,11 +12,14 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   private[this] val _tableName                      = super.tableName
   private[this] val _columnNames                    = super.columnNames
   private[this] val _self: SkinnyMapperBase[Entity] = this
+  // NOTE: this field must be lazy one
+  private[this] lazy val _defaultOrderings = defaultOrderings
 
   protected def underlying: SkinnyMapperBase[Entity] = new SkinnyMapperBase[Entity] {
     override def defaultAlias                                = _self.defaultAlias
     override val tableName                                   = _tableName
     override val columnNames                                 = _columnNames
+    override def defaultOrderings                            = _defaultOrderings
     def extract(rs: WrappedResultSet, n: ResultName[Entity]) = _self.extract(rs, n)
   }
 
@@ -48,6 +51,8 @@ trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
   def defaultScope(alias: Alias[Entity]): Option[SQLSyntax] = None
 
   def defaultScopeWithDefaultAlias: Option[SQLSyntax] = defaultScope(defaultAlias)
+
+  def defaultOrderings: Seq[SQLSyntax]
 
   /**
     * Returns primary key name. (default: "id")

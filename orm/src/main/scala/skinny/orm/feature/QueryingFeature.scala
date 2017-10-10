@@ -29,6 +29,7 @@ trait QueryingFeatureWithId[Id, Entity]
     */
   def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
+    orderings = this.defaultOrderings,
     conditions = conditions.flatMap {
       case (key, value) =>
         implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
@@ -49,6 +50,7 @@ trait QueryingFeatureWithId[Id, Entity]
     */
   def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
+    orderings = this.defaultOrderings,
     conditions = Seq(condition)
   )
 
@@ -61,6 +63,7 @@ trait QueryingFeatureWithId[Id, Entity]
   def paginate(pagination: Pagination): EntitiesSelectOperationBuilder = {
     new EntitiesSelectOperationBuilder(
       mapper = this,
+      orderings = this.defaultOrderings,
       limit = Some(pagination.limit),
       offset = Some(pagination.offset)
     )
@@ -73,7 +76,11 @@ trait QueryingFeatureWithId[Id, Entity]
     * @return query builder
     */
   def limit(n: Int): EntitiesSelectOperationBuilder =
-    new EntitiesSelectOperationBuilder(mapper = this, limit = Some(n))
+    new EntitiesSelectOperationBuilder(
+      mapper = this,
+      orderings = this.defaultOrderings,
+      limit = Some(n)
+    )
 
   /**
     * Appends offset part.
@@ -82,7 +89,11 @@ trait QueryingFeatureWithId[Id, Entity]
     * @return query builder
     */
   def offset(n: Int): EntitiesSelectOperationBuilder =
-    new EntitiesSelectOperationBuilder(mapper = this, offset = Some(n))
+    new EntitiesSelectOperationBuilder(
+      mapper = this,
+      orderings = this.defaultOrderings,
+      offset = Some(n)
+    )
 
   /**
     * Select query builder.
@@ -95,7 +106,7 @@ trait QueryingFeatureWithId[Id, Entity]
   abstract class SelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
-      orderings: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax],
       limit: Option[Int] = None,
       offset: Option[Int] = None,
       isCountOnly: Boolean = false
@@ -132,6 +143,7 @@ trait QueryingFeatureWithId[Id, Entity]
       */
     def where(condition: SQLSyntax): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
       mapper = this.mapper,
+      orderings = this.orderings,
       conditions = conditions ++ Seq(condition),
       limit = limit,
       offset = offset
@@ -150,7 +162,7 @@ trait QueryingFeatureWithId[Id, Entity]
   case class EntitiesSelectOperationBuilder(
       mapper: QueryingFeatureWithId[Id, Entity],
       conditions: Seq[SQLSyntax] = Nil,
-      orderings: Seq[SQLSyntax] = Nil,
+      orderings: Seq[SQLSyntax],
       limit: Option[Int] = None,
       offset: Option[Int] = None
   ) extends SelectOperationBuilder(mapper, conditions, orderings, limit, offset, false) {
@@ -329,11 +341,12 @@ trait QueryingFeatureWithId[Id, Entity]
                   .and(defaultScopeWithDefaultAlias)
             })
 
-            if (orderings.isEmpty) query.append(pagination)
-            else
-              query
-                .orderBy(sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*))
-                .append(pagination)
+            if (orderings.isEmpty) {
+              query.append(pagination)
+            } else {
+              val orderByPart = sqls.csv(orderingsForDistinctQuery(orderings, allowedForDistinctQuery): _*)
+              query.orderBy(orderByPart).append(pagination)
+            }
 
           }.map(_.any(1)).list.apply()
 
