@@ -20,7 +20,7 @@ sbt ++2.11.11 \
 
 else
 
-sbt ++2.12.2 \
+sbt ++2.12.3 \
   clean \
   common/publishLocal \
   assets/publishLocal \
