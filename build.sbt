@@ -4,14 +4,14 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion       = "2.5.0"
+lazy val currentVersion       = "2.5.1"
 
 lazy val skinnyMicroVersion   = "1.2.7"
 lazy val scalikeJDBCVersion   = "3.1.0"
 lazy val h2Version            = "1.4.196"
-lazy val kuromojiVersion      = "7.0.0"
+lazy val kuromojiVersion      = "7.0.1"
 lazy val mockitoVersion       = "2.10.0"
-lazy val jettyVersion         = "9.3.20.v20170531"
+lazy val jettyVersion         = "9.3.21.v20170918"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val scalaTestVersion     = "3.0.4"
@@ -65,7 +65,7 @@ lazy val common = (project in file("common"))
     libraryDependencies ++= {
       jodaDependencies ++ testDependencies ++ Seq(
         "org.skinny-framework" %% "skinny-micro-common"      % skinnyMicroVersion % Compile,
-        "com.typesafe"         % "config"                    % "1.3.1"            % Compile,
+        "com.typesafe"         % "config"                    % "1.3.2"            % Compile,
         "org.apache.lucene"    % "lucene-core"               % kuromojiVersion    % Provided,
         "org.apache.lucene"    % "lucene-analyzers-common"   % kuromojiVersion    % Provided,
         "org.apache.lucene"    % "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
@@ -161,7 +161,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"  % "flyway-core"    % "4.2.0"        % Compile,
-      "org.hibernate" % "hibernate-core" % "5.2.10.Final" % Test
+      "org.hibernate" % "hibernate-core" % "5.2.11.Final" % Test
     ) ++ testDependencies
   )
   .dependsOn(common)
@@ -370,7 +370,7 @@ lazy val slf4jApiDependencies = Seq(
 )
 lazy val jodaDependencies = Seq(
   "joda-time" % "joda-time"    % "2.9.9" % Compile,
-  "org.joda"  % "joda-convert" % "1.9"   % Compile
+  "org.joda"  % "joda-convert" % "1.9.2" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
