@@ -9,13 +9,13 @@ lazy val currentVersion       = "2.5.1"
 lazy val skinnyMicroVersion   = "1.2.7"
 lazy val scalikeJDBCVersion   = "3.1.0"
 lazy val h2Version            = "1.4.196"
-lazy val kuromojiVersion      = "7.0.1"
+lazy val kuromojiVersion      = "7.1.0"
 lazy val mockitoVersion       = "2.10.0"
 lazy val jettyVersion         = "9.3.21.v20170918"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val scalaTestVersion     = "3.0.4"
-lazy val commonsIoVersion     = "2.5"
+lazy val commonsIoVersion     = "2.6"
 lazy val skinnyLogbackVersion = "1.0.14"
 
 lazy val baseSettings = Seq(
@@ -28,7 +28,7 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.12.4",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   publishMavenStyle := true,
@@ -161,7 +161,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"  % "flyway-core"    % "4.2.0"        % Compile,
-      "org.hibernate" % "hibernate-core" % "5.2.11.Final" % Test
+      "org.hibernate" % "hibernate-core" % "5.2.12.Final" % Test
     ) ++ testDependencies
   )
   .dependsOn(common)

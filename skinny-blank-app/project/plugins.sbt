@@ -7,7 +7,7 @@ resolvers += "sonatype releases" at "https://oss.sonatype.org/content/repositori
 fullResolvers ~= { _.filterNot(_.name == "jcenter") }
 
 // Much fatster dependency resolver - https://github.com/alexarchambault/coursier
-addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC12")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-RC13")
 
 // --------
 // scalac options for sbt
@@ -22,7 +22,7 @@ addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")
 
 // --------
 // format Scala source code automatically
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.12")
+addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.14")
 
 // --------
 // IntelliJ IDEA setting files generator
@@ -31,9 +31,9 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.0")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 // Coveralls integration - http://coveralls.io/
-//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.1.0")
+//addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.2")
 
 // check the latest version of dependencies
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.0")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.3")

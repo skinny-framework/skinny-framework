@@ -221,7 +221,7 @@ IF "%command%"=="db:repair" (
 
 IF %command%==eclipse (
   IF NOT EXIST "project\_skinny_eclipse.sbt" (
-    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"5.1.0^"^) > "project\_skinny_eclipse.sbt"
+    ECHO addSbtPlugin^(^"com.typesafe.sbteclipse^" %% ^"sbteclipse-plugin^" %% ^"5.2.4^"^) > "project\_skinny_eclipse.sbt"
   )
   sbt eclipse
   GOTO script_eof
@@ -250,7 +250,7 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.4^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.6^"^) > "project\_skinny_assembly.sbt"
     (
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
       ECHO _root_.sbt.Keys.test in assembly := {}
@@ -384,11 +384,11 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.19"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.21"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
-  ECHO   scalaVersion := "2.12.3", >> "_skinny_scalajs_settings.sbt"
+  ECHO   scalaVersion := "2.12.4", >> "_skinny_scalajs_settings.sbt"
   ECHO   unmanagedSourceDirectories in Compile ^<= baseDirectory^(_ / "scala"^).value, >> "_skinny_scalajs_settings.sbt"
   ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"

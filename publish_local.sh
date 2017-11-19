@@ -2,7 +2,7 @@
 
 if [[ "$1" == "test" ]]; then
 
-sbt ++2.11.11 \
+sbt ++2.11.12 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -20,7 +20,7 @@ sbt ++2.11.11 \
 
 else
 
-sbt ++2.12.3 \
+sbt ++2.12.4 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -42,7 +42,7 @@ sbt ++2.12.3 \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
   velocity/publishLocal \
-  ++2.11.11 \
+  ++2.11.12 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -64,7 +64,7 @@ sbt ++2.12.3 \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
   velocity/publishLocal \
-  ++2.10.6 \
+  ++2.10.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \
