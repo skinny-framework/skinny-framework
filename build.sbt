@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion       = "2.5.2"
+lazy val currentVersion = "2.5.2"
 
 lazy val skinnyMicroVersion   = "1.2.8"
 lazy val scalikeJDBCVersion   = "3.1.0"
@@ -228,8 +228,8 @@ lazy val scaldi = (project in file("scaldi"))
     libraryDependencies ++= {
       servletApiDependencies ++ Seq(
         scalaVersion.value match {
-          case v if v.startsWith("2.10.") => "org.scaldi"                      %% "scaldi" % "0.3.2"
-          case _                          => "org.scaldi"                      %% "scaldi" % "0.5.8"
+          case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
+          case _                          => "org.scaldi" %% "scaldi" % "0.5.8"
         },
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ testDependencies

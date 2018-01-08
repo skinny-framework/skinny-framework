@@ -93,10 +93,7 @@ class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
     Company.findById(company.id).get.name should not equal (newName)
 
     withSession("csrf-token" -> "12345") {
-      put(s"/companies/${company.id}",
-          "name"       -> newName,
-          "updatedAt"  -> "2013-01-02 12:34:56",
-          "csrf-token" -> "12345") {
+      put(s"/companies/${company.id}", "name" -> newName, "updatedAt" -> "2013-01-02 12:34:56", "csrf-token" -> "12345") {
         status should equal(302)
       }
       put(s"/companies/${company.id}", "csrf-token" -> "12345") {

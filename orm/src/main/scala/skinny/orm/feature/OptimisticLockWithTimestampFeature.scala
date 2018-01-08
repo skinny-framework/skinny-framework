@@ -92,7 +92,8 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
     * @param s db session
     * @return deleted count
     */
-  def deleteByIdAndOptionalTimestamp(id: Long, timestamp: Option[DateTime])(implicit s: DBSession = autoSession): Int = {
+  def deleteByIdAndOptionalTimestamp(id: Long,
+                                     timestamp: Option[DateTime])(implicit s: DBSession = autoSession): Int = {
     deleteBy(byIdAndTimestamp(id, timestamp))
   }
 
