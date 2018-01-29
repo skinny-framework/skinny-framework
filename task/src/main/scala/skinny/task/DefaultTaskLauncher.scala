@@ -27,8 +27,7 @@ trait DefaultTaskLauncher extends SkinnyTaskLauncher {
   register("generate:reverse-scaffold:scaml",
            (params) => ReverseScaffoldGenerator.run("scaml", params, SkinnyEnv.get()))
   register("generate:reverse-scaffold:jade", (params) => ReverseScaffoldGenerator.run("jade", params, SkinnyEnv.get()))
-  register("generate:reverse-scaffold-all",
-           (params) => ReverseScaffoldAllGenerator.run("ssp", params, SkinnyEnv.get()))
+  register("generate:reverse-scaffold-all", (params) => ReverseScaffoldAllGenerator.run("ssp", params, SkinnyEnv.get()))
   register("generate:reverse-scaffold-all:ssp",
            (params) => ReverseScaffoldAllGenerator.run("ssp", params, SkinnyEnv.get()))
   register("generate:reverse-scaffold-all:scaml",

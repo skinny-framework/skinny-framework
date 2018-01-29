@@ -12,7 +12,4 @@ trait SkinnyResourceServlet extends SkinnyResourceServletWithId[Long] {
   implicit override val skinnyMicroParamsIdTypeConverter: TypeConverter[String, Long] = TypeConverters.stringToLong
 }
 
-trait SkinnyResourceServletWithId[Id]
-    extends SkinnyServlet
-    with SkinnyResourceActions[Id]
-    with SkinnyResourceRoutes[Id]
+trait SkinnyResourceServletWithId[Id] extends SkinnyServlet with SkinnyResourceActions[Id] with SkinnyResourceRoutes[Id]

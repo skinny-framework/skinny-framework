@@ -20,12 +20,8 @@ trait CreateTables extends DBSeeds { self: Connection =>
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
   override def db(): DB = NamedDB('test006).toDB()
 
-  var (_beforeCreate,
-       _beforeUpdateBy,
-       _beforeDeleteBy,
-       _afterCreate,
-       _afterDeleteBy,
-       _afterUpdateBy) = (0, 0, 0, 0, 0, 0)
+  var (_beforeCreate, _beforeUpdateBy, _beforeDeleteBy, _afterCreate, _afterDeleteBy, _afterUpdateBy) =
+    (0, 0, 0, 0, 0, 0)
 
   case class Summary(id: Long, name: String)
   object Summary extends SkinnyCRUDMapper[Summary] {

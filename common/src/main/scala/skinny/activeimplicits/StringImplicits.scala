@@ -291,14 +291,12 @@ trait StringImplicits {
       hiraganaReadings
     def toRomajiReadings(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default) = romajiReadings
 
-    def katakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString {
-      s =>
-        this.katakanaReadings.mkString
+    def katakana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
+      this.katakanaReadings.mkString
     }
 
-    def hiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString {
-      s =>
-        this.hiraganaReadings.mkString
+    def hiragana(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>
+      this.hiraganaReadings.mkString
     }
 
     def romaji(implicit analyzer: SkinnyJapaneseAnalyzer = SkinnyJapaneseAnalyzer.default): String = withString { s =>

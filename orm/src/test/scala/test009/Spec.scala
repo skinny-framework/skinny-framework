@@ -69,8 +69,8 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
   }
 
   object Tag extends SkinnyCRUDMapper[Tag] {
-    override val connectionPoolName                                     = 'test009
-    override def defaultAlias                                           = createAlias("t")
+    override val connectionPoolName                                 = 'test009
+    override def defaultAlias                                       = createAlias("t")
     override def extract(rs: WrappedResultSet, rn: ResultName[Tag]) = autoConstruct(rs, rn)
   }
 
