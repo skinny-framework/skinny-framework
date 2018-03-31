@@ -1,6 +1,7 @@
 package skinny.orm
 
 import scalikejdbc._
+import skinny.orm.JodaImplicits._
 import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
 import org.scalatest._
@@ -566,8 +567,11 @@ class SkinnyORMSpec
       Product.deleteById(productId)
       Product.findById(productId) should equal(None)
 
-      val productId2: ProductId =
-        Product.createWithAttributes('id -> 777, 'name -> "How to learn Ruby", 'priceYen -> 1800)
+      // since h2 database 1.4.197, setting a specific value for an auto-generated column is no longer allowed.
+      val productId2: ProductId = Product.createWithAttributes(
+                                                               /*'id -> ProductId(777), */
+                                                               'name     -> "How to learn Ruby",
+                                                               'priceYen -> 1800)
       Product.findById(productId2).map(_.name) should equal(Some("How to learn Ruby"))
 
       Product.updateById(productId2).withAttributes('priceYen -> 1950)

@@ -15,14 +15,14 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 // --------
 // Servlet app packager/runner plugin
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.1.7")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.2.5")
 
 // Scalate template files precompilation
 addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.8.0.1")
 
 // --------
 // format Scala source code automatically
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.14")
+addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.15")
 
 // --------
 // IntelliJ IDEA setting files generator

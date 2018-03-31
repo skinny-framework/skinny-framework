@@ -7,7 +7,7 @@ import scalikejdbc._
   *
   * @tparam Entity entity
   */
-trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] {
+trait SkinnyMapperBase[Entity] extends SQLSyntaxSupport[Entity] with JodaImplicits {
 
   private[this] val _tableName                      = super.tableName
   private[this] val _columnNames                    = super.columnNames

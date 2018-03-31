@@ -206,8 +206,12 @@ object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider
             .update
             .apply()
           catch {
-            case scala.util.control.NonFatal(_) =>
-              logger.info(s"Failed to set attribute ($name -> $value) for id: ${id}")
+            case scala.util.control.NonFatal(e) =>
+              if (logger.isDebugEnabled) {
+                logger.debug(s"Failed to set attribute ($name -> $value) for id: ${id}", e)
+              } else {
+                logger.info(s"Failed to set attribute ($name -> $value) for id: ${id}")
+              }
           }
       }
     }
