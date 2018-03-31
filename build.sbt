@@ -229,10 +229,7 @@ lazy val scaldi = (project in file("scaldi"))
     name := "skinny-scaldi",
     libraryDependencies ++= {
       servletApiDependencies ++ Seq(
-        scalaVersion.value match {
-          case v if v.startsWith("2.10.") => "org.scaldi" %% "scaldi" % "0.3.2"
-          case _                          => "org.scaldi" %% "scaldi" % "0.5.8"
-        },
+        "org.scaldi"           %% "scaldi"            % "0.5.8",
         "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
       ) ++ testDependencies
     }
