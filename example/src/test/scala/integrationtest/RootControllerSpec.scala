@@ -2,7 +2,7 @@ package integrationtest
 
 import _root_.controller._
 import service._
-import skinny._
+import skinny.{ Routes, _ }
 import skinny.test.SkinnyFlatSpec
 
 class RootControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {

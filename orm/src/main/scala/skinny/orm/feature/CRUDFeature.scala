@@ -168,7 +168,7 @@ trait CRUDFeatureWithId[Id, Entity]
           case (k, v) if k == primaryKey => {
             try {
               (k, idToRawValue(v.asInstanceOf[Id]))
-            } catch { case e: ClassCastException => (k, v) }
+            } catch { case _: ClassCastException => (k, v) }
           }
           case (k, v) => (k, v)
         }

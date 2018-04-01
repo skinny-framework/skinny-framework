@@ -5,6 +5,7 @@ import org.scalatest.{ FunSpec, Matchers }
 import skinny.session.jdbc.SkinnySession
 import org.joda.time.DateTime
 import skinny.orm.feature._
+import skinny.orm.JodaImplicits._
 
 class SkinnySessionSpec extends FunSpec with Matchers with Connection with CreateTables {
 

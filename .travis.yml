@@ -1,8 +1,8 @@
 language: scala
 sudo: false
 scala:
-- 2.10.7
 - 2.11.12
+# 2.12.5 doesn't work with this project
 - 2.12.4
 jdk:
 - oraclejdk8
