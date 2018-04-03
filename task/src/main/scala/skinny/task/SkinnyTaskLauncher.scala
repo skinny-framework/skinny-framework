@@ -20,7 +20,7 @@ trait SkinnyTaskLauncher {
     )
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     args.toList match {
       case name :: parameters =>
         tasks.get(name).map(_.apply(parameters)).getOrElse(println(s"Task for ${name} not found."))

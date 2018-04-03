@@ -39,7 +39,7 @@ class MockHttpSession extends HttpSession {
     this.id
   }
 
-  def access {
+  def access: Unit = {
     this.lastAccessedTime = System.currentTimeMillis
     this.isNewSession = false
   }
@@ -52,7 +52,7 @@ class MockHttpSession extends HttpSession {
     this.servletContext
   }
 
-  override def setMaxInactiveInterval(interval: Int) {
+  override def setMaxInactiveInterval(interval: Int): Unit = {
     this.maxInactiveInterval = interval
   }
 
@@ -78,7 +78,7 @@ class MockHttpSession extends HttpSession {
     this.attributes.keySet.toArray(new Array[String](this.attributes.size))
   }
 
-  override def setAttribute(name: String, value: AnyRef) {
+  override def setAttribute(name: String, value: AnyRef): Unit = {
     if (value != null) {
       this.attributes.put(name, value)
       if (value.isInstanceOf[HttpSessionBindingListener]) {
@@ -89,11 +89,11 @@ class MockHttpSession extends HttpSession {
     }
   }
 
-  override def putValue(name: String, value: AnyRef) {
+  override def putValue(name: String, value: AnyRef): Unit = {
     setAttribute(name, value)
   }
 
-  override def removeAttribute(name: String) {
+  override def removeAttribute(name: String): Unit = {
     val value: AnyRef = this.attributes.remove(name)
     if (value.isInstanceOf[HttpSessionBindingListener]) {
       (value.asInstanceOf[HttpSessionBindingListener]).valueUnbound(new HttpSessionBindingEvent(this, name, value))
@@ -104,7 +104,7 @@ class MockHttpSession extends HttpSession {
 
   def clearAttributes = attributes.clear()
 
-  override def invalidate {
+  override def invalidate: Unit = {
     this.invalid = true
     clearAttributes
   }

@@ -4,7 +4,7 @@ import skinny.session.SkinnySessionInitializer
 
 class ScalatraBootstrap extends SkinnyLifeCycle {
 
-  override def initSkinnyApp(ctx: ServletContext) {
+  override def initSkinnyApp(ctx: ServletContext): Unit = {
 
     scalikejdbc.GlobalSettings.loggingSQLAndTime = scalikejdbc.LoggingSQLAndTimeSettings(
       singleLineMode = true

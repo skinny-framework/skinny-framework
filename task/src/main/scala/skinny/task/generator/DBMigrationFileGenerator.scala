@@ -18,7 +18,7 @@ trait DBMigrationFileGenerator extends CodeGenerator {
     println("")
   }
 
-  def run(args: List[String]) {
+  def run(args: List[String]): Unit = {
     args.toList match {
       case name :: sqlParts =>
         showSkinnyGenerator()

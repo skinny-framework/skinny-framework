@@ -71,7 +71,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     "'" + toResourceNameWithNamespace(namespaces, resource)
   }
 
-  def run(args: Seq[String]) {
+  def run(args: Seq[String]): Unit = {
     if (args.size < 3) {
       showUsage
       return
@@ -184,7 +184,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // Controller
   // --------------------------
 
-  def generateApplicationControllerIfAbsent() {
+  def generateApplicationControllerIfAbsent(): Unit = {
     val file = new File(s"${sourceDir}/${controllerPackageDir}/ApplicationController.scala")
     writeIfAbsent(
       file,
@@ -331,7 +331,7 @@ trait ScaffoldGenerator extends CodeGenerator {
                                  resources: String,
                                  resource: String,
                                  template: String,
-                                 args: Seq[ScaffoldGeneratorArg]) {
+                                 args: Seq[ScaffoldGeneratorArg]): Unit = {
     val controllerClassName = toClassName(resources) + "Controller"
     val dir                 = toDirectoryPath(controllerPackageDir, namespaces)
     val file                = new File(s"${sourceDir}/${dir}/${controllerClassName}.scala")
@@ -490,7 +490,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateControllerSpec(namespaces: Seq[String],
                              resources: String,
                              resource: String,
-                             nameAndTypeNamePairs: Seq[(String, String)]) {
+                             nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val controllerClassName = toClassName(resources) + "Controller"
     val dir                 = toDirectoryPath(controllerPackageDir, namespaces)
     val file                = new File(s"${testSourceDir}/${dir}/${controllerClassName}Spec.scala")
@@ -638,7 +638,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateIntegrationTestSpec(namespaces: Seq[String],
                                   resources: String,
                                   resource: String,
-                                  nameAndTypeNamePairs: Seq[(String, String)]) {
+                                  nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val controllerClassName = toClassName(resources) + "Controller"
     val dir                 = toDirectoryPath("integrationtest", namespaces)
     val file                = new File(s"${testSourceDir}/${dir}/${controllerClassName}_IntegrationTestSpec.scala")
@@ -655,7 +655,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   // factories.conf
   // --------------------------
 
-  def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def appendToFactoriesConf(factoryName: String, nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val file = new File(s"${testResourceDir}/factories.conf")
 
     val params = nameAndTypeNamePairs
@@ -721,7 +721,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateMessages(namespaces: Seq[String],
                        resources: String,
                        resource: String,
-                       nameAndTypeNamePairs: Seq[(String, String)]) {
+                       nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val file            = new File(s"${resourceDir}/messages.conf")
     val messageResource = toResourceNameWithNamespace(namespaces, resource)
 
@@ -771,7 +771,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateMigrationSQL(resources: String,
                            resource: String,
                            generatorArgs: Seq[ScaffoldGeneratorArg],
-                           withId: Boolean) {
+                           withId: Boolean): Unit = {
     val version = DateTime.now.toString("yyyyMMddHHmmss")
     val file: File = {
       val filepath = {
@@ -821,7 +821,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateFormView(namespaces: Seq[String],
                        resources: String,
                        resource: String,
-                       nameAndTypeNamePairs: Seq[(String, String)]) {
+                       nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
@@ -839,7 +839,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateNewView(namespaces: Seq[String],
                       resources: String,
                       resource: String,
-                      nameAndTypeNamePairs: Seq[(String, String)]) {
+                      nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
@@ -857,7 +857,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateEditView(namespaces: Seq[String],
                        resources: String,
                        resource: String,
-                       nameAndTypeNamePairs: Seq[(String, String)]) {
+                       nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
@@ -875,7 +875,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateIndexView(namespaces: Seq[String],
                         resources: String,
                         resource: String,
-                        nameAndTypeNamePairs: Seq[(String, String)]) {
+                        nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))
@@ -893,7 +893,7 @@ trait ScaffoldGenerator extends CodeGenerator {
   def generateShowView(namespaces: Seq[String],
                        resources: String,
                        resource: String,
-                       nameAndTypeNamePairs: Seq[(String, String)]) {
+                       nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val dir     = toDirectoryPath("views", namespaces)
     val viewDir = s"${webInfDir}/${dir}/${resources}"
     FileUtils.forceMkdir(new File(viewDir))

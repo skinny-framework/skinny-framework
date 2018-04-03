@@ -21,7 +21,7 @@ object AssetsPrecompileTask {
   /**
     * skinny.task.AssetsPrecompileTask.main(Array("basedir"))
     */
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val baseDir   = args.headOption.getOrElse(".") + "/src/main/webapp/WEB-INF/assets"
     val outputDir = args.headOption.getOrElse(".") + "/src/main/webapp/assets"
 

@@ -43,7 +43,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
     override def extract(rs: WrappedResultSet, rn: ResultName[AbilityType]) = autoConstruct(rs, rn)
   }
 
-  override def fixture(implicit session: DBSession) {}
+  override def fixture(implicit session: DBSession): Unit = {}
 
   describe("SkinnyRecord") {
     it("should update timestamps") { implicit session =>

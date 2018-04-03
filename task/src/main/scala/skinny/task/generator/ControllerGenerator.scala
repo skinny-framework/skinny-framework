@@ -17,7 +17,7 @@ trait ControllerGenerator extends CodeGenerator {
     println("")
   }
 
-  def run(args: List[String]) {
+  def run(args: List[String]): Unit = {
     val completedArgs: Seq[String] = if (args.size == 1) {
       if (args.head.contains(".")) {
         val elements = args.head.split("\\.")
@@ -54,7 +54,7 @@ trait ControllerGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateApplicationControllerIfAbsent() {
+  def generateApplicationControllerIfAbsent(): Unit = {
     val file = new File(s"${sourceDir}/${controllerPackageDir}/ApplicationController.scala")
     writeIfAbsent(
       file,
@@ -80,14 +80,14 @@ trait ControllerGenerator extends CodeGenerator {
     )
   }
 
-  def generate(namespaces: Seq[String], name: String) {
+  def generate(namespaces: Seq[String], name: String): Unit = {
     val file = new File(
       s"${sourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}Controller.scala"
     )
     writeIfAbsent(file, code(namespaces, name))
   }
 
-  override def appendToControllers(namespaces: Seq[String], name: String) {
+  override def appendToControllers(namespaces: Seq[String], name: String): Unit = {
     val controllerName = toControllerName(namespaces, name)
     val controllerClassName = toNamespace(s"_root_.${controllerPackage}", namespaces) + "." + toControllerClassName(
       name
@@ -170,7 +170,7 @@ trait ControllerGenerator extends CodeGenerator {
       |""".stripMargin
   }
 
-  def generateControllerSpec(namespaces: Seq[String], name: String) {
+  def generateControllerSpec(namespaces: Seq[String], name: String): Unit = {
     val specFile = new File(
       s"${testSourceDir}/${toDirectoryPath(controllerPackageDir, namespaces)}/${toClassName(name)}ControllerSpec.scala"
     )
@@ -206,7 +206,7 @@ trait ControllerGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateIntegrationSpec(namespaces: Seq[String], name: String) {
+  def generateIntegrationSpec(namespaces: Seq[String], name: String): Unit = {
     val specFile = new File(
       s"${testSourceDir}/${toDirectoryPath("integrationtest", namespaces)}/${toClassName(name)}Controller_IntegrationTestSpec.scala"
     )

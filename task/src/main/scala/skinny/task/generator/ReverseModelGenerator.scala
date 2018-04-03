@@ -36,7 +36,7 @@ trait ReverseModelGenerator extends CodeGenerator with ReverseGenerator {
     DBSettings.initialize()
   }
 
-  def run(args: List[String]) {
+  def run(args: List[String]): Unit = {
     val (tableName: String, nameWithPackage: Option[String], skinnyEnv: Option[String]) = args match {
       case tableName :: Nil                           => (tableName, None, None)
       case tableName :: nameWithPackage :: Nil        => (tableName, Some(nameWithPackage), None)

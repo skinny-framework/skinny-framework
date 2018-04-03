@@ -12,7 +12,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   override def db(): DB = NamedDB('test001).toDB()
 
-  override def fixture(implicit session: DBSession) {
+  override def fixture(implicit session: DBSession): Unit = {
     val t1_1 = Test1.createWithAttributes('name -> "foo-1")
     val t1_2 = Test1.createWithAttributes('name -> "foo-2")
     val t1_3 = Test1.createWithAttributes('name -> "foo-3")

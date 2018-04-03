@@ -49,7 +49,7 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
     * @param only should be applied only for these action methods
     * @param except should not be applied for these action methods
     */
-  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
+  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil): Unit = {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
     forgeryProtectionExcludedActionNames ++= except
@@ -58,7 +58,7 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
   /**
     * Overrides to skip execution when the current request matches excluded patterns.
     */
-  override def handleForgery()(implicit ctx: SkinnyContext) {
+  override def handleForgery()(implicit ctx: SkinnyContext): Unit = {
     if (forgeryProtectionEnabled) {
       logger.debug {
         s"""

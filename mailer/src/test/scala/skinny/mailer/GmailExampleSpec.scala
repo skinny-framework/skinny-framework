@@ -8,7 +8,7 @@ class GmailExampleSpec {
   /**
     * Paste this code on the REPL!
     */
-  def example {
+  def example: Unit = {
 
     // https://support.google.com/accounts/answer/185833
     val yourGmail    = "*****@gmail.com"

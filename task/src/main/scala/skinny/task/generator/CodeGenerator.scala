@@ -232,7 +232,7 @@ trait CodeGenerator {
     }
   }
 
-  def forceWrite(file: File, code: String) {
+  def forceWrite(file: File, code: String): Unit = {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       FileUtils.write(file, code, charset)
@@ -243,7 +243,7 @@ trait CodeGenerator {
     }
   }
 
-  def writeIfAbsent(file: File, code: String) {
+  def writeIfAbsent(file: File, code: String): Unit = {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       println("  \"" + file.getPath + "\" skipped.")
@@ -253,7 +253,7 @@ trait CodeGenerator {
     }
   }
 
-  def writeAppending(file: File, code: String) {
+  def writeAppending(file: File, code: String): Unit = {
     FileUtils.forceMkdir(file.getParentFile)
     if (file.exists()) {
       FileUtils.write(file, code, charset, true)

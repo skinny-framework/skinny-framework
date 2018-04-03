@@ -9,7 +9,7 @@ class ServiceSpec extends fixture.FunSpec with Matchers with Connection with Cre
 
   override def db(): DB = NamedDB('service).toDB()
 
-  override def fixture(implicit session: DBSession) {
+  override def fixture(implicit session: DBSession): Unit = {
     val serviceNo = Service.createWithAttributes('name -> "Cool Web Service")
     Application.createWithAttributes('name -> "Smartphone site", 'serviceNo   -> serviceNo)
     Application.createWithAttributes('name -> "PC site", 'serviceNo           -> serviceNo)
