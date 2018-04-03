@@ -42,7 +42,7 @@ class ReactJSXCompiler {
 
   private[this] def jsxCommand = if (isWindows) "jsx.bat" else "jsx"
 
-  private[this] def nativeCompilerDescription = Seq(jsxCommand, "--version").lines.mkString
+  private[this] def nativeCompilerDescription = Seq(jsxCommand, "--version").lineStream.mkString
 
   private[this] def nativeCompilerCommand = Seq(jsxCommand)
 
@@ -53,7 +53,7 @@ class ReactJSXCompiler {
       //  at java.lang.Object.wait(Native Method)
       false
     } else {
-      try !Seq(jsxCommand, "--version").lines.mkString.isEmpty
+      try !Seq(jsxCommand, "--version").lineStream.mkString.isEmpty
       catch { case e: IOException => false }
     }
   }
