@@ -120,7 +120,7 @@ class MockHttpServletRequest extends HttpServletRequest {
   val CONTENT_TYPE_HEADER = "Content-Type"
   val CHARSET_PREFIX      = "charset="
 
-  def updateContentTypeHeader() {
+  def updateContentTypeHeader(): Unit = {
     if (contentType != null) {
       val s = new StringBuilder(contentType)
       if (!contentType.toLowerCase.contains(CHARSET_PREFIX) && characterEncoding != null) {
@@ -132,7 +132,7 @@ class MockHttpServletRequest extends HttpServletRequest {
 
   val headers = new LinkedHashMap[String, HeaderValueHolder]
 
-  def doAddHeaderValue(name: String, value: AnyRef, replace: Boolean) {
+  def doAddHeaderValue(name: String, value: AnyRef, replace: Boolean): Unit = {
     def replaceHeader(name: String): HeaderValueHolder = {
       val h = new HeaderValueHolder
       headers.put(name, h)

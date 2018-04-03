@@ -9,7 +9,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   override def db(): DB = NamedDB('test002).toDB()
 
-  override def fixture(implicit session: DBSession) {
+  override def fixture(implicit session: DBSession): Unit = {
     Account.createWithAttributes('name -> "Alice")
     Account.createWithAttributes('name -> "Bob")
   }

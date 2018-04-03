@@ -23,7 +23,7 @@ trait ReverseModelAllGenerator extends CodeGenerator {
     DBSettings.initialize()
   }
 
-  def run(args: List[String]) {
+  def run(args: List[String]): Unit = {
     val skinnyEnv: Option[String] = args.headOption
 
     initializeDB(skinnyEnv)

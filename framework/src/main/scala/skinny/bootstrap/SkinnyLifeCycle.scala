@@ -43,7 +43,7 @@ trait SkinnyLifeCycle extends LifeCycle {
     initSkinnyApp(ctx)
   }
 
-  override def destroy(context: ServletContext) {
+  override def destroy(context: ServletContext): Unit = {
     if (dbSettingsEnabled) skinny.DBSettings.destroy()
     if (workerServiceEnabled) skinnyWorkerService.shutdownNow()
     RouteRegistry.init()

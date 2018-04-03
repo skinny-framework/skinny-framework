@@ -36,7 +36,7 @@ trait ReverseScaffoldAllGenerator extends CodeGenerator {
     DBSettings.initialize()
   }
 
-  def run(templateType: String, args: List[String], skinnyEnv: Option[String]) {
+  def run(templateType: String, args: List[String], skinnyEnv: Option[String]): Unit = {
 
     initializeDB(skinnyEnv)
 

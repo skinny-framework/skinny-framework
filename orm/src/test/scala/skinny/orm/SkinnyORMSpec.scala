@@ -17,7 +17,7 @@ class SkinnyORMSpec
     with Formatter
     with AutoRollback {
 
-  override def fixture(implicit session: DBSession) {
+  override def fixture(implicit session: DBSession): Unit = {
 
     // #createWithNamedValues
     val countryId1 = Country.createWithAttributes('name -> "Japan")

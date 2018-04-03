@@ -25,8 +25,8 @@ trait PerRequestFilterBase extends Filter {
     }
   }
 
-  override def init(filterConfig: FilterConfig) {}
+  override def init(filterConfig: FilterConfig): Unit = {}
 
-  override def destroy() {}
+  override def destroy(): Unit = {}
 
 }

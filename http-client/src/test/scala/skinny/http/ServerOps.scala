@@ -26,7 +26,7 @@ trait ServerOps {
   }
 
   def runnable(server: Server) = new Runnable() {
-    def run() {
+    def run(): Unit = {
       try server.start()
       catch { case e: Throwable => e.printStackTrace() }
     }
@@ -39,7 +39,7 @@ trait ServerOps {
 
   def start(server: HttpServer) = {
     new Thread(new Runnable() {
-      def run() {
+      def run(): Unit = {
         server.start()
       }
     }).start()

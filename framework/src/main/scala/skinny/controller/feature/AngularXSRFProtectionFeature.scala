@@ -47,7 +47,7 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
     * @param only should be applied only for these action methods
     * @param except should not be applied for these action methods
     */
-  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
+  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil): Unit = {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
     forgeryProtectionExcludedActionNames ++= except
@@ -56,7 +56,7 @@ trait AngularXSRFProtectionFeature extends AngularXSRFCookieProviderFeature {
   /**
     * Overrides to skip execution when the current request matches excluded patterns.
     */
-  def handleAngularForgery() {
+  def handleAngularForgery(): Unit = {
     if (forgeryProtectionEnabled) {
       logger.debug {
         s"""

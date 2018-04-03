@@ -48,7 +48,7 @@ trait CSRFProtectionFeature extends CSRFTokenSupport {
     * @param only should be applied only for these action methods
     * @param except should not be applied for these action methods
     */
-  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil) {
+  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil): Unit = {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
     forgeryProtectionExcludedActionNames ++= except
@@ -57,7 +57,7 @@ trait CSRFProtectionFeature extends CSRFTokenSupport {
   /**
     * Overrides to skip execution when the current request matches excluded patterns.
     */
-  override def handleForgery() {
+  override def handleForgery(): Unit = {
     if (forgeryProtectionEnabled) {
       logger.debug {
         s"""

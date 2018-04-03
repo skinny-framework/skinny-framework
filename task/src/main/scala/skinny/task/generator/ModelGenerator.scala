@@ -35,7 +35,7 @@ trait ModelGenerator extends CodeGenerator {
     println("")
   }
 
-  def run(args: Seq[String]) {
+  def run(args: Seq[String]): Unit = {
     val completedArgs: List[String] = {
       if (args.size >= 2 && args(1).contains(":")) Seq("") ++ args
       else args
@@ -299,7 +299,7 @@ trait ModelGenerator extends CodeGenerator {
   def generate(namespaces: Seq[String],
                name: String,
                tableName: Option[String],
-               nameAndTypeNamePairs: Seq[(String, String)]) {
+               nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val productionFile = new File(
       s"${sourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}.scala"
     )
@@ -322,7 +322,7 @@ trait ModelGenerator extends CodeGenerator {
         |""".stripMargin
   }
 
-  def generateSpec(namespaces: Seq[String], name: String, nameAndTypeNamePairs: Seq[(String, String)]) {
+  def generateSpec(namespaces: Seq[String], name: String, nameAndTypeNamePairs: Seq[(String, String)]): Unit = {
     val specFile = new File(
       s"${testSourceDir}/${toDirectoryPath(modelPackageDir, namespaces)}/${toClassName(name)}Spec.scala"
     )

@@ -47,7 +47,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
     lazy val withAssociations = joins(companyRef, personRef)
   }
 
-  override def fixture(implicit session: DBSession) {
+  override def fixture(implicit session: DBSession): Unit = {
     val p1 = Person.createWithAttributes('name        -> "Alice")
     val p2 = Person.createWithAttributes('name        -> "Bob")
     val p3 = Person.createWithAttributes('name        -> "Chris")

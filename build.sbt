@@ -31,7 +31,7 @@ lazy val baseSettings = Seq(
   // NOTE: 2.12.5 has several issues with existing code
   scalaVersion := "2.12.4",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
-  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
+  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
   publishMavenStyle := true,
   // NOTE: for stability
   parallelExecution in Test := false,
