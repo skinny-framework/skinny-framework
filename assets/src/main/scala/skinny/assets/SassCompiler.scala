@@ -24,7 +24,7 @@ class SassCompiler {
     */
   private[this] def ensureSassCommand() = {
     try {
-      Seq(sassCommand, "-v").lines // > /dev/null
+      Seq(sassCommand, "-v").lineStream // > /dev/null
     } catch {
       case e: IOException =>
         throw new AssetsPrecompileFailureException(

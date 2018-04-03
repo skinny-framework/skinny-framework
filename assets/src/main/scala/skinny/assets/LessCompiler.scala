@@ -24,7 +24,7 @@ class LessCompiler {
 
   private[this] def lessCommand = if (isWindows) "lessc.bat" else "lessc"
 
-  private[this] def nativeCompilerDescription = Seq(lessCommand, "-v").lines.mkString
+  private[this] def nativeCompilerDescription = Seq(lessCommand, "-v").lineStream.mkString
 
   private[this] def nativeCompilerCommand = Seq(lessCommand, "-") // after "-" read stdin
 
@@ -35,7 +35,7 @@ class LessCompiler {
       //  at java.lang.Object.wait(Native Method)
       false
     } else {
-      try Seq(lessCommand, "-v").lines.size > 0
+      try Seq(lessCommand, "-v").lineStream.size > 0
       catch { case e: IOException => false }
     }
   }
