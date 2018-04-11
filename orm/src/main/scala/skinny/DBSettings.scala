@@ -3,7 +3,7 @@ package skinny
 /**
   * Skinny ORM Database settings initializer.
   *
-  * @see https://github.com/seratch/scalikejdbc
+  * @see https://github.com/scalikejdbc/scalikejdbc
   */
 object DBSettings extends DBSettingsInitializer
 
