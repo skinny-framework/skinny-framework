@@ -30,7 +30,7 @@ lazy val baseSettings = Seq(
   sbtPlugin := false,
   scalaVersion := "2.12.6",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
-  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
+  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture", "-Xsource:2.13"),
   publishMavenStyle := true,
   // NOTE: for stability
   parallelExecution in Test := false,
