@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sbt ++2.12.6 \
+sbt ++2.12.4 \
   clean \
   common/publishSigned \
   assets/publishSigned \
@@ -22,7 +22,7 @@ sbt ++2.12.6 \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
   velocity/publishSigned \
-  ++2.11.12 \
+  ++2.11.11 \
   clean \
   common/publishSigned \
   assets/publishSigned \

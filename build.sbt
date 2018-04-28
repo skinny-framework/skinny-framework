@@ -28,7 +28,8 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.6",
+  // NOTE: 2.12.5 has several issues with existing code
+  scalaVersion := "2.12.4",
   ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture", "-Xsource:2.13"),
   publishMavenStyle := true,
