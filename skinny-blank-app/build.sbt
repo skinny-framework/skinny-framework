@@ -66,7 +66,7 @@ DBSettings.initialize()
   javaOptions in Test ++= Seq("-Dskinny.env=test"),
   fork in Test := true,
   suppressSbtShellNotification := true,
-  scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Xsource:2.13"),
+  scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
   ideaExcludeFolders := Seq(".idea",
                             ".idea_modules",
                             "db",
