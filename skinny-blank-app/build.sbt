@@ -14,7 +14,7 @@ val appName         = "skinny-blank-app"
 val appVersion      = "0.1.0-SNAPSHOT"
 
 val skinnyVersion   = "2.6.0"
-val theScalaVersion = "2.12.4"
+val theScalaVersion = "2.12.6"
 val jettyVersion    = "9.4.9.v20180320"
 
 lazy val baseSettings = servletSettings ++ Seq(
