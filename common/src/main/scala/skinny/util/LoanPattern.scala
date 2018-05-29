@@ -7,7 +7,7 @@ import scala.language.reflectiveCalls
   */
 object LoanPattern {
 
-  type Closable = { def close() }
+  type Closable = { def close(): Unit }
 
   /**
     * Closes the resource finally.
