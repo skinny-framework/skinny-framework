@@ -4,14 +4,14 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "2.6.0"
+lazy val currentVersion = "3.0.0-RC1"
 
-lazy val skinnyMicroVersion   = "1.3.0"
-lazy val scalikeJDBCVersion   = "3.2.3"
+lazy val skinnyMicroVersion   = "1.4.0-RC1"
+lazy val scalikeJDBCVersion   = "3.3.0-RC1"
 lazy val h2Version            = "1.4.197"
-lazy val kuromojiVersion      = "7.2.1"
-lazy val mockitoVersion       = "2.17.0"
-lazy val jettyVersion         = "9.4.9.v20180320"
+lazy val kuromojiVersion      = "7.4.0"
+lazy val mockitoVersion       = "2.19.1"
+lazy val jettyVersion         = "9.4.11.v20180605"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val scalaTestVersion     = "3.0.5"
@@ -28,21 +28,18 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  // NOTE: 2.12.5 has several issues with existing code
+  // NOTE: 2.12.5+ may have several issues with existing code
   scalaVersion := "2.12.4",
-  ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) },
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
   publishMavenStyle := true,
   // NOTE: for stability
   parallelExecution in Test := false,
-  pollInterval in Test := 10,
   maxErrors in Test := 10,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ =>
     false
   },
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  incOptions := incOptions.value.withNameHashing(true),
   // NOTE: forking when testing doesn't work for some existing tests
   // fork in Test := true,
   logBuffered in Test := false,
@@ -72,7 +69,7 @@ lazy val common = (project in file("common"))
         "org.apache.lucene"    % "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
       ) ++ (scalaVersion.value match {
         case v if v.startsWith("2.11.") || v.startsWith("2.12.") =>
-          Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6" % Compile)
+          Seq("org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1" % Compile)
         case _ => Nil
       })
     }
@@ -162,7 +159,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"    % "flyway-core"            % "5.0.7"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.2.16.Final"     % Test,
+      "org.hibernate"   % "hibernate-core"         % "5.2.17.Final"     % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies
   )
@@ -350,8 +347,8 @@ lazy val fullExclusionRules = Seq(
   ExclusionRule("org.slf4j", "slf4j-log4j12")
 )
 lazy val compileScalateDependencies = Seq(
-  "org.scalatra.scalate" %% "scalamd"      % "1.7.0" % Compile,
-  "org.scalatra.scalate" %% "scalate-core" % "1.8.0" % Compile excludeAll (fullExclusionRules: _*)
+  "org.scalatra.scalate" %% "scalamd"      % "1.7.1" % Compile,
+  "org.scalatra.scalate" %% "scalate-core" % "1.9.0" % Compile excludeAll (fullExclusionRules: _*)
 )
 
 lazy val scalikejdbcDependencies = Seq(
@@ -369,8 +366,8 @@ lazy val slf4jApiDependencies = Seq(
   "org.slf4j" % "slf4j-api" % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time" % "joda-time"    % "2.9.9" % Compile,
-  "org.joda"  % "joda-convert" % "1.9.2" % Compile
+  "joda-time" % "joda-time"    % "2.10"  % Compile,
+  "org.joda"  % "joda-convert" % "2.1.1" % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
