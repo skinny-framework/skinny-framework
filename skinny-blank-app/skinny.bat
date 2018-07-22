@@ -250,14 +250,14 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.6^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.7^"^) > "project\_skinny_assembly.sbt"
     (
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
       ECHO _root_.sbt.Keys.test in assembly := {}
       ECHO.resourceGenerators in Compile += ^(Def.task {
       ECHO.  val ^(managedBase, base^) = ^(resourceManaged.value, baseDirectory.value^)
       ECHO.  val webappBase = base / "src" / "main" / "webapp"
-      ECHO.  for ^( ^(from, to^) ^<- ^webappBase ** "*" `pair` rebase(webappBase, managedBase / "main/"^) ^)
+      ECHO.  for ^( ^(from, to^) ^<- ^webappBase ** "*" `pair` Path.rebase(webappBase, managedBase / "main/"^) ^)
       ECHO.    yield {
       ECHO.      Sync.copy^(from, to^)
       ECHO.      to
@@ -384,17 +384,17 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "http://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.22"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.24"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
-  ECHO   scalaVersion := "2.12.4", >> "_skinny_scalajs_settings.sbt"
+  ECHO   scalaVersion := "2.12.6", >> "_skinny_scalajs_settings.sbt"
   ECHO   unmanagedSourceDirectories in Compile ^<= baseDirectory^(_ / "scala"^).value, >> "_skinny_scalajs_settings.sbt"
   ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.3", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.2", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "io.monix"     %%%%  "minitest"        %% "1.1.1" %% "test" >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.6", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.4", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "io.monix"     %%%%  "minitest"        %% "2.1.1" %% "test" >> "_skinny_scalajs_settings.sbt"
   ECHO   ^), >> "_skinny_scalajs_settings.sbt"
   ECHO   crossTarget in Compile := baseDirectory^(_ / ".." / ".." / "assets" / "js"^).value >> "_skinny_scalajs_settings.sbt"
   ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"

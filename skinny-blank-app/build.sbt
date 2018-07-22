@@ -1,7 +1,6 @@
 import sbt._, Keys._
 import org.fusesource.scalate.ScalatePlugin._, ScalateKeys._
 import skinny.servlet._, ServletPlugin._, ServletKeys._
-import org.sbtidea.SbtIdeaPlugin._
 
 import scala.language.postfixOps
 
@@ -13,21 +12,22 @@ val appOrganization = "org.skinny-framework"
 val appName         = "skinny-blank-app"
 val appVersion      = "0.1.0-SNAPSHOT"
 
-val skinnyVersion   = "2.6.0"
+val skinnyVersion   = "3.0.0-RC1"
+// NOTE: 2.12.5+ may have several issues with existing code
 val theScalaVersion = "2.12.4"
-val jettyVersion    = "9.4.9.v20180320"
+val jettyVersion    = "9.4.11.v20180605"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
   name := appName,
   version := appVersion,
   scalaVersion := theScalaVersion,
-  dependencyOverrides := Set(
+  dependencyOverrides := Seq(
     "org.scala-lang"         % "scala-library"             % scalaVersion.value,
     "org.scala-lang"         % "scala-reflect"             % scalaVersion.value,
     "org.scala-lang"         % "scala-compiler"            % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml"                % "1.0.6",
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.0",
+    "org.scala-lang.modules" %% "scala-xml"                % "1.1.0",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
     "org.slf4j"              % "slf4j-api"                 % "1.7.25"
   ),
   libraryDependencies ++= Seq(
@@ -59,22 +59,12 @@ DBSettings.initialize()
   ),
   // Faster "./skinny idea"
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
-  // the name-hashing algorithm for the incremental compiler.
-  incOptions := incOptions.value.withNameHashing(true),
   updateOptions := updateOptions.value.withCachedResolution(true),
   logBuffered in Test := false,
   javaOptions in Test ++= Seq("-Dskinny.env=test"),
   fork in Test := true,
   suppressSbtShellNotification := true,
-  scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature"),
-  ideaExcludeFolders := Seq(".idea",
-                            ".idea_modules",
-                            "db",
-                            "target",
-                            "task/target",
-                            "build",
-                            "standalone-build",
-                            "node_modules")
+  scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 )
 
 lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
@@ -120,8 +110,7 @@ lazy val dev = (project in file("."))
 /*
 lazy val precompileDev = (project in file(".")).settings(devBaseSettings, scalatePrecompileSettings).settings(
   name := appName + "-precompile-dev",
-  target := baseDirectory.value / "target" / "precompile-dev",
-  ideaIgnoreModule := true
+  target := baseDirectory.value / "target" / "precompile-dev"
 )
  */
 // -------------------------------------------------------
@@ -134,7 +123,7 @@ lazy val task = (project in file("task"))
     mainClass := Some("TaskRunner"),
     name := appName + "-task",
     libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0"
-  ) dependsOn (dev)
+  ) dependsOn (dev % "compile->compile")
 
 // -------------------------------------------------------
 // Packaging
@@ -151,14 +140,12 @@ lazy val packagingBaseSettings = baseSettings ++ scalatePrecompileSettings ++ Se
 lazy val build = (project in file("build"))
   .settings(packagingBaseSettings)
   .settings(
-    name := appName,
-    ideaIgnoreModule := true
+    name := appName
   )
 lazy val standaloneBuild = (project in file("standalone-build"))
   .settings(packagingBaseSettings)
   .settings(
     name := appName + "-standalone",
     libraryDependencies += "org.skinny-framework" %% "skinny-standalone" % skinnyVersion,
-    ideaIgnoreModule := true,
     ivyXML := <dependencies><exclude org="org.eclipse.jetty.orbit" /></dependencies>
   )
