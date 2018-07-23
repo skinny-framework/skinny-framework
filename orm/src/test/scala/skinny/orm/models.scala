@@ -4,6 +4,7 @@ import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
 import scalikejdbc._
 import skinny.orm.feature._
+import skinny.orm.feature.associations.Association
 
 case class Member(
     id: Long,
@@ -42,7 +43,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 
   val mentor =
     belongsToWithAlias[Member](Member -> Member.mentorAlias, (m, mentor) => m.copy(mentor = mentor)).byDefault
-  val name =
+  val name: Association[Member] =
     hasOne[Name](Name, (m, name) => m.copy(name = name))
       .includes[Name](
         (ms, ns) =>
@@ -75,7 +76,7 @@ object Member extends SkinnyCRUDMapper[Member] {
   )
 
   // mentorees
-  val mentorees = hasMany[Member](
+  val mentorees: Association[Member] = hasMany[Member](
     many = Member -> Member.mentoreeAlias,
     on = (m, mentorees) => sqls.eq(m.id, mentorees.mentorId),
     merge = (member, mentorees) => member.copy(mentorees = mentorees)
