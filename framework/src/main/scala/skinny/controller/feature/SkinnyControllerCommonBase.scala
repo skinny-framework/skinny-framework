@@ -131,7 +131,7 @@ trait SkinnyControllerCommonBase
       case JSet(xs) =>
         xs.flatMap { v =>
           _toXml(name, v)
-        }(collection.breakOut)
+        }.toSeq
       case JInt(x)     => new XmlElem(name, x.toString)
       case JLong(x)    => new XmlElem(name, x.toString)
       case JDouble(x)  => new XmlElem(name, x.toString)
