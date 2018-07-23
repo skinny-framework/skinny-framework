@@ -3,7 +3,6 @@ package skinny.test
 import scalikejdbc._
 import com.typesafe.config.ConfigFactory
 
-import scala.collection.breakOut
 import scala.collection.JavaConverters._
 import skinny.util.JavaReflectAPI
 import org.slf4j.LoggerFactory
@@ -55,7 +54,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     // TODO directory scan and work with factories/*.conf
     val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName.name)
-    config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }(breakOut)
+    config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
   /**
@@ -99,7 +98,8 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
             (key, value)
           }
         }
-      }(breakOut)
+      }
+      .toSeq
 
     val id = try mapper.createWithNamedValues(mergedAttributes: _*)
     catch {

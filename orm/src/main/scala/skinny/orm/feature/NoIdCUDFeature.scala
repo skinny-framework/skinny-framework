@@ -3,7 +3,7 @@ package skinny.orm.feature
 import scalikejdbc._
 import skinny.orm.SkinnyMapperBase
 import skinny.PermittedStrongParameters
-import scala.collection.{ breakOut, mutable }
+import scala.collection.mutable
 
 trait NoIdCUDFeature[Entity]
     extends SkinnyMapperBase[Entity]
@@ -87,7 +87,7 @@ trait NoIdCUDFeature[Entity]
   protected def namedValuesForCreation(strongParameters: PermittedStrongParameters): Seq[(SQLSyntax, Any)] = {
     mergeNamedValuesForCreation(strongParameters.params.map {
       case (name, (value, paramType)) => (column.field(name), getTypedValueFromStrongParameter(name, value, paramType))
-    }(breakOut))
+    }.toSeq)
   }
 
   def createWithNamedValues(namesAndValues: (SQLSyntax, Any)*)(implicit s: DBSession = autoSession): Any = {
@@ -236,7 +236,7 @@ trait NoIdCUDFeature[Entity]
       strongParameters.params.map {
         case (name, (value, paramType)) =>
           (column.field(name), getTypedValueFromStrongParameter(name, value, paramType))
-      }(breakOut)
+      }.toSeq
     }
 
     /**
