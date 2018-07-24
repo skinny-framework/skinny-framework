@@ -38,10 +38,8 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishLocal \
   twitterController/publishLocal \
   standalone/publishLocal \
-  scaldi/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  velocity/publishLocal \
   ++2.12.6 \
   clean \
   common/publishLocal \
@@ -60,10 +58,8 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishLocal \
   twitterController/publishLocal \
   standalone/publishLocal \
-  scaldi/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  velocity/publishLocal \
   ++2.11.12 \
   clean \
   common/publishLocal \
@@ -82,9 +78,7 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishLocal \
   twitterController/publishLocal \
   standalone/publishLocal \
-  scaldi/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  velocity/publishLocal
 
 fi

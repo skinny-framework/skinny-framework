@@ -18,10 +18,8 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishSigned \
   twitterController/publishSigned \
   standalone/publishSigned \
-  scaldi/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  velocity/publishSigned \
   ++2.12.6 \
   clean \
   common/publishSigned \
@@ -40,10 +38,8 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishSigned \
   twitterController/publishSigned \
   standalone/publishSigned \
-  scaldi/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  velocity/publishSigned \
   ++2.11.12 \
   clean \
   common/publishSigned \
@@ -62,7 +58,5 @@ sbt ++2.13.0-M4 \
   oauth2Controller/publishSigned \
   twitterController/publishSigned \
   standalone/publishSigned \
-  scaldi/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  velocity/publishSigned
