@@ -86,7 +86,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
           } else xs.updated(c.field(key), value)
 
       }
-      .map(ParameterBinderOps.extractValueFromParameterBinder)
+      .map { ParameterBinderOps.extractValueFromParameterBinder(_) }
       .map {
         case (key, value) => {
           // will replace only value which starts with #{ ... } because '#' might be used for test data in some case

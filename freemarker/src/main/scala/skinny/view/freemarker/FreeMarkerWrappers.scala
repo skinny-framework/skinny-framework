@@ -188,8 +188,8 @@ class ScalaMethodWrapper(
             case c                                         => c
           }
         }
-        val method = target.getClass.getDeclaredMethod(methodName, paramTypes: _*)
-        method.invoke(target, params: _*)
+        val method = target.getClass.getDeclaredMethod(methodName, paramTypes.toIndexedSeq: _*)
+        method.invoke(target, params.toIndexedSeq: _*)
     }
   }
 }

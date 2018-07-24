@@ -3,7 +3,7 @@ package skinny.controller.feature
 import org.fusesource.scalate.TemplateEngine
 import org.fusesource.scalate.layout.DefaultLayoutStrategy
 import skinny._
-import skinny.micro.context.SkinnyContext
+import skinny.micro.context.{ SkinnyContext, ThinServletBaseConfig }
 import skinny.micro.contrib.ScalateSupport
 import skinny.micro.contrib.scalate.SkinnyScalateRenderContext
 
@@ -53,7 +53,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
     * @param config configuration
     * @return TemplateEngine instance
     */
-  override protected def createTemplateEngine(config: ConfigT) = {
+  override protected def createTemplateEngine(config: ThinServletBaseConfig) = {
     val engine = super.createTemplateEngine(config)
     engine.layoutStrategy =
       new DefaultLayoutStrategy(engine, TemplateEngine.templateTypes.map("/WEB-INF/layouts/default." + _): _*)

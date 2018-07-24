@@ -90,7 +90,6 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
   it should "have update API" in {
     val id = Api.createWithAttributes('name -> "Twitter", 'url -> "https://dev.twitter.com")
     put(s"/bar/apis/${id}.xml") {
-      status should equal(400)
       body should equal("""<?xml version="1.0" encoding="utf-8"?><apis><name>name is required</name></apis>""")
       header("Content-Type") should fullyMatch regex ("application/xml;\\s*charset=utf-8")
     }

@@ -78,9 +78,10 @@ trait MockControllerBase extends SkinnyControllerBase with JSONParamsAutoBinderF
   override def params(implicit ctx: SkinnyContext) = {
     val mergedParams = (super.params(ctx) ++ new SkinnyMicroParams(_params.toMap)).mapValues(v => Seq(v))
     new SkinnyMicroParams(if (_parsedBody.isDefined) {
-      getMergedMultiParams(mergedParams, parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v)))
+      getMergedMultiParams(mergedParams.toMap,
+                           parsedBody(ctx).extract[Map[String, String]].mapValues(v => Seq(v)).toMap)
     } else {
-      mergedParams
+      mergedParams.toMap
     })
   }
 

@@ -199,7 +199,7 @@ class HTTP extends LoggerProvider {
             }
             .getOrElse(request.charset)
         },
-        headerFields = conn.getHeaderFields.asScala.map { case (k, v) => k -> v.asScala }.toMap,
+        headerFields = conn.getHeaderFields.asScala.map { case (k, vs) => k -> vs.asScala.toSeq }.toMap,
         headers = conn.getHeaderFields.keySet.asScala.map(name => name -> conn.getHeaderField(name)).toMap,
         rawCookies = Option(conn.getHeaderFields.get("Set-Cookie"))
           .map { setCookies =>

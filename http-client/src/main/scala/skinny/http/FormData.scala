@@ -75,9 +75,9 @@ case class FormData(
     bytes.orElse(toBytes(textInput)).orElse(toBytes(fileInput)).getOrElse(Array())
   }
 
-  def bytes(body: Array[Byte]): FormData = returningThis(bytes = Some(body))
+  def bytes(body: Array[Byte]): FormData = returningThis { bytes = Some(body) }
 
-  def fileInput(input: FileInput): FormData = returningThis(fileInput = input)
+  def fileInput(input: FileInput): FormData = returningThis { fileInput = input }
   def file(file: java.io.File): FormData = returningThis {
     fileInput = FileInput(file, fileInput.contentType)
   }
@@ -87,7 +87,7 @@ case class FormData(
     fileInput = FileInput(fileInput.file, contentType)
   }
 
-  def textInput(input: TextInput): FormData = returningThis(textInput = input)
+  def textInput(input: TextInput): FormData = returningThis { textInput = input }
   def text(textBody: String, charset: String = HTTP.DEFAULT_CHARSET): FormData = returningThis {
     textInput = TextInput(textBody, charset)
   }

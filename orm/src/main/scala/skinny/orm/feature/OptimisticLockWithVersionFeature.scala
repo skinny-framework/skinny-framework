@@ -53,7 +53,11 @@ trait OptimisticLockWithVersionFeatureWithId[Id, Entity] extends CRUDFeatureWith
     * @param where condition
     */
   class UpdateOperationBuilderWithVersion(mapper: CRUDFeatureWithId[Id, Entity], where: SQLSyntax)
-      extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
+      extends UpdateOperationBuilder(mapper = mapper,
+                                     where = where,
+                                     beforeHandlers = beforeUpdateByHandlers.toIndexedSeq,
+                                     afterHandlers = afterUpdateByHandlers.toIndexedSeq) {
+
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockVersionFieldName)
     addUpdateSQLPart(sqls"${c} = ${c} + 1")

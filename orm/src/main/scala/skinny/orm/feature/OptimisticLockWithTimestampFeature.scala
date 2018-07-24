@@ -78,7 +78,11 @@ trait OptimisticLockWithTimestampFeatureWithId[Id, Entity] extends CRUDFeatureWi
     * @param where condition
     */
   class UpdateOperationBuilderWithVersion(mapper: CRUDFeatureWithId[Id, Entity], where: SQLSyntax)
-      extends UpdateOperationBuilder(mapper, where, beforeUpdateByHandlers, afterUpdateByHandlers) {
+      extends UpdateOperationBuilder(mapper = mapper,
+                                     where = where,
+                                     beforeHandlers = beforeUpdateByHandlers.toIndexedSeq,
+                                     afterHandlers = afterUpdateByHandlers.toIndexedSeq) {
+
     // appends additional part of update query
     private[this] val c = defaultAlias.support.column.field(lockTimestampFieldName)
     addUpdateSQLPart(sqls"${c} = ${sqls.currentTimestamp}")
