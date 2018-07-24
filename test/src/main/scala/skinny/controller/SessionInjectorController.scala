@@ -1,10 +1,10 @@
 package skinny.controller
 
 import java.io._
+import java.util.Base64
 
 import skinny.micro.Format
 import skinny.util.LoanPattern._
-import sun.misc.{ BASE64Decoder, BASE64Encoder }
 import skinny.logging.LoggerProvider
 
 import scala.util.control.NonFatal
@@ -56,7 +56,7 @@ trait SessionInjectorController extends SkinnyApiController with LoggerProvider 
     using(new ObjectOutputStream(bao)) {
       _.writeObject(obj)
     }
-    new BASE64Encoder().encode(bao.toByteArray)
+    Base64.getEncoder.encodeToString(bao.toByteArray)
   }
 
   /**
@@ -67,7 +67,7 @@ trait SessionInjectorController extends SkinnyApiController with LoggerProvider 
     */
   def deserialize(str: String): AnyRef = {
     try {
-      val bytes = new BASE64Decoder().decodeBuffer(str)
+      val bytes = Base64.getDecoder.decode(str)
       val bai   = new ByteArrayInputStream(bytes)
       using(new ObjectInputStream(bai)) {
         _.readObject
