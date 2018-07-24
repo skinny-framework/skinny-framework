@@ -16,6 +16,7 @@ lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val commonsIoVersion     = "2.6"
 lazy val skinnyLogbackVersion = "1.0.14"
+lazy val collectionCompatVersion = "0.1.1"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
@@ -30,6 +31,14 @@ lazy val baseSettings = Seq(
   scalaVersion := "2.12.6",
   crossScalaVersions := Seq("2.13.0-M4", "2.12.6", "2.11.12"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
+  libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion,
+  unmanagedSourceDirectories in Compile += {
+    val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v >= 13 => base / s"scala-2.13+"
+      case _ =>                       base / s"scala-2.13-"
+    }
+  },
   publishMavenStyle := true,
   // NOTE: for stability
   parallelExecution in Test := false,
@@ -200,22 +209,6 @@ lazy val thymeleaf = (project in file("thymeleaf"))
   )
   .dependsOn(framework)
 
-lazy val velocity = (project in file("velocity"))
-  .settings(baseSettings)
-  .settings(
-    name := "skinny-velocity",
-    libraryDependencies ++= servletApiDependencies ++ Seq(
-      "commons-logging"     % "commons-logging" % "1.2" % Compile,
-      "org.apache.velocity" % "velocity"        % "1.7" % Compile,
-      "org.apache.velocity" % "velocity-tools"  % "2.0" % Compile excludeAll (
-        ExclusionRule("org.apache.velocity", "velocity"),
-        ExclusionRule("commons-loggin", "commons-logging")
-      ),
-      "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
-    ) ++ testDependencies(scalaVersion.value)
-  )
-  .dependsOn(framework)
-
 // just keeping compatibility with 1.x
 lazy val json = (project in file("json"))
   .settings(baseSettings)
@@ -310,7 +303,6 @@ lazy val example = (project in file("example"))
     assets,
     thymeleaf,
     freemarker,
-    velocity,
     factoryGirl,
     test % Test,
     task,
