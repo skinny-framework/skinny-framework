@@ -6,16 +6,16 @@ import scala.language.postfixOps
 
 lazy val currentVersion = "3.0.0-RC2"
 
-lazy val skinnyMicroVersion   = "1.4.0-RC3"
-lazy val scalikeJDBCVersion   = "3.3.0-RC1"
-lazy val h2Version            = "1.4.197"
-lazy val kuromojiVersion      = "7.4.0"
-lazy val mockitoVersion       = "2.19.1"
-lazy val jettyVersion         = "9.4.11.v20180605"
-lazy val logbackVersion       = "1.2.3"
-lazy val slf4jApiVersion      = "1.7.25"
-lazy val commonsIoVersion     = "2.6"
-lazy val skinnyLogbackVersion = "1.0.14"
+lazy val skinnyMicroVersion      = "1.4.0-RC3"
+lazy val scalikeJDBCVersion      = "3.3.0-RC1"
+lazy val h2Version               = "1.4.197"
+lazy val kuromojiVersion         = "7.4.0"
+lazy val mockitoVersion          = "2.19.1"
+lazy val jettyVersion            = "9.4.11.v20180605"
+lazy val logbackVersion          = "1.2.3"
+lazy val slf4jApiVersion         = "1.7.25"
+lazy val commonsIoVersion        = "2.6"
+lazy val skinnyLogbackVersion    = "1.0.14"
 lazy val collectionCompatVersion = "0.1.1"
 
 lazy val baseSettings = Seq(
@@ -36,7 +36,7 @@ lazy val baseSettings = Seq(
     val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v >= 13 => base / s"scala-2.13+"
-      case _ =>                       base / s"scala-2.13-"
+      case _                       => base / s"scala-2.13-"
     }
   },
   publishMavenStyle := true,
@@ -350,7 +350,7 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
 def scalatestV(scalaV: String) = {
   CrossVersion.partialVersion(scalaV) match {
     case Some((2, v)) if v >= 13 => "3.0.6-SNAP1"
-    case _ =>                       "3.0.5"
+    case _                       => "3.0.5"
   }
 }
 def testDependencies(scalaV: String) = Seq(
