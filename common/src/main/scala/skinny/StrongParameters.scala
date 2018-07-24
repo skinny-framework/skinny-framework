@@ -14,7 +14,7 @@ case class StrongParameters(params: Map[String, Any]) {
     * @return permitted parameters
     */
   def permit(paramKeyAndParamTypes: (String, ParamType)*): PermittedStrongParameters = {
-    val _params = params
+    val _params: Seq[(String, (Any, ParamType))] = params.toSeq
       .filter { case (name, _) => paramKeyAndParamTypes.exists(_._1 == name) }
       .flatMap {
         case (name, value) =>
@@ -23,12 +23,12 @@ case class StrongParameters(params: Map[String, Any]) {
             case (_, paramType)         => name -> (value                          -> paramType)
           }
       }
-    val nullableBooleanParams = paramKeyAndParamTypes
+    val nullableBooleanParams: Seq[(String, (Any, ParamType))] = paramKeyAndParamTypes
       .filter(_._2 == ParamType.Boolean)
       .filterNot { case (paramKey, _) => params.keys.exists(_ == paramKey) }
       .map { case (name, _) => name -> (false, ParamType.Boolean) }
 
-    new PermittedStrongParameters(_params ++ nullableBooleanParams)
+    new PermittedStrongParameters((_params ++ nullableBooleanParams).toMap)
   }
 }
 

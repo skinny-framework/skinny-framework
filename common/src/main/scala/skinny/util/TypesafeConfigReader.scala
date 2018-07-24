@@ -126,7 +126,7 @@ object TypesafeConfigReader {
   }
 
   def booleanSeq(env: String, path: String): Option[Seq[Boolean]] = {
-    Try(config(env).getBooleanList(path).asScala.map(_.asInstanceOf[Boolean])).toOption
+    Try(config(env).getBooleanList(path).asScala.map(_.asInstanceOf[Boolean]).toIndexedSeq).toOption
   }
 
   def double(env: String, path: String): Option[Double] = {
@@ -134,7 +134,7 @@ object TypesafeConfigReader {
   }
 
   def doubleSeq(env: String, path: String): Option[Seq[Double]] = {
-    Try(config(env).getDoubleList(path).asScala.map(_.asInstanceOf[Double])).toOption
+    Try(config(env).getDoubleList(path).asScala.map(_.asInstanceOf[Double]).toIndexedSeq).toOption
   }
 
   def int(env: String, path: String): Option[Int] = {
@@ -142,7 +142,7 @@ object TypesafeConfigReader {
   }
 
   def intSeq(env: String, path: String): Option[Seq[Int]] = {
-    Try(config(env).getIntList(path).asScala.map(_.asInstanceOf[Int])).toOption
+    Try(config(env).getIntList(path).asScala.map(_.asInstanceOf[Int]).toIndexedSeq).toOption
   }
 
   def long(env: String, path: String): Option[Long] = {
@@ -150,14 +150,14 @@ object TypesafeConfigReader {
   }
 
   def longSeq(env: String, path: String): Option[Seq[Long]] = {
-    Try(config(env).getLongList(path).asScala.map(_.asInstanceOf[Long])).toOption
+    Try(config(env).getLongList(path).asScala.map(_.asInstanceOf[Long]).toIndexedSeq).toOption
   }
 
   def string(env: String, path: String): Option[String] = {
     Try(config(env).getString(path)).toOption
   }
   def stringSeq(env: String, path: String): Option[Seq[String]] = {
-    Try(config(env).getStringList(path).asScala).toOption
+    Try(config(env).getStringList(path).asScala.toIndexedSeq).toOption
   }
 
   def get(env: String, path: String): Option[ConfigValue] = {

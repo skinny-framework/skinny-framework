@@ -35,7 +35,7 @@ trait DBSeeds {
     * @return self
     */
   def addSeedSQL(seedSQLs: SQL[_, _]*)(implicit session: DBSession = dbSeedsAutoSession): DBSeeds = {
-    registeredSeedOperations.appendAll(seedSQLs.map(s => () => s.execute.apply()))
+    registeredSeedOperations ++= seedSQLs.map(s => () => s.execute.apply())
     this
   }
 

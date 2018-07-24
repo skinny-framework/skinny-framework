@@ -1,14 +1,21 @@
 language: scala
 sudo: false
 scala:
-- 2.11.12
-- 2.12.6
+  - 2.11.12
+  - 2.12.6
+  - 2.13.0-M4
 jdk:
-- oraclejdk8
+  - oraclejdk8
 cache:
   directories:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
+matrix:
+  include:
+  - scala: 2.12.6
+    jdk: oraclejdk9
+  - scala: 2.12.6
+    jdk: oraclejdk10
 script: 
   - travis_retry "./travis.sh"
   - find $HOME/.sbt -name "*.lock" | xargs rm -f

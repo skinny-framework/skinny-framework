@@ -7,7 +7,7 @@ import javax.mail.internet.{ MimeBodyPart, MimeMultipart }
   *
   * @param message message
   */
-case class Attachments(message: RichMimeMessage) extends IndexedSeq[RichMimeBodyPart] {
+case class Attachments(message: RichMimeMessage) {
 
   def ++=(filename: String, o: AnyRef, mimeType: String): Unit = {
     message.addAttachment(filename, o, mimeType)
@@ -25,7 +25,7 @@ case class Attachments(message: RichMimeMessage) extends IndexedSeq[RichMimeBody
     message.addAttachment(filename, bytes, mimeType)
   }
 
-  override def seq: IndexedSeq[RichMimeBodyPart] = message.underlying.getContent match {
+  def toSeq: IndexedSeq[RichMimeBodyPart] = message.underlying.getContent match {
     case mp: MimeMultipart =>
       (for (i <- 0 until mp.getCount()) yield i)
         .map(mp.getBodyPart(_))
@@ -36,8 +36,8 @@ case class Attachments(message: RichMimeMessage) extends IndexedSeq[RichMimeBody
     case _ => IndexedSeq[RichMimeBodyPart]()
   }
 
-  def apply(idx: Int): RichMimeBodyPart = seq.apply(idx)
+  def apply(idx: Int): RichMimeBodyPart = toSeq.apply(idx)
 
-  def length: Int = seq.size
+  def length: Int = toSeq.size
 
 }

@@ -22,10 +22,10 @@ case class HeaderLines(message: RichMimeMessage) {
     */
   def toSeq: Seq[String] = {
     Option(message.underlying.getAllHeaderLines)
-      .map(_.asScala)
-      .getOrElse(Nil)
+      .map(_.asScala.toIndexedSeq)
+      .getOrElse(Seq.empty)
       .map(_.asInstanceOf[String])
-      .toSeq
+      .toIndexedSeq
   }
 
 }

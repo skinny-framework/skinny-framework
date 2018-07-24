@@ -54,9 +54,9 @@ trait Inflector {
   private[this] val singulars: ListBuffer[Rule]      = new ListBuffer[Rule]()
   private[this] val uncountables: ListBuffer[String] = new ListBuffer[String]()
 
-  private[this] lazy val fixedPlurals: Seq[Rule]        = plurals.reverse
-  private[this] lazy val fixedSingulars: Seq[Rule]      = singulars.reverse
-  private[this] lazy val fixedUncountables: Seq[String] = uncountables.reverse
+  private[this] lazy val fixedPlurals: Seq[Rule]        = plurals.reverse.toIndexedSeq
+  private[this] lazy val fixedSingulars: Seq[Rule]      = singulars.reverse.toIndexedSeq
+  private[this] lazy val fixedUncountables: Seq[String] = uncountables.reverse.toIndexedSeq
 
   def addPlural(pattern: String, replacement: String): Unit = {
     plurals += Rule(pattern -> replacement)

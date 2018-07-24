@@ -20,7 +20,29 @@ sbt ++2.11.12 \
 
 else
 
-sbt ++2.12.6 \
+sbt ++2.13.0-M4 \
+  clean \
+  common/publishLocal \
+  assets/publishLocal \
+  httpClient/publishLocal \
+  json/publishLocal \
+  orm/publishLocal \
+  factoryGirl/publishLocal \
+  validator/publishLocal \
+  framework/publishLocal \
+  mailer/publishLocal \
+  task/publishLocal \
+  test/publishLocal \
+  worker/publishLocal \
+  oauth2/publishLocal \
+  oauth2Controller/publishLocal \
+  twitterController/publishLocal \
+  standalone/publishLocal \
+  scaldi/publishLocal \
+  freemarker/publishLocal \
+  thymeleaf/publishLocal \
+  velocity/publishLocal \
+  ++2.12.6 \
   clean \
   common/publishLocal \
   assets/publishLocal \

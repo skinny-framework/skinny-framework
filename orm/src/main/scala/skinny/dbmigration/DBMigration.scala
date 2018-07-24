@@ -35,7 +35,7 @@ trait DBMigration {
             .asScala
             .map(l => "db.migration." + l.replaceAll("/", "."))
           if (locations.nonEmpty) {
-            flyway.setLocations(locations: _*)
+            flyway.setLocations(locations.toIndexedSeq: _*)
           }
         }
         flyway.migrate()

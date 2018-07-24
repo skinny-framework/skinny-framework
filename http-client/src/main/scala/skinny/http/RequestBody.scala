@@ -28,7 +28,7 @@ case class RequestBody(request: Request) {
   def asBytes: Array[Byte] = request.bodyBytes.getOrElse(Array())
 
   def asApplicationXWwwFormUrlencoded: Array[Byte] = {
-    val encoded = request.formParams
+    val encoded = request.formParams.toSeq
       .flatMap {
         case (key, value) =>
           if (value != null) Some(s"${HTTP.urlEncode(key)}=${HTTP.urlEncode(String.valueOf(value))}")

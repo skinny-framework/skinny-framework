@@ -20,7 +20,6 @@ object Controllers {
     programmers.mount(ctx)
     thymeleaf.mount(ctx)
     freemarker.mount(ctx)
-    velocity.mount(ctx)
     sampleApi.mount(ctx)
     sampleTxApi.mount(ctx)
     dashboard.mount(ctx)
@@ -83,9 +82,6 @@ object Controllers {
   }
   object freemarker extends FreeMarkerController with Routes {
     val indexUrl = get("/freemarker/?".r)(index).as('index)
-  }
-  object velocity extends VelocityController with Routes {
-    val indexUrl = get("/velocity/?".r)(index).as('index)
   }
 
   object sampleApi extends SampleApiController with Routes {

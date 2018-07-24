@@ -23,8 +23,8 @@ class UsageSpec extends FunSpec with Matchers {
         // can access parameters via #params
         val params: Parameters = validator.params
         params.toMap should equal(Map("user_id" -> 123, "name" -> null))
-        params.keys() should equal(Seq("user_id", "name"))
-        params.values() should equal(Seq(123, null))
+        params.keys() should (equal(Seq("user_id", "name")) or equal(Seq("name", "user_id")))
+        params.values() should (equal(Seq(123, null)) or equal(Seq(null, 123)))
 
         // can access errors
         val errors: Errors = validator.errors

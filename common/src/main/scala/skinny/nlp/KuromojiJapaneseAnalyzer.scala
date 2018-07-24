@@ -58,7 +58,7 @@ case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer)
           val katakana = if (readingAttr.getReading != null) readingAttr.getReading else original
           val romaji   = ToStringUtil.getRomanization(katakana)
           val token    = KuromojiToken(original, katakana, romaji)
-          tokens.append(token)
+          tokens += token
         }
       }
       logger.debug(s"Tokenized results: ${tokens}")
@@ -69,18 +69,18 @@ case class KuromojiJapaneseAnalyzer(kuromojiAnalyzer: JapaneseAnalyzer)
         if (previous != null) {
           if (current.term.contains(previous.term)) {
             distinctTokens.remove(distinctTokens.size - 1)
-            distinctTokens.append(current)
+            distinctTokens += current
           } else if (previous.term.contains(current.term)) {
             // NOOP
           } else {
-            distinctTokens.append(current)
+            distinctTokens += current
           }
         } else {
-          distinctTokens.append(current)
+          distinctTokens += current
         }
         previous = current
       }
-      distinctTokens.toSeq
+      distinctTokens.toIndexedSeq
     }
   }
 

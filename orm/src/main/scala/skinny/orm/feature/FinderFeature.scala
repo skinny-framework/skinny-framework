@@ -168,12 +168,12 @@ trait FinderFeatureWithId[Id, Entity]
     // find ids for pagination
     val ids: Seq[Any] = withSQL {
       lazy val allowedForDistinctQuery: Seq[SQLSyntax] = {
-        columns.map(column => SQLSyntax.createUnsafely(s"${defaultAlias.tableAliasName}.${column}", Nil))
+        columns.map(column => SQLSyntax.createUnsafely(s"${defaultAlias.tableAliasName}.${column}", Nil)).toIndexedSeq
       }
       val baseQuery = {
         val columnsToFetch: Seq[SQLSyntax] = Seq(sqls"distinct ${defaultAlias.field(primaryKeyFieldName)}") ++ {
           // in this case, intentionally orderings are empty
-          if (orderings.isEmpty) Nil
+          if (orderings.isEmpty) Seq.empty
           else orderingsForDistinctQuery(orderings, allowedForDistinctQuery).map(removeAscDesc)
         }
         selectQueryWithAdditionalAssociations(

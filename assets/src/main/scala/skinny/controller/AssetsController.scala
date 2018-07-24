@@ -82,13 +82,13 @@ class AssetsController extends SkinnyController {
     * Registers JS compiler to this controller.
     * @param compiler compiler
     */
-  def registerJsCompiler(compiler: AssetCompiler) = jsCompilers.append(compiler)
+  def registerJsCompiler(compiler: AssetCompiler) = jsCompilers += compiler
 
   /**
     * Registers CSS compiler to this controller.
     * @param compiler compiler
     */
-  def registerCssCompiler(compiler: AssetCompiler) = cssCompilers.append(compiler)
+  def registerCssCompiler(compiler: AssetCompiler) = cssCompilers += compiler
 
   def maybeFullpath: Option[String] = multiParams("splat").headOption
   def fullpath                      = maybeFullpath.get
@@ -151,7 +151,7 @@ class AssetsController extends SkinnyController {
           sourceMapsPath match {
             case Some(path) =>
               contentType = "application/octet-stream"
-              sourceMapsFromResourceOrFile(path, jsCompilers)
+              sourceMapsFromResourceOrFile(path, jsCompilers.toIndexedSeq)
             case _ =>
               jsCompilers.find(c => path(c.extension).isDefined).flatMap { compiler =>
                 path(compiler.extension).map { path =>
@@ -201,8 +201,9 @@ class AssetsController extends SkinnyController {
       case _ => None
     }
   }
-  private def compiledJsFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, jsCompilers)
-  private def compiledJsFromFile(path: String): Option[String]      = compiledCodeFromFile(path, jsCompilers)
+  private def compiledJsFromClassPath(path: String): Option[String] =
+    compiledCodeFromClassPath(path, jsCompilers.toIndexedSeq)
+  private def compiledJsFromFile(path: String): Option[String] = compiledCodeFromFile(path, jsCompilers.toIndexedSeq)
 
   private def sourceMapsFromResourceOrFile(path: String, compilers: Seq[AssetCompiler]): Option[String] = {
     def findResource(path: String, extension: String): Option[ClassPathResource] = {
@@ -292,7 +293,7 @@ class AssetsController extends SkinnyController {
           sourceMapsPath match {
             case Some(path) =>
               contentType = "application/octet-stream"
-              sourceMapsFromResourceOrFile(path, cssCompilers)
+              sourceMapsFromResourceOrFile(path, cssCompilers.toIndexedSeq)
             case _ =>
               cssCompilers.find(c => path(c.extension).isDefined) match {
                 case Some(compiler) =>
@@ -346,8 +347,9 @@ class AssetsController extends SkinnyController {
         None
     }
   }
-  private def compiledCssFromClassPath(path: String): Option[String] = compiledCodeFromClassPath(path, cssCompilers)
-  private def compiledCssFromFile(path: String): Option[String]      = compiledCodeFromFile(path, cssCompilers)
+  private def compiledCssFromClassPath(path: String): Option[String] =
+    compiledCodeFromClassPath(path, cssCompilers.toIndexedSeq)
+  private def compiledCssFromFile(path: String): Option[String] = compiledCodeFromFile(path, cssCompilers.toIndexedSeq)
 
   val PATTERN_RFC1123 = "EEE, dd MMM yyyy HH:mm:ss zzz"
   val PATTERN_RFC1036 = "EEE, dd-MMM-yy HH:mm:ss zzz"
