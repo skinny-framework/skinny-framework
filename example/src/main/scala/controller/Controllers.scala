@@ -23,7 +23,6 @@ object Controllers {
     velocity.mount(ctx)
     sampleApi.mount(ctx)
     sampleTxApi.mount(ctx)
-    scaldi.mount(ctx)
     dashboard.mount(ctx)
 
     SkillsController.mount(ctx)
@@ -106,10 +105,6 @@ object Controllers {
     val smallUrl = get("/filedownload/small")(small).as('small)
     val nullUrl  = get("/filedownload/null")(nullValue).as('null)
     val errorUrl = get("/filedownload/error")(error).as('error)
-  }
-
-  object scaldi extends ScaldiController with Routes {
-    val indexUrl = get("/scaldi/")(index).as('index)
   }
 
   object dashboard extends DashboardController with Routes {
