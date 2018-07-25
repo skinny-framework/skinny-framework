@@ -5,7 +5,7 @@ create table skinny_sessions (
 );
 
 create table servlet_sessions (
-  jsession_id varchar(32) not null primary key,
+  jsession_id varchar(50) not null primary key,
   skinny_session_id bigint not null,
   created_at timestamp not null,
   foreign key(skinny_session_id) references skinny_sessions(id)
