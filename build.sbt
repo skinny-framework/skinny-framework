@@ -4,10 +4,10 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.0-RC2"
+lazy val currentVersion = "3.0.0-RC3"
 
-lazy val skinnyMicroVersion      = "1.4.0-RC3"
-lazy val scalikeJDBCVersion      = "3.3.0-RC1"
+lazy val skinnyMicroVersion      = "2.0.0-RC1"
+lazy val scalikeJDBCVersion      = "3.3.0"
 lazy val h2Version               = "1.4.197"
 lazy val kuromojiVersion         = "7.4.0"
 lazy val mockitoVersion          = "2.19.1"
@@ -334,7 +334,7 @@ lazy val scalikejdbcDependencies = Seq(
 )
 
 lazy val servletApiDependencies = Seq(
-  "javax.servlet" % "javax.servlet-api" % "3.1.0" % Provided
+  "javax.servlet" % "javax.servlet-api" % "3.1.0" % Compile
 )
 lazy val slf4jApiDependencies = Seq(
   "org.slf4j" % "slf4j-api" % slf4jApiVersion % Compile
