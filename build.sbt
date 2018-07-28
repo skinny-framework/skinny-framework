@@ -4,13 +4,13 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.0-RC3"
+lazy val currentVersion = "3.0.0"
 
-lazy val skinnyMicroVersion      = "2.0.0-RC1"
+lazy val skinnyMicroVersion      = "2.0.0"
 lazy val scalikeJDBCVersion      = "3.3.0"
 lazy val h2Version               = "1.4.197"
 lazy val kuromojiVersion         = "7.4.0"
-lazy val mockitoVersion          = "2.19.1"
+lazy val mockitoVersion          = "2.20.1"
 lazy val jettyVersion            = "9.4.11.v20180605"
 lazy val logbackVersion          = "1.2.3"
 lazy val slf4jApiVersion         = "1.7.25"
@@ -72,7 +72,7 @@ lazy val common = (project in file("common"))
       jodaDependencies ++ testDependencies(scalaVersion.value) ++ Seq(
         "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1"            % Compile,
         "org.skinny-framework"   %% "skinny-micro-common"      % skinnyMicroVersion % Compile,
-        "com.typesafe"           % "config"                    % "1.3.2"            % Compile,
+        "com.typesafe"           % "config"                    % "1.3.3"            % Compile,
         "org.apache.lucene"      % "lucene-core"               % kuromojiVersion    % Provided,
         "org.apache.lucene"      % "lucene-analyzers-common"   % kuromojiVersion    % Provided,
         "org.apache.lucene"      % "lucene-analyzers-kuromoji" % kuromojiVersion    % Provided
@@ -164,7 +164,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"    % "flyway-core"            % "5.0.7"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.2.17.Final"     % Test,
+      "org.hibernate"   % "hibernate-core"         % "5.3.3.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
