@@ -20,10 +20,13 @@ trait JoinsFeature[Entity] extends SkinnyMapperBase[Entity] with AssociationsFea
     */
   def joins[Id](
       associations: Association[_]*
-  ): JoinsFeature[Entity] with IdFeature[Id] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[
-    Id,
-    Entity
-  ] = {
+  ): JoinsFeature[Entity]
+    with IdFeature[Id]
+    with FinderFeatureWithId[Id, Entity]
+    with QueryingFeatureWithId[
+      Id,
+      Entity
+    ] = {
     val _self         = this
     val _associations = associations
 

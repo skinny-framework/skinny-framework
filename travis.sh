@@ -13,7 +13,7 @@ if [[ "$TEST_TYPE" == "framework" ]]; then
   # sass 3.5 requires Ruby 2.0+
   gem install sass -v 3.4.25 &&
   sbt "example/run db:migrate test" &&
-  sbt ++$TRAVIS_SCALA_VERSION scalafmt::test sbt:scalafmt::test test:scalafmt::test test
+  sbt ++$TRAVIS_SCALA_VERSION scalafmtSbtCheck scalafmtCheck test
 elif [[ "$TEST_TYPE" == "blank-app" && "$TRAVIS_SCALA_VERSION" == 2.12* ]]; then
   export SBT_OPTS="" &&  yes|./run_skinny-blank-app_test.sh
 fi
