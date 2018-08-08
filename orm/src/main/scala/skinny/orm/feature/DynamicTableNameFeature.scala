@@ -21,10 +21,12 @@ trait DynamicTableNameFeatureWithId[Id, Entity] { self: SkinnyMapperBase[Entity]
     */
   def withTableName(
       tableName: String
-  ): DynamicTableNameFeatureWithId[Id, Entity] with FinderFeatureWithId[Id, Entity] with QueryingFeatureWithId[
-    Id,
-    Entity
-  ] = {
+  ): DynamicTableNameFeatureWithId[Id, Entity]
+    with FinderFeatureWithId[Id, Entity]
+    with QueryingFeatureWithId[
+      Id,
+      Entity
+    ] = {
     val _self            = this
     val dynamicTableName = tableName
 

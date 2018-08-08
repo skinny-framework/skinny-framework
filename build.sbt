@@ -10,7 +10,7 @@ lazy val skinnyMicroVersion      = "2.0.0"
 lazy val scalikeJDBCVersion      = "3.3.0"
 lazy val h2Version               = "1.4.197"
 lazy val kuromojiVersion         = "7.4.0"
-lazy val mockitoVersion          = "2.20.1"
+lazy val mockitoVersion          = "2.21.0"
 lazy val jettyVersion            = "9.4.11.v20180605"
 lazy val logbackVersion          = "1.2.3"
 lazy val slf4jApiVersion         = "1.7.25"
@@ -21,7 +21,10 @@ lazy val collectionCompatVersion = "0.1.1"
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
   version := currentVersion,
-  dependencyOverrides += "org.slf4j" % "slf4j-api" % slf4jApiVersion,
+  dependencyOverrides ++= Seq(
+    "org.slf4j"              % "slf4j-api"  % slf4jApiVersion,
+    "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
+  ),
   resolvers ++= Seq(
     "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
     //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -163,8 +166,8 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"    % "flyway-core"            % "5.0.7"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.3.3.Final"      % Test,
+      "org.flywaydb"    % "flyway-core"            % "5.1.4"            % Compile,
+      "org.hibernate"   % "hibernate-core"         % "5.3.4.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -188,7 +191,7 @@ lazy val freemarker = (project in file("freemarker"))
     name := "skinny-freemarker",
     libraryDependencies ++= servletApiDependencies ++ Seq(
       "commons-beanutils"    % "commons-beanutils"  % "1.9.3"            % Compile,
-      "org.freemarker"       % "freemarker"         % "2.3.23"           % Compile,
+      "org.freemarker"       % "freemarker"         % "2.3.28"           % Compile,
       "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
