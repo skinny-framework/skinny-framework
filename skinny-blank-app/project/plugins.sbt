@@ -22,7 +22,7 @@ addSbtPlugin("org.scalatra.scalate" % "sbt-scalate-precompiler" % "1.9.0.0")
 
 // --------
 // format Scala source code automatically
-addSbtPlugin("com.lucidchart" % "sbt-scalafmt" % "1.15")
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "1.5.1")
 
 // --------
 // scoverage for test coverage (./skinny test:coverage)

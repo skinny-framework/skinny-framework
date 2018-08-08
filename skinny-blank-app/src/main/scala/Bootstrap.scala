@@ -6,9 +6,10 @@ class Bootstrap extends SkinnyLifeCycle {
 
   // If you prefer more logging, configure this settings
   // http://scalikejdbc.org/documentation/configuration.html
-  scalikejdbc.GlobalSettings.loggingSQLAndTime = scalikejdbc.LoggingSQLAndTimeSettings(
-    singleLineMode = true
-  )
+  scalikejdbc.GlobalSettings.loggingSQLAndTime =
+    scalikejdbc.LoggingSQLAndTimeSettings(
+      singleLineMode = true
+    )
 
   // simple worker example
   /*

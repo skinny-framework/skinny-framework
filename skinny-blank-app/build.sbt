@@ -9,12 +9,12 @@ import scala.language.postfixOps
 // -------------------------------------------------------
 
 val appOrganization = "org.skinny-framework"
-val appName         = "skinny-blank-app"
-val appVersion      = "0.1.0-SNAPSHOT"
+val appName = "skinny-blank-app"
+val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion   = "3.0.0"
+val skinnyVersion = "3.0.0"
 val theScalaVersion = "2.12.6"
-val jettyVersion    = "9.4.11.v20180605"
+val jettyVersion = "9.4.11.v20180605"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -22,24 +22,24 @@ lazy val baseSettings = servletSettings ++ Seq(
   version := appVersion,
   scalaVersion := theScalaVersion,
   dependencyOverrides := Seq(
-    "org.scala-lang"         % "scala-library"             % scalaVersion.value,
-    "org.scala-lang"         % "scala-reflect"             % scalaVersion.value,
-    "org.scala-lang"         % "scala-compiler"            % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml"                % "1.1.0",
+    "org.scala-lang" % "scala-library" % scalaVersion.value,
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-    "org.slf4j"              % "slf4j-api"                 % "1.7.25"
+    "org.slf4j" % "slf4j-api" % "1.7.25"
   ),
   libraryDependencies ++= Seq(
-    "org.skinny-framework" %% "skinny-framework"    % skinnyVersion,
-    "org.skinny-framework" %% "skinny-assets"       % skinnyVersion,
-    "org.skinny-framework" %% "skinny-task"         % skinnyVersion,
-    "org.skinny-framework" % "skinny-logback"       % "1.0.14",
-    "com.h2database"       % "h2"                   % "1.4.197", // your own JDBC driver
+    "org.skinny-framework" %% "skinny-framework" % skinnyVersion,
+    "org.skinny-framework" %% "skinny-assets" % skinnyVersion,
+    "org.skinny-framework" %% "skinny-task" % skinnyVersion,
+    "org.skinny-framework" % "skinny-logback" % "1.0.14",
+    "com.h2database" % "h2" % "1.4.197", // your own JDBC driver
     "org.skinny-framework" %% "skinny-factory-girl" % skinnyVersion % "test",
-    "org.skinny-framework" %% "skinny-test"         % skinnyVersion % "test",
-    "org.eclipse.jetty"    % "jetty-webapp"         % jettyVersion % "container",
-    "org.eclipse.jetty"    % "jetty-plus"           % jettyVersion % "container",
-    "javax.servlet"        % "javax.servlet-api"    % "3.1.0" % "container;provided;test"
+    "org.skinny-framework" %% "skinny-test" % skinnyVersion % "test",
+    "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container",
+    "org.eclipse.jetty" % "jetty-plus" % jettyVersion % "container",
+    "javax.servlet" % "javax.servlet-api" % "3.1.0" % "container;provided;test"
   ),
   // ------------------------------
   // for ./skinnny console
@@ -75,10 +75,11 @@ lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
         // These imports should be same as src/main/scala/templates/ScalatePackage.scala
         Seq("import controller._", "import model._"),
         Seq(
-          Binding("context",
-                  "_root_.skinny.micro.contrib.scalate.SkinnyScalateRenderContext",
-                  importMembers = true,
-                  isImplicit = true)
+          Binding(
+            "context",
+            "_root_.skinny.micro.contrib.scalate.SkinnyScalateRenderContext",
+            importMembers = true,
+            isImplicit = true)
         ),
         Some("templates")
       )
@@ -91,7 +92,8 @@ lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
 // -------------------------------------------------------
 
 lazy val devBaseSettings = baseSettings ++ Seq(
-  unmanagedClasspath in Test += Attributed.blank(baseDirectory.value / "src/main/webapp"),
+  unmanagedClasspath in Test += Attributed.blank(
+    baseDirectory.value / "src/main/webapp"),
   // Integration tests become slower when multiple controller tests are loaded in the same time
   parallelExecution in Test := false,
   port in container.Configuration := 8080
@@ -132,7 +134,8 @@ lazy val packagingBaseSettings = baseSettings ++ scalatePrecompileSettings ++ Se
   sources in doc in Compile := List(),
   publishTo := {
     val base = "https://oss.sonatype.org/"
-    if (version.value.trim.endsWith("SNAPSHOT")) Some("snapshots" at base + "content/repositories/snapshots")
+    if (version.value.trim.endsWith("SNAPSHOT"))
+      Some("snapshots" at base + "content/repositories/snapshots")
     else Some("releases" at base + "service/local/staging/deploy/maven2")
   }
 )
