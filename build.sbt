@@ -31,8 +31,8 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.6",
-  crossScalaVersions := Seq("2.13.0-M4", "2.12.6", "2.11.12"),
+  scalaVersion := "2.12.7",
+  crossScalaVersions := Seq("2.13.0-M4", "2.12.7", "2.11.12"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
   libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion,
   unmanagedSourceDirectories in Compile += {
