@@ -6,7 +6,8 @@ scala:
   - 2.13.0-M4
 jdk:
   - oraclejdk8
-  - openjdk11
+  # TODO: need to fix
+  #- openjdk11
 cache:
   directories:
     - $HOME/.ivy2/cache
