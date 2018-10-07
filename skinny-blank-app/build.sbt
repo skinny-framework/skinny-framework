@@ -12,9 +12,9 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "3.0.0"
-val theScalaVersion = "2.12.6"
-val jettyVersion = "9.4.11.v20180605"
+val skinnyVersion = "3.0.1"
+val theScalaVersion = "2.12.7"
+val jettyVersion = "9.4.12.v20180830"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -25,7 +25,7 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang" % "scala-library" % scalaVersion.value,
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
+    "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
     "org.slf4j" % "slf4j-api" % "1.7.25"
   ),
