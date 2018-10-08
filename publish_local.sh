@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ "$1" == "test" ]]; then
 
-sbt ++2.11.12 \
+sbt ++2.12.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \
@@ -40,7 +40,7 @@ sbt ++2.13.0-M4 \
   standalone/publishLocal \
   freemarker/publishLocal \
   thymeleaf/publishLocal \
-  ++2.12.6 \
+  ++2.12.7 \
   clean \
   common/publishLocal \
   assets/publishLocal \

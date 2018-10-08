@@ -4,14 +4,14 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.0"
+lazy val currentVersion = "3.0.1"
 
 lazy val skinnyMicroVersion      = "2.0.0"
 lazy val scalikeJDBCVersion      = "3.3.1"
 lazy val h2Version               = "1.4.197"
-lazy val kuromojiVersion         = "7.4.0"
-lazy val mockitoVersion          = "2.21.0"
-lazy val jettyVersion            = "9.4.11.v20180605"
+lazy val kuromojiVersion         = "7.5.0"
+lazy val mockitoVersion          = "2.23.0"
+lazy val jettyVersion            = "9.4.12.v20180830"
 lazy val logbackVersion          = "1.2.3"
 lazy val slf4jApiVersion         = "1.7.25"
 lazy val commonsIoVersion        = "2.6"
@@ -23,7 +23,7 @@ lazy val baseSettings = Seq(
   version := currentVersion,
   dependencyOverrides ++= Seq(
     "org.slf4j"              % "slf4j-api"  % slf4jApiVersion,
-    "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
+    "org.scala-lang.modules" %% "scala-xml" % (if (scalaVersion.value == "2.13.0-M4") "1.1.0" else "1.1.1"),
   ),
   resolvers ++= Seq(
     "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
@@ -166,8 +166,8 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"    % "flyway-core"            % "5.1.4"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.3.4.Final"      % Test,
+      "org.flywaydb"    % "flyway-core"            % "5.2.0"            % Compile,
+      "org.hibernate"   % "hibernate-core"         % "5.3.6.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -248,7 +248,7 @@ lazy val twitterController = (project in file("twitter-controller"))
   .settings(
     name := "skinny-twitter-controller",
     libraryDependencies ++= Seq(
-      "org.twitter4j"        % "twitter4j-core"     % "4.0.6"            % Compile,
+      "org.twitter4j"        % "twitter4j-core"     % "4.0.7"            % Compile,
       "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion % Test
     ) ++ servletApiDependencies ++ testDependencies(scalaVersion.value)
   )
