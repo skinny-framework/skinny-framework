@@ -305,20 +305,24 @@ object future extends ValidationRule {
 // param("createdAt" -> "2013-01-02 03:04:05") is dateTimeFormat
 object dateTimeFormat extends ValidationRule {
   def name = "dateTimeFormat"
-  def isValid(v: Any): Boolean = isEmpty(v) || {
-    try DateTimeUtil.parseDateTime(v.toString) != null
-    catch { case scala.util.control.NonFatal(e) => false }
-  }
+  def isValid(v: Any): Boolean = isEmpty(v) || (
+    v.toString.split("[-:\\s/]").forall(!_.isEmpty) && {
+      try DateTimeUtil.parseDateTime(v.toString) != null
+      catch { case scala.util.control.NonFatal(e) => false }
+    }
+  )
 }
 
 // ----
 // param("birthday" -> "2011-06-22") is dateFormat
 object dateFormat extends ValidationRule {
   def name = "dateFormat"
-  def isValid(v: Any): Boolean = isEmpty(v) || {
-    try DateTimeUtil.parseLocalDate(v.toString) != null
-    catch { case scala.util.control.NonFatal(e) => false }
-  }
+  def isValid(v: Any): Boolean = isEmpty(v) || (
+    v.toString.split("[-:\\s/]").forall(!_.isEmpty) && {
+      try DateTimeUtil.parseLocalDate(v.toString) != null
+      catch { case scala.util.control.NonFatal(e) => false }
+    }
+  )
 }
 
 // ----

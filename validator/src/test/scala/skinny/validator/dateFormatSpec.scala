@@ -22,6 +22,9 @@ class dateFormatSpec extends FlatSpec with Matchers {
     validate(param("x" -> "2013/01/02 12:34:56")).isSuccess should equal(true)
     validate(param("x" -> "2013/1/2 12-34-56")).isSuccess should equal(true)
     validate(param("x" -> "2013-01-02 123456")).isSuccess should equal(true)
+
+    validate(param("x" -> "-01-02 03:04:05")).isSuccess should equal(false)
+    validate(param("x" -> "-01-02")).isSuccess should equal(false)
   }
 
 }
