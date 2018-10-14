@@ -4,26 +4,25 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.1"
+lazy val currentVersion = "3.0.1-RC1"
 
-lazy val skinnyMicroVersion      = "2.0.0"
-lazy val scalikeJDBCVersion      = "3.3.1"
-lazy val h2Version               = "1.4.197"
-lazy val kuromojiVersion         = "7.5.0"
-lazy val mockitoVersion          = "2.23.0"
-lazy val jettyVersion            = "9.4.12.v20180830"
-lazy val logbackVersion          = "1.2.3"
-lazy val slf4jApiVersion         = "1.7.25"
-lazy val commonsIoVersion        = "2.6"
-lazy val skinnyLogbackVersion    = "1.0.14"
-lazy val collectionCompatVersion = "0.1.1"
+lazy val skinnyMicroVersion   = "2.0.1-RC1"
+lazy val scalikeJDBCVersion   = "3.3.1"
+lazy val h2Version            = "1.4.197"
+lazy val kuromojiVersion      = "7.5.0"
+lazy val mockitoVersion       = "2.23.0"
+lazy val jettyVersion         = "9.4.12.v20180830"
+lazy val logbackVersion       = "1.2.3"
+lazy val slf4jApiVersion      = "1.7.25"
+lazy val commonsIoVersion     = "2.6"
+lazy val skinnyLogbackVersion = "1.0.14"
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
   version := currentVersion,
   dependencyOverrides ++= Seq(
     "org.slf4j"              % "slf4j-api"  % slf4jApiVersion,
-    "org.scala-lang.modules" %% "scala-xml" % (if (scalaVersion.value == "2.13.0-M4") "1.1.0" else "1.1.1"),
+    "org.scala-lang.modules" %% "scala-xml" % (if (scalaVersion.value == "2.13.0-M5") "1.1.0" else "1.1.1"),
   ),
   resolvers ++= Seq(
     "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
@@ -32,9 +31,12 @@ lazy val baseSettings = Seq(
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
   scalaVersion := "2.12.7",
-  crossScalaVersions := Seq("2.13.0-M4", "2.12.7", "2.11.12"),
+  crossScalaVersions := Seq("2.13.0-M5", "2.12.7", "2.11.12"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
-  libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion,
+  libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % {
+    // TODO https://github.com/scala/scala-collection-compat/pull/152
+    if (scalaVersion.value == "2.13.0-M5") "0.2.0" else "0.1.1"
+  },
   unmanagedSourceDirectories in Compile += {
     val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -324,8 +326,8 @@ lazy val fullExclusionRules = Seq(
   ExclusionRule("org.slf4j", "slf4j-log4j12")
 )
 lazy val compileScalateDependencies = Seq(
-  "org.scalatra.scalate" %% "scalamd"      % "1.7.1" % Compile,
-  "org.scalatra.scalate" %% "scalate-core" % "1.9.0" % Compile excludeAll (fullExclusionRules: _*)
+  "org.scalatra.scalate" %% "scalamd"      % "1.7.1"     % Compile,
+  "org.scalatra.scalate" %% "scalate-core" % "1.9.1-RC1" % Compile excludeAll (fullExclusionRules: _*)
 )
 
 lazy val scalikejdbcDependencies = Seq(
@@ -352,7 +354,7 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
 )
 def scalatestV(scalaV: String) = {
   CrossVersion.partialVersion(scalaV) match {
-    case Some((2, v)) if v >= 13 => "3.0.6-SNAP1"
+    case Some((2, v)) if v >= 13 => "3.0.6-SNAP3"
     case _                       => "3.0.5"
   }
 }
