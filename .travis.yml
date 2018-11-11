@@ -16,8 +16,6 @@ matrix:
   include:
   - scala: 2.12.7
     jdk: oraclejdk9
-  - scala: 2.12.7
-    jdk: oraclejdk10
 script: 
   - travis_retry "./travis.sh"
   - find $HOME/.sbt -name "*.lock" | xargs rm -f
