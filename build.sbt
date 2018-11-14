@@ -167,7 +167,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"    % "flyway-core"            % "5.2.0"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.3.6.Final"      % Test,
+      "org.hibernate"   % "hibernate-core"         % "5.3.7.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -343,8 +343,8 @@ lazy val slf4jApiDependencies = Seq(
   "org.slf4j" % "slf4j-api" % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time" % "joda-time"    % "2.10"  % Compile,
-  "org.joda"  % "joda-convert" % "2.1.1" % Compile
+  "joda-time" % "joda-time"    % "2.10.1" % Compile,
+  "org.joda"  % "joda-convert" % "2.1.2"  % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
