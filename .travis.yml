@@ -2,7 +2,7 @@ language: scala
 sudo: false
 scala:
   - 2.11.12
-  - 2.12.7
+  - 2.12.8
   - 2.13.0-M4
 jdk:
   - oraclejdk8
@@ -14,7 +14,7 @@ cache:
     - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
 matrix:
   include:
-  - scala: 2.12.7
+  - scala: 2.12.8
     jdk: oraclejdk9
 script: 
   - travis_retry "./travis.sh"
