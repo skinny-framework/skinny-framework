@@ -363,7 +363,6 @@ def testDependencies(scalaV: String) = Seq(
   "org.jvnet.mock-javamail" % "mock-javamail"   % "1.9"                % Test,
   "com.h2database"          % "h2"              % h2Version            % Test,
   "org.skinny-framework"    % "skinny-logback"  % skinnyLogbackVersion % Test,
-  "com.h2database"          % "h2"              % h2Version            % Test
 )
 
 def _publishTo(v: String) = {
