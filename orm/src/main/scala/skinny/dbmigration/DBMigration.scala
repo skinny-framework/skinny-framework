@@ -21,9 +21,10 @@ trait DBMigration {
       DBSettings.initialize()
 
       try {
-        val pool   = ConnectionPool.get(Symbol(poolName))
-        val flyway = new Flyway
-        flyway.setDataSource(pool.dataSource)
+        val pool = ConnectionPool.get(Symbol(poolName))
+        val flyway = Flyway
+          .configure()
+          .dataSource(pool.dataSource)
 
         val migrationConfigPath = s"db.${poolName}.migration"
         val rootConfig          = TypesafeConfigReader.config(env)
@@ -35,10 +36,10 @@ trait DBMigration {
             .asScala
             .map(l => "db.migration." + l.replaceAll("/", "."))
           if (locations.nonEmpty) {
-            flyway.setLocations(locations.toIndexedSeq: _*)
+            flyway.locations(locations.toIndexedSeq: _*)
           }
         }
-        flyway.migrate()
+        flyway.load().migrate()
       } catch {
         case e: IllegalStateException =>
           throw new DBSettingsException(s"ConnectionPool named $poolName is not found.")
@@ -57,10 +58,12 @@ trait DBMigration {
       System.setProperty(SkinnyEnv.PropertyKey, env)
       DBSettings.initialize()
       try {
-        val pool   = ConnectionPool.get(Symbol(poolName))
-        val flyway = new Flyway
-        flyway.setDataSource(pool.dataSource)
-        flyway.repair()
+        val pool = ConnectionPool.get(Symbol(poolName))
+        Flyway
+          .configure()
+          .dataSource(pool.dataSource)
+          .load()
+          .repair()
       } catch {
         case e: IllegalStateException =>
           throw new DBSettingsException(s"ConnectionPool named $poolName is not found.")
