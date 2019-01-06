@@ -4,7 +4,7 @@ import scalikejdbc._
 import skinny.orm.JodaImplicits._
 import org.joda.time.DateTime
 import scalikejdbc.scalatest.AutoRollback
-import org.scalatest._
+import org.scalatest.{ Tag => _, _ }
 import skinny.{ Pagination, ParamType, PermittedStrongParameters, StrongParameters }
 import skinny.test.LightFactoryGirl
 import skinny.orm.exception.OptimisticLockException

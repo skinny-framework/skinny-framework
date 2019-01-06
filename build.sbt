@@ -16,13 +16,19 @@ lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.25"
 lazy val commonsIoVersion     = "2.6"
 lazy val skinnyLogbackVersion = "1.0.14"
+lazy val collectionCompatVersion = Def.setting {
+  if (scalaVersion.value == "2.13.0-M5")
+    "0.2.0"
+  else
+    "0.1.1"
+}
 
 lazy val baseSettings = Seq(
   organization := "org.skinny-framework",
   version := currentVersion,
   dependencyOverrides ++= Seq(
     "org.slf4j"              % "slf4j-api"  % slf4jApiVersion,
-    "org.scala-lang.modules" %% "scala-xml" % (if (scalaVersion.value == "2.13.0-M5") "1.1.0" else "1.1.1"),
+    "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
   ),
   resolvers ++= Seq(
     "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
@@ -30,13 +36,10 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.7",
-  crossScalaVersions := Seq("2.13.0-M5", "2.12.7", "2.11.12"),
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.13.0-M5", "2.12.8", "2.11.12"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
-  libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % {
-    // TODO https://github.com/scala/scala-collection-compat/pull/152
-    if (scalaVersion.value == "2.13.0-M5") "0.2.0" else "0.1.1"
-  },
+  libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion.value,
   unmanagedSourceDirectories in Compile += {
     val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -169,7 +172,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"    % "flyway-core"            % "5.2.0"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.3.6.Final"      % Test,
+      "org.hibernate"   % "hibernate-core"         % "5.3.7.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -345,8 +348,8 @@ lazy val slf4jApiDependencies = Seq(
   "org.slf4j" % "slf4j-api" % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time" % "joda-time"    % "2.10"  % Compile,
-  "org.joda"  % "joda-convert" % "2.1.1" % Compile
+  "joda-time" % "joda-time"    % "2.10.1" % Compile,
+  "org.joda"  % "joda-convert" % "2.1.2"  % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "javax.mail"              % "mail"          % "1.4.7" % Compile,
@@ -354,7 +357,7 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
 )
 def scalatestV(scalaV: String) = {
   CrossVersion.partialVersion(scalaV) match {
-    case Some((2, v)) if v >= 13 => "3.0.6-SNAP3"
+    case Some((2, v)) if v >= 13 => "3.0.6-SNAP5"
     case _                       => "3.0.5"
   }
 }
@@ -365,7 +368,6 @@ def testDependencies(scalaV: String) = Seq(
   "org.jvnet.mock-javamail" % "mock-javamail"   % "1.9"                % Test,
   "com.h2database"          % "h2"              % h2Version            % Test,
   "org.skinny-framework"    % "skinny-logback"  % skinnyLogbackVersion % Test,
-  "com.h2database"          % "h2"              % h2Version            % Test
 )
 
 def _publishTo(v: String) = {

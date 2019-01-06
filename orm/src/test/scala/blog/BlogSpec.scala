@@ -3,7 +3,7 @@ package blog
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest._
+import org.scalatest.{ Tag => _, _ }
 import skinny.Pagination
 
 class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
