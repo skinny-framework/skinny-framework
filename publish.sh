@@ -20,7 +20,7 @@ sbt ++2.13.0-M5 \
   standalone/publishSigned \
   freemarker/publishSigned \
   thymeleaf/publishSigned \
-  ++2.12.6 \
+  ++2.12.8 \
   clean \
   common/publishSigned \
   assets/publishSigned \

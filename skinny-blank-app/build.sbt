@@ -12,9 +12,9 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "3.0.1"
+val skinnyVersion = "3.0.2-RC1"
 val theScalaVersion = "2.12.8"
-val jettyVersion = "9.4.12.v20180830"
+val jettyVersion = "9.4.14.v20181114"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
