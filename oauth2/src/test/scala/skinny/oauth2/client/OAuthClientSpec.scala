@@ -83,11 +83,11 @@ class OAuthClientSpec extends FunSpec with Matchers {
         .clientId("xxx.apps.googleusercontent.com") // CLIENT ID
         .state("session_id_hash_value")
         .responseType("code")
-        .scope("openid email")
+        .scope("openid email profile")
         .redirectURI("http://localhost:8080/oauth2callback")
 
       val url = new URL(request.locationURI)
-      (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://accounts.google.com/o/oauth2/auth")
+      (url.getProtocol + "://" + url.getHost + url.getPath) should equal("https://accounts.google.com/o/oauth2/v2/auth")
 
       val params: Map[String, String] = url.getQuery
         .split("&")
@@ -99,7 +99,7 @@ class OAuthClientSpec extends FunSpec with Matchers {
       params should equal(
         Map(
           "state"         -> "session_id_hash_value",
-          "scope"         -> "openid+email",
+          "scope"         -> "openid+email+profile",
           "redirect_uri"  -> "http%3A%2F%2Flocalhost%3A8080%2Foauth2callback",
           "client_id"     -> "xxx.apps.googleusercontent.com",
           "response_type" -> "code"

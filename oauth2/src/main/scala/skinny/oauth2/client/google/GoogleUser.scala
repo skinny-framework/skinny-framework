@@ -5,6 +5,7 @@ import skinny.oauth2.client.OAuth2User
 /**
   * Authorized Google plus user basic information.
   */
+@deprecated("Google+ API will be shutdown on March 7, 2019. https://developers.google.com/+/api-shutdown")
 case class GoogleUser(
     override val id: String,
     displayName: String,
