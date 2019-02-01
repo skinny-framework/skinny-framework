@@ -5,7 +5,7 @@ import skinny.oauth2.client.OAuth2User
 /**
   * Authorized Google OpenID Connect user
   */
-case class GoogleOpenIdConnectUser(
+case class GoogleOpenIDConnectUser(
     sub: String,
     email: String,
     emailVerified: Boolean,

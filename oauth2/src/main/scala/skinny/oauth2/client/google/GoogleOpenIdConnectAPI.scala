@@ -9,15 +9,15 @@ import scala.util.control.NonFatal
 /**
   * Google OpenID Connect API.
   */
-trait GoogleOpenIdConnectAPI extends LoggerProvider {
+trait GoogleOpenIDConnectAPI extends LoggerProvider {
 
-  def userinfo(token: OAuth2Token): Option[GoogleOpenIdConnectUser] = {
+  def userinfo(token: OAuth2Token): Option[GoogleOpenIDConnectUser] = {
     try {
       val response = OAuth2Client.resource {
         BearerRequest("https://openidconnect.googleapis.com/v1/userinfo").accessToken(token.accessToken)
       }
       logger.debug(s"Google OpenID Connect authorized user: ${response.body}")
-      JSONStringOps.fromJSONString[GoogleOpenIdConnectUser](response.body).toOption
+      JSONStringOps.fromJSONString[GoogleOpenIDConnectUser](response.body).toOption
     } catch {
       case NonFatal(e) =>
         logger.error(s"Failed to get current Google OpenID Connect user information because ${e.getMessage}", e)
@@ -27,4 +27,4 @@ trait GoogleOpenIdConnectAPI extends LoggerProvider {
 
 }
 
-object GoogleOpenIdConnectAPI extends GoogleOpenIdConnectAPI
+object GoogleOpenIDConnectAPI extends GoogleOpenIDConnectAPI
