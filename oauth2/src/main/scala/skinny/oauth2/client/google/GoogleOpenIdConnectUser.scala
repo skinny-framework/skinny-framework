@@ -10,8 +10,8 @@ case class GoogleOpenIDConnectUser(
     email: String,
     emailVerified: Boolean,
     name: String,
-    familyName: String,
-    givenName: String,
+    familyName: Option[String],
+    givenName: Option[String],
     locale: String,
     picture: String
 ) extends OAuth2User {
