@@ -9,7 +9,7 @@ import scala.util.control.NonFatal
 /**
   * Google Plus API.
   */
-@deprecated("Google+ API will be shutdown on March 7, 2019. https://developers.google.com/+/api-shutdown")
+@deprecated("Google+ API will be shut down on March 7, 2019. https://developers.google.com/+/api-shutdown")
 trait GooglePlusAPI extends LoggerProvider {
 
   def me(token: OAuth2Token): Option[GoogleUser] = {
