@@ -13,7 +13,7 @@ case class GoogleOpenIdConnectUser(
     familyName: String,
     givenName: String,
     locale: String,
-    picture: String,
+    picture: String
 ) extends OAuth2User {
   override val id: String = sub
 }
