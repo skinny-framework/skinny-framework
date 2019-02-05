@@ -68,7 +68,7 @@ object OAuth2Provider {
   val Google = OAuth2Provider(
     "Google",
     "https://accounts.google.com/o/oauth2/v2/auth",
-    "https://oauth2.googleapis.com/token",
+    "https://oauth2.googleapis.com/token"
   )
 
   // mixi
