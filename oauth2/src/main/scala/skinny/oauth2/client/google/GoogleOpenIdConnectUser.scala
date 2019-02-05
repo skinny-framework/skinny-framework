@@ -7,13 +7,13 @@ import skinny.oauth2.client.OAuth2User
   */
 case class GoogleOpenIDConnectUser(
     sub: String,
-    email: String,
-    emailVerified: Boolean,
-    name: String,
+    email: Option[String],
+    emailVerified: Option[Boolean],
+    name: Option[String],
     familyName: Option[String],
     givenName: Option[String],
-    locale: String,
-    picture: String
+    locale: Option[String],
+    picture: Option[String]
 ) extends OAuth2User {
   override val id: String = sub
 }
