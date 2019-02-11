@@ -31,4 +31,4 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
 //addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.2.5")
 
 // check the latest version of dependencies
-// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.3.4")
+// addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.4.0")
