@@ -11,6 +11,7 @@ import skinny.oauth2.client.google._
   * export SKINNY_OAUTH2_CLIENT_SECRET_GOOGLE=yyy
   * }}}
   */
+@deprecated("Google+ API will be shut down on March 7, 2019. https://developers.google.com/+/api-shutdown")
 trait GoogleLoginFeature extends OAuth2LoginFeature[GoogleUser] {
 
   override protected def provider = OAuth2Provider.Google

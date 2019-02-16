@@ -38,7 +38,6 @@ object OAuth2Provider {
   // Apache Oltu built-in providers
   val Facebook   = OAuth2Provider(OAuthProviderType.FACEBOOK)
   val Foursquare = OAuth2Provider(OAuthProviderType.FOURSQUARE)
-  val Google     = OAuth2Provider(OAuthProviderType.GOOGLE)
   val GitHub     = OAuth2Provider(OAuthProviderType.GITHUB)
   val Instagram  = OAuth2Provider(OAuthProviderType.INSTAGRAM)
   val LinkedIn   = OAuth2Provider(OAuthProviderType.LINKEDIN)
@@ -62,6 +61,14 @@ object OAuth2Provider {
     "dropbox",
     "https://www.dropbox.com/1/oauth2/authorize",
     "https://www.dropbox.com/1/oauth2/token"
+  )
+
+  // Google
+  // https://developers.google.com/identity/protocols/OpenIDConnect
+  val Google = OAuth2Provider(
+    "Google",
+    "https://accounts.google.com/o/oauth2/v2/auth",
+    "https://oauth2.googleapis.com/token"
   )
 
   // mixi
