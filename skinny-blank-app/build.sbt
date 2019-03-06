@@ -12,9 +12,9 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "3.0.2-RC1"
+val skinnyVersion = "3.0.2"
 val theScalaVersion = "2.12.8"
-val jettyVersion = "9.4.14.v20181114"
+val jettyVersion = "9.4.15.v20190215"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -27,14 +27,14 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
     "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-    "org.slf4j" % "slf4j-api" % "1.7.25"
+    "org.slf4j" % "slf4j-api" % "1.7.26"
   ),
   libraryDependencies ++= Seq(
     "org.skinny-framework" %% "skinny-framework" % skinnyVersion,
     "org.skinny-framework" %% "skinny-assets" % skinnyVersion,
     "org.skinny-framework" %% "skinny-task" % skinnyVersion,
     "org.skinny-framework" % "skinny-logback" % "1.0.14",
-    "com.h2database" % "h2" % "1.4.197", // your own JDBC driver
+    "com.h2database" % "h2" % "1.4.198", // your own JDBC driver
     "org.skinny-framework" %% "skinny-factory-girl" % skinnyVersion % "test",
     "org.skinny-framework" %% "skinny-test" % skinnyVersion % "test",
     "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container",

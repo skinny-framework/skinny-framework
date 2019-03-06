@@ -4,21 +4,21 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.2-RC1"
+lazy val currentVersion = "3.0.2"
 
-lazy val skinnyMicroVersion   = "2.0.1-RC1"
-lazy val scalikeJDBCVersion   = "3.3.2"
-lazy val h2Version            = "1.4.197"
-lazy val kuromojiVersion      = "7.5.0"
-lazy val mockitoVersion       = "2.23.0"
-lazy val jettyVersion         = "9.4.14.v20181114"
+lazy val skinnyMicroVersion   = "2.0.1"
+lazy val scalikeJDBCVersion   = "3.3.3"
+lazy val h2Version            = "1.4.198"
+lazy val kuromojiVersion      = "7.7.1"
+lazy val mockitoVersion       = "2.25.0"
+lazy val jettyVersion         = "9.4.15.v20190215"
 lazy val logbackVersion       = "1.2.3"
-lazy val slf4jApiVersion      = "1.7.25"
+lazy val slf4jApiVersion      = "1.7.26"
 lazy val commonsIoVersion     = "2.6"
 lazy val skinnyLogbackVersion = "1.0.14"
 lazy val collectionCompatVersion = Def.setting {
   if (scalaVersion.value == "2.13.0-M5")
-    "0.2.0"
+    "0.2.1"
   else
     "0.1.1"
 }
@@ -31,7 +31,7 @@ lazy val baseSettings = Seq(
     "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
   ),
   resolvers ++= Seq(
-    "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
+    "sonatype staging" at "https://oss.sonatype.org/content/repositories/staging",
     //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   ),
   publishTo := _publishTo(version.value),
@@ -94,7 +94,7 @@ lazy val httpClient = (project in file("http-client"))
     name := "skinny-http-client",
     libraryDependencies ++= Seq(
       "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion % Compile,
-      "commons-fileupload"   % "commons-fileupload"   % "1.3.3"            % Test,
+      "commons-fileupload"   % "commons-fileupload"   % "1.4"              % Test,
       "commons-io"           % "commons-io"           % commonsIoVersion   % Test,
       "commons-httpclient"   % "commons-httpclient"   % "3.1"              % Test,
       "javax.servlet"        % "javax.servlet-api"    % "3.1.0"            % Test,
@@ -171,7 +171,7 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"    % "flyway-core"            % "5.2.0"            % Compile,
+      "org.flywaydb"    % "flyway-core"            % "5.2.4"            % Compile,
       "org.hibernate"   % "hibernate-core"         % "5.4.1.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
@@ -329,8 +329,8 @@ lazy val fullExclusionRules = Seq(
   ExclusionRule("org.slf4j", "slf4j-log4j12")
 )
 lazy val compileScalateDependencies = Seq(
-  "org.scalatra.scalate" %% "scalamd"      % "1.7.1"     % Compile,
-  "org.scalatra.scalate" %% "scalate-core" % "1.9.1-RC1" % Compile excludeAll (fullExclusionRules: _*)
+  "org.scalatra.scalate" %% "scalamd"      % "1.7.1" % Compile,
+  "org.scalatra.scalate" %% "scalate-core" % "1.9.1" % Compile excludeAll (fullExclusionRules: _*)
 )
 
 lazy val scalikejdbcDependencies = Seq(
@@ -357,8 +357,8 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
 )
 def scalatestV(scalaV: String) = {
   CrossVersion.partialVersion(scalaV) match {
-    case Some((2, v)) if v >= 13 => "3.0.6-SNAP5"
-    case _                       => "3.0.5"
+    case Some((2, v)) if v >= 13 => "3.1.0-SNAP7"
+    case _                       => "3.0.6"
   }
 }
 def testDependencies(scalaV: String) = Seq(
