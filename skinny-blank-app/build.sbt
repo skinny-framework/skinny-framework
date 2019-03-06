@@ -53,7 +53,7 @@ import _root_.scalikejdbc.config._
 DBSettings.initialize()
 """,
   resolvers ++= Seq(
-    "sonatype releases" at "https://oss.sonatype.org/content/repositories/releases"
+    "sonatype staging" at "https://oss.sonatype.org/content/repositories/staging",
     //, "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   ),
   // Faster "./skinny idea"
