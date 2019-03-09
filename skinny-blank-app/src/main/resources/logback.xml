@@ -13,6 +13,7 @@
     <logger name="org.eclipse.jetty" level="warn"/>
     <logger name="org.fusesource.scalate" level="warn"/>
     <logger name="skinny.micro.contrib.ScalateSupport##anon#1.SourceMap" level="warn"/>
+    <logger name="skinny.micro.contrib.ScalateSupport##anon#2.SourceMap" level="warn"/>
     <logger name="org.flywaydb" level="info"/>
 
     <root level="debug">
