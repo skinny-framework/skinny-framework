@@ -5,7 +5,7 @@ import scala.language.reflectiveCalls
 import javax.servlet.ServletContext
 
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.internal.stubbing.answers._

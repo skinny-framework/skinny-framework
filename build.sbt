@@ -356,10 +356,7 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "org.jvnet.mock-javamail" % "mock-javamail" % "1.9"   % Provided
 )
 def scalatestV(scalaV: String) = {
-  CrossVersion.partialVersion(scalaV) match {
-    case Some((2, v)) if v >= 13 => "3.1.0-SNAP7"
-    case _                       => "3.0.6"
-  }
+  "3.0.7"
 }
 def testDependencies(scalaV: String) = Seq(
   "org.scalatest"           %% "scalatest"      % scalatestV(scalaV)   % Test,
