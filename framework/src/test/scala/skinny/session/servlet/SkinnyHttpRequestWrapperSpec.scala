@@ -3,7 +3,7 @@ package skinny.session.servlet
 import javax.servlet.http.HttpServletRequest
 
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 
 class SkinnyHttpRequestWrapperSpec extends FlatSpec with Matchers with MockitoSugar {
 

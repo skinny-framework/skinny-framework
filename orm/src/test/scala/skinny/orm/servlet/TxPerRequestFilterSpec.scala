@@ -4,7 +4,7 @@ import javax.servlet.{ FilterChain, ServletContext }
 import javax.servlet.http._
 
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import scalikejdbc._
 

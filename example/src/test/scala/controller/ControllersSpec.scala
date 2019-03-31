@@ -1,7 +1,7 @@
 package controller
 
 import org.scalatest._
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import skinny._
 
 class ControllersSpec extends FlatSpec with Matchers with MockitoSugar {
