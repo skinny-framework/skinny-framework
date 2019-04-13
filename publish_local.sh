@@ -20,7 +20,7 @@ sbt ++2.12.8 \
 
 else
 
-sbt ++2.13.0-M5 \
+sbt ++2.13.0-RC1 \
   clean \
   common/publishLocal \
   assets/publishLocal \

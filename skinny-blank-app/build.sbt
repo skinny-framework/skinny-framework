@@ -14,7 +14,7 @@ val appVersion = "0.1.0-SNAPSHOT"
 
 val skinnyVersion = "3.0.3-SNAPSHOT"
 val theScalaVersion = "2.12.8"
-val jettyVersion = "9.4.15.v20190215"
+val jettyVersion = "9.4.16.v20190411"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -25,8 +25,8 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang" % "scala-library" % scalaVersion.value,
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+    "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
     "org.slf4j" % "slf4j-api" % "1.7.26"
   ),
   libraryDependencies ++= Seq(

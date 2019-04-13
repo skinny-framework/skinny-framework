@@ -15,7 +15,7 @@ matrix:
   include:
   - scala: 2.12.8
     jdk: oraclejdk9
-  - scala: 2.13.0-M5
+  - scala: 2.13.0-RC1
     script:
     - sbt "++ ${TRAVIS_SCALA_VERSION}!" test:compile # TODO enable test
 script: 
