@@ -4,7 +4,7 @@ scala:
   - 2.11.12
   - 2.12.8
 jdk:
-  - oraclejdk8
+  - openjdk8
   # TODO: need to fix
   #- openjdk11
 cache:
@@ -13,9 +13,7 @@ cache:
     - $HOME/.sbt/boot/scala-$TRAVIS_SCALA_VERSION
 matrix:
   include:
-  - scala: 2.12.8
-    jdk: oraclejdk9
-  - scala: 2.13.0-M5
+  - scala: 2.13.0
     script:
     - sbt "++ ${TRAVIS_SCALA_VERSION}!" test:compile # TODO enable test
 script: 
