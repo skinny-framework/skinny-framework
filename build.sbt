@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.3-SNAPSHOT"
+lazy val currentVersion = "3.0.3"
 
 lazy val skinnyMicroVersion = Def.setting(
   CrossVersion.partialVersion(scalaVersion.value) match {

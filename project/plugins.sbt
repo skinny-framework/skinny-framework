@@ -10,6 +10,6 @@ addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin"      % "3.0.8")
 addSbtPlugin("com.geirsson"         % "sbt-scalafmt"            % "1.5.1")
 addSbtPlugin("com.jsuereth"         % "sbt-pgp"                 % "1.1.2")
 addSbtPlugin("net.virtual-void"     % "sbt-dependency-graph"    % "0.9.2")
-addSbtPlugin("com.timushev.sbt"     % "sbt-updates"             % "0.4.1")
+addSbtPlugin("com.timushev.sbt"     % "sbt-updates"             % "0.4.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
