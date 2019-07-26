@@ -91,8 +91,8 @@ trait Inflector {
 
   def pascalize(word: String): String = {
     val lst = word.split("_").toList
-    (lst.headOption.map(s ⇒ s.substring(0, 1).toUpperCase(ENGLISH) + s.substring(1)).get ::
-    lst.tail.map(s ⇒ s.substring(0, 1).toUpperCase + s.substring(1))).mkString("")
+    (lst.headOption.map(s => s.substring(0, 1).toUpperCase(ENGLISH) + s.substring(1)).get ::
+    lst.tail.map(s => s.substring(0, 1).toUpperCase + s.substring(1))).mkString("")
   }
 
   def underscore(word: String): String = {
@@ -129,10 +129,10 @@ trait Inflector {
       numberString + "th"
     } else {
       (number % 10) match {
-        case 1 ⇒ numberString + "st"
-        case 2 ⇒ numberString + "nd"
-        case 3 ⇒ numberString + "rd"
-        case _ ⇒ numberString + "th"
+        case 1 => numberString + "st"
+        case 2 => numberString + "nd"
+        case 3 => numberString + "rd"
+        case _ => numberString + "th"
       }
     }
   }
@@ -161,7 +161,7 @@ trait Inflector {
 
   def interpolate(text: String, vars: Map[String, String]): String = {
     """\#\{([^}]+)\}""".r.replaceAllIn(text, (_: Regex.Match) match {
-      case Regex.Groups(v) ⇒ vars.getOrElse(v, "")
+      case Regex.Groups(v) => vars.getOrElse(v, "")
     })
   }
 
