@@ -1,6 +1,7 @@
 package blog
 
-import skinny.orm._, feature._
+import skinny.orm.SkinnyCRUDMapper
+import skinny.orm.feature.TimestampsFeature
 import scalikejdbc._
 import org.joda.time._
 
