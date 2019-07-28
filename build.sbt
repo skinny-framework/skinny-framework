@@ -16,9 +16,9 @@ lazy val skinnyMicroVersion = Def.setting(
 )
 lazy val scalikeJDBCVersion   = "3.3.5"
 lazy val h2Version            = "1.4.199"
-lazy val kuromojiVersion      = "8.0.0"
-lazy val mockitoVersion       = "2.27.0"
-lazy val jettyVersion         = "9.4.16.v20190411"
+lazy val kuromojiVersion      = "8.2.0"
+lazy val mockitoVersion       = "2.28.2"
+lazy val jettyVersion         = "9.4.19.v20190610"
 lazy val logbackVersion       = "1.2.3"
 lazy val slf4jApiVersion      = "1.7.26"
 lazy val commonsIoVersion     = "2.6"
@@ -90,7 +90,7 @@ lazy val common = (project in file("common"))
           else "1.1.2"
         }                      % Compile,
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion.value % Compile,
-        "com.typesafe"         % "config" % "1.3.3" % Compile,
+        "com.typesafe"         % "config" % "1.3.4" % Compile,
         "org.apache.lucene"    % "lucene-core" % kuromojiVersion % Provided,
         "org.apache.lucene"    % "lucene-analyzers-common" % kuromojiVersion % Provided,
         "org.apache.lucene"    % "lucene-analyzers-kuromoji" % kuromojiVersion % Provided
@@ -182,7 +182,7 @@ lazy val orm = (project in file("orm"))
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
       "org.flywaydb"    % "flyway-core"            % "5.2.4"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.4.2.Final"      % Test,
+      "org.hibernate"   % "hibernate-core"         % "5.4.3.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -358,7 +358,7 @@ lazy val slf4jApiDependencies = Seq(
   "org.slf4j" % "slf4j-api" % slf4jApiVersion % Compile
 )
 lazy val jodaDependencies = Seq(
-  "joda-time" % "joda-time"    % "2.10.1" % Compile,
+  "joda-time" % "joda-time"    % "2.10.3" % Compile,
   "org.joda"  % "joda-convert" % "2.2.1"  % Compile
 )
 lazy val mailDependencies = slf4jApiDependencies ++ Seq(
