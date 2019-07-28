@@ -45,7 +45,15 @@ lazy val baseSettings = Seq(
   sbtPlugin := false,
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq("2.13.0", "2.12.8", "2.11.12"),
-  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture"),
+  scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, v)) if v <= 12 =>
+        Seq("-Xfuture")
+      case _ =>
+        Nil
+    }
+  },
   libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion.value,
   unmanagedSourceDirectories in Compile += {
     val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
