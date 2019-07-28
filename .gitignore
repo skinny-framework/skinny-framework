@@ -78,3 +78,5 @@ tmp
 
 velocity.log*
 skinny-engine-blank-app.zip
+pc.stdout.log
+ensime-langserver.log
