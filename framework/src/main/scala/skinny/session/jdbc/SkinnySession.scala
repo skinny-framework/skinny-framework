@@ -7,7 +7,7 @@ import java.io._
 import skinny.logging.LoggerProvider
 
 /**
-  * SkinnySession JDBC implmenetation.
+  * SkinnySession JDBC implementation.
   */
 case class SkinnySession(
     id: Long,
@@ -99,7 +99,7 @@ case class SkinnySession(
 }
 
 /**
-  * SkinnySession JDBC implmenetation.
+  * SkinnySession JDBC implementation.
   */
 object SkinnySession extends SkinnyCRUDMapper[SkinnySession] with LoggerProvider {
 
