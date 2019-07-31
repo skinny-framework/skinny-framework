@@ -15,7 +15,25 @@ matrix:
   include:
   - scala: 2.13.0
     script:
-    - sbt "++ ${TRAVIS_SCALA_VERSION}!" test:compile # TODO enable test
+    - sbt "++ ${TRAVIS_SCALA_VERSION}!" test:compile
+      assets/test
+      common/test
+      factoryGirl/test
+      framework/test
+      freemarker/test
+      httpClient/test
+      json/test
+      mailer/test
+      oauth2/test
+      oauth2Controller/test
+      orm/test
+      standalone/test
+      task/test
+      thymeleaf/test
+      twitterController/test
+      validator/test
+      worker/test
+
 script: 
   - travis_retry "./travis.sh"
   - find $HOME/.sbt -name "*.lock" | xargs rm -f

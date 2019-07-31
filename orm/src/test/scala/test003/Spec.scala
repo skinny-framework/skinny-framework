@@ -4,7 +4,7 @@ import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 import skinny.exception.IllegalAssociationException
-import skinny.orm._
+import skinny.orm.{ SkinnyCRUDMapper, SkinnyNoIdCRUDMapper }
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 

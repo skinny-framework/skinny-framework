@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
-import skinny.orm._
+import skinny.orm.{ SkinnyCRUDMapper, SkinnyRecord }
 import skinny.orm.feature.TimestampsFeature
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
