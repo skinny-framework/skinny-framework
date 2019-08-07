@@ -22,7 +22,7 @@ class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.Skinn
 
   it should "accept resource list request" in {
     val programmer = Programmer.findAllWithLimitOffset(1, 0).headOption.getOrElse {
-      FactoryGirl(Programmer).create('name -> "Alice")
+      FactoryGirl(Programmer).create(Symbol("name") -> "Alice")
     }
     get("/angular/programmers.json") {
       logger.debug(body)
@@ -30,7 +30,7 @@ class AngularXHRProgrammersControllerSpec extends SkinnyFlatSpec with unit.Skinn
       val acts = fromJSONString[List[Programmer]](body)
       acts should not equal (None)
       acts.get should not be (empty)
-      atLeast(1, acts.get) should have('name (programmer.name))
+      atLeast(1, acts.get) should have(Symbol("name")(programmer.name))
     }
   }
 

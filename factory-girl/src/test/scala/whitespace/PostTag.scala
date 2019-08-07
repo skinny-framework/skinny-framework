@@ -12,7 +12,7 @@ case class PostTag(
 )
 
 object PostTag extends SkinnyJoinTable[PostTag] {
-  override val connectionPoolName = 'ws
+  override val connectionPoolName = Symbol("ws")
   override val tableName          = "posts_tags"
   override val defaultAlias       = createAlias("pt")
 

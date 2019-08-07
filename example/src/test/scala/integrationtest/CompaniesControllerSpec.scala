@@ -28,7 +28,7 @@ class CompaniesControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
       val acts = fromJSONString[List[Company]](body)
       acts should not equal (None)
       acts.get should not be (empty)
-      atLeast(1, acts.get) should have('name (company.name))
+      atLeast(1, acts.get) should have(Symbol("name")(company.name))
     }
     get("/companies.xml") {
       logger.debug(body)

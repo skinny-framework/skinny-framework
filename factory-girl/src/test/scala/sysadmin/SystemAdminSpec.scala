@@ -14,7 +14,7 @@ class userAdminSpec
     with AutoRollback
     with Logging {
 
-  override def db(): DB = NamedDB('sysadmin).toDB()
+  override def db(): DB = NamedDB(Symbol("sysadmin")).toDB()
 
   describe("factory.conf") {
     it("should be available") { implicit session =>
@@ -27,7 +27,9 @@ class userAdminSpec
 
   describe("with os/java/user attributes") {
     it("should be available") { implicit session =>
-      val user = FactoryGirl(User).withAttributes('os -> "MacOS X", 'java -> "8", 'user -> "sera").create()
+      val user = FactoryGirl(User)
+        .withAttributes(Symbol("os") -> "MacOS X", Symbol("java") -> "8", Symbol("user") -> "sera")
+        .create()
       user.os should equal("MacOS X")
       user.java should equal("8")
       user.user should equal("sera")

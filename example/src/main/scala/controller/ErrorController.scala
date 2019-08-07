@@ -11,14 +11,14 @@ object ErrorController extends ApplicationController with TxPerRequestFilter wit
     throw new RuntimeException
   }
 
-  val runtimeUrl = get("/error/runtime")(runtime).as('errorPage)
+  val runtimeUrl = get("/error/runtime")(runtime).as(Symbol("errorPage"))
 
   get("/error/rollback") {
-    Company.createWithAttributes('name -> "Typesafe", 'createdAt -> DateTime.now)
+    Company.createWithAttributes(Symbol("name") -> "Typesafe", Symbol("createdAt") -> DateTime.now)
 
     rollbackTxPerRequest
     logger.info("Transaction should be rolled back.")
 
-  }.as('rollbackPage)
+  }.as(Symbol("rollbackPage"))
 
 }
