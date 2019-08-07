@@ -27,12 +27,12 @@ class AsyncErrorPageFilterSpec extends ScalatraFlatSpec {
 
   object ErrorController extends AsyncSkinnyController with AsyncErrorMessageFilter with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error")(implicit ctx => execute).as('execute)
+    get("/error")(implicit ctx => execute).as(Symbol("execute"))
   }
 
   object Error2Controller extends AsyncSkinnyController with AsyncErrorPageFilter with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error2")(implicit ctx => execute).as('execute)
+    get("/error2")(implicit ctx => execute).as(Symbol("execute"))
   }
   object Error3Controller
       extends AsyncSkinnyController
@@ -40,7 +40,7 @@ class AsyncErrorPageFilterSpec extends ScalatraFlatSpec {
       with AsyncErrorMessageFilter
       with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error3")(implicit ctx => execute).as('execute)
+    get("/error3")(implicit ctx => execute).as(Symbol("execute"))
   }
 
   addFilter(ErrorController, "/*")

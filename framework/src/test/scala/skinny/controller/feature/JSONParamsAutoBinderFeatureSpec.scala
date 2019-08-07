@@ -13,7 +13,7 @@ class JSONParamsAutoBinderFeatureSpec extends ScalatraFlatSpec {
     def index = {
       params.getAs[String]("name") should equal(Some("Alice"))
     }
-    post("/")(index).as('index)
+    post("/")(index).as(Symbol("index"))
   }
   addFilter(Controller, "/*")
 

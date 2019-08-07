@@ -12,7 +12,7 @@ case class Tag(
 )
 
 object Tag extends SkinnyCRUDMapper[Tag] with TimestampsFeature[Tag] {
-  override val connectionPoolName = 'blog
+  override val connectionPoolName = Symbol("blog")
   override val tableName          = "tags"
   override val defaultAlias       = createAlias("t")
 

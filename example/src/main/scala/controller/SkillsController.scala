@@ -32,10 +32,10 @@ object SkillsController
   // #158 SkinnySessionFilter#skinnySession become infinite loop
   def skinnySessionBug = {
     skinnySession("foo")
-    skinnySession('foo)
+    skinnySession(Symbol("foo"))
     "ok"
   }
 
-  get("/skills/skinny-session-bug")(skinnySessionBug).as('bug)
+  get("/skills/skinny-session-bug")(skinnySessionBug).as(Symbol("bug"))
 
 }

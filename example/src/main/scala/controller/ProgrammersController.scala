@@ -14,7 +14,15 @@ class ProgrammersController extends SkinnyResource with ApplicationController {
   override def itemsName = resourcesName
   override def itemName  = resourceName
 
-  beforeAction(only = Seq('index, 'indexWithSlash, 'new, 'create, 'createWithSlash, 'edit, 'update)) {
+  beforeAction(
+    only = Seq(Symbol("index"),
+               Symbol("indexWithSlash"),
+               Symbol("new"),
+               Symbol("create"),
+               Symbol("createWithSlash"),
+               Symbol("edit"),
+               Symbol("update"))
+  ) {
     set("companies", Company.findAll())
     set("skills", Skill.findAll())
   }

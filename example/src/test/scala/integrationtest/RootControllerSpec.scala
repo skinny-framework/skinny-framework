@@ -15,7 +15,7 @@ class RootControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
   addFilter(ErrorController, "/*")
   addFilter(new RootController with Routes {
     override val echoService = new EchoServiceMock
-    get("/mock/?".r)(index).as('index)
+    get("/mock/?".r)(index).as(Symbol("index"))
   }, "/*")
 
   it should "show top page" in {
