@@ -27,7 +27,7 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
     "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-    "org.slf4j" % "slf4j-api" % "1.7.26"
+    "org.slf4j" % "slf4j-api" % "1.7.27"
   ),
   libraryDependencies ++= Seq(
     "org.skinny-framework" %% "skinny-framework" % skinnyVersion,
