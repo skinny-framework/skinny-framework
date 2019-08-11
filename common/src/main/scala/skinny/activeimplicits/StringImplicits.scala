@@ -74,12 +74,12 @@ trait StringImplicits {
         .toCamelCase(str)
         .split("/")
         .map { s =>
-          s.head.toUpper + s.tail
+          s"${s.head.toUpper}${s.tail}"
         }
         .mkString("::")
     def lowerCamelizeAsRuby: String = {
       val s = camelizeAsRuby
-      s.head.toLower + s.tail
+      s"${s.head.toLower}${s.tail}"
     }
 
     def camelizeAsScala: String = withString { s =>
@@ -195,7 +195,7 @@ trait StringImplicits {
       s.replaceAll("-", " ")
         .split("\\s+")
         .map { s =>
-          s.head.toUpper + s.tail
+          s"${s.head.toUpper}${s.tail}"
         }
         .mkString(" ")
     }

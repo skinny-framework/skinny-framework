@@ -59,7 +59,7 @@ object StringUtil {
     Option(str)
       .map { s =>
         val result = toUpperCamelCase(s)
-        if (result.headOption.exists(c => c.isUpper)) result.head.toLower + result.tail
+        if (result.headOption.exists(c => c.isUpper)) s"${result.head.toLower}${result.tail}"
         else result
       }
       .orNull[String]
@@ -77,7 +77,7 @@ object StringUtil {
           }
           ._1
           .mkString
-        if (result.headOption.exists(c => c.isLower)) result.head.toUpper + result.tail
+        if (result.headOption.exists(c => c.isLower)) s"${result.head.toUpper}${result.tail}"
         else result
       }
       .orNull[String]

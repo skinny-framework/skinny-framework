@@ -43,7 +43,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     */
   def factoryName: Symbol = {
     val n = Option(name).map(_.name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
-    Symbol((n.head.toLower + n.tail).replaceFirst("\\$$", ""))
+    Symbol(s"${n.head.toLower}${n.tail}".replaceFirst("\\$$", ""))
   }
 
   /**

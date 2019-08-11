@@ -28,9 +28,9 @@ class intValueSpec extends FlatSpec with Matchers {
     validate(param("id", 3)).isSuccess should equal(true)
 
     validate(param("id", java.lang.Integer.MAX_VALUE)).isSuccess should equal(true)
-    validate(param("id", java.lang.Integer.MAX_VALUE + "1")).isSuccess should equal(false)
+    validate(param("id", s"${java.lang.Integer.MAX_VALUE}1")).isSuccess should equal(false)
     validate(param("id", java.lang.Integer.MIN_VALUE)).isSuccess should equal(true)
-    validate(param("id", java.lang.Integer.MIN_VALUE + "1")).isSuccess should equal(false)
+    validate(param("id", s"${java.lang.Integer.MIN_VALUE}1")).isSuccess should equal(false)
 
   }
 

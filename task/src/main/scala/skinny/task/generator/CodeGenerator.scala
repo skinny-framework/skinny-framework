@@ -329,7 +329,7 @@ trait CodeGenerator {
 
   def toVariable(name: String) = toCamelCase(name)
 
-  def toClassName(name: String) = name.head.toUpper + toCamelCase(name.tail)
+  def toClassName(name: String) = s"${name.head.toUpper}${toCamelCase(name.tail)}"
 
   def toNamespace(basePackage: String, namespaces: Seq[String]): String = {
     (Seq(basePackage) ++ namespaces).filter(!_.isEmpty).reduceLeft { (a, b) =>
@@ -350,7 +350,7 @@ trait CodeGenerator {
     if (namespaces.filterNot(_.isEmpty).isEmpty) toCamelCase(resources)
     else
       namespaces.head + namespaces.tail.map { n =>
-        n.head.toUpper + n.tail
+        s"${n.head.toUpper}${n.tail}"
       }.mkString + toClassName(resources)
   }
 
@@ -379,15 +379,15 @@ trait CodeGenerator {
 
   def toSplitName(v: String): String = toSnakeCase(v).split("_").toSeq.mkString(" ")
 
-  def toFirstCharUpper(s: String): String = s.head.toUpper + s.tail
+  def toFirstCharUpper(s: String): String = s"${s.head.toUpper}${s.tail}"
 
-  def toFirstCharLower(s: String): String = s.head.toLower + s.tail
+  def toFirstCharLower(s: String): String = s"${s.head.toLower}${s.tail}"
 
   def toCapitalizedSplitName(v: String): String = {
     toSnakeCase(v)
       .split("_")
       .toSeq
-      .map(word => word.head.toUpper + word.tail)
+      .map(word => s"${word.head.toUpper}${word.tail}")
       .mkString(" ")
   }
 

@@ -28,9 +28,9 @@ class longValueSpec extends FlatSpec with Matchers {
     validate(param("id", 3)).isSuccess should equal(true)
 
     validate(param("id", java.lang.Long.MAX_VALUE)).isSuccess should equal(true)
-    validate(param("id", java.lang.Long.MAX_VALUE + "1")).isSuccess should equal(false)
+    validate(param("id", s"${java.lang.Long.MAX_VALUE}1")).isSuccess should equal(false)
     validate(param("id", java.lang.Long.MIN_VALUE)).isSuccess should equal(true)
-    validate(param("id", java.lang.Long.MIN_VALUE + "1")).isSuccess should equal(false)
+    validate(param("id", s"${java.lang.Long.MIN_VALUE}1")).isSuccess should equal(false)
 
   }
 
