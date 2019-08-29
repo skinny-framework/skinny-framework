@@ -189,7 +189,7 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"    % "flyway-core"            % "5.2.4"            % Compile,
+      "org.flywaydb"    % "flyway-core"            % "6.0.1"            % Compile,
       "org.hibernate"   % "hibernate-core"         % "5.4.4.Final"      % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
