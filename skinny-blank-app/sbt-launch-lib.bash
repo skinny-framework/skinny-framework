@@ -52,10 +52,6 @@ acquire_sbt_jar () {
   fi
 }
 
-rt_export_file () {
-  echo "${sbt_bin_dir}/java9-rt-export.jar"
-}
-
 execRunner () {
   # print the arguments one to a line, quoting any containing spaces
   [[ $verbose || $debug ]] && echo "# Executing command line:" && {
@@ -253,29 +249,6 @@ checkJava() {
   fi
 }
 
-copyRt() {
-  local at_least_9="$(expr $java_version ">=" 9)"
-  if [[ "$at_least_9" == "1" ]]; then
-    rtexport=$(rt_export_file)
-    # The grep for java9-rt-ext- matches the filename prefix printed in Export.java
-    java9_ext=$("$java_cmd" ${JAVA_OPTS} ${SBT_OPTS:-$default_sbt_opts} ${java_args[@]} \
-      -jar "$rtexport" --rt-ext-dir | grep java9-rt-ext-)
-    java9_rt=$(echo "$java9_ext/rt.jar")
-    vlog "[copyRt] java9_rt = '$java9_rt'"
-    if [[ ! -f "$java9_rt" ]]; then
-      echo Copying runtime jar.
-      mkdir -p "$java9_ext"
-      execRunner "$java_cmd" \
-        ${JAVA_OPTS} \
-        ${SBT_OPTS:-$default_sbt_opts} \
-        ${java_args[@]} \
-        -jar "$rtexport" \
-        "${java9_rt}"
-    fi
-    addJava "-Dscala.ext.dirs=${java9_ext}"
-  fi
-}
-
 run() {
   syncPreloaded
 
@@ -293,9 +266,6 @@ run() {
 
   # TODO - java check should be configurable...
   checkJava "6"
-
-  # Java 9 support
-  copyRt
 
   #If we're in cygwin, we should use the windows config, and terminal hacks
   if [[ "$CYGWIN_FLAG" == "true" ]]; then

@@ -112,8 +112,6 @@ call :process
 
 call :checkjava
 
-call :copyrt
-
 call :sync_preloaded
 
 call :run %SBT_ARGS%
@@ -157,29 +155,6 @@ echo Please go to http://www.oracle.com/technetwork/java/javase/downloads/ and d
 echo a valid JDK and install before running sbt.
 echo.
 exit /B 1
-
-:copyrt
-if /I %JAVA_VERSION% GEQ 9 (
-  set rtexport=!SBT_HOME!java9-rt-export.jar
-
-  "%_JAVACMD%" %_JAVA_OPTS% %SBT_OPTS% -jar "!rtexport!" --rt-ext-dir > "%TEMP%.\rtext.txt"
-  set /p java9_ext= < "%TEMP%.\rtext.txt"
-  set java9_rt=!java9_ext!\rt.jar
-
-  if not exist "!java9_rt!" (
-    mkdir "!java9_ext!"
-    "%_JAVACMD%" %_JAVA_OPTS% %SBT_OPTS% -jar "!rtexport!" "!java9_rt!"
-  )
-  set _JAVA_OPTS=!_JAVA_OPTS! -Dscala.ext.dirs="!java9_ext!"
-
-  rem check to see if a GC has been set in the opts
-  echo !_JAVA_OPTS! | findstr /r "Use.*GC" >nul
-  if ERRORLEVEL 1 (
-    rem don't have a GC set - revert to old GC
-    set _JAVA_OPTS=!_JAVA_OPTS! -XX:+UseParallelGC
-  )
-)
-exit /B 0
 
 :sync_preloaded
 if "%INIT_SBT_VERSION%"=="" (
