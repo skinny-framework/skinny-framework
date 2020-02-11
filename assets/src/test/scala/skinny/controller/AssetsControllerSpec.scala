@@ -5,21 +5,20 @@ import scala.language.reflectiveCalls
 import javax.servlet.ServletContext
 
 import org.scalatest._
-import org.scalatestplus.mockito.MockitoSugar
-import org.mockito.Mockito._
+import org.mockito.Mockito.{ mock, when }
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.internal.stubbing.answers._
 import skinny.SkinnyEnv
 import skinny.micro.context.SkinnyContext
 import skinny.test.MockController
 
-class AssetsControllerSpec extends FlatSpec with Matchers with MockitoSugar {
+class AssetsControllerSpec extends FlatSpec with Matchers {
   class MockPassException extends Throwable
 
   def newController = new AssetsController with MockController {
 
     override val servletContext: ServletContext = {
-      val sc = mock[ServletContext]
+      val sc = mock(classOf[ServletContext])
       when(sc.getRealPath(anyString())).thenAnswer(new ReturnsArgumentAt(0))
       sc
     }

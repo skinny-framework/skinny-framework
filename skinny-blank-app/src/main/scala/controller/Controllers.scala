@@ -11,7 +11,7 @@ object Controllers {
   }
 
   object root extends RootController with Routes {
-    val indexUrl = get("/?")(index).as('index)
+    val indexUrl = get("/?")(index).as("index")
   }
 
 }

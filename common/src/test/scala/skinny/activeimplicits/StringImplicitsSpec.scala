@@ -205,7 +205,7 @@ class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
   it should "have #romaji with custom analyzer" in {
     val dictionaryText =
       """日本,日本,nihon,カスタム名詞
-        |マイクロソフト,Microsoft,microsoft,カスタム名詞
+        |マイクロソフト,マイクロソフト,microsoft,カスタム名詞
         |株式会社,K.K.,k.k.,カスタム名詞""".stripMargin
     implicit val analyzer = SkinnyJapaneseAnalyzerFactory.create(dictionaryText)
 
