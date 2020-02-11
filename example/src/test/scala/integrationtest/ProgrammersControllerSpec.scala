@@ -106,7 +106,7 @@ class ProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
   }
 
   it should "delete a programmer" in {
-    val id = Programmer.createWithAttributes(Symbol("name") -> "Unit Test Programmer", Symbol("favoriteNumber") -> 123)
+    val id = Programmer.createWithAttributes("name" -> "Unit Test Programmer", "favoriteNumber" -> 123)
     delete(s"/programmers/${id}") {
       status should equal(403)
     }
@@ -130,7 +130,7 @@ class ProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   it should "add a programmer to a company" in {
     val id =
-      Programmer.createWithAttributes(Symbol("name") -> "JoinCompany Test Programmer", Symbol("favoriteNumber") -> 123)
+      Programmer.createWithAttributes("name" -> "JoinCompany Test Programmer", "favoriteNumber" -> 123)
     try {
       withSession("csrf-token" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrf-token" -> "aaaaaa") {
@@ -144,7 +144,7 @@ class ProgrammersControllerSpec extends SkinnyFlatSpec with unit.SkinnyTesting {
 
   it should "remove a programmer from a company" in {
     val id =
-      Programmer.createWithAttributes(Symbol("name") -> "LeaveCompany Test Programmer", Symbol("favoriteNumber") -> 123)
+      Programmer.createWithAttributes("name" -> "LeaveCompany Test Programmer", "favoriteNumber" -> 123)
     try {
       withSession("csrf-token" -> "aaaaaa") {
         post(s"/programmers/${id}/company/${company.id}", "csrf-token" -> "aaaaaa") {

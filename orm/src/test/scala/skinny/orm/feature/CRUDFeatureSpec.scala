@@ -9,9 +9,9 @@ class CRUDFeatureSpec extends FlatSpec with Matchers {
   behavior of "CRUDFeature"
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("CRUDFeatureSpec"), "jdbc:h2:mem:CRUDFeatureSpec;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("CRUDFeatureSpec", "jdbc:h2:mem:CRUDFeatureSpec;MODE=PostgreSQL", "sa", "sa")
 
-  NamedDB(Symbol("CRUDFeatureSpec")).autoCommit { implicit s =>
+  NamedDB("CRUDFeatureSpec").autoCommit { implicit s =>
     sql"create table company(id bigserial, name varchar(100) not null)".execute.apply()
     sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute
       .apply()
@@ -21,12 +21,12 @@ class CRUDFeatureSpec extends FlatSpec with Matchers {
   case class Company(id: Long, name: String)
 
   object Person extends SkinnyCRUDMapper[Person] {
-    override def connectionPoolName                                   = Symbol("CRUDFeatureSpec")
+    override def connectionPoolName                                   = "CRUDFeatureSpec"
     override def defaultAlias                                         = createAlias("p")
     override def extract(rs: WrappedResultSet, n: ResultName[Person]) = autoConstruct(rs, n, "company")
   }
   object Company extends SkinnyCRUDMapper[Company] {
-    override def connectionPoolName                                    = Symbol("CRUDFeatureSpec")
+    override def connectionPoolName                                    = "CRUDFeatureSpec"
     override def defaultAlias                                          = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = autoConstruct(rs, n)
   }
@@ -49,17 +49,17 @@ class CRUDFeatureSpec extends FlatSpec with Matchers {
     Person.findModels(1, 1)
   }
   it should "have #findModel" in {
-    val id = Person.createWithAttributes(Symbol("name") -> "Alice")
+    val id = Person.createWithAttributes("name" -> "Alice")
     Person.findModel(id).isDefined should equal(true)
   }
 
   it should "have #updateModelById" in {
-    val id = Person.createWithAttributes(Symbol("name") -> "Alice")
+    val id = Person.createWithAttributes("name" -> "Alice")
     Person.updateModelById(id, StrongParameters(Map("name" -> "Bob")).permit("name" -> ParamType.String))
   }
 
   it should "have #deleteModelById" in {
-    val id = Person.createWithAttributes(Symbol("name") -> "Alice")
+    val id = Person.createWithAttributes("name" -> "Alice")
     Person.deleteModelById(id)
   }
 

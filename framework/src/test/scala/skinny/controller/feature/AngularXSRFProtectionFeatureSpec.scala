@@ -14,8 +14,8 @@ class AngularXSRFProtectionFeatureSpec extends ScalatraFlatSpec {
     def create = "ok"
   }
   val controller = new Controller with Routes {
-    get("/token")(token).as(Symbol("token"))
-    post("/")(create).as(Symbol("create"))
+    get("/token")(token).as("token")
+    post("/")(create).as("create")
   }
 
   addFilter(controller, "/*")

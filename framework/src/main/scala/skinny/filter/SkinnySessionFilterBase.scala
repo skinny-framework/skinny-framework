@@ -56,6 +56,7 @@ private[skinny] trait SkinnySessionFilterBase extends SkinnyFilter { self: Flash
 
   def skinnySession[A](key: String)(implicit ctx: SkinnyContext): Option[A] = skinnySession(ctx).getAs[A](key)
 
+  @deprecated(message = "Use skinnySession(String) instead.", since = "4.0.0")
   def skinnySession[A](key: Symbol)(implicit ctx: SkinnyContext): Option[A] = skinnySession[A](key.name)(ctx)
 
   // --------------------------------------

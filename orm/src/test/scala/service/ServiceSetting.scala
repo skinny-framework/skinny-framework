@@ -15,7 +15,7 @@ case class ServiceSetting(
 )
 
 object ServiceSetting extends SkinnyCRUDMapper[ServiceSetting] with TimestampsFeature[ServiceSetting] {
-  override val connectionPoolName = Symbol("service")
+  override val connectionPoolName = "service"
   override val tableName          = "service_settings"
   override def defaultAlias       = createAlias("ss")
 

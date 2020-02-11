@@ -5,7 +5,7 @@ import skinny.dbmigration.DBSeeds
 
 trait CreateTables extends DBSeeds { self: Connection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("test002"))
+  override val dbSeedsAutoSession = NamedAutoSession("test002")
 
   addSeedSQL(
     sql"""

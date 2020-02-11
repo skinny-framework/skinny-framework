@@ -8,12 +8,12 @@ import skinny.orm._
 
 trait ByDefaultConnection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("issue219bydefault"), "jdbc:h2:mem:issue219bydefault;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("issue219bydefault", "jdbc:h2:mem:issue219bydefault;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait ByDefaultCreateTables extends DBSeeds { self: ByDefaultConnection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("issue219bydefault"))
+  override val dbSeedsAutoSession = NamedAutoSession("issue219bydefault")
 
   addSeedSQL(
     sql"""
@@ -53,13 +53,13 @@ class ByDefaultSpec
   case class Tag(id: Long, name: String, articleId: Option[Long], article: Option[Article] = None)
 
   object User extends SkinnyCRUDMapper[User] {
-    override val connectionPoolName = Symbol("issue219bydefault")
+    override val connectionPoolName = "issue219bydefault"
     override def defaultAlias       = createAlias("u")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn)
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName = Symbol("issue219bydefault")
+    override val connectionPoolName = "issue219bydefault"
     override def defaultAlias       = createAlias("a")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user", "tags")
@@ -90,7 +90,7 @@ class ByDefaultSpec
     )
   }
   object Tag extends SkinnyCRUDMapper[Tag] {
-    override val connectionPoolName                                 = Symbol("issue219bydefault")
+    override val connectionPoolName                                 = "issue219bydefault"
     override def defaultAlias                                       = createAlias("t")
     override def extract(rs: WrappedResultSet, rn: ResultName[Tag]) = autoConstruct(rs, rn, "article")
 
@@ -111,11 +111,11 @@ class ByDefaultSpec
 
   import Article._
 
-  override def db(): DB = NamedDB(Symbol("issue219bydefault")).toDB()
+  override def db(): DB = NamedDB("issue219bydefault").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val aliceId = User.createWithAttributes(Symbol("name") -> "Alice")
-    val bobId   = User.createWithAttributes(Symbol("name") -> "Bob")
+    val aliceId = User.createWithAttributes("name" -> "Alice")
+    val bobId   = User.createWithAttributes("name" -> "Bob")
     Seq(
       ("Hello World", Some(aliceId)),
       ("Getting Started with Scala", Some(bobId)),
@@ -123,12 +123,12 @@ class ByDefaultSpec
       ("How to user sbt", Some(aliceId))
     ).foreach {
       case (title, userId) =>
-        Article.createWithAttributes(Symbol("title") -> title, Symbol("userId") -> userId)
+        Article.createWithAttributes("title" -> title, "userId" -> userId)
     }
   }
 
   def id(implicit session: DBSession): Long = {
-    Article.where(Symbol("title") -> "Functional Programming").apply().head.id
+    Article.where("title" -> "Functional Programming").apply().head.id
   }
 
   describe("find without associations") {

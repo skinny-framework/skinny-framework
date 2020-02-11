@@ -36,6 +36,6 @@ object SkillsController
     "ok"
   }
 
-  get("/skills/skinny-session-bug")(skinnySessionBug).as(Symbol("bug"))
+  get("/skills/skinny-session-bug")(skinnySessionBug).as("bug")
 
 }

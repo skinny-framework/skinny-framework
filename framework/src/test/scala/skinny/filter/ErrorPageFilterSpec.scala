@@ -25,16 +25,16 @@ class ErrorPageFilterSpec extends ScalatraFlatSpec {
 
   object ErrorController extends SkinnyController with ErrorMessageFilter with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error")(execute).as(Symbol("execute"))
+    get("/error")(execute).as("execute")
   }
 
   object Error2Controller extends SkinnyController with ErrorPageFilter with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error2")(execute).as(Symbol("execute"))
+    get("/error2")(execute).as("execute")
   }
   object Error3Controller extends SkinnyController with ErrorPageFilter with ErrorMessageFilter with Routes {
     def execute = throw new RuntimeException("foo-bar-baz")
-    get("/error3")(execute).as(Symbol("execute"))
+    get("/error3")(execute).as("execute")
   }
 
   addFilter(ErrorController, "/*")

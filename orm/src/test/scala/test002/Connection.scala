@@ -4,5 +4,5 @@ import scalikejdbc.ConnectionPool
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("test002"), "jdbc:h2:mem:test002;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("test002", "jdbc:h2:mem:test002;MODE=PostgreSQL", "sa", "sa")
 }

@@ -7,13 +7,13 @@ import org.scalatest.{ Tag => _, _ }
 
 class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("blog2")).toDB()
+  override def db(): DB = NamedDB("blog2").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
     val postId =
-      Post.createWithAttributes(Symbol("title") -> "Hello World!", Symbol("body") -> "This is the first entry...")
-    val scalaTagId = Tag.createWithAttributes(Symbol("name") -> "Scala")
-    val rubyTagId  = Tag.createWithAttributes(Symbol("name") -> "Ruby")
+      Post.createWithAttributes("title" -> "Hello World!", "body" -> "This is the first entry...")
+    val scalaTagId = Tag.createWithAttributes("name" -> "Scala")
+    val rubyTagId  = Tag.createWithAttributes("name" -> "Ruby")
     val pt         = PostTag.column
     insert.into(PostTag).namedValues(pt.postId -> postId, pt.tagId -> scalaTagId).toSQL.update.apply()
     insert.into(PostTag).namedValues(pt.postId -> postId, pt.tagId -> rubyTagId).toSQL.update.apply()

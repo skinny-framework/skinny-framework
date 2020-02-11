@@ -36,7 +36,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
   val createApiUrl = post(s"${resourcesBasePath}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     createApiAction
-  }).as(Symbol("createApi"))
+  }).as("createApi")
 
   protected def createApiAction =
     params.get("ext").map {
@@ -51,7 +51,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
   val indexApiUrl: Route = get(s"${resourcesBasePath}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     indexApiAction
-  }).as(Symbol("indexApi"))
+  }).as("indexApi")
 
   protected def indexApiAction =
     (for {
@@ -73,7 +73,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
     get(s"${resourcesBasePath}/:${idParamName}.:ext")({
       setContentTypeFromSkinnyApiResourceExtParam
       showApiAction
-    }).as(Symbol("showApi"))
+    }).as("showApi")
   }
   protected def showApiAction =
     (for {
@@ -93,17 +93,17 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
   val updatePostApiUrl = post(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     updateApiAction
-  }).as(Symbol("updateApi"))
+  }).as("updateApi")
 
   val updatePutApiUrl = put(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     updateApiAction
-  }).as(Symbol("updateApi"))
+  }).as("updateApi")
 
   val updatePatchApiUrl = patch(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     updateApiAction
-  }).as(Symbol("updateApi"))
+  }).as("updateApi")
 
   protected def updateApiAction = {
     params
@@ -128,7 +128,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
   val destroyApiUrl = delete(s"${resourcesBasePath}/:${idParamName}.:ext")({
     setContentTypeFromSkinnyApiResourceExtParam
     deleteApiAction
-  }).as(Symbol("destroyApi"))
+  }).as("destroyApi")
 
   protected def deleteApiAction = {
     params

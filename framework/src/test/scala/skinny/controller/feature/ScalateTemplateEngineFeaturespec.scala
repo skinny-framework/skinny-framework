@@ -33,7 +33,7 @@ class ScalateTemplateEngineFeatureSpec extends ScalatraFlatSpec with BeforeAndAf
     def c                          = render("foo/c")
     def xyz                        = render("foo/xyz")
 
-    get("/ssp/a")(a).as(Symbol("a"))
+    get("/ssp/a")(a).as("a")
     get("/ssp/c")(c)
     get("/ssp/xyz")(xyz)
   }

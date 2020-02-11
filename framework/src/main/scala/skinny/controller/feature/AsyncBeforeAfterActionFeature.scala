@@ -25,7 +25,7 @@ trait AsyncBeforeAfterActionFeature extends SkinnyMicroBase with AsyncBeforeAfte
   /**
     * If you prefer #beforeFilter than #beforeAction, keep going!
     */
-  def beforeFilter(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: (Context) => Any): Unit = {
+  def beforeFilter(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: (Context) => Any): Unit = {
     beforeAction(only, except)(action)
   }
 
@@ -36,7 +36,7 @@ trait AsyncBeforeAfterActionFeature extends SkinnyMicroBase with AsyncBeforeAfte
     * @param except this action should not be applied for these action methods
     * @param action action
     */
-  def beforeAction(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: (Context) => Any): Unit = {
+  def beforeAction(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: (Context) => Any): Unit = {
     skinnyBeforeActions += (
         (ctx) => {
           currentActionName.map { name =>
@@ -55,7 +55,7 @@ trait AsyncBeforeAfterActionFeature extends SkinnyMicroBase with AsyncBeforeAfte
   /**
     * If you prefer #afterFilter than #afterAction, keep going!
     */
-  def afterFilter(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: (Context) => Any): Unit = {
+  def afterFilter(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: (Context) => Any): Unit = {
     afterAction(only, except)(action)
   }
 
@@ -66,7 +66,7 @@ trait AsyncBeforeAfterActionFeature extends SkinnyMicroBase with AsyncBeforeAfte
     * @param except this action should not be applied for these action methods
     * @param action action
     */
-  def afterAction(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: (Context) => Any): Unit = {
+  def afterAction(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: (Context) => Any): Unit = {
     skinnyAfterActions += (
         (ctx) => {
           currentActionName.map { name =>

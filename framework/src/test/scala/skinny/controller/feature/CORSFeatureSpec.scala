@@ -16,7 +16,7 @@ class CORSFeatureSpec extends ScalatraFlatSpec {
     def showAlice = toJSONString(Map("name" -> "Alice", "age" -> 23))
   }
   val controller = new SampleController with Routes {
-    val creationUrl = get("/alice")(showAlice).as(Symbol("alice"))
+    val creationUrl = get("/alice")(showAlice).as("alice")
   }
 
   addFilter(controller, "/*")

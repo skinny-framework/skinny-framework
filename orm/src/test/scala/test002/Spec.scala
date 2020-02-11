@@ -7,11 +7,11 @@ import org.scalatest.{ fixture, Matchers }
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("test002")).toDB()
+  override def db(): DB = NamedDB("test002").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    Account.createWithAttributes(Symbol("name") -> "Alice")
-    Account.createWithAttributes(Symbol("name") -> "Bob")
+    Account.createWithAttributes("name" -> "Alice")
+    Account.createWithAttributes("name" -> "Bob")
   }
 
   describe("SkinnyNoIdMapper#findAll") {

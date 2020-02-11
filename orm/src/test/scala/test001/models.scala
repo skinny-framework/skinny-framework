@@ -48,7 +48,7 @@ WHERE  t1_default.name = ?
 
 case class Test1(id: Long, name: String, test2: Seq[Test2] = Nil)
 object Test1 extends SkinnyCRUDMapper[Test1] {
-  override def connectionPoolName = Symbol("test001")
+  override def connectionPoolName = "test001"
   override def defaultAlias       = createAlias("t1_default")
   override def extract(rs: WrappedResultSet, n: ResultName[Test1]) =
     new Test1(id = rs.get(n.id), name = rs.get(n.name))
@@ -65,7 +65,7 @@ object Test1 extends SkinnyCRUDMapper[Test1] {
 
 case class Test2(id: Long, name: String, test1: Seq[Test1] = Nil)
 object Test2 extends SkinnyCRUDMapper[Test2] {
-  override def connectionPoolName = Symbol("test001")
+  override def connectionPoolName = "test001"
   override def defaultAlias       = createAlias("t2_default")
   override def extract(rs: WrappedResultSet, n: ResultName[Test2]) =
     new Test2(id = rs.get(n.id), name = rs.get(n.name))
@@ -84,6 +84,6 @@ object Test2 extends SkinnyCRUDMapper[Test2] {
 
 case class Test1Test2(test1Id: Long, test2Id: Long)
 object Test1Test2 extends SkinnyJoinTable[Test1Test2] {
-  override def connectionPoolName = Symbol("test001")
+  override def connectionPoolName = "test001"
   override def defaultAlias       = createAlias("t1t2")
 }

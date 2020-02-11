@@ -9,11 +9,11 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("test009"), "jdbc:h2:mem:test009;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("test009", "jdbc:h2:mem:test009;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("test009"))
+  override val dbSeedsAutoSession = NamedAutoSession("test009")
   addSeedSQL(sql"""
    create table blog (
      id bigserial not null,
@@ -37,14 +37,14 @@ trait CreateTables extends DBSeeds { self: Connection =>
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("test009")).toDB()
+  override def db(): DB = NamedDB("test009").toDB()
 
   case class Blog(id: Long, name: String, createdAt: DateTime, tags: Seq[Tag] = Nil)
   case class BlogTag(blogId: Long, tagId: Long)
   case class Tag(id: Long, value: String, createdAt: DateTime)
 
   object Blog extends SkinnyCRUDMapper[Blog] {
-    override val connectionPoolName                                  = Symbol("test009")
+    override val connectionPoolName                                  = "test009"
     override def defaultAlias                                        = createAlias("b")
     override def extract(rs: WrappedResultSet, rn: ResultName[Blog]) = autoConstruct(rs, rn, "tags")
 
@@ -63,31 +63,31 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
   }
 
   object BlogTag extends SkinnyCRUDMapper[BlogTag] {
-    override val connectionPoolName                                     = Symbol("test009")
+    override val connectionPoolName                                     = "test009"
     override def defaultAlias                                           = createAlias("bt")
     override def extract(rs: WrappedResultSet, rn: ResultName[BlogTag]) = autoConstruct(rs, rn)
   }
 
   object Tag extends SkinnyCRUDMapper[Tag] {
-    override val connectionPoolName                                 = Symbol("test009")
+    override val connectionPoolName                                 = "test009"
     override def defaultAlias                                       = createAlias("t")
     override def extract(rs: WrappedResultSet, rn: ResultName[Tag]) = autoConstruct(rs, rn)
   }
 
   def dataPreparation()(implicit s: DBSession) = {
-    val blog1 = Blog.createWithAttributes(Symbol("name") -> "Apply in America")
-    val blog2 = Blog.createWithAttributes(Symbol("name") -> "Apply in Brazil")
-    val blog3 = Blog.createWithAttributes(Symbol("name") -> "Apply in China")
-    val blog4 = Blog.createWithAttributes(Symbol("name") -> "Apply in Tokyo")
-    val blog5 = Blog.createWithAttributes(Symbol("name") -> "Apply in NY")
+    val blog1 = Blog.createWithAttributes("name" -> "Apply in America")
+    val blog2 = Blog.createWithAttributes("name" -> "Apply in Brazil")
+    val blog3 = Blog.createWithAttributes("name" -> "Apply in China")
+    val blog4 = Blog.createWithAttributes("name" -> "Apply in Tokyo")
+    val blog5 = Blog.createWithAttributes("name" -> "Apply in NY")
 
-    val tag1 = Tag.createWithAttributes(Symbol("value") -> "scala")
-    val tag2 = Tag.createWithAttributes(Symbol("value") -> "java")
-    val tag3 = Tag.createWithAttributes(Symbol("value") -> "ruby")
+    val tag1 = Tag.createWithAttributes("value" -> "scala")
+    val tag2 = Tag.createWithAttributes("value" -> "java")
+    val tag3 = Tag.createWithAttributes("value" -> "ruby")
 
-    BlogTag.createWithAttributes(Symbol("blogId") -> blog4, Symbol("tagId") -> tag2)
-    BlogTag.createWithAttributes(Symbol("blogId") -> blog4, Symbol("tagId") -> tag1)
-    BlogTag.createWithAttributes(Symbol("blogId") -> blog5, Symbol("tagId") -> tag3)
+    BlogTag.createWithAttributes("blogId" -> blog4, "tagId" -> tag2)
+    BlogTag.createWithAttributes("blogId" -> blog4, "tagId" -> tag1)
+    BlogTag.createWithAttributes("blogId" -> blog5, "tagId" -> tag3)
   }
 
   describe("findAllWithLimitOffset") {

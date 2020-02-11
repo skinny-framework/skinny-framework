@@ -8,7 +8,7 @@ import skinny.orm.{ SkinnyCRUDMapper, SkinnyNoIdCRUDMapper }
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("test003")).toDB()
+  override def db(): DB = NamedDB("test003").toDB()
 
   // entities
   case class Person(id: Int, name: String)
@@ -23,19 +23,19 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   // mappers
   object Person extends SkinnyCRUDMapper[Person] {
-    override val connectionPoolName                                    = Symbol("test003")
+    override val connectionPoolName                                    = "test003"
     override lazy val defaultAlias                                     = createAlias("p")
     override def extract(rs: WrappedResultSet, rn: ResultName[Person]) = autoConstruct(rs, rn)
   }
 
   object Company extends SkinnyCRUDMapper[Company] {
-    override val connectionPoolName                                     = Symbol("test003")
+    override val connectionPoolName                                     = "test003"
     override lazy val defaultAlias                                      = createAlias("c")
     override def extract(rs: WrappedResultSet, rn: ResultName[Company]) = autoConstruct(rs, rn)
   }
 
   object Employee extends SkinnyNoIdCRUDMapper[Employee] {
-    override val connectionPoolName                                      = Symbol("test003")
+    override val connectionPoolName                                      = "test003"
     override lazy val defaultAlias                                       = createAlias("e")
     override def extract(rs: WrappedResultSet, rn: ResultName[Employee]) = autoConstruct(rs, rn, "company", "person")
 
@@ -48,13 +48,13 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
   }
 
   override def fixture(implicit session: DBSession): Unit = {
-    val p1 = Person.createWithAttributes(Symbol("name")        -> "Alice")
-    val p2 = Person.createWithAttributes(Symbol("name")        -> "Bob")
-    val p3 = Person.createWithAttributes(Symbol("name")        -> "Chris")
-    val c1 = Company.createWithAttributes(Symbol("name")       -> "Google")
-    val e1 = Employee.createWithAttributes(Symbol("companyId") -> c1, Symbol("personId") -> p1)
+    val p1 = Person.createWithAttributes("name"        -> "Alice")
+    val p2 = Person.createWithAttributes("name"        -> "Bob")
+    val p3 = Person.createWithAttributes("name"        -> "Chris")
+    val c1 = Company.createWithAttributes("name"       -> "Google")
+    val e1 = Employee.createWithAttributes("companyId" -> c1, "personId" -> p1)
     val e2 =
-      Employee.createWithAttributes(Symbol("companyId") -> c1, Symbol("personId") -> p2, Symbol("role") -> "Engineer")
+      Employee.createWithAttributes("companyId" -> c1, "personId" -> p2, "role" -> "Engineer")
   }
 
   describe("Entities with compound primary keys") {

@@ -14,7 +14,7 @@ import skinny.orm.feature.CRUDFeatureWithId
   *
   * @see "https://github.com/thoughtbot/factory_girl"
   */
-case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) {
+case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: String = null) {
 
   private[this] val logger = LoggerFactory.getLogger(classOf[LightFactoryGirl[Id, Entity]])
 
@@ -22,8 +22,8 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
 
   val autoSession = AutoSession
 
-  private[this] val valuesToReplaceVariablesInConfig = new scala.collection.concurrent.TrieMap[Symbol, Any]()
-  private[this] val additionalNamedValues            = new scala.collection.concurrent.TrieMap[Symbol, Any]()
+  private[this] val valuesToReplaceVariablesInConfig = new scala.collection.concurrent.TrieMap[String, Any]()
+  private[this] val additionalNamedValues            = new scala.collection.concurrent.TrieMap[String, Any]()
 
   /**
     * Set named values to bind #{name} in "src/test/resources/factories.conf".
@@ -31,7 +31,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     * @param namedValues named values
     * @return self
     */
-  def withVariables(namedValues: (Symbol, Any)*): LightFactoryGirl[Id, Entity] = {
+  def withVariables(namedValues: (String, Any)*): LightFactoryGirl[Id, Entity] = {
     namedValues.foreach { case (key, value) => valuesToReplaceVariablesInConfig.put(key, value) }
     this
   }
@@ -41,9 +41,9 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     *
     * @return prefix
     */
-  def factoryName: Symbol = {
-    val n = Option(name).map(_.name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
-    Symbol(s"${n.head.toLower}${n.tail}".replaceFirst("\\$$", ""))
+  def factoryName: String = {
+    val n = Option(name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
+    s"${n.head.toLower}${n.tail}".replaceFirst("\\$$", "")
   }
 
   /**
@@ -53,7 +53,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     */
   def loadedAttributes(): Map[SQLSyntax, Any] = {
     // TODO directory scan and work with factories/*.conf
-    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName.name)
+    val config = ConfigFactory.load(getClass.getClassLoader, "factories.conf").getConfig(factoryName)
     config.root().unwrapped().asScala.map { case (k, v) => c.field(k) -> v.toString }.toMap
   }
 
@@ -62,7 +62,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     * @param attributes attributes
     * @return self
     */
-  def withAttributes(attributes: (Symbol, Any)*): LightFactoryGirl[Id, Entity] = {
+  def withAttributes(attributes: (String, Any)*): LightFactoryGirl[Id, Entity] = {
     attributes.foreach { case (key, value) => additionalNamedValues.put(key, value) }
     this
   }
@@ -74,10 +74,10 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
     * @param s session
     * @return created entity
     */
-  def create(attributes: (Symbol, Any)*)(implicit s: DBSession = autoSession): Entity = {
+  def create(attributes: (String, Any)*)(implicit s: DBSession = autoSession): Entity = {
     val mergedAttributes = (additionalNamedValues ++ attributes)
       .foldLeft(loadedAttributes()) {
-        case (xs, (Symbol(key), value)) =>
+        case (xs, (key, value)) =>
           if (xs.exists(_._1 == mapper.column.field(key))) {
             xs.map {
               case (k, _) if k == mapper.column.field(key) => (k, value)
@@ -92,7 +92,7 @@ case class LightFactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], n
           // will replace only value which starts with #{ ... } because '#' might be used for test data in some case
           if (value.toString.startsWith("#")) {
             val variableKey   = value.toString.trim.replaceAll("[#{}]", "")
-            val replacedValue = valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).orNull[Any]
+            val replacedValue = valuesToReplaceVariablesInConfig.get(variableKey).orNull[Any]
             (key, replacedValue)
           } else {
             (key, value)

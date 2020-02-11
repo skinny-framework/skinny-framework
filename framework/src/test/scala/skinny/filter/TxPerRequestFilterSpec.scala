@@ -8,12 +8,12 @@ import skinny.routing.Routes
 class TxPerRequestFilterSpec extends ScalatraFlatSpec {
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("TxPerRequestFilterSpec"), "jdbc:h2:mem:TxPerRequestFilterSpec", "sa", "sa")
+  ConnectionPool.add("TxPerRequestFilterSpec", "jdbc:h2:mem:TxPerRequestFilterSpec", "sa", "sa")
 
   object Controller extends SkinnyApiController with TxPerRequestFilter with Routes {
-    override def connectionPoolForTxPerRequestFilter = ConnectionPool.get(Symbol("TxPerRequestFilterSpec"))
+    override def connectionPoolForTxPerRequestFilter = ConnectionPool.get("TxPerRequestFilterSpec")
     def index                                        = "ok"
-    get("/")(index).as(Symbol("index"))
+    get("/")(index).as("index")
   }
   addFilter(Controller, "/*")
 

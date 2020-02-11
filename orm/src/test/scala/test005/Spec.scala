@@ -8,12 +8,12 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("test005"), "jdbc:h2:mem:test005;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("test005", "jdbc:h2:mem:test005;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("test005"))
+  override val dbSeedsAutoSession = NamedAutoSession("test005")
 
   addSeedSQL(sql"create table summary (id bigserial not null, name varchar(100) not null)")
   addSeedSQL(sql"create table data1 (id bigserial not null, summary_id bigint not null references summary(id))")
@@ -58,7 +58,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
   case class Data10(id: Long, summaryId: Option[Long], summary: Option[Summary] = None)
 
   object Summary extends SkinnyCRUDMapper[Summary] {
-    override val connectionPoolName = Symbol("test005")
+    override val connectionPoolName = "test005"
     override def defaultAlias       = createAlias("s")
     override def extract(rs: WrappedResultSet, rn: ResultName[Summary]) = {
       autoConstruct(rs, rn, "data1", "data2", "data3", "data4", "data5", "data6", "data7", "data8", "data9", "data10")
@@ -117,85 +117,85 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
     def withAssociations = joins(d1, d2, d3, d4, d5, d6, d7, d8, d9)
   }
   object Data1 extends SkinnyCRUDMapper[Data1] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d1")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data1]) = autoConstruct(rs, rn, "summary")
   }
   object Data2 extends SkinnyCRUDMapper[Data2] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d2")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data2]) = autoConstruct(rs, rn, "summary")
   }
   object Data3 extends SkinnyCRUDMapper[Data3] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d3")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data3]) = autoConstruct(rs, rn, "summary")
   }
   object Data4 extends SkinnyCRUDMapper[Data4] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d4")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data4]) = autoConstruct(rs, rn, "summary")
   }
   object Data5 extends SkinnyCRUDMapper[Data5] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d5")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data5]) = autoConstruct(rs, rn, "summary")
   }
   object Data6 extends SkinnyCRUDMapper[Data6] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d6")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data6]) = autoConstruct(rs, rn, "summary")
   }
   object Data7 extends SkinnyCRUDMapper[Data7] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d7")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data7]) = autoConstruct(rs, rn, "summary")
   }
   object Data8 extends SkinnyCRUDMapper[Data8] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d8")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data8]) = autoConstruct(rs, rn, "summary")
   }
   object Data9 extends SkinnyCRUDMapper[Data9] {
-    override val connectionPoolName                                   = Symbol("test005")
+    override val connectionPoolName                                   = "test005"
     override def defaultAlias                                         = createAlias("d9")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data9]) = autoConstruct(rs, rn, "summary")
   }
   object Data10 extends SkinnyCRUDMapper[Data10] {
-    override val connectionPoolName                                    = Symbol("test005")
+    override val connectionPoolName                                    = "test005"
     override def defaultAlias                                          = createAlias("d10")
     override def extract(rs: WrappedResultSet, rn: ResultName[Data10]) = autoConstruct(rs, rn, "summary")
   }
 
-  override def db(): DB = NamedDB(Symbol("test005")).toDB()
+  override def db(): DB = NamedDB("test005").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val summaryId = Summary.createWithAttributes(Symbol("name") -> "Sample")
-    Data1.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data1.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data1.createWithAttributes(Symbol("summaryId") -> summaryId)
+    val summaryId = Summary.createWithAttributes("name" -> "Sample")
+    Data1.createWithAttributes("summaryId" -> summaryId)
+    Data1.createWithAttributes("summaryId" -> summaryId)
+    Data1.createWithAttributes("summaryId" -> summaryId)
 
-    Data2.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data2.createWithAttributes("summaryId" -> summaryId)
 
-    Data3.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data3.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data3.createWithAttributes("summaryId" -> summaryId)
+    Data3.createWithAttributes("summaryId" -> summaryId)
 
-    Data4.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data4.createWithAttributes("summaryId" -> summaryId)
 
-    Data5.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data5.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data5.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data5.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data5.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data5.createWithAttributes("summaryId" -> summaryId)
+    Data5.createWithAttributes("summaryId" -> summaryId)
+    Data5.createWithAttributes("summaryId" -> summaryId)
+    Data5.createWithAttributes("summaryId" -> summaryId)
+    Data5.createWithAttributes("summaryId" -> summaryId)
 
-    Data6.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data6.createWithAttributes("summaryId" -> summaryId)
 
-    Data7.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data7.createWithAttributes("summaryId" -> summaryId)
 
-    Data8.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data8.createWithAttributes("summaryId" -> summaryId)
 
-    Data9.createWithAttributes(Symbol("summaryId") -> summaryId)
-    Data9.createWithAttributes(Symbol("summaryId") -> summaryId)
+    Data9.createWithAttributes("summaryId" -> summaryId)
+    Data9.createWithAttributes("summaryId" -> summaryId)
   }
 
   describe("Entity which has 1 - 8 associations") {

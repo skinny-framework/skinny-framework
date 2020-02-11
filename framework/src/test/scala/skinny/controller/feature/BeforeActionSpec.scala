@@ -8,12 +8,12 @@ class BeforeActionSpec extends ScalatraFlatSpec {
   behavior of "beforeAction"
 
   object Before1 extends SkinnyController with Routes {
-    get("/1") { response.writer.write("2") }.as(Symbol("index"))
+    get("/1") { response.writer.write("2") }.as("index")
     beforeAction() { response.writer.write("0") }
     beforeAction() { response.writer.write("1") }
   }
   object Before2 extends SkinnyController with Routes {
-    get("/2") { response.writer.write("Computer") }.as(Symbol("index"))
+    get("/2") { response.writer.write("Computer") }.as("index")
     beforeAction() { response.writer.write("OK ") }
   }
   addFilter(Before1, "/*")

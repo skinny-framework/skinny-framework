@@ -19,7 +19,7 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport with S
     def useUrl = url("/foo")
     get("/useUrl")(useUrl)
 
-    val hoge    = get("hoge")("aaaa").as(Symbol("hoge"))
+    val hoge    = get("hoge")("aaaa").as("hoge")
     def useUrl2 = url(hoge)
     get("/useUrl2")(useUrl2)
   }
@@ -29,7 +29,7 @@ class SkinnyTestSupportSpec extends SkinnyFlatSpec with SkinnyTestSupport with S
     def useUrl = url("/foo")
     get("/api/useUrl")(useUrl)
 
-    val hoge    = get("hoge")("aaaa").as(Symbol("hoge"))
+    val hoge    = get("hoge")("aaaa").as("hoge")
     def useUrl2 = url(hoge)
     get("/api/useUrl2")(useUrl2)
   }

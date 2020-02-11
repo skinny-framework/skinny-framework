@@ -8,12 +8,12 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("issue219"), "jdbc:h2:mem:issue219;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("issue219", "jdbc:h2:mem:issue219;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("issue219"))
+  override val dbSeedsAutoSession = NamedAutoSession("issue219")
 
   addSeedSQL(
     sql"""
@@ -48,13 +48,13 @@ class Issue219Spec extends fixture.FunSpec with Matchers with Connection with Cr
   case class Tag(id: Long, name: String, articleId: Option[Long], article: Option[Article] = None)
 
   object User extends SkinnyCRUDMapper[User] {
-    override val connectionPoolName = Symbol("issue219")
+    override val connectionPoolName = "issue219"
     override def defaultAlias       = createAlias("u")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn)
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName                                     = Symbol("issue219")
+    override val connectionPoolName                                     = "issue219"
     override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user", "tags")
 
@@ -84,7 +84,7 @@ class Issue219Spec extends fixture.FunSpec with Matchers with Connection with Cr
     )
   }
   object Tag extends SkinnyCRUDMapper[Tag] {
-    override val connectionPoolName                                 = Symbol("issue219")
+    override val connectionPoolName                                 = "issue219"
     override def defaultAlias                                       = createAlias("t")
     override def extract(rs: WrappedResultSet, rn: ResultName[Tag]) = autoConstruct(rs, rn, "article")
 
@@ -105,11 +105,11 @@ class Issue219Spec extends fixture.FunSpec with Matchers with Connection with Cr
 
   import Article._
 
-  override def db(): DB = NamedDB(Symbol("issue219")).toDB()
+  override def db(): DB = NamedDB("issue219").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val aliceId = User.createWithAttributes(Symbol("name") -> "Alice")
-    val bobId   = User.createWithAttributes(Symbol("name") -> "Bob")
+    val aliceId = User.createWithAttributes("name" -> "Alice")
+    val bobId   = User.createWithAttributes("name" -> "Bob")
     Seq(
       ("Hello World", Some(aliceId)),
       ("Getting Started with Scala", Some(bobId)),
@@ -117,16 +117,16 @@ class Issue219Spec extends fixture.FunSpec with Matchers with Connection with Cr
       ("How to user sbt", Some(aliceId))
     ).foreach {
       case (title, userId) =>
-        Article.createWithAttributes(Symbol("title") -> title, Symbol("userId") -> userId)
+        Article.createWithAttributes("title" -> title, "userId" -> userId)
     }
     val articles = Article.limit(2).apply()
-    Tag.createWithAttributes(Symbol("name") -> "Technical", Symbol("articleId")   -> articles(0).id)
-    Tag.createWithAttributes(Symbol("name") -> "Programming", Symbol("articleId") -> articles(0).id)
-    Tag.createWithAttributes(Symbol("name") -> "Scala", Symbol("articleId")       -> articles(1).id)
+    Tag.createWithAttributes("name" -> "Technical", "articleId"   -> articles(0).id)
+    Tag.createWithAttributes("name" -> "Programming", "articleId" -> articles(0).id)
+    Tag.createWithAttributes("name" -> "Scala", "articleId"       -> articles(1).id)
   }
 
   def id(implicit session: DBSession): Long = {
-    Article.where(Symbol("title") -> "Functional Programming").apply().head.id
+    Article.where("title" -> "Functional Programming").apply().head.id
   }
 
   describe("find without associations") {

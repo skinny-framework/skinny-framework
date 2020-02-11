@@ -9,11 +9,11 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("test007"), "jdbc:h2:mem:test007;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("test007", "jdbc:h2:mem:test007;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("test007"))
+  override val dbSeedsAutoSession = NamedAutoSession("test007")
   addSeedSQL(sql"create table blog (id bigserial not null, name varchar(100) not null)")
   addSeedSQL(sql"""
    create table article (
@@ -27,11 +27,11 @@ trait CreateTables extends DBSeeds { self: Connection =>
 }
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
-  override def db(): DB = NamedDB(Symbol("test007")).toDB()
+  override def db(): DB = NamedDB("test007").toDB()
 
   case class Blog(id: Long, name: String, articles: Seq[Article] = Seq.empty)
   object Blog extends SkinnyCRUDMapper[Blog] {
-    override val connectionPoolName                                  = Symbol("test007")
+    override val connectionPoolName                                  = "test007"
     override def defaultAlias                                        = createAlias("b")
     override def extract(rs: WrappedResultSet, rn: ResultName[Blog]) = autoConstruct(rs, rn, "articles")
 
@@ -48,7 +48,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
                      createdAt: DateTime,
                      blog: Option[Blog] = None)
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName                                     = Symbol("test007")
+    override val connectionPoolName                                     = "test007"
     override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "blog")
 
@@ -57,19 +57,13 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   describe("associations by default") {
     it("should work") { implicit session =>
-      val blogId1 = Blog.createWithAttributes(Symbol("name") -> "Apply in Tokyo")
-      val blogId2 = Blog.createWithAttributes(Symbol("name") -> "Apply in NY")
-      val blogId3 = Blog.createWithAttributes(Symbol("name") -> "Apply in Paris")
+      val blogId1 = Blog.createWithAttributes("name" -> "Apply in Tokyo")
+      val blogId2 = Blog.createWithAttributes("name" -> "Apply in NY")
+      val blogId3 = Blog.createWithAttributes("name" -> "Apply in Paris")
       (1 to 20).foreach { day =>
-        Article.createWithAttributes(Symbol("title")  -> s"Learning Scala: Day $day",
-                                     Symbol("body")   -> "xxx",
-                                     Symbol("blogId") -> blogId1)
-        Article.createWithAttributes(Symbol("title")  -> s"Learning Scala: Day $day",
-                                     Symbol("body")   -> "xxx",
-                                     Symbol("blogId") -> blogId2)
-        Article.createWithAttributes(Symbol("title")  -> s"Learning Scala: Day $day",
-                                     Symbol("body")   -> "xxx",
-                                     Symbol("blogId") -> blogId3)
+        Article.createWithAttributes("title" -> s"Learning Scala: Day $day", "body" -> "xxx", "blogId" -> blogId1)
+        Article.createWithAttributes("title" -> s"Learning Scala: Day $day", "body" -> "xxx", "blogId" -> blogId2)
+        Article.createWithAttributes("title" -> s"Learning Scala: Day $day", "body" -> "xxx", "blogId" -> blogId3)
       }
       val blogs = Blog.findAllWithLimitOffset(2, 0)
       blogs.size should equal(2)
