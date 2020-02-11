@@ -23,8 +23,8 @@ class FutureOpsFeatureSpec extends ScalatraFlatSpec {
       }
       awaitFutures(1.seconds)(f)
     }
-    get("/")(index).as(Symbol("index"))
-    get("/context")(withContext).as(Symbol("context"))
+    get("/")(index).as("index")
+    get("/context")(withContext).as("context")
   }
   addFilter(Controller, "/*")
 

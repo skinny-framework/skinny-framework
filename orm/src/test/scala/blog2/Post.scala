@@ -15,7 +15,7 @@ case class Post(
 )
 
 object Post extends SkinnyCRUDMapper[Post] with TimestampsFeature[Post] {
-  override val connectionPoolName = Symbol("blog2")
+  override val connectionPoolName = "blog2"
   override val tableName          = "posts"
   override val defaultAlias       = createAlias("p")
 

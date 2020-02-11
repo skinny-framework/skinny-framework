@@ -8,24 +8,24 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("test006"), "jdbc:h2:mem:test006;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("test006", "jdbc:h2:mem:test006;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("test006"))
+  override val dbSeedsAutoSession = NamedAutoSession("test006")
   addSeedSQL(sql"create table summary (id bigserial not null, name varchar(100) not null)")
   runIfFailed(sql"select count(1) from summary")
 }
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
-  override def db(): DB = NamedDB(Symbol("test006")).toDB()
+  override def db(): DB = NamedDB("test006").toDB()
 
   var (_beforeCreate, _beforeUpdateBy, _beforeDeleteBy, _afterCreate, _afterDeleteBy, _afterUpdateBy) =
     (0, 0, 0, 0, 0, 0)
 
   case class Summary(id: Long, name: String)
   object Summary extends SkinnyCRUDMapper[Summary] {
-    override val connectionPoolName = Symbol("test006")
+    override val connectionPoolName = "test006"
     override def defaultAlias       = createAlias("s")
 
     beforeCreate((session: DBSession, namedValues: Seq[(SQLSyntax, Any)]) => {
@@ -82,8 +82,8 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
       _beforeDeleteBy should equal(0)
       _afterDeleteBy should equal(0)
 
-      val id = Summary.createWithAttributes(Symbol("name") -> "Sample")
-      Summary.updateById(id).withAttributes(Symbol("name") -> "Sample2")
+      val id = Summary.createWithAttributes("name" -> "Sample")
+      Summary.updateById(id).withAttributes("name" -> "Sample2")
       Summary.deleteById(id)
 
       _beforeCreate should equal(2)

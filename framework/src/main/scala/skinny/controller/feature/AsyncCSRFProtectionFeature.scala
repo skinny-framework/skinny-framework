@@ -36,12 +36,12 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
   /**
     * Excluded actions.
     */
-  private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
+  private[this] val forgeryProtectionExcludedActionNames = new scala.collection.mutable.ArrayBuffer[String]
 
   /**
     * Included actions.
     */
-  private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[Symbol]
+  private[this] val forgeryProtectionIncludedActionNames = new scala.collection.mutable.ArrayBuffer[String]
 
   /**
     * Declarative activation of CSRF protection. Of course, highly inspired by Ruby on Rails.
@@ -49,7 +49,7 @@ trait AsyncCSRFProtectionFeature extends AsyncCSRFTokenSupport {
     * @param only should be applied only for these action methods
     * @param except should not be applied for these action methods
     */
-  def protectFromForgery(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil): Unit = {
+  def protectFromForgery(only: Seq[String] = Nil, except: Seq[String] = Nil): Unit = {
     forgeryProtectionEnabled = true
     forgeryProtectionIncludedActionNames ++= only
     forgeryProtectionExcludedActionNames ++= except

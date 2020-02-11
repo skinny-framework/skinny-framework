@@ -14,7 +14,7 @@ class ChunkedResponseFeatureSpec extends ScalatraFlatSpec {
     }
   }
   val controller = new Controller with Routes {
-    get("/")(index).as(Symbol("index"))
+    get("/")(index).as("index")
   }
 
   addFilter(controller, "/*")

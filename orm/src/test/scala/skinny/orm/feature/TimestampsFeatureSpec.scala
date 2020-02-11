@@ -77,7 +77,7 @@ create table my_with_id (
       loaded2.updatedAt shouldNot be(loaded1.updatedAt)
 
       info("Specified value is used when a user wants.")
-      WithId.updateById(id).withAttributes(Symbol("createdAt") -> t1, Symbol("updatedAt") -> t2)
+      WithId.updateById(id).withAttributes("createdAt" -> t1, "updatedAt" -> t2)
       val loaded3 = WithId.findById(id).get
       loaded3.createdAt should be(t1)
       loaded3.updatedAt should be(t2)
@@ -87,7 +87,7 @@ create table my_with_id (
   describe("WithoutId") {
     it("assigns/updates timestamps") { implicit session =>
       info("It automatically assigns createdAt and updatedAt.")
-      NoId.createWithAttributes(Symbol("a") -> 1, Symbol("b") -> 2)
+      NoId.createWithAttributes("a" -> 1, "b" -> 2)
       val findCond = sqls.eq(NoId.column.a, 1).and.eq(NoId.column.b, 2)
       val loaded1  = NoId.findBy(findCond).get
       loaded1.createdAt should be(loaded1.updatedAt)
@@ -100,7 +100,7 @@ create table my_with_id (
       loaded2.updatedAt shouldNot be(loaded1.updatedAt)
 
       info("Specified value is used when a user wants.")
-      NoId.updateBy(findCond).withAttributes(Symbol("createdAt") -> t1, Symbol("updatedAt") -> t2)
+      NoId.updateBy(findCond).withAttributes("createdAt" -> t1, "updatedAt" -> t2)
       val loaded3 = NoId.findBy(findCond).get
       loaded3.createdAt should be(t1)
       loaded3.updatedAt should be(t2)

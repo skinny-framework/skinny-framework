@@ -16,7 +16,7 @@ import skinny.routing.RichRoute
 object RoutesAsImplicits extends RoutesAsImplicits
 
 /**
-  * Implicits for RichRoute which enables Route to call #as(Symbol) method.
+  * Implicits for RichRoute which enables Route to call #as(String) method.
   */
 trait RoutesAsImplicits {
 

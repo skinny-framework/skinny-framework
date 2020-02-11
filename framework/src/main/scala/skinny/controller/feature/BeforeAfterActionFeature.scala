@@ -1,7 +1,7 @@
 package skinny.controller.feature
 
-import skinny.micro.{ Handler, SkinnyMicroBase }
 import skinny.micro.base.BeforeAfterDsl
+import skinny.micro.{ Handler, SkinnyMicroBase }
 
 /**
   * beforeAction/afterAction support.
@@ -25,7 +25,7 @@ trait BeforeAfterActionFeature extends SkinnyMicroBase with BeforeAfterDsl {
   /**
     * If you prefer #beforeFilter than #beforeAction, keep going!
     */
-  def beforeFilter(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: => Any): Unit = {
+  def beforeFilter(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: => Any): Unit = {
     beforeAction(only, except)(action)
   }
 
@@ -36,7 +36,7 @@ trait BeforeAfterActionFeature extends SkinnyMicroBase with BeforeAfterDsl {
     * @param except this action should not be applied for these action methods
     * @param action action
     */
-  def beforeAction(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: => Any): Unit = {
+  def beforeAction(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: => Any): Unit = {
     skinnyBeforeActions += (
         () => {
           currentActionName.map { name =>
@@ -55,7 +55,7 @@ trait BeforeAfterActionFeature extends SkinnyMicroBase with BeforeAfterDsl {
   /**
     * If you prefer #afterFilter than #afterAction, keep going!
     */
-  def afterFilter(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: => Any): Unit = {
+  def afterFilter(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: => Any): Unit = {
     afterAction(only, except)(action)
   }
 
@@ -66,7 +66,7 @@ trait BeforeAfterActionFeature extends SkinnyMicroBase with BeforeAfterDsl {
     * @param except this action should not be applied for these action methods
     * @param action action
     */
-  def afterAction(only: Seq[Symbol] = Nil, except: Seq[Symbol] = Nil)(action: => Any): Unit = {
+  def afterAction(only: Seq[String] = Nil, except: Seq[String] = Nil)(action: => Any): Unit = {
     skinnyAfterActions += (
         () => {
           currentActionName.map { name =>

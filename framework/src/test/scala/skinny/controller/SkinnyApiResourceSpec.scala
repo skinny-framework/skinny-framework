@@ -12,15 +12,15 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
 
   Class.forName("org.h2.Driver")
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
-  ConnectionPool.add(Symbol("SkinnyApiResource"), "jdbc:h2:mem:SkinnyApiResource", "", "")
-  NamedDB(Symbol("SkinnyApiResource")).localTx { implicit s =>
+  ConnectionPool.add("SkinnyApiResource", "jdbc:h2:mem:SkinnyApiResource", "", "")
+  NamedDB("SkinnyApiResource").localTx { implicit s =>
     sql"create table api (id serial primary key, name varchar(64) not null, url varchar(128) not null);".execute
       .apply()
   }
 
   case class Api(id: Long, name: String, url: String)
   object Api extends SkinnyCRUDMapper[Api] {
-    override def connectionPoolName = Symbol("SkinnyApiResource")
+    override def connectionPoolName = "SkinnyApiResource"
     override def defaultAlias       = createAlias("api")
     override def extract(rs: WrappedResultSet, n: ResultName[Api]) = new Api(
       id = rs.get(n.id),
@@ -88,7 +88,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
   }
 
   it should "have update API" in {
-    val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+    val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
     put(s"/bar/apis/${id}.xml") {
       body should equal("""<?xml version="1.0" encoding="utf-8"?><apis><name>name is required</name></apis>""")
       header("Content-Type") should fullyMatch regex ("application/xml;\\s*charset=utf-8")
@@ -116,7 +116,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
 
   it should "have delete API" in {
     {
-      val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+      val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
       delete(s"/bar/apis/${id}.xml") {
         status should equal(200)
         header("Content-Type") should fullyMatch regex ("application/xml;\\s*charset=utf-8")
@@ -126,7 +126,7 @@ class SkinnyApiResourceSpec extends ScalatraFlatSpec {
     }
 
     {
-      val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+      val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
       delete(s"/bar/apis/${id}.json") {
         status should equal(200)
         header("Content-Type") should fullyMatch regex ("application/json;\\s*charset=utf-8")

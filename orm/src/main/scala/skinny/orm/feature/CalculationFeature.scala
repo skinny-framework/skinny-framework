@@ -20,17 +20,17 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
   /**
     * Count only.
     */
-  def count(fieldName: Symbol = Symbol(""), distinct: Boolean = false)(
+  def count(fieldName: String = "", distinct: Boolean = false)(
       implicit s: DBSession = autoSession
   ): Long = {
-    if (fieldName == Symbol("")) {
+    if (fieldName == "") {
       withSQL {
         select(sqls.count).from(as(syntax))
       }.map(_.long(1)).single.apply().getOrElse(0L)
     } else {
       calculate {
-        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-        else sqls.count(defaultAlias.field(fieldName.name))
+        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName)))
+        else sqls.count(defaultAlias.field(fieldName))
       }.toLong
     }
   }
@@ -38,19 +38,19 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
   /**
     * Counts distinct rows.
     */
-  def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long =
+  def distinctCount(fieldName: String = primaryKeyFieldName)(implicit s: DBSession = autoSession): Long =
     count(fieldName, true)
 
   /**
     * Calculates sum of a column.
     */
-  def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-    calculate(sqls.sum(defaultAlias.field(fieldName.name)))
+  def sum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.sum(defaultAlias.field(fieldName)))
 
   /**
     * Calculates average of a column.
     */
-  def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+  def average(fieldName: String, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
     calculate(decimals match {
       case Some(dcml) =>
         val decimalsValue = dcml match {
@@ -65,29 +65,29 @@ trait CalculationFeature[Entity] extends SkinnyMapperBase[Entity] {
           case 9 => sqls"9"
           case _ => sqls"10"
         }
-        sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+        sqls"round(${sqls.avg(defaultAlias.field(fieldName))}, ${decimalsValue})"
       case _ =>
-        sqls.avg(defaultAlias.field(fieldName.name))
+        sqls.avg(defaultAlias.field(fieldName))
     })
   }
 
-  def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
+  def avg(fieldName: String, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
     average(fieldName, decimals)
 
   /**
     * Calculates minimum value of a column.
     */
-  def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-    calculate(sqls.min(defaultAlias.field(fieldName.name)))
+  def minimum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.min(defaultAlias.field(fieldName)))
 
-  def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
+  def min(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
   /**
     * Calculates minimum value of a column.
     */
-  def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-    calculate(sqls.max(defaultAlias.field(fieldName.name)))
+  def maximum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+    calculate(sqls.max(defaultAlias.field(fieldName)))
 
-  def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
+  def max(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
 }

@@ -47,116 +47,116 @@ object Controllers {
   object companies extends CompaniesController {}
 
   object root extends RootController with Routes {
-    val indexUrl        = get("/")(index).as(Symbol("index"))
-    val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as(Symbol("sessionRenew"))
-    val errorUrl        = get("/error")(errorExample).as(Symbol("error"))
-    val reactUrl        = get("/react")(reactExample).as(Symbol("react"))
-    val nestedI18nUrl   = get("/nested-i18n")(nestedI18nExample).as(Symbol("nestedI18n"))
-    val invalidateUrl   = get("/invalidate")(invalidateExample).as(Symbol("invalidate"))
+    val indexUrl        = get("/")(index).as("index")
+    val sessionRenewUrl = get("/session/renew")(renewSessionAttributes).as("sessionRenew")
+    val errorUrl        = get("/error")(errorExample).as("error")
+    val reactUrl        = get("/react")(reactExample).as("react")
+    val nestedI18nUrl   = get("/nested-i18n")(nestedI18nExample).as("nestedI18n")
+    val invalidateUrl   = get("/invalidate")(invalidateExample).as("invalidate")
   }
 
   object programmers extends ProgrammersController with Routes {
-    val joinCompanyUrl  = post("/programmers/:programmerId/company/:companyId")(joinCompany).as(Symbol("joinCompany"))
-    val leaveCompanyUrl = delete("/programmers/:programmerId/company")(leaveCompany).as(Symbol("leaveCompany"))
-    val addSkillUrl     = post("/programmers/:programmerId/skills/:skillId")(addSkill).as(Symbol("addSkill"))
-    val deleteSkillUrl  = delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as(Symbol("deleteSkill"))
+    val joinCompanyUrl  = post("/programmers/:programmerId/company/:companyId")(joinCompany).as("joinCompany")
+    val leaveCompanyUrl = delete("/programmers/:programmerId/company")(leaveCompany).as("leaveCompany")
+    val addSkillUrl     = post("/programmers/:programmerId/skills/:skillId")(addSkill).as("addSkill")
+    val deleteSkillUrl  = delete("/programmers/:programmerId/skills/:skillId")(deleteSkill).as("deleteSkill")
   }
 
   object customLayout extends CustomLayoutController with Routes {
-    val indexUrl   = get("/custom-layout/?".r)(index).as(Symbol("index"))
-    val defaultUrl = get("/custom-layout/default")(default).as(Symbol("default"))
-    val barUrl     = get("/custom-layout/bar")(bar).as(Symbol("bar"))
+    val indexUrl   = get("/custom-layout/?".r)(index).as("index")
+    val defaultUrl = get("/custom-layout/default")(default).as("default")
+    val barUrl     = get("/custom-layout/bar")(bar).as("bar")
   }
 
   object mail extends MailController with Routes {
-    val indexUrl = get("/mail/")(index).as(Symbol("index"))
-    val sspUrl   = get("/mail/ssp")(ssp).as(Symbol("ssp"))
+    val indexUrl = get("/mail/")(index).as("index")
+    val sspUrl   = get("/mail/ssp")(ssp).as("ssp")
   }
 
   object mustache extends MustacheController with Routes {
-    val indexUrl = get("/mustache/?".r)(index).as(Symbol("index"))
+    val indexUrl = get("/mustache/?".r)(index).as("index")
   }
 
   object thymeleaf extends ThymeleafController with Routes {
-    val indexUrl = get("/thymeleaf/?".r)(index).as(Symbol("index"))
+    val indexUrl = get("/thymeleaf/?".r)(index).as("index")
   }
   object freemarker extends FreeMarkerController with Routes {
-    val indexUrl = get("/freemarker/?".r)(index).as(Symbol("index"))
+    val indexUrl = get("/freemarker/?".r)(index).as("index")
   }
 
   object sampleApi extends SampleApiController with Routes {
-    val createCompanyUrl = post("/api/companies")(createCompany).as(Symbol("createCompany"))
-    val companiesUrl     = get("/api/companies")(companiesJson).as(Symbol("companies"))
+    val createCompanyUrl = post("/api/companies")(createCompany).as("createCompany")
+    val companiesUrl     = get("/api/companies")(companiesJson).as("companies")
   }
   object sampleTxApi extends SampleTxApiController with Routes {
-    get("/api/error")(index).as(Symbol("index"))
+    get("/api/error")(index).as("index")
   }
 
   object fileUpload extends FileUploadController with Routes {
-    val formUrl   = get("/fileupload")(form).as(Symbol("form"))
-    val submitUrl = post("/fileupload/submit")(submit).as(Symbol("submit"))
+    val formUrl   = get("/fileupload")(form).as("form")
+    val submitUrl = post("/fileupload/submit")(submit).as("submit")
   }
   object fileDownload extends FileDownloadController with Routes {
-    val indexUrl = get("/filedownload")(index).as(Symbol("index"))
-    val smallUrl = get("/filedownload/small")(small).as(Symbol("small"))
-    val nullUrl  = get("/filedownload/null")(nullValue).as(Symbol("null"))
-    val errorUrl = get("/filedownload/error")(error).as(Symbol("error"))
+    val indexUrl = get("/filedownload")(index).as("index")
+    val smallUrl = get("/filedownload/small")(small).as("small")
+    val nullUrl  = get("/filedownload/null")(nullValue).as("null")
+    val errorUrl = get("/filedownload/error")(error).as("error")
   }
 
   object dashboard extends DashboardController with Routes {
-    val indexUrl = get("/dashboard/")(index).as(Symbol("index"))
+    val indexUrl = get("/dashboard/")(index).as("index")
   }
 
   object angularApp extends AngularAppController with Routes {
-    val indexUrl       = get("/angular/app")(index).as(Symbol("index"))
-    val programmersUrl = get("/angular/programmers/")(programmers).as(Symbol("programmers"))
+    val indexUrl       = get("/angular/app")(index).as("index")
+    val programmersUrl = get("/angular/programmers/")(programmers).as("programmers")
   }
 
   object facebook extends FacebookController with Routes {
-    val loginUrl    = get("/facebook")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/facebook/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/facebook/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/facebook")(loginRedirect).as("login")
+    val callbackUrl = get("/facebook/callback")(callback).as("callback")
+    val okUrl       = get("/facebook/ok")(ok).as("ok")
   }
 
   object github extends GitHubController with Routes {
-    val loginUrl    = get("/github")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/github/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/github/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/github")(loginRedirect).as("login")
+    val callbackUrl = get("/github/callback")(callback).as("callback")
+    val okUrl       = get("/github/ok")(ok).as("ok")
   }
 
   object google extends GoogleController with Routes {
-    val loginUrl    = get("/google")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/google/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/google/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/google")(loginRedirect).as("login")
+    val callbackUrl = get("/google/callback")(callback).as("callback")
+    val okUrl       = get("/google/ok")(ok).as("ok")
   }
 
   object twitter extends TwitterController with Routes {
-    val loginUrl    = get("/twitter")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/twitter/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/twitter/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/twitter")(loginRedirect).as("login")
+    val callbackUrl = get("/twitter/callback")(callback).as("callback")
+    val okUrl       = get("/twitter/ok")(ok).as("ok")
   }
 
   object typetalk extends TypetalkController with Routes {
-    val loginUrl    = get("/typetalk")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/typetalk/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/typetalk/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/typetalk")(loginRedirect).as("login")
+    val callbackUrl = get("/typetalk/callback")(callback).as("callback")
+    val okUrl       = get("/typetalk/ok")(ok).as("ok")
   }
 
   object dropbox extends DropboxController with Routes {
-    val loginUrl    = get("/dropbox")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/dropbox/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/dropbox/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/dropbox")(loginRedirect).as("login")
+    val callbackUrl = get("/dropbox/callback")(callback).as("callback")
+    val okUrl       = get("/dropbox/ok")(ok).as("ok")
   }
 
   object backlog extends BacklogController with Routes {
-    val loginUrl    = get("/backlog")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/backlog/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/backlog/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/backlog")(loginRedirect).as("login")
+    val callbackUrl = get("/backlog/callback")(callback).as("callback")
+    val okUrl       = get("/backlog/ok")(ok).as("ok")
   }
   object backlogJp extends BacklogJPController with Routes {
-    val loginUrl    = get("/backlogjp")(loginRedirect).as(Symbol("login"))
-    val callbackUrl = get("/backlogjp/callback")(callback).as(Symbol("callback"))
-    val okUrl       = get("/backlogjp/ok")(ok).as(Symbol("ok"))
+    val loginUrl    = get("/backlogjp")(loginRedirect).as("login")
+    val callbackUrl = get("/backlogjp/callback")(callback).as("callback")
+    val okUrl       = get("/backlogjp/ok")(ok).as("ok")
   }
 
 }

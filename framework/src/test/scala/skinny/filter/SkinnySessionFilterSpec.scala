@@ -10,14 +10,14 @@ class SkinnySessionFilterSpec extends ScalatraFlatSpec with Connection with Crea
   behavior of "SkinnySessionFilter"
 
   object SyncController extends SkinnyController with SkinnySessionFilter with Routes {
-    get("/sync")("ok").as(Symbol("index"))
+    get("/sync")("ok").as("index")
   }
   addFilter(SyncController, "/*")
 
   object AsyncController extends AsyncSkinnyController with AsyncSkinnySessionFilter with Routes {
     get("/async") { implicit ctx =>
       "ok"
-    }.as(Symbol("index"))
+    }.as("index")
   }
   addFilter(AsyncController, "/*")
 

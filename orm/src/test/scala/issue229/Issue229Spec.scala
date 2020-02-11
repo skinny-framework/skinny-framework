@@ -8,12 +8,12 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("issue229"), "jdbc:h2:mem:issue229;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("issue229", "jdbc:h2:mem:issue229;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("issue229"))
+  override val dbSeedsAutoSession = NamedAutoSession("issue229")
 
   addSeedSQL(
     sql"""
@@ -39,13 +39,13 @@ class Issue229Spec extends fixture.FunSpec with Matchers with Connection with Cr
   case class Article(id: Long, title: String, userId: Option[Long], user: Option[User] = None)
 
   object User extends SkinnyCRUDMapper[User] {
-    override val connectionPoolName = Symbol("issue229")
+    override val connectionPoolName = "issue229"
     override def defaultAlias       = createAlias("u")
 
     override def extract(rs: WrappedResultSet, rn: ResultName[User]) = autoConstruct(rs, rn)
   }
   object Article extends SkinnyCRUDMapper[Article] {
-    override val connectionPoolName                                     = Symbol("issue229")
+    override val connectionPoolName                                     = "issue229"
     override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
@@ -64,28 +64,28 @@ class Issue229Spec extends fixture.FunSpec with Matchers with Connection with Cr
     }
   }
 
-  override def db(): DB = NamedDB(Symbol("issue229")).toDB()
+  override def db(): DB = NamedDB("issue229").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val aliceId = User.createWithAttributes(Symbol("name") -> "Alice")
-    val bobId   = User.createWithAttributes(Symbol("name") -> "Bob")
+    val aliceId = User.createWithAttributes("name" -> "Alice")
+    val bobId   = User.createWithAttributes("name" -> "Bob")
     Seq(
       ("Hello World", Some(aliceId)),
       ("Getting Started with Scala", Some(bobId)),
       ("Functional Programming", None),
       ("How to user sbt", Some(aliceId))
     ).foreach {
-      case (title, userId) => Article.createWithAttributes(Symbol("title") -> title, Symbol("userId") -> userId)
+      case (title, userId) => Article.createWithAttributes("title" -> title, "userId" -> userId)
     }
   }
 
   def id(implicit session: DBSession): Long = {
-    Article.where(Symbol("title") -> "Functional Programming").apply().head.id
+    Article.where("title" -> "Functional Programming").apply().head.id
   }
 
   describe("find empty with empty ids") {
     it("should return no results") { implicit session =>
-      Article.where(Symbol("id") -> Nil).apply().size should equal(0)
+      Article.where("id" -> Nil).apply().size should equal(0)
     }
   }
 

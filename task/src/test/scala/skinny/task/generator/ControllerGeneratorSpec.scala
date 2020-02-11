@@ -38,13 +38,14 @@ class ControllerGeneratorSpec extends FunSpec with Matchers {
       val expected =
         """package controller.admin
           |
-          |import org.scalatest._
+          |import org.scalatest.funspec.AnyFunSpec
+          |import org.scalatest.matchers.should.Matchers
           |import skinny._
           |import skinny.test._
           |import org.joda.time._
           |
           |// NOTICE before/after filters won't be executed by default
-          |class MembersControllerSpec extends FunSpec with Matchers with DBSettings {
+          |class MembersControllerSpec extends AnyFunSpec with Matchers with DBSettings {
           |
           |  def createMockController = new MembersController with MockController
           |

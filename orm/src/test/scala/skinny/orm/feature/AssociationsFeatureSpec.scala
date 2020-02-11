@@ -9,12 +9,9 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
   behavior of "AssociationsFeature"
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("AssociationsFeatureSpec"),
-                     "jdbc:h2:mem:AssociationsFeatureSpec;MODE=PostgreSQL",
-                     "sa",
-                     "sa")
+  ConnectionPool.add("AssociationsFeatureSpec", "jdbc:h2:mem:AssociationsFeatureSpec;MODE=PostgreSQL", "sa", "sa")
 
-  NamedDB(Symbol("AssociationsFeatureSpec")).autoCommit { implicit s =>
+  NamedDB("AssociationsFeatureSpec").autoCommit { implicit s =>
     sql"create table company(id bigserial, name varchar(100) not null)".execute.apply()
     sql"create table person(id bigserial, name varchar(100) not null, company_id bigint references company(id))".execute
       .apply()
@@ -30,12 +27,12 @@ class AssociationsFeatureSpec extends FlatSpec with Matchers {
   case class Company(id: Long, name: String)
 
   object Person extends SkinnyMapper[Person] {
-    override def connectionPoolName                                   = Symbol("AssociationsFeatureSpec")
+    override def connectionPoolName                                   = "AssociationsFeatureSpec"
     override def defaultAlias                                         = createAlias("p")
     override def extract(rs: WrappedResultSet, n: ResultName[Person]) = autoConstruct(rs, n, "company")
   }
   object Company extends SkinnyMapper[Company] {
-    override def connectionPoolName                                    = Symbol("AssociationsFeatureSpec")
+    override def connectionPoolName                                    = "AssociationsFeatureSpec"
     override def defaultAlias                                          = createAlias("c")
     override def extract(rs: WrappedResultSet, n: ResultName[Company]) = autoConstruct(rs, n)
   }

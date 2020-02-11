@@ -9,12 +9,12 @@ import skinny.orm._
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("issue259"), "jdbc:h2:mem:issue259;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("issue259", "jdbc:h2:mem:issue259;MODE=PostgreSQL", "sa", "sa")
 }
 
 trait CreateTables extends DBSeeds { self: Connection =>
 
-  override val dbSeedsAutoSession = NamedAutoSession(Symbol("issue259"))
+  override val dbSeedsAutoSession = NamedAutoSession("issue259")
 
   addSeedSQL(
     sql"""
@@ -56,7 +56,7 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection wi
   case class Article(title: String, userId: Option[Long], user: Option[User] = None)
 
   object User extends SkinnyCRUDMapper[User] {
-    override val connectionPoolName = Symbol("issue259")
+    override val connectionPoolName = "issue259"
     override def defaultAlias       = createAlias("u")
 
     lazy val articlesRef = hasMany[Article](
@@ -74,7 +74,7 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection wi
     }
   }
   object Nickname extends SkinnyNoIdCRUDMapper[Nickname] {
-    override val connectionPoolName                                      = Symbol("issue259")
+    override val connectionPoolName                                      = "issue259"
     override def defaultAlias                                            = createAlias("n")
     override def extract(rs: WrappedResultSet, rn: ResultName[Nickname]) = autoConstruct(rs, rn, "user")
 
@@ -84,7 +84,7 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection wi
     )
   }
   object Article extends SkinnyNoIdCRUDMapper[Article] {
-    override val connectionPoolName                                     = Symbol("issue259")
+    override val connectionPoolName                                     = "issue259"
     override def defaultAlias                                           = createAlias("a")
     override def extract(rs: WrappedResultSet, rn: ResultName[Article]) = autoConstruct(rs, rn, "user")
 
@@ -94,17 +94,17 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection wi
     )
   }
 
-  override def db(): DB = NamedDB(Symbol("issue259")).toDB()
+  override def db(): DB = NamedDB("issue259").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val aliceId = User.createWithAttributes(Symbol("name") -> "Alice")
-    val bobId   = User.createWithAttributes(Symbol("name") -> "Bob") // Scala
-    val chrisId = User.createWithAttributes(Symbol("name") -> "Chris") // Scala
-    val denId   = User.createWithAttributes(Symbol("name") -> "Den")
-    val ericId  = User.createWithAttributes(Symbol("name") -> "Eric") // Scala
-    val fredId  = User.createWithAttributes(Symbol("name") -> "Fred")
+    val aliceId = User.createWithAttributes("name" -> "Alice")
+    val bobId   = User.createWithAttributes("name" -> "Bob") // Scala
+    val chrisId = User.createWithAttributes("name" -> "Chris") // Scala
+    val denId   = User.createWithAttributes("name" -> "Den")
+    val ericId  = User.createWithAttributes("name" -> "Eric") // Scala
+    val fredId  = User.createWithAttributes("name" -> "Fred")
 
-    Nickname.createWithAttributes(Symbol("userId") -> bobId, Symbol("name") -> "Bobby")
+    Nickname.createWithAttributes("userId" -> bobId, "name" -> "Bobby")
 
     val titleAndUser = Seq(
       ("Hello World", Some(aliceId)),
@@ -123,7 +123,7 @@ class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection wi
     )
     titleAndUser.foreach {
       case (title, userId) =>
-        Article.createWithAttributes(Symbol("title") -> title, Symbol("userId") -> userId)
+        Article.createWithAttributes("title" -> title, "userId" -> userId)
     }
   }
 

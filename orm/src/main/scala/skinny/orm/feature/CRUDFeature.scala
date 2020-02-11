@@ -255,7 +255,7 @@ trait CRUDFeatureWithId[Id, Entity]
     }
   }
 
-  override def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession): Id = {
+  override def createWithAttributes(parameters: (String, Any)*)(implicit s: DBSession): Id = {
     super.createWithAttributes(parameters: _*).asInstanceOf[Id]
   }
 

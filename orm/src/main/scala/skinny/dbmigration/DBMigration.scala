@@ -4,8 +4,11 @@ import org.flywaydb.core.Flyway
 import skinny.util.TypesafeConfigReader
 import skinny.{ DBSettings, SkinnyEnv }
 import scalikejdbc.ConnectionPool
+
 import scala.collection.JavaConverters._
 import skinny.exception.DBSettingsException
+
+import scala.util.control.NonFatal
 
 object DBMigration extends DBMigration
 
@@ -21,7 +24,12 @@ trait DBMigration {
       DBSettings.initialize()
 
       try {
-        val pool = ConnectionPool.get(Symbol(poolName))
+        val pool: ConnectionPool = try {
+          ConnectionPool.get(Symbol(poolName)) // TODO: remove this symbol conversion by modifying ScalikeJDBC
+        } catch {
+          case NonFatal(_) =>
+            ConnectionPool.get(poolName)
+        }
         val flyway = Flyway
           .configure()
           .dataSource(pool.dataSource)
@@ -42,7 +50,7 @@ trait DBMigration {
         flyway.load().migrate()
       } catch {
         case e: IllegalStateException =>
-          throw new DBSettingsException(s"ConnectionPool named $poolName is not found.")
+          throw new DBSettingsException(s"ConnectionPool named $poolName is not found.", e)
       }
     } finally {
       skinnyEnv.foreach { env =>
@@ -58,7 +66,7 @@ trait DBMigration {
       System.setProperty(SkinnyEnv.PropertyKey, env)
       DBSettings.initialize()
       try {
-        val pool = ConnectionPool.get(Symbol(poolName))
+        val pool = ConnectionPool.get(poolName)
         Flyway
           .configure()
           .dataSource(pool.dataSource)

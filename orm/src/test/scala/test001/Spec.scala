@@ -10,18 +10,18 @@ import org.scalatest.{ fixture, Matchers }
   */
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("test001")).toDB()
+  override def db(): DB = NamedDB("test001").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val t1_1 = Test1.createWithAttributes(Symbol("name") -> "foo-1")
-    val t1_2 = Test1.createWithAttributes(Symbol("name") -> "foo-2")
-    val t1_3 = Test1.createWithAttributes(Symbol("name") -> "foo-3")
-    val t2_1 = Test2.createWithAttributes(Symbol("name") -> "bar-1")
-    val t2_2 = Test2.createWithAttributes(Symbol("name") -> "bar-2")
+    val t1_1 = Test1.createWithAttributes("name" -> "foo-1")
+    val t1_2 = Test1.createWithAttributes("name" -> "foo-2")
+    val t1_3 = Test1.createWithAttributes("name" -> "foo-3")
+    val t2_1 = Test2.createWithAttributes("name" -> "bar-1")
+    val t2_2 = Test2.createWithAttributes("name" -> "bar-2")
 
-    Test1Test2.createWithAttributes(Symbol("test1Id") -> t1_1, Symbol("test2Id") -> t2_1)
-    Test1Test2.createWithAttributes(Symbol("test1Id") -> t1_1, Symbol("test2Id") -> t2_2)
-    Test1Test2.createWithAttributes(Symbol("test1Id") -> t1_2, Symbol("test2Id") -> t2_2)
+    Test1Test2.createWithAttributes("test1Id" -> t1_1, "test2Id" -> t2_1)
+    Test1Test2.createWithAttributes("test1Id" -> t1_1, "test2Id" -> t2_2)
+    Test1Test2.createWithAttributes("test1Id" -> t1_2, "test2Id" -> t2_2)
   }
 
   describe("hasManyThrough byDefault each other") {

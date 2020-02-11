@@ -31,7 +31,7 @@ trait ActionDefinitionFeature extends SkinnyMicroBase {
     *
     * @return action name
     */
-  def currentActionName(implicit cxt: SkinnyContext = context): Option[Symbol] = {
+  def currentActionName(implicit cxt: SkinnyContext = context): Option[String] = {
     // Scalatra takes priority to routing definition which is defined later.
     // So we should take priority to the first action name found from reversed action definitions here.
     actionDefinitions.reverse

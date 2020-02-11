@@ -20,13 +20,13 @@ class SkinnyORMSpec
   override def fixture(implicit session: DBSession): Unit = {
 
     // #createWithNamedValues
-    val countryId1 = Country.createWithAttributes(Symbol("name") -> "Japan")
-    val countryId2 = Country.createWithAttributes(Symbol("name") -> "China")
+    val countryId1 = Country.createWithAttributes("name" -> "Japan")
+    val countryId2 = Country.createWithAttributes("name" -> "China")
 
-    val groupId1 = GroupMapper.createWithAttributes(Symbol("name") -> "Scala Users Group")
-    val groupId2 = GroupMapper.createWithAttributes(Symbol("name") -> "Java Group")
+    val groupId1 = GroupMapper.createWithAttributes("name" -> "Scala Users Group")
+    val groupId2 = GroupMapper.createWithAttributes("name" -> "Java Group")
 
-    val companyId = Company.createWithAttributes(Symbol("name") -> "Typesafe", Symbol("countryId") -> countryId1)
+    val companyId = Company.createWithAttributes("name" -> "Typesafe", "countryId" -> countryId1)
 
     Member.withColumns { m =>
       // Member doesn't use TimestampsFeature
@@ -46,17 +46,17 @@ class SkinnyORMSpec
         m.createdAt -> DateTime.now
       )
 
-      Name.createWithAttributes(Symbol("memberId") -> alice, Symbol("first") -> "Alice", Symbol("last") -> "Cooper")
-      Name.createWithAttributes(Symbol("memberId") -> bob, Symbol("first")   -> "Bob", Symbol("last")   -> "Marley")
-      Name.createWithAttributes(Symbol("memberId") -> chris, Symbol("first") -> "Chris", Symbol("last") -> "Birchall")
+      Name.createWithAttributes("memberId" -> alice, "first" -> "Alice", "last" -> "Cooper")
+      Name.createWithAttributes("memberId" -> bob, "first"   -> "Bob", "last"   -> "Marley")
+      Name.createWithAttributes("memberId" -> chris, "first" -> "Chris", "last" -> "Birchall")
 
-      GroupMember.createWithAttributes(Symbol("memberId") -> alice, Symbol("groupId") -> groupId1)
-      GroupMember.createWithAttributes(Symbol("memberId") -> bob, Symbol("groupId")   -> groupId1)
-      GroupMember.createWithAttributes(Symbol("memberId") -> bob, Symbol("groupId")   -> groupId2)
+      GroupMember.createWithAttributes("memberId" -> alice, "groupId" -> groupId1)
+      GroupMember.createWithAttributes("memberId" -> bob, "groupId"   -> groupId1)
+      GroupMember.createWithAttributes("memberId" -> bob, "groupId"   -> groupId2)
 
-      val skillId = Skill.createWithAttributes(Symbol("name") -> "Programming")
-      Skill.updateById(skillId).withAttributes(Symbol("name") -> "Web development")
-      MemberSkill.createWithAttributes(Symbol("memberId")     -> alice, Symbol("skillId") -> skillId)
+      val skillId = Skill.createWithAttributes("name" -> "Programming")
+      Skill.updateById(skillId).withAttributes("name" -> "Web development")
+      MemberSkill.createWithAttributes("memberId"     -> alice, "skillId" -> skillId)
     }
   }
 
@@ -86,7 +86,7 @@ class SkinnyORMSpec
 
   describe("SkinnyRecord") {
     it("should act like ActiveRecord") { implicit session =>
-      val countryId = Country.createWithAttributes(Symbol("name") -> "Brazil")
+      val countryId = Country.createWithAttributes("name" -> "Brazil")
       val country   = Country.findById(countryId).get
 
       country.copy(name = "BRAZIL").save()
@@ -116,16 +116,16 @@ class SkinnyORMSpec
       val now    = DateTime.now
 
       val member1Id = Member.createWithAttributes(
-        Symbol("countryId") -> mentor.countryId,
-        Symbol("companyId") -> mentor.companyId,
-        Symbol("mentorId")  -> mentor.id,
-        Symbol("createdAt") -> now
+        "countryId" -> mentor.countryId,
+        "companyId" -> mentor.companyId,
+        "mentorId"  -> mentor.id,
+        "createdAt" -> now
       )
       val member2Id = Member.createWithAttributes(
-        Symbol("countryId") -> mentor.countryId,
-        Symbol("companyId") -> mentor.companyId,
-        Symbol("mentorId")  -> mentor.id,
-        Symbol("createdAt") -> now
+        "countryId" -> mentor.countryId,
+        "companyId" -> mentor.companyId,
+        "mentorId"  -> mentor.id,
+        "createdAt" -> now
       )
 
       val member = Member.findBy(
@@ -171,50 +171,50 @@ class SkinnyORMSpec
       Member.count() should be > (0L)
     }
 
-    it("should have #count(Symbol)") { implicit session =>
-      Member.count(Symbol("countryId"), false) should equal(3L)
-      Member.count(Symbol("countryId"), true) should equal(2L)
+    it("should have #count(String)") { implicit session =>
+      Member.count("countryId", false) should equal(3L)
+      Member.count("countryId", true) should equal(2L)
     }
 
-    it("should have #distinctCount(Symbol)") { implicit session =>
+    it("should have #distinctCount(String)") { implicit session =>
       Member.distinctCount() should equal(3L)
-      Member.distinctCount(Symbol("countryId")) should equal(2L)
+      Member.distinctCount("countryId") should equal(2L)
     }
 
     // http://api.rubyonrails.org/classes/ActiveRecord/Calculations.html
     it("should have #count, #sum, #average, #maximum and #minimum") { implicit s =>
-      val id = Product.createWithAttributes(Symbol("name") -> "How to learn Scala", Symbol("priceYen") -> 1230)
-      Product.createWithAttributes(Symbol("name") -> "How to learn Scala 2", Symbol("priceYen") -> 1800)
+      val id = Product.createWithAttributes("name" -> "How to learn Scala", "priceYen" -> 1230)
+      Product.createWithAttributes("name" -> "How to learn Scala 2", "priceYen" -> 1800)
 
       val p = Product.defaultAlias
 
       Product.count() should equal(2)
       Product.where(sqls.eq(p.id, id.value)).count() should equal(1)
 
-      Product.where(sqls.isNotNull(p.priceYen)).sum(Symbol("priceYen")) should equal(3030)
-      Product.sum(Symbol("priceYen")) should equal(3030)
+      Product.where(sqls.isNotNull(p.priceYen)).sum("priceYen") should equal(3030)
+      Product.sum("priceYen") should equal(3030)
 
       // NOTICE: H2 and others returns value without decimal part.
       // https://hibernate.atlassian.net/browse/HHH-5173
-      Product.average(Symbol("priceYen")) should equal(1515)
-      Product.average(Symbol("priceYen"), Some(2)) should equal(1515)
-      Product.minimum(Symbol("priceYen")) should equal(1230)
-      Product.maximum(Symbol("priceYen")) should equal(1800)
+      Product.average("priceYen") should equal(1515)
+      Product.average("priceYen", Some(2)) should equal(1515)
+      Product.minimum("priceYen") should equal(1230)
+      Product.maximum("priceYen") should equal(1800)
 
-      Product.avg(Symbol("priceYen")) should equal(1515)
-      Product.avg(Symbol("priceYen"), Some(3)) should equal(1515)
-      Product.min(Symbol("priceYen")) should equal(1230)
-      Product.max(Symbol("priceYen")) should equal(1800)
+      Product.avg("priceYen") should equal(1515)
+      Product.avg("priceYen", Some(3)) should equal(1515)
+      Product.min("priceYen") should equal(1230)
+      Product.max("priceYen") should equal(1800)
 
-      Product.where(sqls.isNotNull(p.priceYen)).average(Symbol("priceYen")) should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).average(Symbol("priceYen"), Some(2)) should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).minimum(Symbol("priceYen")) should equal(1230)
-      Product.where(sqls.isNotNull(p.priceYen)).maximum(Symbol("priceYen")) should equal(1800)
+      Product.where(sqls.isNotNull(p.priceYen)).average("priceYen") should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).average("priceYen", Some(2)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).minimum("priceYen") should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).maximum("priceYen") should equal(1800)
 
-      Product.where(sqls.isNotNull(p.priceYen)).avg(Symbol("priceYen")) should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).avg(Symbol("priceYen"), Some(3)) should equal(1515)
-      Product.where(sqls.isNotNull(p.priceYen)).min(Symbol("priceYen")) should equal(1230)
-      Product.where(sqls.isNotNull(p.priceYen)).max(Symbol("priceYen")) should equal(1800)
+      Product.where(sqls.isNotNull(p.priceYen)).avg("priceYen") should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).avg("priceYen", Some(3)) should equal(1515)
+      Product.where(sqls.isNotNull(p.priceYen)).min("priceYen") should equal(1230)
+      Product.where(sqls.isNotNull(p.priceYen)).max("priceYen") should equal(1800)
     }
 
     it("should have #findAllBy(SQLSyntax, Int, Int)") { implicit session =>
@@ -258,11 +258,11 @@ class SkinnyORMSpec
     it("should have #updateById(Long)") { implicit session =>
       val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       val memberId = Member.createWithAttributes(
-        Symbol("countryId") -> countryId,
-        Symbol("createdAt") -> DateTime.now
+        "countryId" -> countryId,
+        "createdAt" -> DateTime.now
       )
       val mentorId = Member.limit(1).offset(0).apply().head.id
-      Member.updateById(memberId).withAttributes(Symbol("mentorId") -> mentorId)
+      Member.updateById(memberId).withAttributes("mentorId" -> mentorId)
       val updated = Member.findById(memberId)
       updated.get.mentorId should equal(Some(mentorId))
     }
@@ -270,8 +270,8 @@ class SkinnyORMSpec
     it("should have #deleteById(Long)") { implicit session =>
       val countryId = Country.limit(1).offset(0).apply().map(_.id).head
       val memberId = Member.createWithAttributes(
-        Symbol("countryId") -> countryId,
-        Symbol("createdAt") -> DateTime.now
+        "countryId" -> countryId,
+        "createdAt" -> DateTime.now
       )
       Member.deleteById(memberId)
     }
@@ -322,7 +322,7 @@ class SkinnyORMSpec
       val allMembers = Member.findAll()
 
       val c        = Country.defaultAlias
-      val japan    = Country.where(Symbol("name") -> "Japan").orderBy(c.id.desc).limit(1000).offset(0).apply().head
+      val japan    = Country.where("name" -> "Japan").orderBy(c.id.desc).limit(1000).offset(0).apply().head
       val expected = allMembers.filter(_.countryId == japan.id)
 
       val m      = Member.defaultAlias
@@ -331,17 +331,17 @@ class SkinnyORMSpec
     }
 
     it("should have #orderBy in Querying APIs") { implicit session =>
-      val id1 = Skill.createWithAttributes(Symbol("name") -> "Skill_B")
-      val id2 = Skill.createWithAttributes(Symbol("name") -> "Skill_A")
-      val id3 = Skill.createWithAttributes(Symbol("name") -> "Skill_B")
+      val id1 = Skill.createWithAttributes("name" -> "Skill_B")
+      val id2 = Skill.createWithAttributes("name" -> "Skill_A")
+      val id3 = Skill.createWithAttributes("name" -> "Skill_B")
       val s   = Skill.defaultAlias
-      val ids = Skill.where(Symbol("id") -> Seq(id1, id2, id3)).orderBy(s.name.asc, s.id.desc).apply().map(_.id)
+      val ids = Skill.where("id" -> Seq(id1, id2, id3)).orderBy(s.name.asc, s.id.desc).apply().map(_.id)
       ids should equal(Seq(id2, id3, id1))
     }
 
     it("should have #paginate in Querying APIs") { implicit session =>
       Seq("America", "Russia", "Korea", "India", "Brazil").foreach { name =>
-        Country.createWithAttributes(Symbol("name") -> name)
+        Country.createWithAttributes("name" -> name)
       }
       val res1 = Country.limit(3).offset(3).apply().map(_.id)
       val res2 = Country.paginate(Pagination.page(2).per(3)).apply().map(_.id)
@@ -370,9 +370,9 @@ class SkinnyORMSpec
     it("should have #hasMany") { implicit session =>
       Member.withAlias { m =>
         val members      = Member.findAll()
-        val membersByIds = Member.where(Symbol("id") -> members.map(_.id)).apply()
+        val membersByIds = Member.where("id" -> members.map(_.id)).apply()
         membersByIds.size should equal(members.size)
-        Member.where(Symbol("id") -> members.map(_.id)).count() should equal(members.size)
+        Member.where("id" -> members.map(_.id)).count() should equal(members.size)
 
         val withGroups = members.filter(_.name.get.first == "Bob").head
         withGroups.groups.size should equal(2)
@@ -403,7 +403,7 @@ class SkinnyORMSpec
 
         {
           val membersWithSkills =
-            Member.joins(Member.skillsSimpleRef).where(Symbol("id") -> Member.findAll().map(_.id)).apply()
+            Member.joins(Member.skillsSimpleRef).where("id" -> Member.findAll().map(_.id)).apply()
           val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
           withSkills.skills.size should equal(1)
           val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
@@ -421,7 +421,7 @@ class SkinnyORMSpec
 
         {
           val membersWithSkills =
-            Member.joins(Member.skillsVerboseRef).where(Symbol("id") -> Member.findAll().map(_.id)).apply()
+            Member.joins(Member.skillsVerboseRef).where("id" -> Member.findAll().map(_.id)).apply()
           val withSkills = membersWithSkills.filter(_.name.get.first == "Alice").head
           withSkills.skills.size should equal(1)
           val withoutSkills = membersWithSkills.filter(_.name.get.first == "Chris").head
@@ -434,20 +434,20 @@ class SkinnyORMSpec
 
   describe("Timestamps") {
     it("should fill timestamps correctly") { implicit session =>
-      val id1 = Skill.createWithAttributes(Symbol("name")     -> "Scala")
+      val id1 = Skill.createWithAttributes("name"             -> "Scala")
       val id2 = Skill.createWithNamedValues(Skill.column.name -> "Java")
 
-      Skill.where(Symbol("id") -> Seq(id1, id2)).apply().foreach { skill =>
+      Skill.where("id" -> Seq(id1, id2)).apply().foreach { skill =>
         skill.createdAt should not be (null)
         skill.updatedAt should not be (null)
       }
 
       Thread.sleep(100L)
 
-      Skill.updateById(id1).withAttributes(Symbol("name")     -> "Scala Programming")
+      Skill.updateById(id1).withAttributes("name"             -> "Scala Programming")
       Skill.updateById(id2).withNamedValues(Skill.column.name -> "Java Programming")
 
-      Skill.where(Symbol("id") -> Seq(id1, id2)).apply().foreach { skill =>
+      Skill.where("id" -> Seq(id1, id2)).apply().foreach { skill =>
         skill.updatedAt should not equal (skill.createdAt)
       }
     }
@@ -459,12 +459,12 @@ class SkinnyORMSpec
       val skill = LightFactoryGirl(Skill).create()
 
       // with optimistic lock
-      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withAttributes(Symbol("name") -> "Java Programming")
+      Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withAttributes("name" -> "Java Programming")
       intercept[OptimisticLockException] {
-        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withAttributes(Symbol("name") -> "Ruby Programming")
+        Skill.updateByIdAndVersion(skill.id, skill.lockVersion).withAttributes("name" -> "Ruby Programming")
       }
       // without lock
-      Skill.updateById(skill.id).withAttributes(Symbol("name") -> "Ruby Programming")
+      Skill.updateById(skill.id).withAttributes("name" -> "Ruby Programming")
     }
 
     it("should delete with lock version") { implicit session =>
@@ -481,24 +481,24 @@ class SkinnyORMSpec
 
     it("should update with lock timestamp") { implicit session =>
       val member = LightFactoryGirl(Member)
-        .withVariables(Symbol("countryId") -> LightFactoryGirl(Country, Symbol("countryyy")).create().id)
-        .create(Symbol("companyId") -> LightFactoryGirl(Company).create().id, Symbol("createdAt") -> DateTime.now)
-      val name = LightFactoryGirl(Name).create(Symbol("memberId") -> member.id)
+        .withVariables("countryId" -> LightFactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> LightFactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = LightFactoryGirl(Name).create("memberId" -> member.id)
 
       // with optimistic lock
-      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes(Symbol("first") -> "Kaz")
+      Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes("first" -> "Kaz")
       intercept[OptimisticLockException] {
-        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes(Symbol("first") -> "Kaz")
+        Name.updateByIdAndTimestamp(name.memberId, name.updatedAt).withAttributes("first" -> "Kaz")
       }
       // without lock
-      Name.updateById(name.memberId).withAttributes(Symbol("first") -> "Kaz")
+      Name.updateById(name.memberId).withAttributes("first" -> "Kaz")
     }
 
     it("should delete with lock timestamp") { implicit session =>
       val member = LightFactoryGirl(Member)
-        .withVariables(Symbol("countryId") -> LightFactoryGirl(Country, Symbol("countryyy")).create().id)
-        .create(Symbol("companyId") -> LightFactoryGirl(Company).create().id, Symbol("createdAt") -> DateTime.now)
-      val name = LightFactoryGirl(Name).create(Symbol("memberId") -> member.id)
+        .withVariables("countryId" -> LightFactoryGirl(Country, "countryyy").create().id)
+        .create("companyId" -> LightFactoryGirl(Company).create().id, "createdAt" -> DateTime.now)
+      val name = LightFactoryGirl(Name).create("memberId" -> member.id)
 
       // with optimistic lock
       Name.deleteByIdAndOptionalTimestamp(name.memberId, name.updatedAt)
@@ -534,28 +534,28 @@ class SkinnyORMSpec
 
       val book2 =
         LightFactoryGirl(Book)
-          .withAttributes(Symbol("isbn") -> "11111-2222-33333", Symbol("title") -> "Play2 in Action")
+          .withAttributes("isbn" -> "11111-2222-33333", "title" -> "Play2 in Action")
           .create()
       book2.isbn should equal(ISBN("11111-2222-33333"))
       book2.destroy()
 
       val book3 =
-        LightFactoryGirl(Book).create(Symbol("isbn") -> ISBN("aaaa-bbbb-cccc"), Symbol("title") -> "Play3 in Action")
+        LightFactoryGirl(Book).create("isbn" -> ISBN("aaaa-bbbb-cccc"), "title" -> "Play3 in Action")
       book3.isbn should equal(ISBN("aaaa-bbbb-cccc"))
       book3.title should equal("Play3 in Action")
 
-      val isbn: ISBN = Book.createWithAttributes(Symbol("title") -> "ScalikeJDBC Cookbook")
-      ISBNMaster.createWithAttributes(Symbol("isbn") -> isbn, Symbol("publisher") -> "O'Reilly")
-      LightFactoryGirl(ISBNMaster).withVariables(Symbol("isbn") -> java.util.UUID.randomUUID).create()
+      val isbn: ISBN = Book.createWithAttributes("title" -> "ScalikeJDBC Cookbook")
+      ISBNMaster.createWithAttributes("isbn" -> isbn, "publisher" -> "O'Reilly")
+      LightFactoryGirl(ISBNMaster).withVariables("isbn" -> java.util.UUID.randomUUID).create()
 
       val newBook = Book.findById(isbn).get
       newBook.title should equal("ScalikeJDBC Cookbook")
       newBook.isbnMaster.map(_.publisher) should equal(Some("O'Reilly"))
 
-      Book.createWithAttributes(Symbol("title") -> "Skinny Framework in Action")
+      Book.createWithAttributes("title" -> "Skinny Framework in Action")
       Book.findAll().size should equal(3)
 
-      Book.updateById(isbn).withAttributes(Symbol("title") -> "ScalikeJDBC Cookbook 2")
+      Book.updateById(isbn).withAttributes("title" -> "ScalikeJDBC Cookbook 2")
       Book.findById(isbn).map(_.title) should equal(Some("ScalikeJDBC Cookbook 2"))
 
       Book.deleteById(isbn)
@@ -566,7 +566,7 @@ class SkinnyORMSpec
     it("should deal with typed auto-increment value") { implicit s =>
       // using typed auto-increment value
       val productId: ProductId =
-        Product.createWithAttributes(Symbol("name") -> "How to learn Scala", Symbol("priceYen") -> 2000)
+        Product.createWithAttributes("name" -> "How to learn Scala", "priceYen" -> 2000)
       Product.findById(productId).map(_.name) should equal(Some("How to learn Scala"))
 
       Product.deleteById(productId)
@@ -575,11 +575,11 @@ class SkinnyORMSpec
       // since h2 database 1.4.197, setting a specific value for an auto-generated column is no longer allowed.
       val productId2: ProductId = Product.createWithAttributes(
                                                                /*'id -> ProductId(777), */
-                                                               Symbol("name")     -> "How to learn Ruby",
-                                                               Symbol("priceYen") -> 1800)
+                                                               "name"     -> "How to learn Ruby",
+                                                               "priceYen" -> 1800)
       Product.findById(productId2).map(_.name) should equal(Some("How to learn Ruby"))
 
-      Product.updateById(productId2).withAttributes(Symbol("priceYen") -> 1950)
+      Product.updateById(productId2).withAttributes("priceYen" -> 1950)
       Product.findById(productId2).map(_.priceYen) should equal(Some(1950))
     }
 
@@ -702,9 +702,9 @@ class SkinnyORMSpec
         val before  = LegacyAccount.count()
         val before2 = LegacyAccount2.count()
         LegacyAccount.createWithAttributes(
-          Symbol("accountCode") -> "foo",
-          Symbol("userId")      -> None,
-          Symbol("name")        -> "Alice"
+          "accountCode" -> "foo",
+          "userId"      -> None,
+          "name"        -> "Alice"
         )
         val after  = LegacyAccount.count()
         val after2 = LegacyAccount2.count()
@@ -715,14 +715,14 @@ class SkinnyORMSpec
       }
 
       LegacyAccount.createWithAttributes(
-        Symbol("accountCode") -> "sera",
-        Symbol("userId")      -> Some(123),
-        Symbol("name")        -> "Sera"
+        "accountCode" -> "sera",
+        "userId"      -> Some(123),
+        "name"        -> "Sera"
       )
       LegacyAccount.createWithAttributes(
-        Symbol("accountCode") -> "kaz",
-        Symbol("userId")      -> Some(333),
-        Symbol("name")        -> "Kaz"
+        "accountCode" -> "kaz",
+        "userId"      -> Some(333),
+        "name"        -> "Kaz"
       )
 
       val accounts  = LegacyAccount.findAll()
@@ -733,7 +733,7 @@ class SkinnyORMSpec
       {
         LegacyAccount.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("foo")
         LegacyAccount2.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("foo")
-        LegacyAccount.updateBy(sqls.eq(c.name, "Alice")).withAttributes(Symbol("accountCode") -> "bar")
+        LegacyAccount.updateBy(sqls.eq(c.name, "Alice")).withAttributes("accountCode" -> "bar")
         LegacyAccount.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("bar")
         LegacyAccount2.findBy(sqls.eq(l.name, "Alice")).get.accountCode should equal("bar")
       }
@@ -753,10 +753,10 @@ class SkinnyORMSpec
     it("should have associations for SkinnyNoIdCRUDMapper") { implicit s =>
       val (t1, t2) = (Table1.defaultAlias, Table2.defaultAlias)
 
-      Table1.createWithAttributes(Symbol("num") -> 1, Symbol("name") -> "Java")
-      Table1.createWithAttributes(Symbol("num") -> 2, Symbol("name") -> "Scala")
+      Table1.createWithAttributes("num" -> 1, "name" -> "Java")
+      Table1.createWithAttributes("num" -> 2, "name" -> "Scala")
 
-      Table2.createWithAttributes(Symbol("label") -> "Java")
+      Table2.createWithAttributes("label" -> "Java")
 
       {
         val java = Table2.findBy(sqls.eq(t2.label, "Java"))

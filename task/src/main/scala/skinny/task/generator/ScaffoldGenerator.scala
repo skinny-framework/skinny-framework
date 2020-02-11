@@ -371,7 +371,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val modelClassName      = toClassName(resource)
     val factoryNamePart: String = {
       val name = toResourceNameWithNamespace(namespaces, resource)
-      if (name != resource) ", '" + name else ""
+      if (name != resource) ", \"" + name + "\"" else ""
     }
 
     val viewTemplatesPath = s"${toResourcesBasePath(namespaces)}/${resources}"
@@ -381,16 +381,18 @@ trait ScaffoldGenerator extends CodeGenerator {
 
     s"""package ${namespace}
       |
-      |import org.scalatest._
+      |import org.scalatest.funspec.AnyFunSpec
+      |import org.scalatest.matchers.should.Matchers
+      |import org.scalatest.BeforeAndAfterAll
       |import skinny._
       |import skinny.test._
       |import org.joda.time._
       |import ${toNamespace(modelPackage, namespaces)}._
       |
       |// NOTICE before/after filters won't be executed by default
-      |class ${controllerClassName}Spec extends FunSpec with Matchers with BeforeAndAfterAll with DBSettings {
+      |class ${controllerClassName}Spec extends AnyFunSpec with Matchers with BeforeAndAfterAll with DBSettings {
       |
-      |  override def afterAll() {
+      |  override def afterAll(): Unit = {
       |    super.afterAll()
       |    ${modelClassName}.deleteAll()
       |  }
@@ -507,7 +509,7 @@ trait ScaffoldGenerator extends CodeGenerator {
     val modelClassName      = toClassName(resource)
     val factoryNamePart: String = {
       val name = toResourceNameWithNamespace(namespaces, resource)
-      if (name != resource) ", '" + name else ""
+      if (name != resource) ", \"" + name + "\"" else ""
     }
 
     val resourcesInLabel = toSplitName(resources)
@@ -527,7 +529,7 @@ trait ScaffoldGenerator extends CodeGenerator {
         |class ${controllerClassName}_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
         |  addFilter(Controllers.${controllerName}, "/*")
         |
-        |  override def afterAll() {
+        |  override def afterAll(): Unit = {
         |    super.afterAll()
         |    ${modelClassName}.deleteAll()
         |  }

@@ -17,7 +17,7 @@ class MockControllerSpec extends FunSpec with Matchers {
     get("/api/useUrl")(useUrl)
     get("/api/useUrl2")(useUrl2)
 
-    val hoge = get("hoge")("aaaa").as(Symbol("hoge"))
+    val hoge = get("hoge")("aaaa").as("hoge")
   }
 
   class ApiTest extends SkinnyApiController with Routes {
@@ -28,7 +28,7 @@ class MockControllerSpec extends FunSpec with Matchers {
     get("/api/useUrl")(useUrl)
     get("/api/useUrl2")(useUrl2)
 
-    val hoge = get("hoge")("aaaa").as(Symbol("hoge"))
+    val hoge = get("hoge")("aaaa").as("hoge")
   }
 
   describe("MockController") {

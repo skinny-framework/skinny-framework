@@ -104,7 +104,7 @@ class SkinnySpec extends ScalatraFlatSpec with MockitoSugar {
   }
 
   object Controller extends SkinnyController with Routes {
-    val indexUrl = get("/")("ok").as(Symbol("index"))
+    val indexUrl = get("/")("ok").as("index")
     get("/redirect") {
       val skinnyObject =
         Skinny(SkinnyContext.buildWithRequest(request, UnstableAccessValidation(true, false)), requestScope)

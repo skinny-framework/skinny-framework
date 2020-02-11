@@ -12,10 +12,10 @@ class FormParamsFeatureSpec extends ScalatraFlatSpec {
     def multi  = formMultiParams.getAs[String]("foo").map(_.mkString(",")).getOrElse("<empty>")
   }
   object ctrl extends Controller with Routes {
-    get("/get")(single).as(Symbol("get"))
-    post("/post")(single).as(Symbol("post"))
-    get("/multi/get")(multi).as(Symbol("multiGet"))
-    post("/multi/post")(multi).as(Symbol("multiPost"))
+    get("/get")(single).as("get")
+    post("/post")(single).as("post")
+    get("/multi/get")(multi).as("multiGet")
+    post("/multi/post")(multi).as("multiPost")
   }
   addFilter(ctrl, "/*")
 

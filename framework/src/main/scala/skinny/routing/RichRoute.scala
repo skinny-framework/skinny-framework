@@ -1,11 +1,11 @@
 package skinny.routing
 
-import skinny.controller.feature.SkinnyControllerCommonBase
 import skinny.controller.ActionDefinition
+import skinny.controller.feature.SkinnyControllerCommonBase
+import skinny.exception.RouteMetadataException
 import skinny.micro.Handler
 import skinny.micro.constant.HttpMethod
 import skinny.micro.routing.Route
-import skinny.exception.RouteMetadataException
 
 /**
   * Route wrapper.
@@ -22,6 +22,7 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
     * @param name action name
     * @return route
     */
+  @deprecated(since = "4.0.0", message = "use as(String) instead.")
   def as(name: Symbol): Route = {
     val expectedMethod = route.metadata
       .get(Handler.RouteMetadataHttpMethodCacheKey)
@@ -33,7 +34,7 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
       }
     controller.addActionDefinition(
       ActionDefinition(
-        name = name,
+        name = name.name,
         method = expectedMethod,
         matcher = (method: HttpMethod, path: String) => method == expectedMethod && route.apply(path).isDefined
       )

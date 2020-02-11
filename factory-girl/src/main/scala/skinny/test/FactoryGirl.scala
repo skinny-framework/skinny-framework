@@ -20,15 +20,15 @@ import scala.util.Try
   *
   * @see "https://github.com/thoughtbot/factory_girl"
   */
-case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: Symbol = null) extends LoggerProvider {
+case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: String = null) extends LoggerProvider {
 
   private[this] val c: ColumnName[Entity] = mapper.column
 
   val autoSession: AutoSession.type = AutoSession
 
-  private[this] val valuesToReplaceVariablesInConfig: TrieMap[Symbol, Any] = new TrieMap[Symbol, Any]()
+  private[this] val valuesToReplaceVariablesInConfig: TrieMap[String, Any] = new TrieMap[String, Any]()
 
-  private[this] val additionalNamedValues: TrieMap[Symbol, Any] = new TrieMap[Symbol, Any]()
+  private[this] val additionalNamedValues: TrieMap[String, Any] = new TrieMap[String, Any]()
 
   var factoriesDir = "factories"
 
@@ -57,7 +57,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     * @param namedValues named values
     * @return self
     */
-  def withVariables(namedValues: (Symbol, Any)*): FactoryGirl[Id, Entity] = {
+  def withVariables(namedValues: (String, Any)*): FactoryGirl[Id, Entity] = {
     namedValues.foreach { case (key, value) => valuesToReplaceVariablesInConfig.put(key, value) }
     this
   }
@@ -67,9 +67,9 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     *
     * @return prefix
     */
-  def factoryName: Symbol = {
-    val n = Option(name).map(_.name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
-    Symbol(s"${n.head.toLower}${n.tail}".replaceFirst("\\$$", ""))
+  def factoryName: String = {
+    val n = Option(name).getOrElse(JavaReflectAPI.classSimpleName(mapper))
+    s"${n.head.toLower}${n.tail}".replaceFirst("\\$$", "")
   }
 
   /**
@@ -81,12 +81,12 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     val rootResolvedConfig = ConfigFactory.parseResources(getClass.getClassLoader, "factories.conf").resolve()
 
     val config = cachedFactoryConfig.getOrElseUpdate(
-      factoryName.name, {
+      factoryName, {
         (rootResolvedConfig +: resolvedConfigs)
           .collectFirst({
-            case c if Try { c.getConfig(factoryName.name) }.isSuccess => c.getConfig(factoryName.name)
+            case c if Try { c.getConfig(factoryName) }.isSuccess => c.getConfig(factoryName)
           })
-          .getOrElse(rootResolvedConfig.getConfig(factoryName.name))
+          .getOrElse(rootResolvedConfig.getConfig(factoryName))
       }
     )
 
@@ -99,7 +99,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     * @param attributes attributes
     * @return self
     */
-  def withAttributes(attributes: (Symbol, Any)*): FactoryGirl[Id, Entity] = {
+  def withAttributes(attributes: (String, Any)*): FactoryGirl[Id, Entity] = {
     attributes.foreach { case (key, value) => additionalNamedValues.put(key, value) }
     this
   }
@@ -131,11 +131,11 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
     * @param s session
     * @return created entity
     */
-  def create(attributes: (Symbol, Any)*)(implicit s: DBSession = autoSession): Entity = {
+  def create(attributes: (String, Any)*)(implicit s: DBSession = autoSession): Entity = {
 
     val mergedAttributes: Seq[(SQLSyntax, Any)] = (additionalNamedValues ++ attributes)
       .foldLeft(loadedAttributes()) {
-        case (xs, (Symbol(key), value)) =>
+        case (xs, (key, value)) =>
           if (xs.exists(_._1 == mapper.column.field(key))) {
             xs.map {
               case (k, _) if k == mapper.column.field(key) => (k, value)
@@ -153,7 +153,7 @@ case class FactoryGirl[Id, Entity](mapper: CRUDFeatureWithId[Id, Entity], name: 
               .map { matched =>
                 val variableKey = matched.trim.replaceAll("[#{}]", "")
                 val replacedValue: String =
-                  valuesToReplaceVariablesInConfig.get(Symbol(variableKey)).map(_.toString).getOrElse {
+                  valuesToReplaceVariablesInConfig.get(variableKey).map(_.toString).getOrElse {
                     // throw exception when the variable is absent
                     throw new IllegalStateException(
                       s"The '#{${variableKey}}' variable used in factories.conf is unset. " +

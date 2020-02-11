@@ -8,12 +8,12 @@ class AfterActionSpec extends ScalatraFlatSpec {
   behavior of "afterAction"
 
   object After1 extends SkinnyController with Routes {
-    get("/1") { response.writer.write("0") }.as(Symbol("index"))
+    get("/1") { response.writer.write("0") }.as("index")
     afterAction() { response.writer.write("1") }
     afterAction() { response.writer.write("2") }
   }
   object After2 extends SkinnyController with Routes {
-    get("/2") { response.writer.write("OK") }.as(Symbol("index"))
+    get("/2") { response.writer.write("OK") }.as("index")
     afterAction() { response.writer.write(" Computer") }
   }
   addFilter(After1, "/*")

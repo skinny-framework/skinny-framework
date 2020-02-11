@@ -54,13 +54,13 @@ class ParamsSpec extends ScalatraFlatSpec {
       Params(params).withTime("time").getAs[String]("time").orNull
     }
 
-    post("/date")(date).as(Symbol("date"))
-    post("/date2")(date2).as(Symbol("date2"))
-    post("/datetime")(datetime).as(Symbol("datetime"))
-    post("/datetime2")(datetime2).as(Symbol("datetime2"))
-    post("/datetime3")(datetime3).as(Symbol("datetime3"))
-    post("/time")(time).as(Symbol("time"))
-    post("/time2")(time2).as(Symbol("time2"))
+    post("/date")(date).as("date")
+    post("/date2")(date2).as("date2")
+    post("/datetime")(datetime).as("datetime")
+    post("/datetime2")(datetime2).as("datetime2")
+    post("/datetime3")(datetime3).as("datetime3")
+    post("/time")(time).as("time")
+    post("/time2")(time2).as("time2")
   }
 
   addFilter(ParasController, "/*")

@@ -19,16 +19,16 @@ trait NoIdQueryingFeature[Entity]
     * @param conditions
     * @return query builder
     */
-  def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+  def where(conditions: (String, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
     conditions = conditions.flatMap {
       case (key, value) =>
         implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
         value match {
-          case None           => Some(sqls.isNull(defaultAlias.field(key.name)))
+          case None           => Some(sqls.isNull(defaultAlias.field(key)))
           case Nil            => None
-          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-          case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key), values.asInstanceOf[Seq[Any]]))
+          case value          => Some(sqls.eq(defaultAlias.field(key), value))
         }
     }
   )
@@ -99,7 +99,7 @@ trait NoIdQueryingFeature[Entity]
       * @param additionalConditions conditions
       * @return query builder
       */
-    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder =
+    def where(additionalConditions: (String, Any)*): EntitiesSelectOperationBuilder =
       new EntitiesSelectOperationBuilder(
         mapper = this.mapper,
         conditions = conditions ++ additionalConditions.flatMap {
@@ -107,8 +107,8 @@ trait NoIdQueryingFeature[Entity]
             implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
             value match {
               case Nil            => None
-              case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-              case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
+              case values: Seq[_] => Some(sqls.in(defaultAlias.field(key), values.asInstanceOf[Seq[Any]]))
+              case value          => Some(sqls.eq(defaultAlias.field(key), value))
             }
         },
         orderings = orderings,

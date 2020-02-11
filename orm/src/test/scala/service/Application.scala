@@ -19,7 +19,7 @@ object Application
     with TimestampsFeature[Application]
     with SoftDeleteWithTimestampFeature[Application] {
 
-  override val connectionPoolName = Symbol("service")
+  override val connectionPoolName = "service"
   override val tableName          = "applications"
   override def defaultAlias       = createAlias("a")
 

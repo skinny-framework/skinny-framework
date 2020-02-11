@@ -11,18 +11,18 @@ class ManualIdControllerSpec extends ScalatraFlatSpec {
   behavior of "SkinnyController with manual ID"
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("ManualIdController"), "jdbc:h2:mem:ManualIdController", "", "")
+  ConnectionPool.add("ManualIdController", "jdbc:h2:mem:ManualIdController", "", "")
 
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
 
-  NamedDB(Symbol("ManualIdController")).localTx { implicit s =>
+  NamedDB("ManualIdController").localTx { implicit s =>
     sql"create table company (id serial primary key, name varchar(64), url varchar(128));".execute.apply()
   }
 
   case class Company(id: Long, name: String, url: String)
 
   object Company extends SkinnyCRUDMapper[Company] {
-    override def connectionPoolName = Symbol("ManualIdController")
+    override def connectionPoolName = "ManualIdController"
 
     override def defaultAlias               = createAlias("c")
     override def useAutoIncrementPrimaryKey = false

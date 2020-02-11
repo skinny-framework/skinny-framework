@@ -6,7 +6,7 @@ import scalikejdbc.ConnectionPool
 class DBMigrationSpec extends FlatSpec with Matchers with DBMigration {
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("DBMigrationSpec"), "jdbc:h2:mem:DBMigrationSpec;MODE=PostgreSQL", "sa", "sa")
+  ConnectionPool.add("DBMigrationSpec", "jdbc:h2:mem:DBMigrationSpec;MODE=PostgreSQL", "sa", "sa")
 
   it should "have #migrate" in {
     migrate("migration", "DBMigrationSpec")

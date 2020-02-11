@@ -4,5 +4,5 @@ import scalikejdbc.ConnectionPool
 
 trait Connection {
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("fg"), "jdbc:h2:mem:fg", "sa", "sa")
+  ConnectionPool.add("fg", "jdbc:h2:mem:fg", "sa", "sa")
 }

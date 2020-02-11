@@ -12,7 +12,7 @@ class AngularXSRFCookieProviderFeatureSpec extends ScalatraFlatSpec {
     def showAlice = toJSONString(Map("name" -> "Alice", "age" -> 23))
   }
   val controller = new Controller with Routes {
-    get("/alice")(showAlice).as(Symbol("alice"))
+    get("/alice")(showAlice).as("alice")
   }
 
   addFilter(controller, "/*")

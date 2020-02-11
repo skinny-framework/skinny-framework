@@ -9,7 +9,7 @@ import skinny.orm.feature.TimestampsFeature
 
 class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("test004")).toDB()
+  override def db(): DB = NamedDB("test004").toDB()
 
   // entities
   case class Ability(
@@ -31,14 +31,14 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   // mappers
   object Ability extends SkinnyCRUDMapper[Ability] with TimestampsFeature[Ability] {
-    override val connectionPoolName                                     = Symbol("test004")
+    override val connectionPoolName                                     = "test004"
     override lazy val defaultAlias                                      = createAlias("a")
     lazy val abilityTypeRef                                             = belongsTo[AbilityType](AbilityType, (a, at) => a.copy(abilityType = at))
     override def extract(rs: WrappedResultSet, rn: ResultName[Ability]) = autoConstruct(rs, rn, "abilityType")
   }
 
   object AbilityType extends SkinnyCRUDMapper[AbilityType] {
-    override val connectionPoolName                                         = Symbol("test004")
+    override val connectionPoolName                                         = "test004"
     override lazy val defaultAlias                                          = createAlias("at")
     override def extract(rs: WrappedResultSet, rn: ResultName[AbilityType]) = autoConstruct(rs, rn)
   }
@@ -47,7 +47,7 @@ class Spec extends fixture.FunSpec with Matchers with Connection with CreateTabl
 
   describe("SkinnyRecord") {
     it("should update timestamps") { implicit session =>
-      val id              = Ability.createWithAttributes(Symbol("name") -> "SCALA")
+      val id              = Ability.createWithAttributes("name" -> "SCALA")
       val before: Ability = Ability.findById(id).get
       before.copy(name = "Scala").save()
       val after = Ability.findById(id).get

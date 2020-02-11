@@ -16,7 +16,7 @@ case class Service(
 
 object Service extends SkinnyCRUDMapper[Service] with TimestampsFeature[Service] {
 
-  override val connectionPoolName  = Symbol("service")
+  override val connectionPoolName  = "service"
   override val tableName           = "services"
   override def defaultAlias        = createAlias("s")
   override def primaryKeyFieldName = "no"

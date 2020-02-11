@@ -12,15 +12,15 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
 
   Class.forName("org.h2.Driver")
   GlobalSettings.loggingSQLAndTime = LoggingSQLAndTimeSettings(singleLineMode = true)
-  ConnectionPool.add(Symbol("SkinnyResource"), "jdbc:h2:mem:SkinnyResource", "", "")
-  NamedDB(Symbol("SkinnyResource")).localTx { implicit s =>
+  ConnectionPool.add("SkinnyResource", "jdbc:h2:mem:SkinnyResource", "", "")
+  NamedDB("SkinnyResource").localTx { implicit s =>
     sql"create table api (id serial primary key, name varchar(64) not null, url varchar(128) not null);".execute
       .apply()
   }
 
   case class Api(id: Long, name: String, url: String)
   object Api extends SkinnyCRUDMapper[Api] {
-    override def connectionPoolName = Symbol("SkinnyResource")
+    override def connectionPoolName = "SkinnyResource"
     override def defaultAlias       = createAlias("api")
     override def extract(rs: WrappedResultSet, n: ResultName[Api]) = new Api(
       id = rs.get(n.id),
@@ -103,7 +103,7 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
   }
 
   it should "have update API" in {
-    val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+    val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
     put(s"/foo/apis/${id}.xml") {
       status should equal(400)
       body should equal("""<?xml version="1.0" encoding="utf-8"?><apis><name>name is required</name></apis>""")
@@ -125,7 +125,7 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
   // delete
 
   it should "have delete API in XML format" in {
-    val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+    val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
     delete(s"/foo/apis/${id}.xml") {
       status should equal(202)
       header("Content-Type") should fullyMatch regex ("application/xml;\\s*charset=utf-8")
@@ -134,7 +134,7 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
     Api.findById(id).isDefined should equal(false)
   }
   it should "have delete API in JSON format" in {
-    val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+    val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
     delete(s"/foo/apis/${id}.json") {
       status should equal(202)
       header("Content-Type") should fullyMatch regex ("application/json;\\s*charset=utf-8")
@@ -143,7 +143,7 @@ class SkinnyResourceSpec extends ScalatraFlatSpec {
     Api.findById(id).isDefined should equal(false)
   }
   it should "have delete API in HTML format" in {
-    val id = Api.createWithAttributes(Symbol("name") -> "Twitter", Symbol("url") -> "https://dev.twitter.com")
+    val id = Api.createWithAttributes("name" -> "Twitter", "url" -> "https://dev.twitter.com")
     delete(s"/foo/apis/${id}") {
       status should equal(200)
       body should equal("")
