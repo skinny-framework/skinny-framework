@@ -102,7 +102,7 @@ trait ControllerGenerator extends CodeGenerator {
     }
     val newControllerDefCode = {
       s"""  object ${controllerName} extends ${controllerClassName} with Routes {
-      |    val indexUrl = get("${path}")(index).as('index)
+      |    val indexUrl = get("${path}")(index).as("index")
       |  }
       |
       |}

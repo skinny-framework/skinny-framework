@@ -4,28 +4,28 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.0.3"
+lazy val currentVersion = "3.1.0"
 
 lazy val skinnyMicroVersion = Def.setting(
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, v)) if v <= 12 =>
       "2.0.1" // for scala-collection-compat compatibility
     case _ =>
-      "2.1.0"
+      "2.2.0"
   }
 )
-lazy val scalikeJDBCVersion   = "3.3.5"
-lazy val h2Version            = "1.4.199"
-lazy val kuromojiVersion      = "8.2.0"
-lazy val mockitoVersion       = "3.0.0"
-lazy val jettyVersion         = "9.4.19.v20190610"
+lazy val scalikeJDBCVersion   = "3.4.0"
+lazy val h2Version            = "1.4.199" // TODO: 1.4.200
+lazy val kuromojiVersion      = "8.4.1"
+lazy val mockitoVersion       = "3.2.4"
+lazy val jettyVersion         = "9.4.26.v20200117"
 lazy val logbackVersion       = "1.2.3"
-lazy val slf4jApiVersion      = "1.7.28"
+lazy val slf4jApiVersion      = "1.7.30"
 lazy val commonsIoVersion     = "2.6"
 lazy val skinnyLogbackVersion = "1.0.14"
 lazy val collectionCompatVersion = Def.setting {
   if (scalaBinaryVersion.value == "2.13")
-    "2.1.1"
+    "2.1.3"
   else
     "0.1.1"
 }
@@ -43,8 +43,8 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.13.0", "2.12.8", "2.11.12"),
+  scalaVersion := "2.12.10",
+  crossScalaVersions := Seq("2.13.1", "2.12.10", "2.11.12"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -98,7 +98,7 @@ lazy val common = (project in file("common"))
           else "1.1.2"
         }                      % Compile,
         "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion.value % Compile,
-        "com.typesafe"         % "config" % "1.3.4" % Compile,
+        "com.typesafe"         % "config" % "1.4.0" % Compile,
         "org.apache.lucene"    % "lucene-core" % kuromojiVersion % Provided,
         "org.apache.lucene"    % "lucene-analyzers-common" % kuromojiVersion % Provided,
         "org.apache.lucene"    % "lucene-analyzers-kuromoji" % kuromojiVersion % Provided
@@ -189,8 +189,8 @@ lazy val orm = (project in file("orm"))
   .settings(
     name := "skinny-orm",
     libraryDependencies ++= scalikejdbcDependencies ++ servletApiDependencies ++ Seq(
-      "org.flywaydb"    % "flyway-core"            % "6.0.1"            % Compile,
-      "org.hibernate"   % "hibernate-core"         % "5.4.5.Final"      % Test,
+      "org.flywaydb"    % "flyway-core"            % "6.2.2"            % Compile,
+      "org.hibernate"   % "hibernate-core"         % "5.4.11.Final"     % Test,
       "org.scalikejdbc" %% "scalikejdbc-joda-time" % scalikeJDBCVersion % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -214,7 +214,7 @@ lazy val freemarker = (project in file("freemarker"))
     name := "skinny-freemarker",
     libraryDependencies ++= servletApiDependencies ++ Seq(
       "commons-beanutils"    % "commons-beanutils"  % "1.9.4"                  % Compile,
-      "org.freemarker"       % "freemarker"         % "2.3.28"                 % Compile,
+      "org.freemarker"       % "freemarker"         % "2.3.29"                 % Compile,
       "org.skinny-framework" %% "skinny-micro-test" % skinnyMicroVersion.value % Test
     ) ++ testDependencies(scalaVersion.value)
   )
@@ -348,7 +348,7 @@ lazy val fullExclusionRules = Seq(
 )
 lazy val compileScalateDependencies = Seq(
   "org.scalatra.scalate" %% "scalamd"      % "1.7.3" % Compile,
-  "org.scalatra.scalate" %% "scalate-core" % "1.9.4" % Compile excludeAll (fullExclusionRules: _*)
+  "org.scalatra.scalate" %% "scalate-core" % "1.9.5" % Compile excludeAll (fullExclusionRules: _*)
 )
 
 lazy val scalikejdbcDependencies = Seq(
@@ -374,7 +374,7 @@ lazy val mailDependencies = slf4jApiDependencies ++ Seq(
   "org.jvnet.mock-javamail" % "mock-javamail" % "1.9"   % Provided
 )
 def scalatestV(scalaV: String) = {
-  "3.0.8"
+  "3.0.8" // TODO: 3.1.0
 }
 def testDependencies(scalaV: String) = Seq(
   "org.scalatest"           %% "scalatest"      % scalatestV(scalaV)   % Test,

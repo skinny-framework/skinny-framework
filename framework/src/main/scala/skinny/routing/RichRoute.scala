@@ -42,4 +42,6 @@ case class RichRoute(route: Route, method: HttpMethod, controller: SkinnyControl
     route
   }
 
+  def as(name: String): Route = as(Symbol(name))
+
 }
