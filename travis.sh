@@ -32,9 +32,9 @@ if [[ "$TEST_TYPE" == "framework" ]]; then
           validator/test \
           worker/test
   else
-    sbt "example/run db:migrate test" &&
-    sbt ++$TRAVIS_SCALA_VERSION scalafmtSbtCheck scalafmtCheck test:scalafmtCheck test
+    SKINNY_ENV=test sbt "example/run db:migrate test" &&
+    SKINNY_ENV=test sbt ++$TRAVIS_SCALA_VERSION scalafmtSbtCheck scalafmtCheck test:scalafmtCheck test
   fi
-elif [[ "$TEST_TYPE" == "blank-app" && "$TRAVIS_SCALA_VERSION" == 2.12* ]]; then
+elif [[ "$TEST_TYPE" == "blank-app" && "$TRAVIS_SCALA_VERSION" == 2.13* ]]; then
   export SBT_OPTS="" &&  yes|./run_skinny-blank-app_test.sh
 fi

@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "3.1.0"
+lazy val currentVersion = "3.2.0"
 
 lazy val skinnyMicroVersion = Def.setting(
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -43,8 +43,8 @@ lazy val baseSettings = Seq(
   ),
   publishTo := _publishTo(version.value),
   sbtPlugin := false,
-  scalaVersion := "2.12.10",
-  crossScalaVersions := Seq("2.13.1", "2.12.10", "2.11.12"),
+  scalaVersion := "2.12.13",
+  crossScalaVersions := Seq("2.13.4", "2.12.13"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   scalacOptions ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
@@ -93,15 +93,12 @@ lazy val common = (project in file("common"))
     name := "skinny-common",
     libraryDependencies ++= {
       jodaDependencies ++ testDependencies(scalaVersion.value) ++ Seq(
-        "org.scala-lang.modules" %% "scala-parser-combinators" % {
-          if (scalaVersion.value.startsWith("2.11")) "1.1.1"
-          else "1.1.2"
-        }                      % Compile,
-        "org.skinny-framework" %% "skinny-micro-common" % skinnyMicroVersion.value % Compile,
-        "com.typesafe"         % "config" % "1.4.0" % Compile,
-        "org.apache.lucene"    % "lucene-core" % kuromojiVersion % Provided,
-        "org.apache.lucene"    % "lucene-analyzers-common" % kuromojiVersion % Provided,
-        "org.apache.lucene"    % "lucene-analyzers-kuromoji" % kuromojiVersion % Provided
+        "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"                  % Compile,
+        "org.skinny-framework"   %% "skinny-micro-common"      % skinnyMicroVersion.value % Compile,
+        "com.typesafe"           % "config"                    % "1.4.0"                  % Compile,
+        "org.apache.lucene"      % "lucene-core"               % kuromojiVersion          % Provided,
+        "org.apache.lucene"      % "lucene-analyzers-common"   % kuromojiVersion          % Provided,
+        "org.apache.lucene"      % "lucene-analyzers-kuromoji" % kuromojiVersion          % Provided
       )
     }
   )
