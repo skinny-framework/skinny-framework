@@ -27,17 +27,16 @@ trait QueryingFeatureWithId[Id, Entity]
     * @param conditions
     * @return query builder
     */
-  def where(conditions: (Symbol, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
+  def where(conditions: (String, Any)*): EntitiesSelectOperationBuilder = new EntitiesSelectOperationBuilder(
     mapper = this,
     orderings = this.defaultOrderings,
     conditions = conditions.flatMap {
       case (key, value) =>
         implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
         value match {
-          case None           => Some(sqls.isNull(defaultAlias.field(key.name)))
-          case Nil            => Some(sqls" FALSE") // for scalikejdbc 2.0.0 - 2.0.6 compatibility
-          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-          case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
+          case None           => Some(sqls.isNull(defaultAlias.field(key)))
+          case values: Seq[_] => Some(sqls.in(defaultAlias.field(key), values.asInstanceOf[Seq[Any]]))
+          case value          => Some(sqls.eq(defaultAlias.field(key), value))
         }
     }
   )
@@ -118,7 +117,7 @@ trait QueryingFeatureWithId[Id, Entity]
       * @param additionalConditions conditions
       * @return query builder
       */
-    def where(additionalConditions: (Symbol, Any)*): EntitiesSelectOperationBuilder =
+    def where(additionalConditions: (String, Any)*): EntitiesSelectOperationBuilder =
       new EntitiesSelectOperationBuilder(
         mapper = this.mapper,
         conditions = conditions ++ additionalConditions.flatMap {
@@ -126,8 +125,8 @@ trait QueryingFeatureWithId[Id, Entity]
             implicit val enableAsIs = ParameterBinderFactory.asisParameterBinderFactory
             value match {
               case Nil            => None
-              case values: Seq[_] => Some(sqls.in(defaultAlias.field(key.name), values.asInstanceOf[Seq[Any]]))
-              case value          => Some(sqls.eq(defaultAlias.field(key.name), value))
+              case values: Seq[_] => Some(sqls.in(defaultAlias.field(key), values.asInstanceOf[Seq[Any]]))
+              case value          => Some(sqls.eq(defaultAlias.field(key), value))
             }
         },
         orderings = orderings,
@@ -222,30 +221,30 @@ trait QueryingFeatureWithId[Id, Entity]
     /**
       * Count only.
       */
-    def count(fieldName: Symbol = Symbol(primaryKeyFieldName), distinct: Boolean = false)(implicit s: DBSession =
-                                                                                            autoSession): Long = {
+    def count(fieldName: String = primaryKeyFieldName,
+              distinct: Boolean = false)(implicit s: DBSession = autoSession): Long = {
       calculate {
-        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName.name)))
-        else sqls.count(defaultAlias.field(fieldName.name))
+        if (distinct) sqls.count(sqls.distinct(defaultAlias.field(fieldName)))
+        else sqls.count(defaultAlias.field(fieldName))
       }.toLong
     }
 
     /**
       * Counts distinct rows.
       */
-    def distinctCount(fieldName: Symbol = Symbol(primaryKeyFieldName))(implicit s: DBSession = autoSession): Long =
+    def distinctCount(fieldName: String = primaryKeyFieldName)(implicit s: DBSession = autoSession): Long =
       count(fieldName, true)
 
     /**
       * Calculates sum of a column.
       */
-    def sum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-      calculate(sqls.sum(defaultAlias.field(fieldName.name)))
+    def sum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.sum(defaultAlias.field(fieldName)))
 
     /**
       * Calculates average of a column.
       */
-    def average(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
+    def average(fieldName: String, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal = {
       calculate(decimals match {
         case Some(dcml) =>
           val decimalsValue = dcml match {
@@ -260,27 +259,27 @@ trait QueryingFeatureWithId[Id, Entity]
             case 9 => sqls"9"
             case _ => sqls"10"
           }
-          sqls"round(${sqls.avg(defaultAlias.field(fieldName.name))}, ${decimalsValue})"
+          sqls"round(${sqls.avg(defaultAlias.field(fieldName))}, ${decimalsValue})"
         case _ =>
-          sqls.avg(defaultAlias.field(fieldName.name))
+          sqls.avg(defaultAlias.field(fieldName))
       })
     }
-    def avg(fieldName: Symbol, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
+    def avg(fieldName: String, decimals: Option[Int] = None)(implicit s: DBSession = autoSession): BigDecimal =
       average(fieldName, decimals)
 
     /**
       * Calculates minimum value of a column.
       */
-    def minimum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-      calculate(sqls.min(defaultAlias.field(fieldName.name)))
-    def min(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
+    def minimum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.min(defaultAlias.field(fieldName)))
+    def min(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal = minimum(fieldName)
 
     /**
       * Calculates minimum value of a column.
       */
-    def maximum(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal =
-      calculate(sqls.max(defaultAlias.field(fieldName.name)))
-    def max(fieldName: Symbol)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
+    def maximum(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal =
+      calculate(sqls.max(defaultAlias.field(fieldName)))
+    def max(fieldName: String)(implicit s: DBSession = autoSession): BigDecimal = maximum(fieldName)
 
     /**
       * Actually applies SQL to the DB.

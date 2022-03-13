@@ -428,7 +428,7 @@ class AssetsController extends SkinnyController {
 object AssetsController extends AssetsController with Routes {
 
   // Unfortunately, *.* seems not to work.
-  val jsRootUrl  = get(s"${jsRootPath}/*")(js).as(Symbol("js"))
-  val cssRootUrl = get(s"${cssRootPath}/*")(css).as(Symbol("css"))
+  val jsRootUrl  = get(s"${jsRootPath}/*")(js).as("js")
+  val cssRootUrl = get(s"${cssRootPath}/*")(css).as("css")
 
 }

@@ -11,10 +11,10 @@ import scalikejdbc._
 class TxPerRequestFilterSpec extends FunSpec with Matchers with MockitoSugar {
 
   Class.forName("org.h2.Driver")
-  ConnectionPool.add(Symbol("TxPerRequestFilterSpec_ORM"), "jdbc:h2:mem:TxPerRequestFilterSpec_ORM", "sa", "sa")
+  ConnectionPool.add("TxPerRequestFilterSpec_ORM", "jdbc:h2:mem:TxPerRequestFilterSpec_ORM", "sa", "sa")
 
   val filter = new TxPerRequestFilter {
-    override def connectionPool = ConnectionPool.get(Symbol("TxPerRequestFilterSpec_ORM"))
+    override def connectionPool = ConnectionPool.get("TxPerRequestFilterSpec_ORM")
   }
 
   describe("TxPerRequestFilter") {

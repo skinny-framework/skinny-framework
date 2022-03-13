@@ -9,9 +9,9 @@ class ActionDefinitionSpec extends FlatSpec with Matchers {
 
   it should "be available" in {
     val method     = HttpMethod.apply("GET")
-    val definition = ActionDefinition(Symbol("index"), method, (m: HttpMethod, path: String) => true)
+    val definition = ActionDefinition("index", method, (m: HttpMethod, path: String) => true)
 
-    definition.name should equal(Symbol("index"))
+    definition.name should equal("index")
     definition.method should equal(method)
     definition.matcher.apply(null, null) should equal(true)
   }

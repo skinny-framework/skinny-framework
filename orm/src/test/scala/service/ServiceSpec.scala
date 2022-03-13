@@ -7,13 +7,13 @@ import org.scalatest._
 
 class ServiceSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
-  override def db(): DB = NamedDB(Symbol("service")).toDB()
+  override def db(): DB = NamedDB("service").toDB()
 
   override def fixture(implicit session: DBSession): Unit = {
-    val serviceNo = Service.createWithAttributes(Symbol("name") -> "Cool Web Service")
-    Application.createWithAttributes(Symbol("name") -> "Smartphone site", Symbol("serviceNo")   -> serviceNo)
-    Application.createWithAttributes(Symbol("name") -> "PC site", Symbol("serviceNo")           -> serviceNo)
-    Application.createWithAttributes(Symbol("name") -> "Featurephone site", Symbol("serviceNo") -> serviceNo)
+    val serviceNo = Service.createWithAttributes("name" -> "Cool Web Service")
+    Application.createWithAttributes("name" -> "Smartphone site", "serviceNo"   -> serviceNo)
+    Application.createWithAttributes("name" -> "PC site", "serviceNo"           -> serviceNo)
+    Application.createWithAttributes("name" -> "Featurephone site", "serviceNo" -> serviceNo)
   }
 
   describe("hasMany without byDefault") {

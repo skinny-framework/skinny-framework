@@ -120,9 +120,9 @@ trait NoIdCUDFeature[Entity]
     * @param s db session
     * @return created count (actually useless)
     */
-  def createWithAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Any = {
+  def createWithAttributes(parameters: (String, Any)*)(implicit s: DBSession = autoSession): Any = {
     createWithNamedValues(mergeNamedValuesForCreation(parameters.map {
-      case (name, value) => (column.field(name.name), value)
+      case (name, value) => (column.field(name), value)
     }): _*)
   }
 
@@ -300,9 +300,9 @@ trait NoIdCUDFeature[Entity]
       * @param s db session
       * @return updated count
       */
-    def withAttributes(parameters: (Symbol, Any)*)(implicit s: DBSession = autoSession): Int = {
+    def withAttributes(parameters: (String, Any)*)(implicit s: DBSession = autoSession): Int = {
       withNamedValues(parameters.map {
-        case (name, value) => (column.field(name.name), value)
+        case (name, value) => (column.field(name), value)
       }: _*)
     }
 

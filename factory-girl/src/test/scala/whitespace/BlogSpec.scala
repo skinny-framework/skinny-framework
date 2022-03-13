@@ -9,21 +9,21 @@ import skinny.logging.Logging
 
 class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback with Logging {
 
-  override def db(): DB = NamedDB(Symbol("ws")).toDB()
+  override def db(): DB = NamedDB("ws").toDB()
 
   describe("variables") {
     it("should be available") { implicit session =>
       val fg = FactoryGirl(Post)
       fg.factoriesDir = "foo bar baz"
-      val post = fg.withVariables(Symbol("name") -> "Kaz").create()
+      val post = fg.withVariables("name" -> "Kaz").create()
       post.title should equal("I just started this blog")
       post.body should equal("Hello, everyone! My name is Kaz. And bulah bulah...")
     }
 
     it("should be available with string interpolation") { implicit session =>
-      val fg = FactoryGirl(Post, Symbol("post2"))
+      val fg = FactoryGirl(Post, "post2")
       fg.factoriesDir = "foo bar baz"
-      val post = fg.withVariables(Symbol("name") -> "Kaz").create()
+      val post = fg.withVariables("name" -> "Kaz").create()
       post.title should equal("I just started this blog")
       post.body should not equal ("Hello, everyone! My name is Kaz. And bulah bulah... ${System.currentTimeMillis}")
     }
@@ -47,7 +47,7 @@ class BlogSpec extends fixture.FunSpec with Matchers with Connection with Create
       intercept[Exception] {
         val fg = FactoryGirl(Post)
         fg.factoriesDir = "foo bar baz"
-        fg.create(Symbol("name") -> None) // should not accepted as 'None'
+        fg.create("name" -> None) // should not accepted as 'None'
       }
     }
   }

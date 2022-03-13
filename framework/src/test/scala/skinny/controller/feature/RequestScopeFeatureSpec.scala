@@ -20,9 +20,9 @@ class RequestScopeFeatureSpec extends ScalatraFlatSpec {
     }
     def showErrorMessages = errorMessages
 
-    get("/echo")(echo).as(Symbol("echo"))
-    get("/nameModel")(nameModel).as(Symbol("nameModel"))
-    get("/showErrorMessages")(showErrorMessages).as(Symbol("showErrorMessages"))
+    get("/echo")(echo).as("echo")
+    get("/nameModel")(nameModel).as("nameModel")
+    get("/showErrorMessages")(showErrorMessages).as("showErrorMessages")
   }
   addFilter(Controller, "/*")
 

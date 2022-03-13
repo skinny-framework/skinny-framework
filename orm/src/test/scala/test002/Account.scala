@@ -6,7 +6,7 @@ import scalikejdbc._
 case class Account(name: String)
 
 object Account extends SkinnyNoIdCRUDMapper[Account] {
-  override def connectionPoolName = Symbol("test002")
+  override def connectionPoolName = "test002"
 
   override def tableName                                                      = "account"
   override def defaultAlias: Alias[Account]                                   = createAlias("a")

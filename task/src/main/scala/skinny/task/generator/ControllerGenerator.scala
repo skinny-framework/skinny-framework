@@ -144,13 +144,14 @@ trait ControllerGenerator extends CodeGenerator {
 
     s"""package ${namespace}
       |
-      |import org.scalatest._
+      |import org.scalatest.funspec.AnyFunSpec
+      |import org.scalatest.matchers.should.Matchers
       |import skinny._
       |import skinny.test._
       |import org.joda.time._
       |
       |// NOTICE before/after filters won't be executed by default
-      |class ${controllerClassName}Spec extends FunSpec with Matchers with DBSettings {
+      |class ${controllerClassName}Spec extends AnyFunSpec with Matchers with DBSettings {
       |
       |  def createMockController = new ${controllerClassName} with MockController
       |

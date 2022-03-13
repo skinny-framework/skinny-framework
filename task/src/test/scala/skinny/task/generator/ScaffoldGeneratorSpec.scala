@@ -158,7 +158,7 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.members, "/*")
           |
-          |  override def afterAll() {
+          |  override def afterAll(): Unit = {
           |    super.afterAll()
           |    Member.deleteAll()
           |  }
@@ -297,12 +297,12 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
           |
-          |  override def afterAll() {
+          |  override def afterAll(): Unit = {
           |    super.afterAll()
           |    Member.deleteAll()
           |  }
           |
-          |  def newMember = FactoryGirl(Member, 'adminMember).create()
+          |  def newMember = FactoryGirl(Member, "adminMember").create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {
@@ -458,12 +458,12 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |class GroupMembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminGroupMembers, "/*")
           |
-          |  override def afterAll() {
+          |  override def afterAll(): Unit = {
           |    super.afterAll()
           |    GroupMember.deleteAll()
           |  }
           |
-          |  def newGroupMember = FactoryGirl(GroupMember, 'adminGroupMember).create()
+          |  def newGroupMember = FactoryGirl(GroupMember, "adminGroupMember").create()
           |
           |  it should "show group members" in {
           |    get("/admin/group_members") {
@@ -602,12 +602,12 @@ class ScaffoldGeneratorSpec extends FunSpec with Matchers {
           |class MembersController_IntegrationTestSpec extends SkinnyFlatSpec with SkinnyTestSupport with BeforeAndAfterAll with DBSettings {
           |  addFilter(Controllers.adminMembers, "/*")
           |
-          |  override def afterAll() {
+          |  override def afterAll(): Unit = {
           |    super.afterAll()
           |    Member.deleteAll()
           |  }
           |
-          |  def newMember = FactoryGirl(Member, 'adminMember).create()
+          |  def newMember = FactoryGirl(Member, "adminMember").create()
           |
           |  it should "show members" in {
           |    get("/admin/members") {
