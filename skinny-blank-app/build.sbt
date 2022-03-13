@@ -12,7 +12,7 @@ val appOrganization = "org.skinny-framework"
 val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
-val skinnyVersion = "4.0.0-SNAPSHOT"
+val skinnyVersion = "4.0.0"
 val theScalaVersion = "2.13.8"
 val jettyVersion = "9.4.45.v20220203"
 
@@ -62,7 +62,6 @@ DBSettings.initialize()
   Test / logBuffered := false,
   Test / javaOptions ++= Seq("-Dskinny.env=test"),
   Test / fork := true,
-  suppressSbtShellNotification := true,
   scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 )
 
@@ -121,7 +120,6 @@ lazy val precompileDev = (project in file(".")).settings(devBaseSettings, scalat
 lazy val task = (project in file("task"))
   .settings(baseSettings)
   .settings(
-    mainClass := Some("TaskRunner"),
     name := appName + "-task",
     libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0"
   ) dependsOn (dev % "compile->compile")

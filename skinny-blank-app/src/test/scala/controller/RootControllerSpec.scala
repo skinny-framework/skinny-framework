@@ -1,9 +1,10 @@
 package controller
 
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.test.MockController
 
-class RootControllerSpec extends FunSpec with Matchers {
+class RootControllerSpec extends AnyFunSpec with Matchers {
 
   describe("RootController") {
     it("shows top page") {
