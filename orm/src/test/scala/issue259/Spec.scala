@@ -1,5 +1,7 @@
 package issue259
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.joda.time.DateTime
 import org.scalatest._
 import scalikejdbc._
@@ -42,7 +44,7 @@ create table article (
   runIfFailed(sql"select count(1) from article")
 }
 
-class HasOneHasManySpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class HasOneHasManySpec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   case class User(
       id: Long,

@@ -1,8 +1,9 @@
 package skinny.oauth2.client
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class BearerRequestSpec extends FlatSpec with Matchers {
+class BearerRequestSpec extends AnyFlatSpec with Matchers {
 
   it should "be available" in {
     val req = BearerRequest("http://www.example.com/")

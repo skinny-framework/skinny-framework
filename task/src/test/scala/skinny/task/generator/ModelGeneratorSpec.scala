@@ -1,8 +1,9 @@
 package skinny.task.generator
 
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ModelGeneratorSpec extends FunSpec with Matchers {
+class ModelGeneratorSpec extends AnyFunSpec with Matchers {
 
   val generator = ModelGenerator
 
@@ -396,13 +397,13 @@ class ModelGeneratorSpec extends FunSpec with Matchers {
           |
           |import skinny.DBSettings
           |import skinny.test._
-          |import org.scalatest.fixture.FlatSpec
-          |import org.scalatest._
+          |import org.scalatest.flatspec.FixtureAnyFlatSpec
+          |import org.scalatest.matchers.should.Matchers
           |import scalikejdbc._
           |import scalikejdbc.scalatest._
           |import org.joda.time._
           |
-          |class ProjectMemberSpec extends FlatSpec with Matchers with DBSettings with AutoRollback {
+          |class ProjectMemberSpec extends FixtureAnyFlatSpec with Matchers with DBSettings with AutoRollback {
           |}
           |""".stripMargin
       code should equal(expected)

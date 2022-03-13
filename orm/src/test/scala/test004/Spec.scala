@@ -1,5 +1,7 @@
 package test004
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.joda.time.DateTime
 import org.scalatest._
 import scalikejdbc._
@@ -7,7 +9,7 @@ import scalikejdbc.scalatest.AutoRollback
 import skinny.orm.{ SkinnyCRUDMapper, SkinnyRecord }
 import skinny.orm.feature.TimestampsFeature
 
-class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class Spec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB("test004").toDB()
 

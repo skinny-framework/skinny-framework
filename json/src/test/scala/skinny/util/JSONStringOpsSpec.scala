@@ -1,6 +1,7 @@
 package skinny.util
 
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.util.{ Success, Try }
 
@@ -8,7 +9,7 @@ import scala.util.{ Success, Try }
 case class UserResponse(user: User)
 case class User(name: String, age: Int, email: String, isAlive: Boolean = false, friend: Option[User] = None)
 
-class JSONStringOpsSpec extends FunSpec with Matchers {
+class JSONStringOpsSpec extends AnyFunSpec with Matchers {
 
   describe("JSONStringOps#fromJSONString") {
 

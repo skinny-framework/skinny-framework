@@ -1,6 +1,6 @@
 /**
   * Job Workers
   *
-  * @see http://skinny-framework.org/documentation/worker_jobs.html
+  * @see https://skinny-framework.github.io/documentation/worker_jobs.html
   */
 package object worker {}

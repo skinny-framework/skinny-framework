@@ -1,5 +1,7 @@
 package test006
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback

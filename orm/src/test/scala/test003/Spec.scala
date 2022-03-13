@@ -1,12 +1,14 @@
 package test003
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 import skinny.exception.IllegalAssociationException
 import skinny.orm.{ SkinnyCRUDMapper, SkinnyNoIdCRUDMapper }
 
-class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class Spec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB("test003").toDB()
 

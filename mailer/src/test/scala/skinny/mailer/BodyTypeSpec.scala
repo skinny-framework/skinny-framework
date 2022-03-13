@@ -1,8 +1,9 @@
 package skinny.mailer
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class BodyTypeSpec extends FlatSpec with Matchers {
+class BodyTypeSpec extends AnyFlatSpec with Matchers {
 
   it should "have Text type" in {
     Text.extension should equal("text")

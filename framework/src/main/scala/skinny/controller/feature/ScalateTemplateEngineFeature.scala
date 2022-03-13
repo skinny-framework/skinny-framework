@@ -155,7 +155,7 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
           |p(class="alert alert-success")
           |  b TODO:
           |  | This is an auto-generated file by
-          |  a(href="http://skinny-framework.org/") Skinny framework
+          |  a(href="https://skinny-framework.github.io/") Skinny framework
           |  |!
           |""".stripMargin
       case "scaml" =>
@@ -164,14 +164,14 @@ trait ScalateTemplateEngineFeature extends TemplateEngineFeature with ScalateSup
           |p(class="alert alert-success")
           |  %b TODO:
           |  This is an auto-generated file by
-          |  %a(href="http://skinny-framework.org/") Skinny framework
+          |  %a(href="https://skinny-framework.github.io/") Skinny framework
           |  !
           |""".stripMargin
       case _ =>
         """<h3>Welcome</h3>
           |<hr/>
           |<p class="alert alert-success">
-          |  <strong>TODO:</strong> This is an auto-generated file by <a href="http://skinny-framework.org/">Skinny framework</a>!<br/>
+          |  <strong>TODO:</strong> This is an auto-generated file by <a href="https://skinny-framework.github.io/">Skinny framework</a>!<br/>
           |</p>
           |""".stripMargin
     }

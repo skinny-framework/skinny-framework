@@ -1,9 +1,10 @@
 package skinny.controller
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.micro.constant.HttpMethod
 
-class ActionDefinitionSpec extends FlatSpec with Matchers {
+class ActionDefinitionSpec extends AnyFlatSpec with Matchers {
 
   behavior of "ActionDefinition"
 

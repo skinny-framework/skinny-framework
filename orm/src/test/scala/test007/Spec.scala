@@ -1,5 +1,7 @@
 package test007
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.joda.time.DateTime
 import org.scalatest._
 import scalikejdbc._

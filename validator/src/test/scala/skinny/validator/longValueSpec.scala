@@ -1,8 +1,9 @@
 package skinny.validator
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class longValueSpec extends FlatSpec with Matchers {
+class longValueSpec extends AnyFlatSpec with Matchers {
 
   behavior of "longValue"
 

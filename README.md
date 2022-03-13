@@ -11,7 +11,7 @@ To put it simply, Skinny framework's concept is **Scala on Rails**. Skinny is hi
 
 See the website in detail.
 
-http://skinny-framework.org/
+https://skinny-framework.github.io/
 
 ## Global skinny script via Homebrew
 

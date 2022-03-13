@@ -1,5 +1,7 @@
 package issue219
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
@@ -42,7 +44,7 @@ create table tag (
 }
 
 class ByDefaultSpec
-    extends fixture.FunSpec
+    extends FixtureAnyFunSpec
     with Matchers
     with ByDefaultConnection
     with ByDefaultCreateTables

@@ -1,8 +1,9 @@
 package skinny.util
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class StringUtilSpec extends FlatSpec with Matchers {
+class StringUtilSpec extends AnyFlatSpec with Matchers {
   import StringUtil._
 
   behavior of "StringUtil"

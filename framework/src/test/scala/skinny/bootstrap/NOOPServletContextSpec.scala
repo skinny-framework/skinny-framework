@@ -1,13 +1,13 @@
 package skinny.bootstrap
 
 import javax.servlet.ServletContext
-
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.controller.{ SkinnyApiController, SkinnyController, SkinnyServlet }
 import skinny.micro.WebApp
 import skinny.micro.routing.RouteRegistry
 
-class NOOPServletContextSpec extends FunSpec with Matchers {
+class NOOPServletContextSpec extends AnyFunSpec with Matchers {
   RouteRegistry.init()
 
   val app1 = new SkinnyController {

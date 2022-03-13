@@ -1,11 +1,12 @@
 package skinny.mailer
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import javax.mail.Session
 import org.joda.time.DateTime
 import skinny.mailer.implicits.SkinnyMailerImplicits
 
-class SkinnyMessageSpec extends FlatSpec with Matchers with SkinnyMailerImplicits {
+class SkinnyMessageSpec extends AnyFlatSpec with Matchers with SkinnyMailerImplicits {
   behavior of "SkinnyMessage"
 
   val session = Session.getInstance(new java.util.Properties())

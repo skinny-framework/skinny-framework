@@ -83,3 +83,5 @@ ensime-langserver.log
 
 .bsp/
 .metals/
+
+.ruby-version

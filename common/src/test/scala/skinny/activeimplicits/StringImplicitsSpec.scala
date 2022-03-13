@@ -1,10 +1,11 @@
 package skinny.activeimplicits
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.nlp.SkinnyJapaneseAnalyzerFactory
 
 // http://api.rubyonrails.org/classes/String.html
-class StringImplicitsSpec extends FlatSpec with Matchers with StringImplicits {
+class StringImplicitsSpec extends AnyFlatSpec with Matchers with StringImplicits {
 
   it should "have #remove" in {
     "Hello Hello HELLO World!".remove("Hello") should equal("  HELLO World!")

@@ -27,7 +27,7 @@ To put it simply, Skinny framework’s concept is Scala on Rails.
 
 Skinny is highly inspired by Ruby on Rails and it is optimized for sustainable productivity for Servlet-based web app development.
 
-http://skinny-framework.org/
+https://skinny-framework.github.io/
 
 ### Reference Links
 
@@ -39,7 +39,7 @@ Skinny Micro is at once a micro Web framework to build Servlet applications in S
 Skinny Micro started as a fork of Scalatra. After that, many improvements have been made to be safer and more efficient when working with Scala Future values upon it.
 Basically, Skinny Micro’s DSLs are source compatible with Scalatra 2.3’s ones. But names of base traits and packages are mostly renamed and the structure of internal modules are re-designed.
 
-- http://skinny-framework.org/documentation/micro.html
+- https://skinny-framework.github.io/documentation/micro.html
 - https://github.com/skinny-framework/skinny-micro
 
 #### ScalikeJDBC
@@ -53,7 +53,7 @@ http://scalikejdbc.org/
 
 Skinny's DB migration cames with Flyway.
 
-- http://skinny-framework.org/documentation/db-migration.html
+- https://skinny-framework.github.io/documentation/db-migration.html
 - http://flywaydb.org/
 
 #### Scalate
@@ -61,7 +61,7 @@ Skinny's DB migration cames with Flyway.
 The Skinny MVC's default template engine is Scalate.
 When you go with Scalate, please read Scalate's documentation too.
 
-- http://skinny-framework.org/documentation/view-templates.html
+- https://skinny-framework.github.io/documentation/view-templates.html
 - http://scalate.github.io/scalate/
 
 #### sbt

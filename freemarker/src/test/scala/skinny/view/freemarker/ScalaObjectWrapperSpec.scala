@@ -1,9 +1,10 @@
 package skinny.view.freemarker
 
 import freemarker.template._
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ScalaObjectWrapperSpec extends FlatSpec with Matchers {
+class ScalaObjectWrapperSpec extends AnyFlatSpec with Matchers {
 
   val objectWrapper = new ScalaObjectWrapper
 

@@ -17,19 +17,14 @@ object DBMigration extends DBMigration
   */
 trait DBMigration {
 
-  def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name): Int = {
+  def migrate(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME): Int = {
     val skinnyEnv = SkinnyEnv.get()
     try {
       System.setProperty(SkinnyEnv.PropertyKey, env)
       DBSettings.initialize()
 
       try {
-        val pool: ConnectionPool = try {
-          ConnectionPool.get(Symbol(poolName)) // TODO: remove this symbol conversion by modifying ScalikeJDBC
-        } catch {
-          case NonFatal(_) =>
-            ConnectionPool.get(poolName)
-        }
+        val pool = ConnectionPool.get(poolName)
         val flyway = Flyway
           .configure()
           .dataSource(pool.dataSource)
@@ -60,7 +55,7 @@ trait DBMigration {
     }
   }
 
-  def repair(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME.name): Unit = {
+  def repair(env: String = SkinnyEnv.Development, poolName: String = ConnectionPool.DEFAULT_NAME): Unit = {
     val skinnyEnv = SkinnyEnv.get()
     try {
       System.setProperty(SkinnyEnv.PropertyKey, env)

@@ -1,11 +1,12 @@
 package skinny.orm.feature
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import skinny._
 import skinny.orm._
 
-class CRUDFeatureSpec extends FlatSpec with Matchers {
+class CRUDFeatureSpec extends AnyFlatSpec with Matchers {
   behavior of "CRUDFeature"
 
   Class.forName("org.h2.Driver")

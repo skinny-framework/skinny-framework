@@ -1,14 +1,16 @@
 package skinny.mailer
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.jvnet.mock_javamail.Mailbox
+import org.scalatest.BeforeAndAfter
 import skinny.SkinnyEnv
 import skinny.mailer.example.MyMailer2
 
 // TODO wrap Mailbox
 import skinny.mailer.implicits.SkinnyMailerImplicits
 
-class WithoutTestSupportSpec extends FlatSpec with Matchers with BeforeAndAfter with SkinnyMailerImplicits {
+class WithoutTestSupportSpec extends AnyFlatSpec with Matchers with BeforeAndAfter with SkinnyMailerImplicits {
 
   // set skinny.env as "test"
   System.setProperty(SkinnyEnv.PropertyKey, "test")

@@ -1,5 +1,7 @@
 package skinny.orm
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import skinny.orm.JodaImplicits._
 import org.joda.time.DateTime
@@ -10,7 +12,7 @@ import skinny.test.LightFactoryGirl
 import skinny.orm.exception.OptimisticLockException
 
 class SkinnyORMSpec
-    extends fixture.FunSpec
+    extends FixtureAnyFunSpec
     with Matchers
     with Connection
     with CreateTables

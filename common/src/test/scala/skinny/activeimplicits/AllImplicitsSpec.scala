@@ -1,8 +1,9 @@
 package skinny.activeimplicits
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AllImplicitsSpec extends FlatSpec with Matchers {
+class AllImplicitsSpec extends AnyFlatSpec with Matchers {
 
   object Sample extends AllImplicits {
     def duration               = 100.seconds

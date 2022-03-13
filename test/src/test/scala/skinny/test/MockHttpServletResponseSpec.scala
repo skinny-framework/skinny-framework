@@ -1,10 +1,10 @@
 package skinny.test
 
+import org.scalatest.flatspec.AnyFlatSpec
 import java.util.Locale
+import org.scalatest.matchers.should.Matchers
 
-import org.scalatest._
-
-class MockHttpServletResponseSpec extends FlatSpec with Matchers {
+class MockHttpServletResponseSpec extends AnyFlatSpec with Matchers {
 
   it should "be available" in {
     val resp = new MockHttpServletResponse

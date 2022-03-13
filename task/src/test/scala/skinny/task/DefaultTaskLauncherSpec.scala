@@ -1,8 +1,9 @@
 package skinny.task
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DefaultTaskLauncherSpec extends FlatSpec with Matchers {
+class DefaultTaskLauncherSpec extends AnyFlatSpec with Matchers {
 
   it should "be available" in {
     val launcher = new DefaultTaskLauncher {}

@@ -250,7 +250,7 @@ IF %command%==package (
 
 IF "%command%"=="package:standalone" (
   IF NOT EXIST "project\_skinny_assembly.sbt" (
-    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"0.14.7^"^) > "project\_skinny_assembly.sbt"
+    ECHO addSbtPlugin^(^"com.eed3si9n^" %% ^"sbt-assembly^" %% ^"1.2.0^"^) > "project\_skinny_assembly.sbt"
     (
       ECHO mainClass in assembly := Some^(^"skinny.standalone.JettyLauncher^"^)
       ECHO _root_.sbt.Keys.test in assembly := {}
@@ -384,7 +384,7 @@ GOTO script_eof
 :scalajs_task
 IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO resolvers += "scala-js-release" at "https://dl.bintray.com/scala-js/scala-js-releases" > "project\_skinny_scalajs.sbt"
-  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "0.6.32"^) >> "project\_skinny_scalajs.sbt"
+  ECHO addSbtPlugin^("org.scala-js" %% "sbt-scalajs" %% "1.9.0"^) >> "project\_skinny_scalajs.sbt"
 
   ECHO lazy val scalajs = ^(project in file^("src/main/webapp/WEB-INF/assets"^)^).settings^( > "_skinny_scalajs_settings.sbt"
   ECHO   name := "application", // JavaScript file name  >> "_skinny_scalajs_settings.sbt"
@@ -392,8 +392,8 @@ IF NOT EXIST "project\_skinny_scalajs.sbt" (
   ECHO   unmanagedSourceDirectories in Compile ^<= baseDirectory^(_ / "scala"^).value, >> "_skinny_scalajs_settings.sbt"
   ECHO   fullResolvers ~= { _.filterNot^(_.name == "jcenter"^) }, >> "_skinny_scalajs_settings.sbt"
   ECHO   libraryDependencies ++= Seq^(                   >> "_skinny_scalajs_settings.sbt"
-  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "0.9.8", >> "_skinny_scalajs_settings.sbt"
-  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "0.9.6", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "org.scala-js" %%%%%% "scalajs-dom"     %% "1.0.0", >> "_skinny_scalajs_settings.sbt"
+  ECHO     "be.doeraene"  %%%%%% "scalajs-jquery"  %% "1.0.0", >> "_skinny_scalajs_settings.sbt"
   ECHO   ^), >> "_skinny_scalajs_settings.sbt"
   ECHO   crossTarget in Compile := baseDirectory^(_ / ".." / ".." / "assets" / "js"^).value >> "_skinny_scalajs_settings.sbt"
   ECHO ^).enablePlugins^(ScalaJSPlugin^) >> "_skinny_scalajs_settings.sbt"

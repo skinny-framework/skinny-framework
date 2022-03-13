@@ -1,8 +1,9 @@
 package skinny.util
 
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class TypesafeConfigReaderSpec extends FunSpec with Matchers {
+class TypesafeConfigReaderSpec extends AnyFunSpec with Matchers {
 
   describe("TypesafeConfigReader#load") {
 
