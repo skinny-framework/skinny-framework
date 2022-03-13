@@ -1,5 +1,7 @@
 package sysadmin
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest._
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
@@ -7,7 +9,7 @@ import skinny.logging.Logging
 import skinny.test.FactoryGirl
 
 class userAdminSpec
-    extends fixture.FunSpec
+    extends FixtureAnyFunSpec
     with Matchers
     with Connection
     with CreateTables

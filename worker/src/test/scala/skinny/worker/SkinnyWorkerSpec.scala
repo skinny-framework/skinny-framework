@@ -1,8 +1,9 @@
 package skinny.worker
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SkinnyWorkerSpec extends FlatSpec with Matchers {
+class SkinnyWorkerSpec extends AnyFlatSpec with Matchers {
   behavior of "SkinnyWorker"
 
   it should "run" in {

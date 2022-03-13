@@ -4,11 +4,12 @@ import java.io.File
 import java.nio.charset.Charset
 
 import org.apache.commons.io.FileUtils
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import skinny.{ DBSettings, SkinnyEnv }
 
-class ReverseScaffoldAllGenerator_InflectorSpec extends FunSpec with Matchers {
+class ReverseScaffoldAllGenerator_InflectorSpec extends AnyFunSpec with Matchers {
 
   val generator = new ReverseScaffoldAllGenerator {
     override def sourceDir       = "tmp/ReverseScaffoldAllGeneratorSpec/src/main/scala"

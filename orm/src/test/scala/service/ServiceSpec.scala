@@ -1,11 +1,13 @@
 package service
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
 import org.scalatest._
 
-class ServiceSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class ServiceSpec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB("service").toDB()
 

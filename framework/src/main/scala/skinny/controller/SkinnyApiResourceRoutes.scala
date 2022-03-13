@@ -29,7 +29,7 @@ trait SkinnyApiResourceRoutes[Id] extends SkinnyControllerBase with RoutesAsImpl
     * Pass this controller instance implicitly
     * because [[skinny.routing.implicits.RoutesAsImplicits]] expects [[skinny.controller.SkinnyControllerBase]].
     */
-  private[this] implicit val skinnyController: SkinnyControllerBase = this
+  override implicit val skinnyController: SkinnyControllerBase = this
 
   // --------------
   // create API

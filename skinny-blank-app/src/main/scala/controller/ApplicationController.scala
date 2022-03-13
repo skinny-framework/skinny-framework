@@ -6,7 +6,7 @@ import skinny.filter._
 /**
   * The base controller for this Skinny application.
   *
-  * see also "http://skinny-framework.org/documentation/controller-and-routes.html"
+  * see also "https://skinny-framework.github.io/documentation/controller-and-routes.html"
   */
 trait ApplicationController
     extends SkinnyController

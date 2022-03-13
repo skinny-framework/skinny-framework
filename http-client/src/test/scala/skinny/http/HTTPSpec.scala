@@ -1,13 +1,15 @@
 package skinny.http
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import java.io.File
 
-import org.scalatest.{ Matchers, WordSpec }
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class HTTPSpec extends WordSpec with Matchers with Handlers with ServerOps {
+class HTTPSpec extends AnyWordSpec with Matchers with Handlers with ServerOps {
 
   "HTTP" should {
 

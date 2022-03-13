@@ -1,8 +1,9 @@
 package skinny.controller
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class MultiParamsSpec extends FlatSpec with Matchers {
+class MultiParamsSpec extends AnyFlatSpec with Matchers {
 
   behavior of "MultiParams"
 

@@ -1,8 +1,9 @@
 package skinny.activeimplicits
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class NumberImplicitsSpec extends FlatSpec with Matchers with NumberImplicits {
+class NumberImplicitsSpec extends AnyFlatSpec with Matchers with NumberImplicits {
 
   it should "have duration implicits" in {
     1.second.toMillis should equal(1000L)

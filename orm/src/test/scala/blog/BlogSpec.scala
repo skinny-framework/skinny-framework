@@ -1,12 +1,13 @@
 package blog
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
-
 import org.scalatest.{ Tag => _, _ }
 import skinny.Pagination
 
-class BlogSpec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class BlogSpec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB("blog").toDB()
 

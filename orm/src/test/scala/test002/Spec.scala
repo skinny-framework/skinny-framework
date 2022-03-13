@@ -1,11 +1,11 @@
 package test002
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import scalikejdbc.scalatest.AutoRollback
 
-import org.scalatest.{ fixture, Matchers }
-
-class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class Spec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
 
   override def db(): DB = NamedDB("test002").toDB()
 

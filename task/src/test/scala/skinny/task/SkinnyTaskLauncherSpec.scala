@@ -1,8 +1,9 @@
 package skinny.task
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class SkinnyTaskLauncherSpec extends FlatSpec with Matchers {
+class SkinnyTaskLauncherSpec extends AnyFlatSpec with Matchers {
 
   val launcher       = new SkinnyTaskLauncher {}
   var result: String = "ng"

@@ -4,11 +4,12 @@ import java.io.File
 import java.nio.charset.Charset
 
 import org.apache.commons.io.FileUtils
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import skinny.{ DBSettings, SkinnyEnv }
 
-class ReverseModelAllGeneratorSpec extends FunSpec with Matchers {
+class ReverseModelAllGeneratorSpec extends AnyFunSpec with Matchers {
 
   val generator = new ReverseModelAllGenerator {
     override def sourceDir       = "tmp/ReverseModelAllGeneratorSpec/src/main/scala"
@@ -123,13 +124,13 @@ object Member extends SkinnyCRUDMapper[Member] {
 
 import skinny.DBSettings
 import skinny.test._
-import org.scalatest.fixture.FlatSpec
-import org.scalatest._
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import scalikejdbc.scalatest._
 import org.joda.time._
 
-class CompanySpec extends FlatSpec with Matchers with DBSettings with AutoRollback {
+class CompanySpec extends FixtureAnyFlatSpec with Matchers with DBSettings with AutoRollback {
 }
 """
       )
@@ -143,13 +144,13 @@ class CompanySpec extends FlatSpec with Matchers with DBSettings with AutoRollba
 
 import skinny.DBSettings
 import skinny.test._
-import org.scalatest.fixture.FlatSpec
-import org.scalatest._
+import org.scalatest.flatspec.FixtureAnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import scalikejdbc.scalatest._
 import org.joda.time._
 
-class MemberSpec extends FlatSpec with Matchers with DBSettings with AutoRollback {
+class MemberSpec extends FixtureAnyFlatSpec with Matchers with DBSettings with AutoRollback {
 }
 """
       )

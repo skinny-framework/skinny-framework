@@ -1,8 +1,9 @@
 package skinny
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class FormatSpec extends FlatSpec with Matchers {
+class FormatSpec extends AnyFlatSpec with Matchers {
   behavior of "Format"
 
   "HTML" should "be available" in {

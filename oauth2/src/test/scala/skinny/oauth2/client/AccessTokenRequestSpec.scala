@@ -1,8 +1,9 @@
 package skinny.oauth2.client
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AccessTokenRequestSpec extends FlatSpec with Matchers {
+class AccessTokenRequestSpec extends AnyFlatSpec with Matchers {
 
   it should "be available" in {
     val req = new AccessTokenRequest(OAuth2Provider.GitHub)

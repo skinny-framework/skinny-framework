@@ -1,11 +1,12 @@
 package skinny.orm.feature
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc._
 import skinny.orm._
 import skinny.orm.exception.AssociationSettingsException
 
-class AssociationsFeatureSpec extends FlatSpec with Matchers {
+class AssociationsFeatureSpec extends AnyFlatSpec with Matchers {
   behavior of "AssociationsFeature"
 
   Class.forName("org.h2.Driver")

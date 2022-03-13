@@ -1,11 +1,11 @@
 package skinny.bootstrap
 
 import javax.servlet.ServletContext
-
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.SkinnyEnv
 
-class SkinnyLifeCycleSpec extends FunSpec with Matchers {
+class SkinnyLifeCycleSpec extends AnyFunSpec with Matchers {
   System.setProperty(SkinnyEnv.PropertyKey, "test")
 
   val lifeCycle = new SkinnyLifeCycle {

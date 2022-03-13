@@ -1,8 +1,9 @@
 package skinny.task.generator
 
-import org.scalatest._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ScaffoldScamlGeneratorSpec extends FunSpec with Matchers {
+class ScaffoldScamlGeneratorSpec extends AnyFunSpec with Matchers {
 
   val generator = ScaffoldScamlGenerator
 

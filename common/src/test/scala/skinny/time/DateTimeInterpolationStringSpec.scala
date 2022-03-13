@@ -1,9 +1,10 @@
 package skinny.time
 
 import org.joda.time._
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DateTimeInterpolationStringSpec extends FlatSpec with Matchers with skinny.time.Implicits {
+class DateTimeInterpolationStringSpec extends AnyFlatSpec with Matchers with skinny.time.Implicits {
 
   behavior of "DateTimeInterpolationString"
 

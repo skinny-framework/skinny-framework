@@ -1,6 +1,6 @@
 import scala.language.postfixOps
 
-env in Compile := Some(file("example") / "jetty-env.xml" asFile)
+Compile / env := Some(file("example") / "jetty-env.xml" asFile)
 initialCommands := """
 import _root_.controller._, model._
 import org.joda.time._

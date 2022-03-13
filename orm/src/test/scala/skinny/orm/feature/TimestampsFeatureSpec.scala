@@ -1,14 +1,15 @@
 package skinny.orm.feature
 
+import org.scalatest.matchers.should.Matchers
 import org.joda.time.DateTime
-import org.scalatest.{ fixture, Matchers }
+import org.scalatest.funspec.FixtureAnyFunSpec
 import scalikejdbc.scalatest.AutoRollback
 import skinny.dbmigration.DBSeeds
 import skinny.orm._
 import scalikejdbc._
 
 class TimestampsFeatureSpec
-    extends fixture.FunSpec
+    extends FixtureAnyFunSpec
     with Matchers
     with Connection
     with DBSeeds

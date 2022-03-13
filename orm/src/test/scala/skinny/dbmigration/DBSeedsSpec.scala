@@ -1,11 +1,12 @@
 package skinny.dbmigration
 
+import org.scalatest.funspec.FixtureAnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scalikejdbc.scalatest.AutoRollback
-import org.scalatest.{ fixture, Matchers }
 import skinny.orm.{ Connection, CreateTables }
 
 class DBSeedsSpec
-    extends fixture.FunSpec
+    extends FixtureAnyFunSpec
     with Matchers
     with Connection
     with CreateTables // just testing lock condition

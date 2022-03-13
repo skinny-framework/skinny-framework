@@ -1,9 +1,10 @@
 package skinny.validator
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import skinny.validator.implicits.ParametersGetAsImplicits
 
-class ParametersSpec extends FlatSpec with Matchers with ParametersGetAsImplicits {
+class ParametersSpec extends AnyFlatSpec with Matchers with ParametersGetAsImplicits {
 
   behavior of "Params"
 

@@ -1,8 +1,9 @@
 package skinny.http
 
-import org.scalatest.{ Matchers, WordSpec }
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class RequestSpec extends WordSpec with Matchers {
+class RequestSpec extends AnyWordSpec with Matchers {
 
   val request = new Request("http://example.com/")
 

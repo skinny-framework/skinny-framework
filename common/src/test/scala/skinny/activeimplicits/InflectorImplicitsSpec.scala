@@ -1,8 +1,9 @@
 package skinny.activeimplicits
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class InflectorImplicitsSpec extends FlatSpec with Matchers with InflectorImplicits {
+class InflectorImplicitsSpec extends AnyFlatSpec with Matchers with InflectorImplicits {
 
   it should "have implicits" in {
     "company".pluralize should equal("companies")

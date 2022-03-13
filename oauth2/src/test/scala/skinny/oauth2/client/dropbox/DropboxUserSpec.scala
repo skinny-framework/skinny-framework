@@ -1,8 +1,9 @@
 package skinny.oauth2.client.dropbox
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DropboxUserSpec extends FlatSpec with Matchers {
+class DropboxUserSpec extends AnyFlatSpec with Matchers {
 
   it should "work" in {
     val raw = new RawDropboxUser(

@@ -13,16 +13,13 @@ jobs:
       matrix:
         include:
           - TEST_TYPE: "framework"
-            TRAVIS_SCALA_VERSION: 2.13.1
+            TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 14
           - TEST_TYPE: "framework"
-            TRAVIS_SCALA_VERSION: 2.13.1
+            TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 11
-          - TEST_TYPE: "framework"
-            TRAVIS_SCALA_VERSION: 2.13.1
-            jdk_version: 8
           - TEST_TYPE: "blank-app"
-            TRAVIS_SCALA_VERSION: 2.13.1
+            TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 11
     steps:
       - uses: actions/checkout@v2

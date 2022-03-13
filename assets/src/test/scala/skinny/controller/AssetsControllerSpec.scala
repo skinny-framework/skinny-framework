@@ -4,7 +4,8 @@ import scala.language.reflectiveCalls
 
 import javax.servlet.ServletContext
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito.{ mock, when }
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.internal.stubbing.answers._
@@ -12,7 +13,7 @@ import skinny.SkinnyEnv
 import skinny.micro.context.SkinnyContext
 import skinny.test.MockController
 
-class AssetsControllerSpec extends FlatSpec with Matchers {
+class AssetsControllerSpec extends AnyFlatSpec with Matchers {
   class MockPassException extends Throwable
 
   def newController = new AssetsController with MockController {

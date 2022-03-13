@@ -2,10 +2,11 @@ package skinny.session.servlet
 
 import javax.servlet.http.HttpServletRequest
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 
-class SkinnyHttpRequestWrapperSpec extends FlatSpec with Matchers with MockitoSugar {
+class SkinnyHttpRequestWrapperSpec extends AnyFlatSpec with Matchers with MockitoSugar {
 
   it should "work" in {
     val underlying = mock[HttpServletRequest]

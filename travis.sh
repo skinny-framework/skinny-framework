@@ -12,7 +12,7 @@ if [[ "$TEST_TYPE" == "framework" ]]; then
   export APP_ENV=test
   # sass 3.5 requires Ruby 2.0+
   gem install sass -v 3.4.25 &&
-  if [[ "$TRAVIS_SCALA_VERSION" == "2.13.1" ]]; then
+  if [[ "$TRAVIS_SCALA_VERSION" == 2.13* ]]; then
     sbt "++ ${TRAVIS_SCALA_VERSION}!" test:compile \
           assets/test \
           common/test \

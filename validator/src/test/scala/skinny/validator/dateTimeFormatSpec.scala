@@ -1,8 +1,9 @@
 package skinny.validator
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class dateTimeFormatSpec extends FlatSpec with Matchers {
+class dateTimeFormatSpec extends AnyFlatSpec with Matchers {
 
   behavior of "dateTimeFormat"
 

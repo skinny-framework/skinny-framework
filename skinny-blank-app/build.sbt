@@ -13,8 +13,8 @@ val appName = "skinny-blank-app"
 val appVersion = "0.1.0-SNAPSHOT"
 
 val skinnyVersion = "4.0.0-SNAPSHOT"
-val theScalaVersion = "2.13.1"
-val jettyVersion = "9.4.19.v20190610"
+val theScalaVersion = "2.13.8"
+val jettyVersion = "9.4.45.v20220203"
 
 lazy val baseSettings = servletSettings ++ Seq(
   organization := appOrganization,
@@ -25,9 +25,9 @@ lazy val baseSettings = servletSettings ++ Seq(
     "org.scala-lang" % "scala-library" % scalaVersion.value,
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-    "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-    "org.slf4j" % "slf4j-api" % "1.7.30"
+    "org.scala-lang.modules" %% "scala-xml" % "2.0.1",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1",
+    "org.slf4j" % "slf4j-api" % "1.7.36"
   ),
   libraryDependencies ++= Seq(
     "org.skinny-framework" %% "skinny-framework" % skinnyVersion,
@@ -59,16 +59,16 @@ DBSettings.initialize()
   // Faster "./skinny idea"
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
   updateOptions := updateOptions.value.withCachedResolution(true),
-  logBuffered in Test := false,
-  javaOptions in Test ++= Seq("-Dskinny.env=test"),
-  fork in Test := true,
+  Test / logBuffered := false,
+  Test / javaOptions ++= Seq("-Dskinny.env=test"),
+  Test / fork := true,
   suppressSbtShellNotification := true,
   scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 )
 
 lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
-  scalateTemplateConfig in Compile := {
-    val base = (sourceDirectory in Compile).value
+  Compile / scalateTemplateConfig := {
+    val base = (Compile / sourceDirectory).value
     Seq(
       TemplateConfig(
         file(".") / "src" / "main" / "webapp" / "WEB-INF",
@@ -92,11 +92,11 @@ lazy val scalatePrecompileSettings = scalateSettings ++ Seq(
 // -------------------------------------------------------
 
 lazy val devBaseSettings = baseSettings ++ Seq(
-  unmanagedClasspath in Test += Attributed.blank(
+  Test / unmanagedClasspath += Attributed.blank(
     baseDirectory.value / "src/main/webapp"),
   // Integration tests become slower when multiple controller tests are loaded in the same time
-  parallelExecution in Test := false,
-  port in container.Configuration := 8080
+  Test / parallelExecution := false,
+  container.Configuration / port := 8080
 )
 lazy val dev = (project in file("."))
   .settings(devBaseSettings)
@@ -131,7 +131,7 @@ lazy val task = (project in file("task"))
 // -------------------------------------------------------
 
 lazy val packagingBaseSettings = baseSettings ++ scalatePrecompileSettings ++ Seq(
-  sources in doc in Compile := List(),
+  Compile / doc / sources := List(),
   publishTo := {
     val base = "https://oss.sonatype.org/"
     if (version.value.trim.endsWith("SNAPSHOT"))

@@ -29,7 +29,7 @@ object Member extends SkinnyCRUDMapper[Member] {
 
   // if you use hasOne, joined entity should be Option[Entity]
   // this code should be here
-  innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated
+  innerJoinWithDefaults(Country, (m, c) => sqls.eq(m.countryId, c.id)).byDefaultEvenIfAssociated()
 
   // one-to-one
   val companyOpt = belongsTo[Company](Company, (m, c) => m.copy(company = c))
@@ -158,8 +158,6 @@ object GroupMapper extends SkinnyCRUDMapper[Group] with SoftDeleteWithTimestampF
   override val tableName                                         = "groups"
   override val defaultAlias                                      = createAlias("g")
   def extract(rs: WrappedResultSet, s: ResultName[Group]): Group = autoConstruct(rs, s)
-
-  private[this] val logger = LoggerFactory.getLogger(classOf[Group])
 
   beforeCreate((session: DBSession, namedValues: Seq[(SQLSyntax, Any)]) => {
     logger.info(s"Before creation. params: ${namedValues}")
