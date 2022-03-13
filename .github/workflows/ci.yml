@@ -18,9 +18,6 @@ jobs:
           - TEST_TYPE: "framework"
             TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 11
-          - TEST_TYPE: "framework"
-            TRAVIS_SCALA_VERSION: 2.13.8
-            jdk_version: 8
           - TEST_TYPE: "blank-app"
             TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 11
