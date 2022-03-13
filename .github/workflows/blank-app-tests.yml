@@ -1,0 +1,41 @@
+name: Blank App Tests
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: '0 6 * * 3'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - TEST_TYPE: "blank-app"
+            TRAVIS_SCALA_VERSION: 2.13.8
+            jdk_version: 11
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+      - uses: olafurpg/setup-scala@v10
+        with:
+          java-version: "adopt@1.${{ matrix.jdk_version }}"
+      - name: Cache sbt
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.sbt
+            ~/.ivy2/cache
+            ~/.coursier
+            ~/.cache/coursier
+          key: sbt-cache-${{ runner.os }}-${{ matrix.target-platform }}-${{ hashFiles('project/build.properties') }}
+      - name: Build
+        run: |
+          export TRAVIS_SCALA_VERSION=${{ matrix.TRAVIS_SCALA_VERSION }}
+          export TEST_TYPE=${{ matrix.TEST_TYPE }}
+          ./travis.sh
+          find $HOME/.sbt -name "*.lock" | xargs rm -f
+          find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm -f

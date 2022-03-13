@@ -1,7 +1,7 @@
 # Skinny Framework 
 
 ![CI Build](https://github.com/skinny-framework/skinny-framework/workflows/CI%20Build/badge.svg)
-[![Maven Central](https://img.shields.io/maven-central/v/org.skinny-framework/skinny-framework_2.12.svg?label=Maven%20Central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.skinny-framework%22%20a%3A%22skinny-framework_2.12%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.skinny-framework/skinny-framework_2.13.svg?label=Maven%20Central)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.skinny-framework%22%20a%3A%22skinny-framework_2.13%22)
 
 Skinny is a full-stack web app framework to build Servlet applications.
 

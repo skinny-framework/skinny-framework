@@ -1,4 +1,4 @@
-name: CI Build
+name: Framework CI Tests
 on:
   pull_request:
   push:
@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 6
     strategy:
       fail-fast: false
       matrix:
@@ -16,9 +16,6 @@ jobs:
             TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 14
           - TEST_TYPE: "framework"
-            TRAVIS_SCALA_VERSION: 2.13.8
-            jdk_version: 11
-          - TEST_TYPE: "blank-app"
             TRAVIS_SCALA_VERSION: 2.13.8
             jdk_version: 11
     steps:
