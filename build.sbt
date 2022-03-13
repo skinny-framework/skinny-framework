@@ -35,8 +35,8 @@ lazy val baseSettings = Seq(
   crossScalaVersions := Seq("2.13.8"),
   scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature"),
   libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % collectionCompatVersion,
-  unmanagedSourceDirectories in Compile += {
-    val base = (sourceDirectory in Compile).value.getParentFile / Defaults.nameForSrc(Compile.name)
+  Compile / unmanagedSourceDirectories += {
+    val base = (Compile / sourceDirectory).value.getParentFile / Defaults.nameForSrc(Compile.name)
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, v)) if v >= 13 => base / s"scala-2.13+"
       case _                       => base / s"scala-2.13-"
@@ -44,22 +44,22 @@ lazy val baseSettings = Seq(
   },
   publishMavenStyle := true,
   // NOTE: for stability
-  parallelExecution in Test := false,
-  maxErrors in Test := 10,
-  publishArtifact in Test := false,
+  Test / parallelExecution := false,
+  Test / maxErrors := 10,
+  Test / publishArtifact := false,
   pomIncludeRepository := { _ =>
     false
   },
   transitiveClassifiers in Global := Seq(Artifact.SourceClassifier),
   // NOTE: forking when testing doesn't work for some existing tests
   // fork in Test := true,
-  logBuffered in Test := false,
-  testForkedParallel in Test := true,
+  Test / logBuffered := false,
+  Test / testForkedParallel := true,
   // TODO: Fix warning - javaOptions will be ignored, fork is set to false
   // javaOptions in Test ++= Seq("-Dskinny.env=test"),
   updateOptions := updateOptions.value.withCachedResolution(true),
   javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-encoding", "UTF-8", "-Xlint:-options"),
-  javacOptions in doc := Seq("-source", "1.8"),
+  doc / javacOptions := Seq("-source", "1.8"),
   pomExtra := _pomExtra
 )
 
@@ -297,7 +297,7 @@ lazy val example = (project in file("example"))
       "org.eclipse.jetty"    % "jetty-plus"        % jettyVersion % "container",
       "javax.servlet"        % "javax.servlet-api" % "3.1.0" % "container;provided;test"
     ),
-    unmanagedClasspath in Test += Attributed.blank(baseDirectory.value / "src/main/webapp")
+    Test / unmanagedClasspath += Attributed.blank(baseDirectory.value / "src/main/webapp")
   )
   .dependsOn(
     framework,

@@ -19,7 +19,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from summary")
 }
 
-class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class Spec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
   override def db(): DB = NamedDB("test006").toDB()
 
   var (_beforeCreate, _beforeUpdateBy, _beforeDeleteBy, _afterCreate, _afterDeleteBy, _afterUpdateBy) =

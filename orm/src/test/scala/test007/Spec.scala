@@ -28,7 +28,7 @@ trait CreateTables extends DBSeeds { self: Connection =>
   runIfFailed(sql"select count(1) from blog")
 }
 
-class Spec extends fixture.FunSpec with Matchers with Connection with CreateTables with AutoRollback {
+class Spec extends FixtureAnyFunSpec with Matchers with Connection with CreateTables with AutoRollback {
   override def db(): DB = NamedDB("test007").toDB()
 
   case class Blog(id: Long, name: String, articles: Seq[Article] = Seq.empty)
