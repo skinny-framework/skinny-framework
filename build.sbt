@@ -4,7 +4,7 @@ import skinny.servlet._, ServletPlugin._, ServletKeys._
 
 import scala.language.postfixOps
 
-lazy val currentVersion = "4.0.0-SNAPSHOT"
+lazy val currentVersion = "4.0.0"
 
 lazy val skinnyMicroVersion      = "2.3.0"
 lazy val scalikeJDBCVersion      = "4.0.0"
