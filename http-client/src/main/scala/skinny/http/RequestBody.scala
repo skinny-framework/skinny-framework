@@ -63,12 +63,10 @@ case class RequestBody(request: Request) {
         }
         out.write(CRLF.getBytes)
 
-        {
-          val sb = new StringBuilder
-          sb.append("--").append(boundary).append("--").append(CRLF)
-          out.write(sb.toString.getBytes)
-        }
       }
+      val sb = new StringBuilder
+      sb.append("--").append(boundary).append("--").append(CRLF)
+      out.write(sb.toString.getBytes)
       out.toByteArray
     }
   }
